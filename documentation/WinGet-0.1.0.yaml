@@ -1,0 +1,731 @@
+openapi: 3.0.1
+info:
+  version: 0.1.0
+  title: WinGet Open API
+  description: API for Winget
+  termsOfService: 'https://winget.microsoft.com/terms-of-use'
+  contact:
+    name: Zach
+    email: zacarpen@microsoft.com
+
+paths:
+  # Package API Calls
+  /packages:
+
+    post:
+      summary: Add Package Metadata
+      tags:
+        - Packages
+      description: This will create a new package in the respository with its assosiated metadata.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/packageRequestBody'
+      responses:
+        201:
+          description: Successfully added a package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/packageSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Package Metadata
+      tags:
+        - Packages
+        - Get
+      description: This will retrieve a set of packages.
+      responses:
+        200:
+          description: Successfully retrieved a list of packages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/packageSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{packageId}:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+      
+    put:
+      summary: Replace Package Metadata
+      tags:
+        - Packages
+      description: This will replace a package in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/packageRequestBody'
+      responses:
+        201:
+          description: Successfully updated a package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/packageSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    patch:
+      summary: Update Package Metadata
+      tags:
+        - Packages
+      description: This will Update a package in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/packageRequestBody'
+      responses:
+        201:
+          description: Successfully updated a package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/packageSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete a Package
+      tags:
+        - Packages
+      description: This will delete a package in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a package
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Package Metadata
+      tags:
+        - Packages
+        - Get
+      description: This will retrieve a set of packages.
+      responses:
+        200:
+          description: Successfully retrieved a package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/packageSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Version API Calls
+  /packages/{packageId}/version:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+
+    post:
+      summary: Add Version Metadata
+      tags:
+        - Versions
+      description: This will create a new version in the respository with its assosiated metadata.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/versionRequestBody'
+      responses:
+        201:
+          description: Successfully added a version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/versionSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Version Metadata
+      tags:
+        - Versions
+        - Get
+      description: This will retrieve a set of versions
+      responses:
+        200:
+          description: Successfully retrieved a list of versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/versionSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{packageId}/versions/{version}:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+
+    put:
+      summary: Replace Version Metadata
+      tags:
+        - Versions
+      description: This will replace a version in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/versionRequestBody'
+      responses:
+        201:
+          description: Successfully updated a version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/versionSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    patch:
+      summary: Update Version Metadata
+      tags:
+        - Versions
+      description: This will Update a version in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/versionRequestBody'
+      responses:
+        201:
+          description: Successfully updated a version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/versionSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+      
+    delete:
+      summary: Delete a Version
+      tags:
+        - Versions
+      description: This will delete a version in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+  
+    get:
+      summary: Get Version Metadata
+      tags:
+        - Versions
+        - Get
+      description: This will retrieve a version.
+      responses:
+        200:
+          description: Successfully retrieved a package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/versionSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Installer API Calls
+  /packages/{packageId}/versions/{version}/installers:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+
+    post:
+      summary: Add Installer Metadata
+      tags:
+        - Installers
+      description: This will create a new Installer in the respository with its assosiated metadata.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/installerRequestBody'
+      responses:
+        201:
+          description: Successfully added an installer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/installerSchema'
+        401:
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Installer Metadata
+      tags:
+        - Installers
+        - Get
+      description: This will retrieve a set of installers/
+      responses:
+        200:
+          description: Successfully retrieved a list of installers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/installerSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{packageId}/version/{version}/installers/{architecture}/{targetPlatform}:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/architecture'
+      - $ref: '#/components/parameters/targetPlatform'
+
+    put:
+      summary: Replace Installer Metadata
+      tags:
+        - Installers
+      description: This will replace an installer in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/installerRequestBody'
+      responses:
+        201:
+          description: Successfully updated an installer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/installerSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    patch:
+      summary: Update Installer Metadata
+      tags:
+        - Installers
+      description: This will Update an installer in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/installerRequestBody'
+      responses:
+        201:
+          description: Successfully updated an installer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/installerSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete an Installer
+      tags:
+        - Installers
+      description: This will delete a version in the respository.
+      security: 
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Installer Metadata
+      tags:
+        - Installers
+        - Get
+      description: This will retrieve an installer.
+      responses:
+        200:
+          description: Successfully retrieved a package.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/installerSchema'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+  
+  /manifests:
+    get:
+      summary: This returns a manifest
+      tags:
+        - Manifests
+        - Get
+      description: This will retrieve a set of manifests.
+      responses:
+        200:
+          description: Successfully retrieved a list of packages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/manifestSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+# Reusable Components for API
+components:
+
+  # Security Components
+  securitySchemes:
+    ApiKeyAuthentication:
+      type: apiKey
+      in: query
+      name: code
+
+  # API Schemas
+  schemas:
+
+    # Primary Keys
+    packageId:
+      description: Model for the Package Id consisting of publisher and package name
+      properties:
+        packageId:
+          type: string
+          example: git.git
+
+    version:
+      description: Version of a software Package
+      properties:
+        version:
+          type: string
+          example: 1.0.0
+
+    architecture:
+      description: Architecture of an installer
+      properties:
+        architecture:
+          type: string
+          example: X86
+
+    targetPlatform:
+      description: Target Platform of an installer
+      properties:
+        version:
+          type: string
+          example: Windows.Desktop
+    
+    # Default Locale
+    defaultLocale:
+      description: Model containing Package Primary-Keys
+      properties:
+        defaultLocale:
+          type: string
+          example: en-us
+
+    # Package Fields
+    packageFields:
+      description: Model containing Package Fields
+      properties:
+        localeKey:
+          type: string
+          example: en-us
+        publisher:
+          type: string
+          example: Git
+        name:
+          type: string
+          example: Git
+        appMoniker:
+          type: string
+          example: Git
+        channel:
+          type: string
+          example: preview
+        license:
+          type: string
+          example: license
+        licenseUrl:
+          type: string
+          example: https://git.com/license
+        additionField:
+          type: string
+          example: https://git.com/license
+    
+    # Package Schema        
+    packageSchema:
+      description: Model containing Package Schema
+      allOf:
+        - $ref: '#/components/schemas/packageId'
+        - $ref: '#/components/schemas/defaultLocale'
+        - type: object
+          properties:
+            packageLocale:
+              type: array
+              items:
+                $ref: '#/components/schemas/packageFields'
+
+    # Version Fields
+    versionFields:
+      description: Model containing Version Fields
+      properties:
+        systemAppId:
+          type: string
+          example: #example#
+        log:
+          type: string
+          example: #example#
+        installLocation:
+          type: string
+          example: #example#
+        scope:
+          type: string
+          example: #example#
+        manifestVersion:
+          type: string
+          example: #example#
+        minOSVersion:
+          type: string
+          example: #example#
+        custom:
+          type: string
+          example: #example#
+        silent:
+          type: string
+          example: #example#
+        silentWithProgress:
+          type: string
+          example: #example#
+        interactive:
+          type: string
+          example: #example#
+
+    # Version Schema        
+    versionSchema:
+      description: Model containing Package Schema
+      allOf:
+        - $ref: '#/components/schemas/version'
+        - type: object
+          properties:
+            versionLocale:
+              type: array
+              items:
+                $ref: '#/components/schemas/versionFields'
+
+    # Installer Fields
+    installerFields:
+      description: Model containing Installer Fields
+      properties:
+        url:
+          type: string
+          example: #example#
+        sha256:
+          type: string
+          example: #example#
+        signatureShar256:
+          type: string
+          example: #example#
+        switches:
+          type: string
+          example: #example#
+
+    # Installer Schema        
+    installerSchema:
+      description: Model containing Package Schema
+      allOf:
+        - $ref: '#/components/schemas/architecture'
+        - $ref: '#/components/schemas/targetPlatform'
+        - type: object
+          properties:
+            installerLocale:
+              type: array
+              items:
+                $ref: '#/components/schemas/installerFields'
+
+    # Manifest Schema
+    manifestSchema: 
+      description: Model containing manifest schema
+      allOf:
+        - $ref: '#/components/schemas/packageSchema'
+        - type: object
+          properties:
+            versions:
+              type: array
+              items: 
+                allOf:
+                  - $ref: '#/components/schemas/versionSchema'
+                  - type: object
+                    properties:
+                      installers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/installerSchema'
+
+    # Misc Schemas
+    error:
+      description: A schema for a generic error
+      properties:
+        errorCode:
+          type: integer
+          #example: 8
+        errorMessage:
+          type: string
+          #example: We have no idea what went wrong. In our experience, you can add random thread.sleep to your code and it will fix this.
+      required: 
+        - errorCode
+        - errorMessage
+
+  # Parameters
+  parameters:
+    packageId:
+      name: packageId
+      in: path
+      description: This is the package id.
+      required: true
+      schema:
+        type: string
+        example: git.git
+
+    version:
+      name: version
+      in: path
+      description: This is the version.
+      required: true
+      schema:
+        type: string
+        example: 1.0.0
+
+    architecture:
+      name: architecture
+      in: path
+      description: This is the installer architecture.
+      required: true
+      schema:
+        type: string
+        example: x86
+        
+    targetPlatform:
+      name: targetPlatform
+      in: path
+      description: This is the installer target platform.
+      required: true
+      schema:
+        type: string
+        example: Windows.Desktop
+
+  # Request Bodies
+  requestBodies:
+    packageRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/packageSchema'
+
+    versionRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/versionSchema'
+
+    installerRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/installerSchema'
+
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid      
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/error'
+
+    NotFoundError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/error'
+
+    GenericError:
+      description: An Error Occured
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/error'
+
+tags: 
+  - name: Packages
+    description: Everything about packages
+  - name: Versions
+    description: Everything about versions
+  - name: Installers
+    description: Everything about installers
+  - name: Manifests
+    description: Everything about manifests
+  - name: Get
+    description: All Get Calls. WinGet will primarily operate on these calls.
