@@ -30,6 +30,8 @@ paths:
                 $ref: '#/components/schemas/packageSchema'
         401:
           $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/GenericError'
 
@@ -161,6 +163,8 @@ paths:
                 $ref: '#/components/schemas/versionSchema'
         401:
           $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/GenericError'
 
@@ -293,6 +297,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/installerSchema'
         401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/GenericError'
 
@@ -405,6 +412,8 @@ paths:
           $ref: '#/components/responses/GenericError'
   
   /manifests:
+    parameters:
+      - $ref: '#/components/parameters/query'
     get:
       summary: This returns a manifest
       tags:
@@ -667,6 +676,15 @@ components:
         type: string
         example: Windows.Desktop
 
+    query:
+      name: query
+      in: query
+      description: This is a JSON reqpresentation of a query to be executed and converted to a Base64 string.
+      required: false
+      schema:
+        type: string
+        example: eyJwYWNrYWdlSWRTdGFydHNXaXRoIjoiZ2l0In0=
+
   # Request Bodies
   requestBodies:
     packageRequestBody:
@@ -702,6 +720,15 @@ components:
 
     NotFoundError:
       description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/error'
+
+    Conflict:
+      description: A conflict exists with the resource.      
       content:
         application/json:
           schema:
