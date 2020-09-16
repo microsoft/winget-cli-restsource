@@ -3,10 +3,9 @@ info:
   version: 0.1.0
   title: WinGet Open API
   description: API for Winget
-  termsOfService: 'https://winget.microsoft.com/terms-of-use'
   contact:
-    name: Zach
-    email: zacarpen@microsoft.com
+    name: Winget Feedback
+    email: winget-feedback@microsoft.com
 
 paths:
   # Package API Calls
