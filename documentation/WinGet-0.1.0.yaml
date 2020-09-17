@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   version: 0.1.0
-  title: WinGet Open API
-  description: API for Winget
+  title: Open Windows Catalog API
+  description: This is the API for the Open Windows Catalog.
   contact:
     name: Winget Feedback
     email: winget-feedback@microsoft.com
@@ -15,14 +15,14 @@ paths:
       summary: Add Package Metadata
       tags:
         - Packages
-      description: This will create a new package in the respository with its assosiated metadata.
+      description: This will create a new package in the repository with its associated metadata.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
         $ref: '#/components/requestBodies/packageRequestBody'
       responses:
         201:
-          description: Successfully added a package
+          description: Successfully added a package.
           content:
             application/json:
               schema:
@@ -42,7 +42,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          description: Successfully retrieved a list of packages
+          description: Successfully retrieved a list of packages.
           content:
             application/json:
               schema:
@@ -62,14 +62,14 @@ paths:
       summary: Replace Package Metadata
       tags:
         - Packages
-      description: This will replace a package in the respository.
+      description: This will replace a package in the repository.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
         $ref: '#/components/requestBodies/packageRequestBody'
       responses:
         201:
-          description: Successfully updated a package
+          description: Successfully updated a package.
           content:
             application/json:
               schema:
@@ -85,12 +85,12 @@ paths:
       summary: Delete a Package
       tags:
         - Packages
-      description: This will delete a package in the respository.
+      description: This will delete a package in the repository.
       security: 
         - ApiKeyAuthentication: []
       responses:
         204:
-          description: Successfully deleted a package
+          description: Successfully deleted a package.
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -106,7 +106,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          description: Successfully retrieved a package
+          description: Successfully retrieved a package.
           content:
             application/json:
               schema:
@@ -125,14 +125,14 @@ paths:
       summary: Add Version Metadata
       tags:
         - Versions
-      description: This will create a new version in the respository with its assosiated metadata.
+      description: This will create a new version in the repository with its associated metadata.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
         $ref: '#/components/requestBodies/versionRequestBody'
       responses:
         201:
-          description: Successfully added a version
+          description: Successfully added a version.
           content:
             application/json:
               schema:
@@ -149,10 +149,10 @@ paths:
       tags:
         - Versions
         - Get
-      description: This will retrieve a set of versions
+      description: This will retrieve a set of versions.
       responses:
         200:
-          description: Successfully retrieved a list of versions
+          description: Successfully retrieved a list of versions.
           content:
             application/json:
               schema:
@@ -173,14 +173,14 @@ paths:
       summary: Replace Version Metadata
       tags:
         - Versions
-      description: This will replace a version in the respository.
+      description: This will replace a version in the repository.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
         $ref: '#/components/requestBodies/versionRequestBody'
       responses:
         201:
-          description: Successfully updated a version
+          description: Successfully updated a version.
           content:
             application/json:
               schema:
@@ -196,12 +196,12 @@ paths:
       summary: Delete a Version
       tags:
         - Versions
-      description: This will delete a version in the respository.
+      description: This will delete a version in the repository.
       security: 
         - ApiKeyAuthentication: []
       responses:
         204:
-          description: Successfully deleted a version
+          description: Successfully deleted a version.
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -217,7 +217,7 @@ paths:
       description: This will retrieve a version.
       responses:
         200:
-          description: Successfully retrieved a package
+          description: Successfully retrieved a package.
           content:
             application/json:
               schema:
@@ -237,7 +237,7 @@ paths:
       summary: Add Installer Metadata
       tags:
         - Installers
-      description: This will create a new Installer in the respository with its assosiated metadata.
+      description: This will create a new Installer in the repository with its associated metadata.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
@@ -261,7 +261,7 @@ paths:
       tags:
         - Installers
         - Get
-      description: This will retrieve a set of installers/
+      description: This will retrieve a set of installers.
       responses:
         200:
           description: Successfully retrieved a list of installers.
@@ -286,7 +286,7 @@ paths:
       summary: Replace Installer Metadata
       tags:
         - Installers
-      description: This will replace an installer in the respository.
+      description: This will replace an installer in the repository.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
@@ -309,7 +309,7 @@ paths:
       summary: Delete an Installer
       tags:
         - Installers
-      description: This will delete a version in the respository.
+      description: This will delete a version in the repository.
       security: 
         - ApiKeyAuthentication: []
       responses:
@@ -374,7 +374,7 @@ paths:
       description: This will retrieve a set of manifests.
       responses:
         200:
-          description: Successfully retrieved a list of packages
+          description: Successfully retrieved a list of packages.
           content:
             application/json:
               schema:
@@ -426,21 +426,21 @@ components:
 
     # Primary Keys
     packageId:
-      description: Model for the Package Id consisting of publisher and package name
+      description: Model for the Package Id consisting of publisher and package name.
       properties:
         packageId:
           type: string
           example: git.git
 
     version:
-      description: Version of a software Package
+      description: Version of a software Package.
       properties:
         version:
           type: string
           example: 1.0.0
 
     installerKey:
-      description: Key that represents an installer within the context of a specific version
+      description: Key that represents an installer within the context of a specific version.
       properties:
         installerKey:
           type: string
@@ -448,7 +448,7 @@ components:
 
     # Default Locale
     defaultLocale:
-      description: Model containing Package Primary-Keys
+      description: Model containing Package Primary-Keys.
       properties:
         defaultLocale:
           type: string
@@ -456,7 +456,7 @@ components:
 
     # Version Fields
     versionFields:
-      description: Model containing Version Fields
+      description: Model containing Version Fields.
       properties:
         name:
           type: string
@@ -494,7 +494,7 @@ components:
         installerType:
           type: string
           example: #example#
-        description:
+        description:.
           type: string
           example: #example#
         homePage:
@@ -509,12 +509,12 @@ components:
 
     # Version Locale
     versionLocale:
-      description: Model containing Version Locale
+      description: Model containing Version Locale.
       properties:
         language:
           type: string
           example: #example#
-        description:
+        description:.
           type: string
           example: #example#
         homepage:
@@ -526,7 +526,7 @@ components:
 
     # Installer Fields
     installerFields:
-      description: Model containing Installer Fields
+      description: Model containing Installer Fields.
       properties:
         arch:
           type: string
@@ -555,7 +555,7 @@ components:
 
     # Switches
     switchesFields:
-      description: Model containing Switches
+      description: Model containing Switches.
       properties:
         custom:
           type: string
@@ -578,14 +578,14 @@ components:
 
     # Package Schema        
     packageSchema:
-      description: Model containing Package Schema
+      description: Model containing Package Schema.
       allOf:
         - $ref: '#/components/schemas/packageId'
         - $ref: '#/components/schemas/defaultLocale'
     
     # Version Schema        
     versionSchema:
-      description: Model containing Package Schema
+      description: Model containing Package Schema.
       allOf:
         - $ref: '#/components/schemas/version'
         - $ref: '#/components/schemas/versionFields'
@@ -598,7 +598,7 @@ components:
 
     # Installer Schema        
     installerSchema:
-      description: Model containing Package Schema
+      description: Model containing Package Schema.
       allOf:
         - $ref: '#/components/schemas/installerKey'
         - $ref: '#/components/schemas/installerFields'
@@ -611,7 +611,7 @@ components:
 
     # Manifest Schema
     manifestSchema: 
-      description: Model containing manifest schema
+      description: Model containing manifest schema.
       allOf:
         - $ref: '#/components/schemas/packageSchema'
         - type: object
@@ -630,14 +630,12 @@ components:
 
     # Misc Schemas
     error:
-      description: A schema for a generic error
+      description: A schema for a generic error.
       properties:
         errorCode:
           type: integer
-          #example: 8
         errorMessage:
           type: string
-          #example: We have no idea what went wrong. In our experience, you can add random thread.sleep to your code and it will fix this.
       required: 
         - errorCode
         - errorMessage
@@ -674,7 +672,7 @@ components:
     query:
       name: query
       in: query
-      description: This is a JSON reqpresentation of a query to be executed and converted to a Base64 string.
+      description: This is a JSON representation of a query to be executed and converted to a Base64 string.
       required: false
       schema:
         type: string
@@ -712,7 +710,7 @@ components:
 
   responses:
     UnauthorizedError:
-      description: API key is missing or invalid      
+      description: API key is missing or invalid      .
       content:
         application/json:
           schema:
@@ -721,7 +719,7 @@ components:
               $ref: '#/components/schemas/error'
 
     NotFoundError:
-      description: The specified resource was not found
+      description: The specified resource was not found.
       content:
         application/json:
           schema:
@@ -739,7 +737,7 @@ components:
               $ref: '#/components/schemas/error'
 
     GenericError:
-      description: An Error Occured
+      description: An Error Occurred.
       content:
         application/json:
           schema:
@@ -749,12 +747,12 @@ components:
 
 tags: 
   - name: Packages
-    description: Everything about packages
+    description: Everything about packages.
   - name: Versions
-    description: Everything about versions
+    description: Everything about versions.
   - name: Installers
-    description: Everything about installers
+    description: Everything about installers.
   - name: Manifests
-    description: Everything about manifests
+    description: Manifests are a collated set of data to aid clients in search and consumption of the data sets.
   - name: Get
     description: All Get Calls.
