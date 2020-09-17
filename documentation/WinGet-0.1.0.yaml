@@ -494,7 +494,7 @@ components:
         installerType:
           type: string
           example: #example#
-        description:.
+        description:
           type: string
           example: #example#
         homePage:
@@ -514,7 +514,7 @@ components:
         language:
           type: string
           example: #example#
-        description:.
+        description:
           type: string
           example: #example#
         homepage:
