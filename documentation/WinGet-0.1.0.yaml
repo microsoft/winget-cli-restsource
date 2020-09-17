@@ -710,7 +710,7 @@ components:
 
   responses:
     UnauthorizedError:
-      description: API key is missing or invalid      .
+      description: API key is missing or invalid.
       content:
         application/json:
           schema:
