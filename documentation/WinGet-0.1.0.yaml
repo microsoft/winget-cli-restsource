@@ -57,35 +57,12 @@ paths:
   /packages/{packageId}:
     parameters:
       - $ref: '#/components/parameters/packageId'
-      
+
     put:
       summary: Replace Package Metadata
       tags:
         - Packages
       description: This will replace a package in the respository.
-      security: 
-        - ApiKeyAuthentication: []
-      requestBody:
-        $ref: '#/components/requestBodies/packageRequestBody'
-      responses:
-        201:
-          description: Successfully updated a package
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/packageSchema'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/GenericError'
-
-    patch:
-      summary: Update Package Metadata
-      tags:
-        - Packages
-      description: This will Update a package in the respository.
       security: 
         - ApiKeyAuthentication: []
       requestBody:
@@ -140,7 +117,7 @@ paths:
           $ref: '#/components/responses/GenericError'
 
   # Version API Calls
-  /packages/{packageId}/version:
+  /packages/{packageId}/versions:
     parameters:
       - $ref: '#/components/parameters/packageId'
 
@@ -215,29 +192,6 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-    patch:
-      summary: Update Version Metadata
-      tags:
-        - Versions
-      description: This will Update a version in the respository.
-      security: 
-        - ApiKeyAuthentication: []
-      requestBody:
-        $ref: '#/components/requestBodies/versionRequestBody'
-      responses:
-        201:
-          description: Successfully updated a version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/versionSchema'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/GenericError'
-      
     delete:
       summary: Delete a Version
       tags:
@@ -322,12 +276,11 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /packages/{packageId}/version/{version}/installers/{architecture}/{targetPlatform}:
+  /packages/{packageId}/versions/{version}/installers/{installerKey}:
     parameters:
       - $ref: '#/components/parameters/packageId'
       - $ref: '#/components/parameters/version'
-      - $ref: '#/components/parameters/architecture'
-      - $ref: '#/components/parameters/targetPlatform'
+      - $ref: '#/components/parameters/installerKey'
 
     put:
       summary: Replace Installer Metadata
@@ -341,29 +294,6 @@ paths:
       responses:
         201:
           description: Successfully updated an installer.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/installerSchema'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/GenericError'
-
-    patch:
-      summary: Update Installer Metadata
-      tags:
-        - Installers
-      description: This will Update an installer in the respository.
-      security: 
-        - ApiKeyAuthentication: []
-      requestBody:
-        $ref: '#/components/requestBodies/installerRequestBody'
-      responses:
-        201:
-          description: Successfully updated an installer
           content:
             application/json:
               schema:
@@ -411,9 +341,32 @@ paths:
           $ref: '#/components/responses/GenericError'
   
   /manifests:
-    parameters:
-      - $ref: '#/components/parameters/query'
+    post:
+      summary: This creates all subcomponents contained in the logical representation of a manifest
+      tags:
+        - Manifests
+      description: This will create all subcomponents contained in the logical representation of a manifest.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/manifestRequestBody'
+      responses:
+        201:
+          description: Successfully added multiple components.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifestSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
     get:
+      parameters:
+        - $ref: '#/components/parameters/query'
       summary: This returns a manifest
       tags:
         - Manifests
@@ -432,6 +385,29 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    put:
+      summary: This updates all subcomponents contained in the logical representation of a manifest
+      tags:
+        - Manifests
+      description: This will update all subcomponents contained in the logical representation of a manifest.
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/manifestRequestBody'
+      responses:
+        201:
+          description: Successfully added multiple components.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifestSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
         default:
           $ref: '#/components/responses/GenericError'
 
@@ -463,20 +439,13 @@ components:
           type: string
           example: 1.0.0
 
-    architecture:
-      description: Architecture of an installer
+    installerKey:
+      description: Key that represents an installer within the context of a specific version
       properties:
-        architecture:
+        installerKey:
           type: string
-          example: X86
+          example: 1
 
-    targetPlatform:
-      description: Target Platform of an installer
-      properties:
-        version:
-          type: string
-          example: Windows.Desktop
-    
     # Default Locale
     defaultLocale:
       description: Model containing Package Primary-Keys
@@ -485,70 +454,109 @@ components:
           type: string
           example: en-us
 
-    # Package Fields
-    packageFields:
-      description: Model containing Package Fields
-      properties:
-        localeKey:
-          type: string
-          example: en-us
-        publisher:
-          type: string
-          example: Git
-        name:
-          type: string
-          example: Git
-        appMoniker:
-          type: string
-          example: Git
-        channel:
-          type: string
-          example: preview
-        license:
-          type: string
-          example: license
-        licenseUrl:
-          type: string
-          example: https://git.com/license
-        additionField:
-          type: string
-          example: https://git.com/license
-    
-    # Package Schema        
-    packageSchema:
-      description: Model containing Package Schema
-      allOf:
-        - $ref: '#/components/schemas/packageId'
-        - $ref: '#/components/schemas/defaultLocale'
-        - type: object
-          properties:
-            packageLocale:
-              type: array
-              items:
-                $ref: '#/components/schemas/packageFields'
-
     # Version Fields
     versionFields:
       description: Model containing Version Fields
       properties:
-        systemAppId:
+        name:
           type: string
           example: #example#
-        log:
+        publisher:
           type: string
           example: #example#
-        installLocation:
+        appMoniker:
           type: string
           example: #example#
-        scope:
+        channel:
           type: string
           example: #example#
-        manifestVersion:
+        author:
+          type: string
+          example: #example#
+        license:
           type: string
           example: #example#
         minOSVersion:
           type: string
           example: #example#
+        tags:
+          type: string
+          example: #example#
+        commands:
+          type: string
+          example: #example#
+        protocols:
+          type: string
+          example: #example#
+        fileExtensions:
+          type: string
+          example: #example#
+        installerType:
+          type: string
+          example: #example#
+        description:
+          type: string
+          example: #example#
+        homePage:
+          type: string
+          example: #example#
+        licenseUrl:
+          type: string
+          example: #example#
+        switches:
+          type: string
+          example: #example#
+
+    # Version Locale
+    versionLocale:
+      description: Model containing Version Locale
+      properties:
+        language:
+          type: string
+          example: #example#
+        description:
+          type: string
+          example: #example#
+        homepage:
+          type: string
+          example: #example#
+        licenseUrl:
+          type: string
+          example: #example#
+
+    # Installer Fields
+    installerFields:
+      description: Model containing Installer Fields
+      properties:
+        arch:
+          type: string
+          example: #example#
+        url:
+          type: string
+          example: #example#
+        sha256:
+          type: string
+          example: #example#
+        signatureSha256:
+          type: string
+          example: #example#
+        language:
+          type: string
+          example: #example#
+        scope:
+          type: string
+          example: #example#
+        installerType:
+          type: string
+          example: #example#
+        productId:
+          type: string
+          example: #example#
+
+    # Switches
+    switchesFields:
+      description: Model containing Switches
+      properties:
         custom:
           type: string
           example: #example#
@@ -558,51 +566,48 @@ components:
         silentWithProgress:
           type: string
           example: #example#
-        interactive:
+        language:
+          type: string
+          example: #example#
+        log:
+          type: string
+          example: #example#
+        installLocation:
           type: string
           example: #example#
 
+    # Package Schema        
+    packageSchema:
+      description: Model containing Package Schema
+      allOf:
+        - $ref: '#/components/schemas/packageId'
+        - $ref: '#/components/schemas/defaultLocale'
+    
     # Version Schema        
     versionSchema:
       description: Model containing Package Schema
       allOf:
         - $ref: '#/components/schemas/version'
+        - $ref: '#/components/schemas/versionFields'
         - type: object
           properties:
-            versionLocale:
+            localization:
               type: array
               items:
-                $ref: '#/components/schemas/versionFields'
-
-    # Installer Fields
-    installerFields:
-      description: Model containing Installer Fields
-      properties:
-        url:
-          type: string
-          example: #example#
-        sha256:
-          type: string
-          example: #example#
-        signatureShar256:
-          type: string
-          example: #example#
-        switches:
-          type: string
-          example: #example#
+                $ref: '#/components/schemas/versionLocale'
 
     # Installer Schema        
     installerSchema:
       description: Model containing Package Schema
       allOf:
-        - $ref: '#/components/schemas/architecture'
-        - $ref: '#/components/schemas/targetPlatform'
+        - $ref: '#/components/schemas/installerKey'
+        - $ref: '#/components/schemas/installerFields'
         - type: object
           properties:
-            installerLocale:
+            switches:
               type: array
               items:
-                $ref: '#/components/schemas/installerFields'
+                $ref: '#/components/schemas/switchesFields'
 
     # Manifest Schema
     manifestSchema: 
@@ -657,23 +662,14 @@ components:
         type: string
         example: 1.0.0
 
-    architecture:
-      name: architecture
+    installerKey:
+      name: installerKey
       in: path
-      description: This is the installer architecture.
+      description: This is the installer key.
       required: true
       schema:
         type: string
-        example: x86
-        
-    targetPlatform:
-      name: targetPlatform
-      in: path
-      description: This is the installer target platform.
-      required: true
-      schema:
-        type: string
-        example: Windows.Desktop
+        example: 1
 
     query:
       name: query
@@ -706,6 +702,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/installerSchema'
+
+    manifestRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/manifestSchema'
 
   responses:
     UnauthorizedError:
@@ -754,4 +757,4 @@ tags:
   - name: Manifests
     description: Everything about manifests
   - name: Get
-    description: All Get Calls. WinGet will primarily operate on these calls.
+    description: All Get Calls.
