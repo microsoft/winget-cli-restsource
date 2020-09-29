@@ -8,7 +8,7 @@ trigger:
 jobs:
 - job: 'BuildTestPublish'
   displayName: 'Build Test & Publish'
-  timeoutInMinutes: 120
+  timeoutInMinutes: 60
   pool:
     vmImage: windows-2019
     demands:
