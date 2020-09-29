@@ -1,0 +1,29 @@
+# Template helper to restore, build, and publish
+
+steps:
+# Restore
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGEt.config'
+    restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
+
+# Build
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+    clean: true
+
+# Component Governance
+- task: ComponentGovernanceComponentDetection@0
+  displayName: Component Governance
+  inputs:
+    scanType: 'Register'
+    verbosity: 'Verbose'
+    alertWarningLevel: 'High'
+    failOnAlert: true

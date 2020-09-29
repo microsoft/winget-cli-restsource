@@ -1,0 +1,20 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "maintainabilityRules": {
+      "topLevelTypes": [ "class", "interface" ]
+    },
+    "documentationRules": {
+      "companyName": "Microsoft Corporation",
+      "copyrightText": "    Copyright (c) {companyName}. All rights reserved.",
+      "documentExposedElements": true,
+      "documentInterfaces": true,
+      "documentInternalElements": true,
+      "headerDecoration": "-----------------------------------------------------------------------",
+      "xmlHeader": true
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "insideNamespace"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+# Copyright (c) Microsoft Corporation. All rights reserved
+# CI pipeline for winget-cli-restsource
+
+# Branches that trigger a build on commit
+trigger:
+- master
+
+jobs:
+- job: 'BuildTestPublish'
+  displayName: 'Build Test & Publish'
+  timeoutInMinutes: 120
+  pool:
+    vmImage: windows-2019
+    demands:
+    - msbuild
+    - visualstudio
+  variables:
+    BuildConfiguration: 'release'
+    BuildPlatform: 'Any CPU'
+
+  steps:
+  # Restore and Build
+  - template: templates/restore-build-publish-test.yml
+
+  # Build Analysis - Binary Analysis (must run after build is complete on agent performing build)
+  - template: templates/binSkim.yml
+    parameters:
+      name: WinGet.BinSkim.ArtifactStagingDirectory
+      binaries: "$(Build.ArtifactStagingDirectory)"
+  
+  # Publish SDT Logs
+  - template: templates/copy-and-publish.yml
+    parameters:
+      name: StaticAnalysisLogs
+      source: '$(Agent.BuildDirectory)\_sdt\logs'
+  
+  # SDT Post Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      BinSkim: true
