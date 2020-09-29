@@ -21,21 +21,3 @@ jobs:
   steps:
   # Restore and Build
   - template: templates/restore-build-publish-test.yml
-
-  # Build Analysis - Binary Analysis (must run after build is complete on agent performing build)
-  - template: templates/binSkim.yml
-    parameters:
-      name: WinGet.BinSkim.ArtifactStagingDirectory
-      binaries: "$(Build.ArtifactStagingDirectory)"
-  
-  # Publish SDT Logs
-  - template: templates/copy-and-publish.yml
-    parameters:
-      name: StaticAnalysisLogs
-      source: '$(Agent.BuildDirectory)\_sdt\logs'
-  
-  # SDT Post Analysis
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
-    displayName: 'Post Analysis'
-    inputs:
-      BinSkim: true
