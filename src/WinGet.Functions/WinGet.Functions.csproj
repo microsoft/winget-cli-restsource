@@ -28,7 +28,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3"/>
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.7" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -45,5 +45,9 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
     </ItemGroup>
 </Project>
