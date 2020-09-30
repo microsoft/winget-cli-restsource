@@ -1,4 +1,10 @@
-﻿namespace Microsoft.WinGet.RestSource.Models
+﻿// -----------------------------------------------------------------------
+// <copyright file="Manifest.cs" company="Microsoft Corporation">
+//     Copyright (c) Microsoft Corporation. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace Microsoft.WinGet.RestSource.Models
 {
     using System.Collections.Generic;
     using Microsoft.WinGet.RestSource.Models.Core;
