@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Models.Core
+namespace Microsoft.WinGet.RestSource.Models
 {
     /// <summary>
     /// This class represents an error response. When an error occurs, we will return this to the client.
