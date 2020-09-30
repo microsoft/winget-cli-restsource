@@ -10,9 +10,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <!-- Warning 1701;1702: These two compiler warnings are raised when a reference is bound to a different version
-         than specified in the assembly reference version number. -->
-    <!-- Warning NU1701: Warning for using Nuget packages in a .Net Standard project compiled in .Net Framework. -->
     <NoWarn>1701;1702;NU1701</NoWarn>
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -20,12 +17,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <NoWarn>1701;1702;NU1701;</NoWarn>
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.RestSource.xml</DocumentationFile>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   
   <ItemGroup>
