@@ -48,5 +48,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// </summary>
         [JsonProperty("publisher")]
         public string Publisher { get; set; }
+
+        // TODO: Finalize schema.
     }
 }

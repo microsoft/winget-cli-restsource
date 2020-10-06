@@ -48,5 +48,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// </summary>
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        // TODO: Finalize schema.
     }
 }

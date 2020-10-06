@@ -41,5 +41,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// </summary>
         [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; }
+
+        // TODO: Finalize schema.
     }
 }

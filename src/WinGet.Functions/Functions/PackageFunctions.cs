@@ -28,6 +28,7 @@ namespace Microsoft.WinGet.Functions.Functions
     /// <summary>
     /// This class contains the functions for interacting with packages.
     /// </summary>
+    /// TODO: Create and switch to non-af binding DocumentClient.
     public static class PackageFunctions
     {
         /// <summary>
