@@ -386,7 +386,12 @@ namespace Microsoft.WinGet.Functions.Functions
                 };
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCores, Formatting.Indented));
+            return installerCores.Count switch
+            {
+                0 => new NoContentResult(),
+                1 => new OkObjectResult(JsonConvert.SerializeObject(installerCores.First(), Formatting.Indented)),
+                _ => new OkObjectResult(JsonConvert.SerializeObject(installerCores, Formatting.Indented))
+            };
         }
     }
 }

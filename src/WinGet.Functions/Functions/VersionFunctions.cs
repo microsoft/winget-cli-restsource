@@ -313,7 +313,12 @@ namespace Microsoft.WinGet.Functions.Functions
                 };
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(versionCores, Formatting.Indented));
+            return versionCores.Count switch
+            {
+                0 => new NoContentResult(),
+                1 => new OkObjectResult(JsonConvert.SerializeObject(versionCores.First(), Formatting.Indented)),
+                _ => new OkObjectResult(JsonConvert.SerializeObject(versionCores, Formatting.Indented))
+            };
         }
     }
 }
