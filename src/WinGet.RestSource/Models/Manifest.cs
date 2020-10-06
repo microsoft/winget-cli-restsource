@@ -27,9 +27,8 @@ namespace Microsoft.WinGet.RestSource.Models
         /// </summary>
         /// <param name="package">Package Core.</param>
         public Manifest(PackageCore package)
+            : base(package)
         {
-            this.DefaultLocale = package.DefaultLocale;
-            this.Id = package.Id;
             this.Versions = null;
         }
 

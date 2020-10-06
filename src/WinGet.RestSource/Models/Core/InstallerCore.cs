@@ -14,6 +14,25 @@ namespace Microsoft.WinGet.RestSource.Models.Core
     public class InstallerCore
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="InstallerCore"/> class.
+        /// </summary>
+        public InstallerCore()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstallerCore"/> class.
+        /// </summary>
+        /// <param name="installerCore">Installer Core.</param>
+        public InstallerCore(InstallerCore installerCore)
+        {
+            this.InstallerKey = installerCore.InstallerKey;
+            this.Arch = installerCore.Arch;
+            this.Url = installerCore.Url;
+            this.Sha256 = installerCore.Sha256;
+        }
+
+        /// <summary>
         /// Gets or sets installer key.
         /// </summary>
         [JsonProperty("installerKey")]

@@ -9,10 +9,27 @@ namespace Microsoft.WinGet.RestSource.Models.Core
     using Newtonsoft.Json;
 
     /// <summary>
-    /// This is the core package model.
+    /// This is the packageCore package model.
     /// </summary>
     public class PackageCore
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageCore"/> class.
+        /// </summary>
+        public PackageCore()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageCore"/> class.
+        /// </summary>
+        /// <param name="packageCore">Package Core.</param>
+        public PackageCore(PackageCore packageCore)
+        {
+            this.Id = packageCore.Id;
+            this.DefaultLocale = packageCore.DefaultLocale;
+        }
+
         /// <summary>
         /// Gets or sets package id.
         /// </summary>

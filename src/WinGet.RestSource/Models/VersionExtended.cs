@@ -16,6 +16,24 @@ namespace Microsoft.WinGet.RestSource.Models
     public class VersionExtended : VersionCore
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="VersionExtended"/> class.
+        /// </summary>
+        public VersionExtended()
+        {
+            this.Installers = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionExtended"/> class.
+        /// </summary>
+        /// <param name="core">Version Core.</param>
+        public VersionExtended(VersionCore core)
+            : base(core)
+        {
+            this.Installers = null;
+        }
+
+        /// <summary>
         /// Gets or sets the set of installers for a version.
         /// Setting order of 1 while keeping everything else default adds this to the end of the inherited class.
         /// </summary>
