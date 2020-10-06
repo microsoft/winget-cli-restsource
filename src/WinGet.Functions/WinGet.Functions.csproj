@@ -54,8 +54,4 @@
     <ItemGroup>
       <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Functions" />
-    </ItemGroup>
 </Project>

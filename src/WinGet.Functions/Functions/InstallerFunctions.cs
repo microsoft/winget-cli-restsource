@@ -1,5 +1,5 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="VersionFunctions.cs" company="Microsoft Corporation">
+// -----------------------------------------------------------------------
+// <copyright file="InstallerFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -26,35 +26,37 @@ namespace Microsoft.WinGet.Functions.Functions
     using Error = Microsoft.WinGet.RestSource.Models.Error;
 
     /// <summary>
-    /// This class contains the functions for interacting with versions.
+    /// This class contains the functions for interacting with installers.
     /// </summary>
-    public static class VersionFunctions
+    public static class InstallerFunctions
     {
         /// <summary>
-        /// Version Post Function.
-        /// This allows us to make post requests for versions.
+        /// Installer Post Function.
+        /// This allows us to make post requests for installers.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
+        /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsPost")]
-        public static async Task<IActionResult> VersionsPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions")] HttpRequest req,
+        [FunctionName("InstallerPost")]
+        public static async Task<IActionResult> InstallerPostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions/{version}/installers")] HttpRequest req,
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             string id,
+            string version,
             ILogger log)
         {
-            VersionCore versionCore = null;
+            InstallerCore installerCore = null;
 
             try
             {
                 // Parse body as package
-                versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
+                installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
 
                 // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
@@ -64,164 +66,44 @@ namespace Microsoft.WinGet.Functions.Functions
                 });
                 Manifest manifest = documentResponse.Document;
 
-                // Create list if null
-                if (manifest.Versions == null)
+                // If version does not exist, throw
+                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
                 {
-                    manifest.Versions = new List<VersionExtended>();
+                    throw new Exception();
+                }
+
+                // Get version
+                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+
+                // Create list if null
+                if (versionToUpdate.Installers == null)
+                {
+                    versionToUpdate.Installers = new List<InstallerCore>();
                 }
 
                 // If does not exist add
-                if (!manifest.Versions.Any(nested => nested.Version == versionCore.Version))
+                if (!versionToUpdate.Installers.Any(nested => nested.Sha256 == installerCore.Sha256))
                 {
-                    manifest.Versions.Add(new VersionExtended(versionCore));
+                    versionToUpdate.Installers.Add(installerCore);
                 }
                 else
                 {
                     throw new Exception();
                 }
 
-                // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
-            }
-            catch (Exception e)
-            {
-                log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
+                log.LogInformation(JsonConvert.SerializeObject(versionToUpdate, Formatting.Indented));
 
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
-            }
-
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(versionCore, Formatting.Indented));
-        }
-
-        /// <summary>
-        /// Version Delete Function.
-        /// This allows us to make Delete requests for versions.
-        /// </summary>
-        /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
-        /// <param name="id">Package ID.</param>
-        /// <param name="version">Version ID.</param>
-        /// <param name="log">ILogger.</param>
-        /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsDelete")]
-        public static async Task<IActionResult> VersionsDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}")]
-            HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
-            string id,
-            string version,
-            ILogger log)
-        {
-            try
-            {
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
-
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
-                {
-                    throw new Exception();
-                }
-
-                // Delete it
+                // Replace Version
                 manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
                 log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
 
-                // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
-            }
-            catch (Exception e)
-            {
-                log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
-            }
-
-            return new OkObjectResult("Deleted");
-        }
-
-        /// <summary>
-        /// Version Put Function.
-        /// This allows us to make put requests for versions.
-        /// </summary>
-        /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
-        /// <param name="id">Package ID.</param>
-        /// <param name="version">Version ID.</param>
-        /// <param name="log">ILogger.</param>
-        /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsPut")]
-        public static async Task<IActionResult> VersionsPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}")]
-            HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
-            string id,
-            string version,
-            ILogger log)
-        {
-            VersionCore versionCore = null;
-
-            try
-            {
-                // Parse body as package
-                versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
-                versionCore.Version = version;
-
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
-
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
-                {
-                    throw new Exception();
-                }
-
-                // Delete Current Version
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
-
-                // Create list if null
                 if (manifest.Versions == null)
                 {
                     manifest.Versions = new List<VersionExtended>();
                 }
 
-                // Add Updated Version
-                manifest.Versions.Add(new VersionExtended(versionCore));
+                manifest.Versions.Add(versionToUpdate);
+                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
 
                 // Save Document
                 await client.ReplaceDocumentAsync(documentLink, manifest, null);
@@ -241,35 +123,35 @@ namespace Microsoft.WinGet.Functions.Functions
                 };
             }
 
-            return new OkObjectResult(versionCore);
+            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
         }
 
         /// <summary>
-        /// Version Get Function.
-        /// This allows us to make get requests for versions.
+        /// Installer Delete Function.
+        /// This allows us to make delete requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
+        /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsGet")]
-        public static async Task<IActionResult> VersionsGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version?}")] HttpRequest req,
+        [FunctionName("InstallerDelete")]
+        public static async Task<IActionResult> InstallerDeleteAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             string id,
             string version,
+            string sha256,
             ILogger log)
         {
-            List<VersionCore> versionCores = new List<VersionCore>();
-
             try
             {
-                // Fetch Current Package
+                // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
                 DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
                 {
@@ -277,30 +159,221 @@ namespace Microsoft.WinGet.Functions.Functions
                 });
                 Manifest manifest = documentResponse.Document;
 
-                if (manifest.Versions == null)
+                // If version does not exist, throw
+                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
                 {
                     throw new Exception();
                 }
 
-                if (version == null)
+                // Get version
+                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+
+                // If installer does not exist, throw
+                if (versionToUpdate.Installers == null || !versionToUpdate.Installers.Any(nested => nested.Sha256 == sha256))
                 {
-                    versionCores.AddRange(manifest.Versions.Select(versionExtended => new VersionCore(versionExtended)));
+                    throw new Exception();
+                }
+
+                // Remove installer
+                versionToUpdate.Installers = new List<InstallerCore>(versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
+
+                // Replace Version
+                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
+                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+
+                if (manifest.Versions == null)
+                {
+                    manifest.Versions = new List<VersionExtended>();
+                }
+
+                manifest.Versions.Add(versionToUpdate);
+                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+
+                // Save Document
+                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e.ToString());
+                Error error = new Error
+                {
+                    ErrorCode = ErrorConstants.UnhandledErrorCode,
+                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
+                };
+
+                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
+                {
+                    StatusCode = 500,
+                };
+            }
+
+            return (ActionResult)new OkObjectResult("Deleted");
+        }
+
+        /// <summary>
+        /// Installer Put Function.
+        /// This allows us to make put requests for installers.
+        /// </summary>
+        /// <param name="req">HttpRequest.</param>
+        /// <param name="client">CosmosDB DocumentClient.</param>
+        /// <param name="id">Package ID.</param>
+        /// <param name="version">Version ID.</param>
+        /// <param name="sha256">SHA 256 for the installer.</param>
+        /// <param name="log">ILogger.</param>
+        /// <returns>IActionResult.</returns>
+        [FunctionName("InstallerPut")]
+        public static async Task<IActionResult> InstallerPutAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
+            [CosmosDB(
+                databaseName: CosmosConnectionConstants.DatabaseName,
+                collectionName: CosmosConnectionConstants.CollectionName,
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            string id,
+            string version,
+            string sha256,
+            ILogger log)
+        {
+            InstallerCore installerCore = null;
+
+            try
+            {
+                // Parse body as package
+                installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
+                installerCore.Sha256 = sha256;
+
+                // Fetch Current Document
+                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
+                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
+                {
+                    PartitionKey = new PartitionKey(id),
+                });
+                Manifest manifest = documentResponse.Document;
+
+                // If version does not exist, throw
+                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                {
+                    throw new Exception();
+                }
+
+                // Get version
+                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+
+                // If installer does not exist throw
+                if (!versionToUpdate.Installers.Any(nested => nested.Sha256 == installerCore.Sha256))
+                {
+                    throw new Exception();
+                }
+
+                // Remove installer
+                versionToUpdate.Installers = new List<InstallerCore>(versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
+
+                // Create list if null
+                if (versionToUpdate.Installers == null)
+                {
+                    versionToUpdate.Installers = new List<InstallerCore>();
+                }
+
+                // Add Version
+                versionToUpdate.Installers.Add(installerCore);
+
+                // Replace Version
+                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
+
+                if (manifest.Versions == null)
+                {
+                    manifest.Versions = new List<VersionExtended>();
+                }
+
+                manifest.Versions.Add(versionToUpdate);
+
+                // Save Document
+                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e.ToString());
+                Error error = new Error
+                {
+                    ErrorCode = ErrorConstants.UnhandledErrorCode,
+                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
+                };
+
+                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
+                {
+                    StatusCode = 500,
+                };
+            }
+
+            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Installer Put Function.
+        /// This allows us to make put requests for installers.
+        /// </summary>
+        /// <param name="req">HttpRequest.</param>
+        /// <param name="client">CosmosDB DocumentClient.</param>
+        /// <param name="id">Package ID.</param>
+        /// <param name="version">Version ID.</param>
+        /// <param name="sha256">SHA 256 for the installer.</param>
+        /// <param name="log">ILogger.</param>
+        /// <returns>IActionResult.</returns>
+        [FunctionName("InstallerGet")]
+        public static async Task<IActionResult> InstallerGetAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version}/installers/{sha256?}")] HttpRequest req,
+            [CosmosDB(
+                databaseName: CosmosConnectionConstants.DatabaseName,
+                collectionName: CosmosConnectionConstants.CollectionName,
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            string id,
+            string version,
+            string sha256,
+            ILogger log)
+        {
+            List<InstallerCore> installerCores = new List<InstallerCore>();
+
+            try
+            {
+                // Fetch Current Document
+                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
+                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
+                {
+                    PartitionKey = new PartitionKey(id),
+                });
+                Manifest manifest = documentResponse.Document;
+
+                // If version does not exist, throw
+                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                {
+                    throw new Exception();
+                }
+
+                // Get version
+                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+
+                // Check for versions
+                if (versionToUpdate.Installers == null)
+                {
+                    throw new Exception();
+                }
+
+                if (sha256 == null)
+                {
+                    installerCores.AddRange(versionToUpdate.Installers.Select(installerCore => new InstallerCore(installerCore)));
                 }
                 else
                 {
-                    // If version does not exist, throw
-                    if (!manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                    if (!versionToUpdate.Installers.Any(installer => installer.Sha256 == sha256))
                     {
                         throw new Exception();
                     }
 
-                    versionCores.AddRange(from versionExtended in manifest.Versions where versionExtended.Version == version select new VersionCore(versionExtended));
+                    installerCores.AddRange(from installer in versionToUpdate.Installers where installer.Sha256 == sha256 select new InstallerCore(installer));
                 }
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-
                 Error error = new Error
                 {
                     ErrorCode = ErrorConstants.UnhandledErrorCode,
@@ -313,7 +386,7 @@ namespace Microsoft.WinGet.Functions.Functions
                 };
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(versionCores, Formatting.Indented));
+            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCores, Formatting.Indented));
         }
     }
 }

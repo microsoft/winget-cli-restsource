@@ -26,17 +26,16 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// <param name="installerCore">Installer Core.</param>
         public InstallerCore(InstallerCore installerCore)
         {
-            this.InstallerKey = installerCore.InstallerKey;
             this.Arch = installerCore.Arch;
             this.Url = installerCore.Url;
             this.Sha256 = installerCore.Sha256;
         }
 
         /// <summary>
-        /// Gets or sets installer key.
+        /// Gets or sets SHA256.
         /// </summary>
-        [JsonProperty("installerKey")]
-        public string InstallerKey { get; set; }
+        [JsonProperty("sha256")]
+        public string Sha256 { get; set; }
 
         /// <summary>
         /// Gets or sets installer architecture.
@@ -49,11 +48,5 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// </summary>
         [JsonProperty("url")]
         public string Url { get; set; }
-
-        /// <summary>
-        /// Gets or sets SHA256.
-        /// </summary>
-        [JsonProperty("sha256")]
-        public string Sha256 { get; set; }
     }
 }
