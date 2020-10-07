@@ -3,8 +3,8 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <AzureFunctionsVersion>V3</AzureFunctionsVersion>
         <Platforms>AnyCPU</Platforms>
-        <AssemblyName>Microsoft.WinGet.Functions</AssemblyName>
-        <RootNamespace>Microsoft.WinGet.Functions</RootNamespace>
+        <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
+        <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,7 +14,7 @@
         <NoWarn>1701;1702;NU1701</NoWarn>
         <WarningsAsErrors />
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.Functions\Microsoft.WinGet.Functions.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,7 +23,7 @@
         <NoWarn>1701;1702;NU1701;</NoWarn>
         <WarningsAsErrors />
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.Functions\Microsoft.WinGet.Functions.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

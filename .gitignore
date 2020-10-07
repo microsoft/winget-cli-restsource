@@ -353,9 +353,10 @@ MigrationBackup/
 src/.idea/
 
 # Exlude Function Settings
-src/WinGet.Functions/local.settings.json
+src/WinGet.RestSource.Functions/local.settings.json
 
 # Exclude Documentation XML
-src/WinGet.Functions/Microsoft.WinGet.Functions.xml
-
+src/WinGet.RestSource.Functions/Microsoft.WinGet.RestSource.Functions.xml
 src/WinGet.RestSource/Microsoft.WinGet.RestSource.xml
+
+
