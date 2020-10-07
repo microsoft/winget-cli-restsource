@@ -363,7 +363,7 @@ namespace Microsoft.WinGet.Functions.Functions
                     throw new Exception();
                 }
 
-                if (sha256 == null)
+                if (string.IsNullOrWhiteSpace(sha256))
                 {
                     installerCores.AddRange(versionToUpdate.Installers.Select(installerCore => new InstallerCore(installerCore)));
                 }

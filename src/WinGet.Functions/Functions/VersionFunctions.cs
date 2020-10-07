@@ -286,7 +286,7 @@ namespace Microsoft.WinGet.Functions.Functions
                     throw new Exception();
                 }
 
-                if (version == null)
+                if (string.IsNullOrWhiteSpace(version))
                 {
                     versionCores.AddRange(manifest.Versions.Select(versionExtended => new VersionCore(versionExtended)));
                 }
