@@ -4,12 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.Functions.Constants
+namespace Microsoft.WinGet.RestSource.Constants
 {
     /// <summary>
     /// This contains the constants for errors and error codes.
     /// </summary>
-    internal class ErrorConstants
+    public class ErrorConstants
     {
         /// <summary>
         /// This is the code for an unhandled error.

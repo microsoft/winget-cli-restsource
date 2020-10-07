@@ -20,6 +20,7 @@ namespace Microsoft.WinGet.Functions.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.Functions.Constants;
     using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Newtonsoft.Json;
     using Error = Microsoft.WinGet.RestSource.Models.Error;
