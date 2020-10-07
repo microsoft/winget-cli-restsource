@@ -29,6 +29,7 @@ namespace Microsoft.WinGet.Functions.Functions
     /// This class contains the functions for interacting with installers.
     /// </summary>
     /// TODO: Create and switch to non-af binding DocumentClient.
+    /// TODO: Refactor duplicate code to library.
     public static class InstallerFunctions
     {
         /// <summary>
@@ -58,6 +59,8 @@ namespace Microsoft.WinGet.Functions.Functions
             {
                 // Parse body as package
                 installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
+
+                // TODO: Validate Parsed Values
 
                 // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
@@ -241,6 +244,8 @@ namespace Microsoft.WinGet.Functions.Functions
                 // Parse body as package
                 installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
                 installerCore.Sha256 = sha256;
+
+                // TODO: Validate Parsed Values
 
                 // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);

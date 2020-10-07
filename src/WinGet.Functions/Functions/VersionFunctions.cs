@@ -29,6 +29,7 @@ namespace Microsoft.WinGet.Functions.Functions
     /// This class contains the functions for interacting with versions.
     /// </summary>
     /// TODO: Create and switch to non-af binding DocumentClient.
+    /// TODO: Refactor duplicate code to library.
     public static class VersionFunctions
     {
         /// <summary>
@@ -56,6 +57,8 @@ namespace Microsoft.WinGet.Functions.Functions
             {
                 // Parse body as package
                 versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
+
+                // TODO: Validate Parsed Values
 
                 // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
@@ -194,6 +197,8 @@ namespace Microsoft.WinGet.Functions.Functions
                 // Parse body as package
                 versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
                 versionCore.Version = version;
+
+                // TODO: Validate Parsed Values
 
                 // Fetch Current Document
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);

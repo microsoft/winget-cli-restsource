@@ -29,6 +29,7 @@ namespace Microsoft.WinGet.Functions.Functions
     /// This class contains the functions for interacting with packages.
     /// </summary>
     /// TODO: Create and switch to non-af binding DocumentClient.
+    /// TODO: Refactor duplicate code to library.
     public static class PackageFunctions
     {
         /// <summary>
@@ -54,6 +55,8 @@ namespace Microsoft.WinGet.Functions.Functions
             {
                 // Parse body as package
                 package = await Parser.StreamParser<PackageCore>(req.Body, log);
+
+                // TODO: Validate Parsed Values
 
                 // Convert Package to Manifest for storage
                 Manifest manifest = new Manifest(package);
@@ -151,6 +154,8 @@ namespace Microsoft.WinGet.Functions.Functions
                 // Parse body as package
                 package = await Parser.StreamParser<PackageCore>(req.Body, log);
                 package.Id = id;
+
+                // TODO: Validate Parsed Values
 
                 // Fetch Current Package
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);

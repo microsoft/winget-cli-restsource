@@ -28,6 +28,7 @@ namespace Microsoft.WinGet.Functions.Functions
     /// This class contains the functions for interacting with manifests.
     /// </summary>
     /// TODO: Create and switch to non-af binding DocumentClient.
+    /// TODO: Refactor duplicate code to library.
     public static class ManifestFunctions
     {
         /// <summary>
@@ -51,6 +52,10 @@ namespace Microsoft.WinGet.Functions.Functions
             try
             {
                 manifest = await Parser.StreamParser<Manifest>(req.Body, log);
+
+                // TODO: Validate Parsed Values
+
+                // Create Document
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(
                     CosmosConnectionConstants.DatabaseName,
                     CosmosConnectionConstants.CollectionName);
@@ -144,6 +149,10 @@ namespace Microsoft.WinGet.Functions.Functions
             try
             {
                 manifest = await Parser.StreamParser<Manifest>(req.Body, log);
+
+                // TODO: Validate Parsed Values
+
+                // Create Document.
                 Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
                 await client.ReplaceDocumentAsync(documentLink, manifest, null);
             }
