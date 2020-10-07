@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <AzureFunctionsVersion>V3</AzureFunctionsVersion>    
-        <RuntimeFrameworkVersion>2.1.7</RuntimeFrameworkVersion>
+        <AzureFunctionsVersion>V3</AzureFunctionsVersion>
         <Platforms>AnyCPU</Platforms>
         <AssemblyName>Microsoft.WinGet.Functions</AssemblyName>
         <RootNamespace>Microsoft.WinGet.Functions</RootNamespace>
