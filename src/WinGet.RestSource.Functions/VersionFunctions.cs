@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Functions.Functions
+namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
     using System.Collections.Generic;
