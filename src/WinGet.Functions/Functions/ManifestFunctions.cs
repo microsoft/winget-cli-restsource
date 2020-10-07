@@ -44,7 +44,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             ILogger log)
         {
             Manifest manifest = null;
@@ -89,7 +89,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {
@@ -135,7 +135,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: Constants.CosmosConnectionConstants.DatabaseName,
                 collectionName: Constants.CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {
@@ -181,7 +181,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: Constants.CosmosConnectionConstants.DatabaseName,
                 collectionName: Constants.CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             ILogger log)
         {
             List<Manifest> manifests = new List<Manifest>();

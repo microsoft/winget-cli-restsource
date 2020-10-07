@@ -46,7 +46,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {
@@ -119,8 +119,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)
@@ -183,8 +182,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)
@@ -261,7 +259,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)

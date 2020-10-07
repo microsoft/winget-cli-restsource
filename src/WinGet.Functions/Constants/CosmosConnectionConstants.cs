@@ -20,5 +20,11 @@ namespace Microsoft.WinGet.Functions.Constants
         /// Cosmos Collection Name.
         /// </summary>
         public const string CollectionName = "Manifests";
+
+        /// <summary>
+        /// This is the connection string setting for the Document DB.
+        /// This is the environment variable set in settings for the cosmos db connection string.
+        /// </summary>
+        public const string ConnectionStringSetting = "CosmosDBConnection";
     }
 }

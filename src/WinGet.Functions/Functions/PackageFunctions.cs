@@ -45,7 +45,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             ILogger log)
         {
             PackageCore package = null;
@@ -94,7 +94,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {
@@ -140,7 +140,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {
@@ -202,7 +202,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             ILogger log)
         {

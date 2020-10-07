@@ -47,7 +47,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)
@@ -144,7 +144,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             string sha256,
@@ -228,7 +228,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             string sha256,
@@ -325,7 +325,7 @@ namespace Microsoft.WinGet.Functions.Functions
             [CosmosDB(
                 databaseName: CosmosConnectionConstants.DatabaseName,
                 collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             string sha256,
