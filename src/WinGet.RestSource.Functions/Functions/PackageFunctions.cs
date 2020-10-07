@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.Functions.Functions
+namespace Microsoft.WinGet.RestSource.Functions.Functions
 {
     using System;
     using System.Collections.Generic;
@@ -18,9 +18,9 @@ namespace Microsoft.WinGet.Functions.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.Functions.Constants;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Newtonsoft.Json;

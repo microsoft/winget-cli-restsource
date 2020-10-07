@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.Functions.Constants
+namespace Microsoft.WinGet.RestSource.Functions.Constants
 {
     /// <summary>
     /// This contains the constants for functions.
