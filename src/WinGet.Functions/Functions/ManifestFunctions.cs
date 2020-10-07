@@ -38,7 +38,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("ManifestPost")]
+        [FunctionName(FunctionConstants.ManifestPost)]
         public static async Task<IActionResult> ManifestPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "manifests")] HttpRequest req,
             [CosmosDB(
@@ -83,7 +83,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Manifest ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("ManifestDelete")]
+        [FunctionName(FunctionConstants.ManifestDelete)]
         public static async Task<IActionResult> ManifestDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "manifests/{id}")] HttpRequest req,
             [CosmosDB(
@@ -129,7 +129,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Manifest ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("ManifestPut")]
+        [FunctionName(FunctionConstants.ManifestPut)]
         public static async Task<IActionResult> ManifestPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "manifests/{id}")] HttpRequest req,
             [CosmosDB(
@@ -175,7 +175,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("ManifestGet")]
+        [FunctionName(FunctionConstants.ManifestGet)]
         public static async Task<IActionResult> ManifestGetAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "manifests")] HttpRequest req,
             [CosmosDB(

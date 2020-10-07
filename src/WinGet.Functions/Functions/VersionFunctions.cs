@@ -40,7 +40,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsPost")]
+        [FunctionName(FunctionConstants.VersionPost)]
         public static async Task<IActionResult> VersionsPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions")] HttpRequest req,
             [CosmosDB(
@@ -112,7 +112,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsDelete")]
+        [FunctionName(FunctionConstants.VersionDelete)]
         public static async Task<IActionResult> VersionsDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
@@ -176,7 +176,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsPut")]
+        [FunctionName(FunctionConstants.VersionPut)]
         public static async Task<IActionResult> VersionsPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
@@ -255,7 +255,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("VersionsGet")]
+        [FunctionName(FunctionConstants.VersionGet)]
         public static async Task<IActionResult> VersionsGetAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version?}")] HttpRequest req,
             [CosmosDB(

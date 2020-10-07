@@ -39,7 +39,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("PackagesPost")]
+        [FunctionName(FunctionConstants.PackagePost)]
         public static async Task<IActionResult> PackagesPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages")] HttpRequest req,
             [CosmosDB(
@@ -88,7 +88,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("PackagesDelete")]
+        [FunctionName(FunctionConstants.PackageDelete)]
         public static async Task<IActionResult> PackageDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}")] HttpRequest req,
             [CosmosDB(
@@ -134,7 +134,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("PackagesPut")]
+        [FunctionName(FunctionConstants.PackagePut)]
         public static async Task<IActionResult> PackagesPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}")] HttpRequest req,
             [CosmosDB(
@@ -196,7 +196,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("PackagesGet")]
+        [FunctionName(FunctionConstants.PackageGet)]
         public static async Task<IActionResult> PackagesGetAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id?}")] HttpRequest req,
             [CosmosDB(

@@ -41,7 +41,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("InstallerPost")]
+        [FunctionName(FunctionConstants.InstallerPost)]
         public static async Task<IActionResult> InstallerPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions/{version}/installers")] HttpRequest req,
             [CosmosDB(
@@ -138,7 +138,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("InstallerDelete")]
+        [FunctionName(FunctionConstants.InstallerDelete)]
         public static async Task<IActionResult> InstallerDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
             [CosmosDB(
@@ -222,7 +222,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("InstallerPut")]
+        [FunctionName(FunctionConstants.InstallerPut)]
         public static async Task<IActionResult> InstallerPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
             [CosmosDB(
@@ -319,7 +319,7 @@ namespace Microsoft.WinGet.Functions.Functions
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName("InstallerGet")]
+        [FunctionName(FunctionConstants.InstallerGet)]
         public static async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version}/installers/{sha256?}")] HttpRequest req,
             [CosmosDB(
