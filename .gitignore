@@ -348,3 +348,15 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Ignore JetBrains Files
+src/.idea/
+
+# Exlude Function Settings
+src/WinGet.RestSource.Functions/local.settings.json
+
+# Exclude Documentation XML
+src/WinGet.RestSource.Functions/Microsoft.WinGet.RestSource.Functions.xml
+src/WinGet.RestSource/Microsoft.WinGet.RestSource.xml
+
+
