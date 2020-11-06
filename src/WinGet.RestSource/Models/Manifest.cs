@@ -38,5 +38,16 @@ namespace Microsoft.WinGet.RestSource.Models
         /// </summary>
         [JsonProperty("versions", Order = 1)]
         public List<VersionExtended> Versions { get; set; }
+
+        /// <summary>
+        /// Converts to a Package Core.
+        /// </summary>
+        /// <returns>Package Core.</returns>
+        public PackageCore ToPackageCore()
+        {
+            PackageCore pc = new PackageCore(this);
+            this.Versions = null;
+            return pc;
+        }
     }
 }

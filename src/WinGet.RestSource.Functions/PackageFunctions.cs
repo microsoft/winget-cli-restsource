@@ -7,12 +7,10 @@
 namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
     using Microsoft.Azure.WebJobs;
@@ -20,34 +18,41 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Newtonsoft.Json;
-    using Error = Microsoft.WinGet.RestSource.Models.Error;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.
     /// </summary>
-    /// TODO: Create and switch to non-af binding DocumentClient.
     /// TODO: Refactor duplicate code to library.
-    public static class PackageFunctions
+    public class PackageFunctions
     {
+        private readonly ICosmosDatabase cosmosDatabase;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageFunctions"/> class.
+        /// </summary>
+        /// <param name="cosmosDatabase">Cosmos Database.</param>
+        public PackageFunctions(ICosmosDatabase cosmosDatabase)
+        {
+            this.cosmosDatabase = cosmosDatabase;
+        }
+
         /// <summary>
         /// Package Post Function.
         /// This allows us to handle post requests for manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackagePost)]
-        public static async Task<IActionResult> PackagesPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> PackagesPostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages")]
+            HttpRequest req,
             ILogger log)
         {
             PackageCore package = null;
@@ -57,29 +62,31 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse body as package
                 package = await Parser.StreamParser<PackageCore>(req.Body, log);
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
 
                 // Convert Package to Manifest for storage
                 Manifest manifest = new Manifest(package);
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName);
-                await client.CreateDocumentAsync(collectionUri, manifest);
+
+                // Create Document and add to cosmos.
+                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                {
+                    Document = manifest,
+                };
+                await this.cosmosDatabase.Add<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
+            return new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
         }
 
         /// <summary>
@@ -88,45 +95,40 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This will delete all sub resources as well.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageDelete)]
-        public static async Task<IActionResult> PackageDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> PackageDeleteAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}")]
+            HttpRequest req,
             string id,
             ILogger log)
         {
             try
             {
-                Uri documentUri = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                await client.DeleteDocumentAsync(documentUri, new RequestOptions
+                // Parse Variables
+                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
                 {
-                    PartitionKey = new PartitionKey(id),
-                });
+                    Id = id,
+                    PartitionKey = id,
+                };
+
+                // Delete Document
+                await this.cosmosDatabase.Delete<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult("Deleted");
+            return new NoContentResult();
         }
 
         /// <summary>
@@ -134,17 +136,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make put requests for packages.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackagePut)]
-        public static async Task<IActionResult> PackagesPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> PackagesPutAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}")]
+            HttpRequest req,
             string id,
             ILogger log)
         {
@@ -154,42 +152,40 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse body as package
                 package = await Parser.StreamParser<PackageCore>(req.Body, log);
-                package.Id = id;
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
+                if (package.Id != id)
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.IdDoesNotMatchErrorCode,
+                            ErrorConstants.IdDoesNotMatchErrorMessage));
+                }
 
                 // Fetch Current Package
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
 
                 // Update Package
-                manifest.Id = package.Id;
-                manifest.DefaultLocale = package.DefaultLocale;
+                cosmosDocument.Document.Id = package.Id;
+                cosmosDocument.Document.DefaultLocale = package.DefaultLocale;
 
                 // Save Package
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-
-                Error error = new Error()
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return (ActionResult)new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
+            return new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
         }
 
         /// <summary>
@@ -198,75 +194,80 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This also allows us to query manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageGet)]
-        public static async Task<IActionResult> PackagesGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id?}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> PackagesGetAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id?}")]
+            HttpRequest req,
             string id,
             ILogger log)
         {
-            List<PackageCore> packages = new List<PackageCore>();
+            ApiResponse<PackageCore> apiResponse = new ApiResponse<PackageCore>();
 
             try
             {
-                if (id == null)
+                if (string.IsNullOrWhiteSpace(id))
                 {
-                    Uri collectionUri = UriFactory.CreateDocumentCollectionUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName);
-                    IQueryable<Manifest> iQueryable = client.CreateDocumentQuery<Manifest>(collectionUri, new FeedOptions { EnableCrossPartitionQuery = true });
+                    // Parse Parameters
+                    string continuationToken = req.Query["ct"];
+                    continuationToken = string.IsNullOrEmpty(continuationToken)
+                        ? null
+                        : Parser.Base64Decode(continuationToken);
 
+                    // Create feed options
+                    // TODO: Expand Feed Options
+                    FeedOptions feedOptions = new FeedOptions
+                    {
+                        EnableCrossPartitionQuery = true,
+                        MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
+                        RequestContinuation = continuationToken,
+                    };
+
+                    // Get iQueryable
+                    IQueryable<Manifest> query = this.cosmosDatabase.GetIQueryable<Manifest>(feedOptions);
+
+                    // Apply query parameters to query
                     // TODO: Apply Query Parameters
 
-                    // Finalize query
-                    IDocumentQuery<Manifest> query = iQueryable.AsDocumentQuery();
+                    // Finalize Query
+                    IDocumentQuery<Manifest> documentQuery = query.AsDocumentQuery();
 
-                    // Query Fetcher - Fetch Manifest as package
-                    while (query.HasMoreResults)
+                    // Get results
+                    CosmosPage<Manifest> cosmosPage =
+                        await this.cosmosDatabase.GetByDocumentQuery<Manifest>(documentQuery);
+                    foreach (Manifest result in cosmosPage.Items)
                     {
-                        foreach (PackageCore result in await query.ExecuteNextAsync())
-                        {
-                            packages.Add(result);
-                        }
+                        apiResponse.Data.Add(result.ToPackageCore());
                     }
+
+                    apiResponse.ContinuationToken = Parser.Base64Encode(cosmosPage.ContinuationToken);
                 }
                 else
                 {
                     // Fetch Current Package
-                    Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                    DocumentResponse<PackageCore> documentResponse = await client.ReadDocumentAsync<PackageCore>(documentLink, new RequestOptions
-                    {
-                        PartitionKey = new PartitionKey(id),
-                    });
-                    packages.Add(documentResponse.Document);
+                    CosmosDocument<Manifest> cosmosDocument =
+                        await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                    log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
+                    apiResponse.Data.Add(cosmosDocument.Document.ToPackageCore());
                 }
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return packages.Count switch
+            return apiResponse.Data.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(JsonConvert.SerializeObject(packages.First(), Formatting.Indented)),
-                _ => new OkObjectResult(JsonConvert.SerializeObject(packages, Formatting.Indented))
+                _ => new OkObjectResult(JsonConvert.SerializeObject(apiResponse, Formatting.Indented))
             };
         }
     }

@@ -26,5 +26,15 @@ namespace Microsoft.WinGet.RestSource.Functions.Constants
         /// This is the environment variable set in settings for the cosmos db connection string.
         /// </summary>
         public const string ConnectionStringSetting = "CosmosDBConnection";
+
+        /// <summary>
+        /// This is the Cosmos Account Endpoint.
+        /// </summary>
+        public const string CosmosAccountEndpointSetting = "CosmosAccountEndpoint";
+
+        /// <summary>
+        /// This is the Cosmos Account Key.
+        /// </summary>
+        public const string CosmosAccountKeySetting = "CosmosAccountKey";
     }
 }

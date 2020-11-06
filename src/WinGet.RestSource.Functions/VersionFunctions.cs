@@ -12,42 +12,47 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.Documents;
-    using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Newtonsoft.Json;
-    using Error = Microsoft.WinGet.RestSource.Models.Error;
 
     /// <summary>
     /// This class contains the functions for interacting with versions.
     /// </summary>
-    /// TODO: Create and switch to non-af binding DocumentClient.
     /// TODO: Refactor duplicate code to library.
-    public static class VersionFunctions
+    public class VersionFunctions
     {
+        private readonly ICosmosDatabase cosmosDatabase;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionFunctions"/> class.
+        /// </summary>
+        /// <param name="cosmosDatabase">Cosmos Database.</param>
+        public VersionFunctions(ICosmosDatabase cosmosDatabase)
+        {
+            this.cosmosDatabase = cosmosDatabase;
+        }
+
         /// <summary>
         /// Version Post Function.
         /// This allows us to make post requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionPost)]
-        public static async Task<IActionResult> VersionsPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> VersionsPostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions")]
+            HttpRequest req,
             string id,
             ILogger log)
         {
@@ -58,51 +63,45 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse body as package
                 versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
 
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // Create list if null
-                if (manifest.Versions == null)
-                {
-                    manifest.Versions = new List<VersionExtended>();
-                }
+                cosmosDocument.Document.Versions ??= new List<VersionExtended>();
 
                 // If does not exist add
-                if (!manifest.Versions.Any(nested => nested.Version == versionCore.Version))
+                if (cosmosDocument.Document.Versions.All(nested => nested.Version != versionCore.Version))
                 {
-                    manifest.Versions.Add(new VersionExtended(versionCore));
+                    cosmosDocument.Document.Versions.Add(new VersionExtended(versionCore));
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionAlreadyExistsErrorCode,
+                            ErrorConstants.VersionAlreadyExistsErrorMessage));
                 }
 
                 // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(versionCore, Formatting.Indented));
+            return new OkObjectResult(JsonConvert.SerializeObject(versionCore, Formatting.Indented));
         }
 
         /// <summary>
@@ -110,62 +109,63 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make Delete requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionDelete)]
-        public static async Task<IActionResult> VersionsDeleteAsync(
+        public async Task<IActionResult> VersionsDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)
         {
             try
             {
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                // Validate Package Version is not null
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
+                }
+
+                // Validate Version exists
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Delete it
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+                cosmosDocument.Document.Versions = new List<VersionExtended>(
+                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument.Document, Formatting.Indented));
 
-                // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                // Save Package
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult("Deleted");
+            return new NoContentResult();
         }
 
         /// <summary>
@@ -173,19 +173,14 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make put requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionPut)]
-        public static async Task<IActionResult> VersionsPutAsync(
+        public async Task<IActionResult> VersionsPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
             string id,
             string version,
             ILogger log)
@@ -196,53 +191,55 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse body as package
                 versionCore = await Parser.StreamParser<VersionCore>(req.Body, log);
-                versionCore.Version = version;
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
-
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
+                if (versionCore.Version != version)
                 {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotMatchErrorCode,
+                            ErrorConstants.VersionDoesNotMatchErrorMessage));
+                }
+
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                if (cosmosDocument.Document.Versions == null ||
+                    cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Delete Current Version
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+                cosmosDocument.Document.Versions = new List<VersionExtended>(
+                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument.Document, Formatting.Indented));
 
                 // Create list if null
-                if (manifest.Versions == null)
-                {
-                    manifest.Versions = new List<VersionExtended>();
-                }
+                cosmosDocument.Document.Versions ??= new List<VersionExtended>();
 
                 // Add Updated Version
-                manifest.Versions.Add(new VersionExtended(versionCore));
+                cosmosDocument.Document.Versions.Add(new VersionExtended(versionCore));
 
-                // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                // Save Package
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
             return new OkObjectResult(versionCore);
@@ -253,75 +250,80 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make get requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionGet)]
-        public static async Task<IActionResult> VersionsGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version?}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> VersionsGetAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version?}")]
+            HttpRequest req,
             string id,
             string version,
             ILogger log)
         {
-            List<VersionCore> versionCores = new List<VersionCore>();
+            ApiResponse<VersionCore> apiResponse = new ApiResponse<VersionCore>();
 
             try
             {
                 // Fetch Current Package
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
-                if (manifest.Versions == null)
+                // Validate Package Contains Versions
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
                 }
 
+                // Process Version Request.
                 if (string.IsNullOrWhiteSpace(version))
                 {
-                    versionCores.AddRange(manifest.Versions.Select(versionExtended => new VersionCore(versionExtended)));
+                    foreach (VersionCore versionCore in cosmosDocument.Document.Versions.Select(
+                        versionExtended => new VersionCore(versionExtended)))
+                    {
+                        apiResponse.Data.Add(versionCore);
+                    }
                 }
                 else
                 {
-                    // If version does not exist, throw
-                    if (!manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                    // If version does not exist, throw an error
+                    if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
                     {
-                        throw new Exception();
+                        throw new InvalidArgumentException(
+                            new InternalRestError(
+                                ErrorConstants.VersionDoesNotExistErrorCode,
+                                ErrorConstants.VersionDoesNotExistErrorMessage));
                     }
 
-                    versionCores.AddRange(from versionExtended in manifest.Versions where versionExtended.Version == version select new VersionCore(versionExtended));
+                    IEnumerable<VersionCore> enumerable = cosmosDocument.Document.Versions
+                        .Where(versionExtended => versionExtended.Version == version)
+                        .Select(versionExtended => new VersionCore(versionExtended));
+                    foreach (VersionCore versionCore in enumerable)
+                    {
+                        apiResponse.Data.Add(versionCore);
+                    }
                 }
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return versionCores.Count switch
+            return apiResponse.Data.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(JsonConvert.SerializeObject(versionCores.First(), Formatting.Indented)),
-                _ => new OkObjectResult(JsonConvert.SerializeObject(versionCores, Formatting.Indented))
+                _ => new OkObjectResult(JsonConvert.SerializeObject(apiResponse, Formatting.Indented))
             };
         }
     }
