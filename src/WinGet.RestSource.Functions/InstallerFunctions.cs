@@ -19,36 +19,43 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Newtonsoft.Json;
-    using Error = Microsoft.WinGet.RestSource.Models.Error;
 
     /// <summary>
     /// This class contains the functions for interacting with installers.
     /// </summary>
-    /// TODO: Create and switch to non-af binding DocumentClient.
     /// TODO: Refactor duplicate code to library.
-    public static class InstallerFunctions
+    public class InstallerFunctions
     {
+        private readonly ICosmosDatabase cosmosDatabase;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstallerFunctions"/> class.
+        /// </summary>
+        /// <param name="cosmosDatabase">Cosmos Database.</param>
+        public InstallerFunctions(ICosmosDatabase cosmosDatabase)
+        {
+            this.cosmosDatabase = cosmosDatabase;
+        }
+
         /// <summary>
         /// Installer Post Function.
         /// This allows us to make post requests for installers.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerPost)]
-        public static async Task<IActionResult> InstallerPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions/{version}/installers")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> InstallerPostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{id}/versions/{version}/installers")]
+            HttpRequest req,
             string id,
             string version,
             ILogger log)
@@ -60,74 +67,73 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse body as package
                 installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
 
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                // Validate Package Version is not null
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
+                }
+
+                // Validate Version exists
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+                VersionExtended versionToUpdate = new List<VersionExtended>(
+                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
+                    .First();
 
                 // Create list if null
-                if (versionToUpdate.Installers == null)
-                {
-                    versionToUpdate.Installers = new List<InstallerCore>();
-                }
+                versionToUpdate.Installers ??= new List<InstallerCore>();
 
                 // If does not exist add
-                if (!versionToUpdate.Installers.Any(nested => nested.Sha256 == installerCore.Sha256))
+                if (versionToUpdate.Installers.All(nested => nested.Sha256 != installerCore.Sha256))
                 {
                     versionToUpdate.Installers.Add(installerCore);
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerAlreadyExistsErrorCode,
+                            ErrorConstants.InstallerAlreadyExistsErrorMessage));
                 }
-
-                log.LogInformation(JsonConvert.SerializeObject(versionToUpdate, Formatting.Indented));
 
                 // Replace Version
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
-
-                if (manifest.Versions == null)
-                {
-                    manifest.Versions = new List<VersionExtended>();
-                }
-
-                manifest.Versions.Add(versionToUpdate);
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+                cosmosDocument.Document.Versions = new List<VersionExtended>(
+                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
+            return new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
         }
 
         /// <summary>
@@ -135,19 +141,18 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make delete requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerDelete)]
-        public static async Task<IActionResult> InstallerDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> InstallerDeleteAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionDelete,
+                Route = "packages/{id}/versions/{version}/installers/{sha256}")]
+            HttpRequest req,
             string id,
             string version,
             string sha256,
@@ -155,63 +160,76 @@ namespace Microsoft.WinGet.RestSource.Functions
         {
             try
             {
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                // Validate Package Version is not null
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
+                }
+
+                // Validate Version exists
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+                VersionExtended versionToUpdate = new List<VersionExtended>(
+                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
+                    .First();
 
-                // If installer does not exist, throw
-                if (versionToUpdate.Installers == null || !versionToUpdate.Installers.Any(nested => nested.Sha256 == sha256))
+                // Validate Installer not null
+                if (versionToUpdate.Installers == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerIsNullErrorCode,
+                            ErrorConstants.InstallerIsNullErrorMessage));
+                }
+
+                // Verify Installer Exists
+                if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerDoesNotExistErrorCode,
+                            ErrorConstants.InstallerDoesNotExistErrorMessage));
                 }
 
                 // Remove installer
-                versionToUpdate.Installers = new List<InstallerCore>(versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
+                versionToUpdate.Installers = new List<InstallerCore>(
+                    versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
 
                 // Replace Version
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
-
-                if (manifest.Versions == null)
-                {
-                    manifest.Versions = new List<VersionExtended>();
-                }
-
-                manifest.Versions.Add(versionToUpdate);
-                log.LogInformation(JsonConvert.SerializeObject(manifest, Formatting.Indented));
+                cosmosDocument.Document.Versions = new List<VersionExtended>(
+                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult("Deleted");
+            return new NoContentResult();
         }
 
         /// <summary>
@@ -219,19 +237,18 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make put requests for installers.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerPut)]
-        public static async Task<IActionResult> InstallerPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}/installers/{sha256}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> InstallerPutAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionPut,
+                Route = "packages/{id}/versions/{version}/installers/{sha256}")]
+            HttpRequest req,
             string id,
             string version,
             string sha256,
@@ -243,74 +260,88 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse body as package
                 installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
-                installerCore.Sha256 = sha256;
 
+                // Validate Parsed Values
                 // TODO: Validate Parsed Values
-
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
+                if (installerCore.Sha256 != sha256)
                 {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerDoesNotMatchErrorCode,
+                            ErrorConstants.InstallerDoesNotMatchErrorMessage));
+                }
 
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
+
+                // Validate Package Version is not null
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
+                }
+
+                // Validate Version exists
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+                VersionExtended versionToUpdate = new List<VersionExtended>(
+                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
+                    .First();
 
-                // If installer does not exist throw
-                if (!versionToUpdate.Installers.Any(nested => nested.Sha256 == installerCore.Sha256))
-                {
-                    throw new Exception();
-                }
-
-                // Remove installer
-                versionToUpdate.Installers = new List<InstallerCore>(versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
-
-                // Create list if null
+                // Validate Installer not null
                 if (versionToUpdate.Installers == null)
                 {
-                    versionToUpdate.Installers = new List<InstallerCore>();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerIsNullErrorCode,
+                            ErrorConstants.InstallerIsNullErrorMessage));
                 }
 
-                // Add Version
+                // Verify Installer Exists
+                if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerDoesNotExistErrorCode,
+                            ErrorConstants.InstallerDoesNotExistErrorMessage));
+                }
+
+                // Replace installer
+                versionToUpdate.Installers = new List<InstallerCore>(
+                    versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
                 versionToUpdate.Installers.Add(installerCore);
 
                 // Replace Version
-                manifest.Versions = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version != version));
-
-                if (manifest.Versions == null)
-                {
-                    manifest.Versions = new List<VersionExtended>();
-                }
-
-                manifest.Versions.Add(versionToUpdate);
+                cosmosDocument.Document.Versions = new List<VersionExtended>(
+                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await client.ReplaceDocumentAsync(documentLink, manifest, null);
+                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
+            return new OkObjectResult(JsonConvert.SerializeObject(installerCore, Formatting.Indented));
         }
 
         /// <summary>
@@ -318,85 +349,110 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make put requests for installers.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="client">CosmosDB DocumentClient.</param>
         /// <param name="id">Package ID.</param>
         /// <param name="version">Version ID.</param>
         /// <param name="sha256">SHA 256 for the installer.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerGet)]
-        public static async Task<IActionResult> InstallerGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version}/installers/{sha256?}")] HttpRequest req,
-            [CosmosDB(
-                databaseName: CosmosConnectionConstants.DatabaseName,
-                collectionName: CosmosConnectionConstants.CollectionName,
-                ConnectionStringSetting = CosmosConnectionConstants.ConnectionStringSetting)] DocumentClient client,
+        public async Task<IActionResult> InstallerGetAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionGet,
+                Route = "packages/{id}/versions/{version}/installers/{sha256?}")]
+            HttpRequest req,
             string id,
             string version,
             string sha256,
             ILogger log)
         {
-            List<InstallerCore> installerCores = new List<InstallerCore>();
+            ApiResponse<InstallerCore> apiResponse = new ApiResponse<InstallerCore>();
 
             try
             {
-                // Fetch Current Document
-                Uri documentLink = UriFactory.CreateDocumentUri(CosmosConnectionConstants.DatabaseName, CosmosConnectionConstants.CollectionName, id);
-                DocumentResponse<Manifest> documentResponse = await client.ReadDocumentAsync<Manifest>(documentLink, new RequestOptions
-                {
-                    PartitionKey = new PartitionKey(id),
-                });
-                Manifest manifest = documentResponse.Document;
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
-                // If version does not exist, throw
-                if (manifest.Versions == null || !manifest.Versions.Any(versionExtended => versionExtended.Version == version))
+                // Validate Package Version is not null
+                if (cosmosDocument.Document.Versions == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionsIsNullErrorCode,
+                            ErrorConstants.VersionsIsNullErrorMessage));
+                }
+
+                // Validate Version exists
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                {
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.VersionDoesNotExistErrorCode,
+                            ErrorConstants.VersionDoesNotExistErrorMessage));
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(manifest.Versions.Where(versionExtended => versionExtended.Version == version)).First();
+                VersionExtended versionToUpdate = new List<VersionExtended>(
+                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
+                    .First();
 
-                // Check for versions
+                // Validate Installer not null
                 if (versionToUpdate.Installers == null)
                 {
-                    throw new Exception();
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.InstallerIsNullErrorCode,
+                            ErrorConstants.InstallerIsNullErrorMessage));
                 }
 
+                // Process Installers
                 if (string.IsNullOrWhiteSpace(sha256))
                 {
-                    installerCores.AddRange(versionToUpdate.Installers.Select(installerCore => new InstallerCore(installerCore)));
+                    IEnumerable<InstallerCore> enumerable =
+                        versionToUpdate.Installers.Select(installerCore => new InstallerCore(installerCore));
+                    foreach (InstallerCore installerCore in enumerable)
+                    {
+                        apiResponse.Data.Add(installerCore);
+                    }
                 }
                 else
                 {
-                    if (!versionToUpdate.Installers.Any(installer => installer.Sha256 == sha256))
+                    // Verify Installer Exists
+                    if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
                     {
-                        throw new Exception();
+                        throw new InvalidArgumentException(
+                            new InternalRestError(
+                                ErrorConstants.InstallerDoesNotExistErrorCode,
+                                ErrorConstants.InstallerDoesNotExistErrorMessage));
                     }
 
-                    installerCores.AddRange(from installer in versionToUpdate.Installers where installer.Sha256 == sha256 select new InstallerCore(installer));
+                    // Add Installer(s)
+                    IEnumerable<InstallerCore> enumerable = versionToUpdate.Installers
+                        .Where(installer => installer.Sha256 == sha256)
+                        .Select(installer => new InstallerCore(installer));
+                    foreach (InstallerCore installerCore in enumerable)
+                    {
+                        apiResponse.Data.Add(installerCore);
+                    }
                 }
+            }
+            catch (DefaultException e)
+            {
+                log.LogError(e.ToString());
+                return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Error error = new Error
-                {
-                    ErrorCode = ErrorConstants.UnhandledErrorCode,
-                    ErrorMessage = ErrorConstants.UnhandledErrorMessage,
-                };
-
-                return new ObjectResult(JsonConvert.SerializeObject(error, Formatting.Indented))
-                {
-                    StatusCode = 500,
-                };
+                return ActionResultHelper.UnhandledError(e);
             }
 
-            return installerCores.Count switch
+            return apiResponse.Data.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(JsonConvert.SerializeObject(installerCores.First(), Formatting.Indented)),
-                _ => new OkObjectResult(JsonConvert.SerializeObject(installerCores, Formatting.Indented))
+                _ => new OkObjectResult(JsonConvert.SerializeObject(apiResponse, Formatting.Indented))
             };
         }
     }

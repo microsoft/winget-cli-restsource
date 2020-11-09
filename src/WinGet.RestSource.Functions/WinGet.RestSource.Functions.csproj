@@ -12,7 +12,7 @@
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
         <NoWarn>1701;1702;NU1701</NoWarn>
-        <WarningsAsErrors/>
+        <WarningsAsErrors />
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
     </PropertyGroup>
@@ -21,7 +21,7 @@
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
         <NoWarn>1701;1702;NU1701;</NoWarn>
-        <WarningsAsErrors/>
+        <WarningsAsErrors />
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
     </PropertyGroup>
@@ -31,13 +31,14 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json"/>
+        <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3"/>
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.7"/>
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2"/>
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3" />
+        <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.7" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -51,6 +52,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj"/>
+        <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
     </ItemGroup>
 </Project>

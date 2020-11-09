@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Error.cs" company="Microsoft Corporation">
+// <copyright file="InternalRestError.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -11,22 +11,22 @@ namespace Microsoft.WinGet.RestSource.Models
     /// <summary>
     /// This class represents an error response. When an error occurs, we will return this to the client.
     /// </summary>
-    public class Error
+    public class InternalRestError
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Error"/> class.
+        /// Initializes a new instance of the <see cref="InternalRestError"/> class.
         /// </summary>
-        public Error()
+        public InternalRestError()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Error"/> class.
+        /// Initializes a new instance of the <see cref="InternalRestError"/> class.
         /// </summary>
         /// <param name="errorCode">Error Code.</param>
         /// <param name="errorMessage">Error Message.</param>
         /// <param name="exception">Optional Exception.</param>
-        public Error(int errorCode, string errorMessage, Exception exception = null)
+        public InternalRestError(int errorCode, string errorMessage, Exception exception = null)
         {
             this.ErrorCode = errorCode;
             this.ErrorMessage = errorMessage;
