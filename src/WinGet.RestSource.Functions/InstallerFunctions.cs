@@ -54,7 +54,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerPost)]
         public async Task<IActionResult> InstallerPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions/{version}/installers")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{id}/versions/{version}/installers")]
             HttpRequest req,
             string id,
             string version,
@@ -150,7 +150,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         public async Task<IActionResult> InstallerDeleteAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
-                "delete",
+                FunctionConstants.FunctionDelete,
                 Route = "packages/{id}/versions/{version}/installers/{sha256}")]
             HttpRequest req,
             string id,
@@ -246,7 +246,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         public async Task<IActionResult> InstallerPutAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
-                "put",
+                FunctionConstants.FunctionPut,
                 Route = "packages/{id}/versions/{version}/installers/{sha256}")]
             HttpRequest req,
             string id,
@@ -358,7 +358,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         public async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
-                "get",
+                FunctionConstants.FunctionGet,
                 Route = "packages/{id}/versions/{version}/installers/{sha256?}")]
             HttpRequest req,
             string id,

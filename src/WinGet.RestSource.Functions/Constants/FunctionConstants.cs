@@ -12,6 +12,26 @@ namespace Microsoft.WinGet.RestSource.Functions.Constants
     public class FunctionConstants
     {
         /// <summary>
+        /// Function Post.
+        /// </summary>
+        public const string FunctionPost = "post";
+
+        /// <summary>
+        /// Function Delete.
+        /// </summary>
+        public const string FunctionDelete = "delete";
+
+        /// <summary>
+        /// Function Put.
+        /// </summary>
+        public const string FunctionPut = "put";
+
+        /// <summary>
+        /// Function Get.
+        /// </summary>
+        public const string FunctionGet = "get";
+
+        /// <summary>
         /// Manifest Post Function Name.
         /// </summary>
         public const string ManifestPost = "ManifestPost";

@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionPost)]
         public async Task<IActionResult> VersionsPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages/{id}/versions")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{id}/versions")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -115,7 +115,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionDelete)]
         public async Task<IActionResult> VersionsDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}/versions/{version}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
             string id,
             string version,
@@ -179,7 +179,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionPut)]
         public async Task<IActionResult> VersionsPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}/versions/{version}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{id}/versions/{version}")]
             HttpRequest req,
             string id,
             string version,
@@ -256,7 +256,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionGet)]
         public async Task<IActionResult> VersionsGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id}/versions/{version?}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packages/{id}/versions/{version?}")]
             HttpRequest req,
             string id,
             string version,

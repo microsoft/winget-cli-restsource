@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackagePost)]
         public async Task<IActionResult> PackagesPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "packages")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages")]
             HttpRequest req,
             ILogger log)
         {
@@ -100,7 +100,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageDelete)]
         public async Task<IActionResult> PackageDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "packages/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{id}")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -141,7 +141,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackagePut)]
         public async Task<IActionResult> PackagesPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "packages/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{id}")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -199,7 +199,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageGet)]
         public async Task<IActionResult> PackagesGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "packages/{id?}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packages/{id?}")]
             HttpRequest req,
             string id,
             ILogger log)

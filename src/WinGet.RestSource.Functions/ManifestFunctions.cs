@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestPost)]
         public async Task<IActionResult> ManifestPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "manifests")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "manifests")]
             HttpRequest req,
             ILogger log)
         {
@@ -95,7 +95,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestDelete)]
         public async Task<IActionResult> ManifestDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "manifests/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "manifests/{id}")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -136,7 +136,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestPut)]
         public async Task<IActionResult> ManifestPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "manifests/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "manifests/{id}")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -192,7 +192,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "manifests/{id?}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "manifests/{id?}")]
             HttpRequest req,
             string id,
             ILogger log)
