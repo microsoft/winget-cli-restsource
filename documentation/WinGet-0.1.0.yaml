@@ -411,6 +411,33 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  # Manifest Search API, will get merged with /manifests
+  /manifestsearch:
+    post:
+      summary: This creates all subcomponents contained in the logical representation of a manifest
+      tags:
+        - Manifests
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/manifestSearchRequestBody'
+      description: This will retrieve a set of manifests.
+      responses:
+        200:
+          description: Successfully retrieved a list of packages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/manifestSchema'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
 # Reusable Components for API
 components:
 
@@ -628,6 +655,84 @@ components:
                         items:
                           $ref: '#/components/schemas/installerSchema'
 
+    # Manifest Search Request Schema
+    manifestSearchRequestSchema: 
+      description: Model containing manifest search request schema.
+      properties:
+        maximumResults:
+          type: integer
+        isForEverything:
+          type: boolean
+        query:
+          $ref: '#/components/schemas/searchRequestQuerySchema'
+        inclusions:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchRequestInclusionAndFilterSchema'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchRequestInclusionAndFilterSchema'
+
+    # Manifest Search Request RequestMatch Schema
+    matchTypeSchema: 
+      description: Model containing manifest request match type.
+      type: string
+      enum:
+          - Exact
+          - CaseInsensitive
+          - StartsWith
+          - Fuzzy
+          - Substring
+          - FuzzySubstring
+          - Wildcard
+          
+    # Manifest Search Request PackageMatchField Schema
+    packageMatchFieldSchema: 
+      description: Model containing manifest request package match field type.
+      type: string
+      enum:
+        - Id
+        - Name
+        - Moniker
+        - Command
+        - Tag
+        - PackageFamilyName
+        - ProductCode
+    
+    # Manifest Search Request Package Match Filter Schema
+    searchRequestPackageMatchFilterSchema: 
+      description: Model containing manifest search request Package Match Filter  schema.
+      properties:
+        packageMatchField:
+          $ref: '#/components/schemas/packageMatchFieldSchema'
+        requestMatch:
+          $ref: '#/components/schemas/searchRequestMatchSchema'
+                  
+    # Manifest Search Request RequestMatch Schema
+    searchRequestMatchSchema: 
+      description: Model containing manifest request match schema.
+      allOf:
+        - type: object
+          properties:
+            keyWord:
+              type: string
+            matchType:
+              $ref: '#/components/schemas/matchTypeSchema'
+              
+    # Manifest Search Request Query Schema
+    searchRequestQuerySchema: 
+      description: Model containing manifest search request Query schema.
+      properties:
+        requestMatch:
+          $ref: '#/components/schemas/searchRequestMatchSchema'
+    
+    # Manifest Search Request Inclusion or Filters Schema
+    searchRequestInclusionAndFilterSchema: 
+      description: Model containing manifest search request Inclusion or filter schema.
+      allOf:
+        - $ref: '#/components/schemas/searchRequestPackageMatchFilterSchema'
+  
     # Misc Schemas
     error:
       description: A schema for a generic error.
@@ -707,6 +812,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/manifestSchema'
+
+    manifestSearchRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/manifestSearchRequestSchema'
 
   responses:
     UnauthorizedError:
