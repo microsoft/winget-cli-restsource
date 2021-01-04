@@ -418,7 +418,7 @@ paths:
   # Manifest Search API
   /manifestSearch:
     post:
-      summary: This creates all subcomponents contained in the logical representation of a manifest
+      summary: This retrieves manifests for a given search request.
       tags:
         - Manifests
       security: 
@@ -428,7 +428,7 @@ paths:
       description: This will retrieve a set of manifests.
       responses:
         200:
-          description: Successfully retrieved a list of packages.
+          description: Successfully retrieved a list of manifests.
           content:
             application/json:
               schema:
@@ -682,10 +682,7 @@ components:
           - Exact
           - CaseInsensitive
           - StartsWith
-          - Fuzzy
           - Substring
-          - FuzzySubstring
-          - Wildcard
           
     # Manifest Search Request Package Match Field Schema
     packageMatchFieldSchema: 
