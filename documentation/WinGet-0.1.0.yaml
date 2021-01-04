@@ -661,7 +661,7 @@ components:
       properties:
         maximumResults:
           type: integer
-        isForEverything:
+        fetchAllManifests:
           type: boolean
         query:
           $ref: '#/components/schemas/searchRequestQuerySchema'
