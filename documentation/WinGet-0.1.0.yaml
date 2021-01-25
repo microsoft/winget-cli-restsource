@@ -388,8 +388,12 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  /manifests/{packageId}:
+    parameters:
+      - $ref: '#/components/parameters/packageId'
+
     put:
-      summary: This updates all subcomponents contained in the logical representation of a manifest
+      summary: This updates all subcomponents contained in the logical representation of a manifest for a given package id.
       tags:
         - Manifests
       description: This will update all subcomponents contained in the logical representation of a manifest.
@@ -408,6 +412,31 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         409:
           $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Manifest Search API
+  /manifestSearch:
+    post:
+      summary: This retrieves manifests for a given search request.
+      tags:
+        - Manifests
+      security: 
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/manifestSearchRequestBody'
+      description: This will retrieve a set of manifests.
+      responses:
+        200:
+          description: Successfully retrieved a list of manifests.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/manifestSchema'
+        400:
+          $ref: '#/components/responses/BadRequestError'
         default:
           $ref: '#/components/responses/GenericError'
 
@@ -605,9 +634,7 @@ components:
         - type: object
           properties:
             switches:
-              type: array
-              items:
-                $ref: '#/components/schemas/switchesFields'
+              $ref: '#/components/schemas/switchesFields'
 
     # Manifest Schema
     manifestSchema: 
@@ -628,6 +655,81 @@ components:
                         items:
                           $ref: '#/components/schemas/installerSchema'
 
+    # Manifest Search Request Schema
+    manifestSearchRequestSchema: 
+      description: Model containing manifest search request schema.
+      properties:
+        maximumResults:
+          type: integer
+        fetchAllManifests:
+          type: boolean
+        query:
+          $ref: '#/components/schemas/searchRequestQuerySchema'
+        inclusions:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchRequestInclusionAndFilterSchema'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchRequestInclusionAndFilterSchema'
+
+    # Manifest Search Request Match Type Schema
+    matchTypeSchema: 
+      description: Model containing manifest request match type.
+      type: string
+      enum:
+          - Exact
+          - CaseInsensitive
+          - StartsWith
+          - Substring
+          
+    # Manifest Search Request Package Match Field Schema
+    packageMatchFieldSchema: 
+      description: Model containing manifest request package match field schema.
+      type: string
+      enum:
+        - Id
+        - Name
+        - Moniker
+        - Command
+        - Tag
+        - PackageFamilyName
+        - ProductCode
+    
+    # Manifest Search Request Package Match Filter Schema
+    searchRequestPackageMatchFilterSchema: 
+      description: Model containing manifest search request Package Match Filter schema.
+      properties:
+        packageMatchField:
+          $ref: '#/components/schemas/packageMatchFieldSchema'
+        requestMatch:
+          $ref: '#/components/schemas/searchRequestMatchSchema'
+                  
+    # Manifest Search Request Match Schema
+    searchRequestMatchSchema: 
+      description: Model containing manifest request match schema.
+      allOf:
+        - type: object
+          properties:
+            keyWord:
+              type: string
+            matchType:
+              $ref: '#/components/schemas/matchTypeSchema'
+              
+    # Manifest Search Request Query Schema
+    searchRequestQuerySchema: 
+      description: Model containing manifest search request Query schema.
+      properties:
+        requestMatch:
+          $ref: '#/components/schemas/searchRequestMatchSchema'
+    
+    # Manifest Search Request Inclusion or Filters Schema
+    searchRequestInclusionAndFilterSchema: 
+      description: Model containing manifest search request Inclusion or filter schema.
+      allOf:
+        - $ref: '#/components/schemas/searchRequestPackageMatchFilterSchema'
+  
     # Misc Schemas
     error:
       description: A schema for a generic error.
@@ -708,6 +810,13 @@ components:
           schema:
             $ref: '#/components/schemas/manifestSchema'
 
+    manifestSearchRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/manifestSearchRequestSchema'
+
   responses:
     UnauthorizedError:
       description: API key is missing or invalid.
@@ -729,6 +838,15 @@ components:
 
     Conflict:
       description: A conflict exists with the resource.      
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/error'
+              
+    BadRequestError:
+      description: Request contains something thats perceived as client error.
       content:
         application/json:
           schema:
