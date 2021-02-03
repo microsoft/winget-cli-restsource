@@ -32,6 +32,11 @@ namespace Microsoft.WinGet.RestSource.Functions.Constants
         public const string FunctionGet = "get";
 
         /// <summary>
+        /// Manifest Search Post Function Name.
+        /// </summary>
+        public const string ManifestSearchPost = "ManifestSearchPost";
+
+        /// <summary>
         /// Manifest Post Function Name.
         /// </summary>
         public const string ManifestPost = "ManifestPost";

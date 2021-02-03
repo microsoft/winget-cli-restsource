@@ -37,37 +37,5 @@ namespace Microsoft.WinGet.RestSource.Common
 
             return deserializedObject;
         }
-
-        /// <summary>
-        /// This will encode a string to Base 64.
-        /// </summary>
-        /// <param name="plainText">Plain Text.</param>
-        /// <returns>Encoded data.</returns>
-        public static string Base64Encode(string plainText)
-        {
-            if (string.IsNullOrEmpty(plainText))
-            {
-                return null;
-            }
-
-            byte[] plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
-
-        /// <summary>
-        /// This will decode data from Base 64.
-        /// </summary>
-        /// <param name="base64EncodedData">Encoded data.</param>
-        /// <returns>Plain Text.</returns>
-        public static string Base64Decode(string base64EncodedData)
-        {
-            if (string.IsNullOrEmpty(base64EncodedData))
-            {
-                return null;
-            }
-
-            byte[] base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        }
     }
 }
