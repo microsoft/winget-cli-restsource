@@ -359,4 +359,8 @@ src/WinGet.RestSource.Functions/local.settings.json
 src/WinGet.RestSource.Functions/Microsoft.WinGet.RestSource.Functions.xml
 src/WinGet.RestSource/Microsoft.WinGet.RestSource.xml
 
+# Developer ARM template
+src/WinGet.RestSource.Infrastructure/**/*.dev.*json
 
+# VS Code
+.vscode/

@@ -1,16 +1,17 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource", "WinGet.RestSource\WinGet.RestSource.csproj", "{15E4BE9B-2891-410A-A042-47FE838B1AEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinGet.RestSource.Functions", "WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj", "{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Functions", "WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj", "{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{145CC9B9-A93E-46C1-90F7-DFB81233B39F}"
-ProjectSection(SolutionItems) = preProject
-	stylecop.json = stylecop.json
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "WinGet.RestSource.Infrastructure", "WinGet.RestSource.Infrastructure\WinGet.RestSource.Infrastructure.deployproj", "{0F98E939-EC64-40DA-9630-336A40807BBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +27,10 @@ Global
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F98E939-EC64-40DA-9630-336A40807BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F98E939-EC64-40DA-9630-336A40807BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F98E939-EC64-40DA-9630-336A40807BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F98E939-EC64-40DA-9630-336A40807BBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
