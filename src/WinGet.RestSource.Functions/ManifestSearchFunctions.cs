@@ -56,21 +56,22 @@ namespace Microsoft.WinGet.RestSource.Functions
             ILogger log)
         {
             ApiResponse<Manifest> apiResponse = new ApiResponse<Manifest>();
+            ManifestSearch manifestSearch = null;
             try
             {
-                // Parse Parameters
-                string continuationToken = req.Query["ct"];
-                continuationToken = string.IsNullOrEmpty(continuationToken)
-                    ? null
-                    : Parser.Base64Decode(continuationToken);
+                manifestSearch = await Parser.StreamParser<ManifestSearch>(req.Body, log);
 
                 // Create feed options
+                int maxItemCount = manifestSearch.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage
+                    ? manifestSearch.MaximumResults
+                    : FunctionSettingsConstants.MaxResultsPerPage;
+
                 // TODO: Expand Feed Options
                 FeedOptions feedOptions = new FeedOptions
                 {
                     EnableCrossPartitionQuery = true,
-                    MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
-                    RequestContinuation = continuationToken,
+                    MaxItemCount = maxItemCount,
+                    RequestContinuation = StringEncoder.DecodeContinuationToken(manifestSearch.ContinuationToken),
                 };
 
                 // Get iQueryable
@@ -86,7 +87,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 CosmosPage<Manifest> cosmosPage =
                     await this.cosmosDatabase.GetByDocumentQuery<Manifest>(documentQuery);
                 apiResponse.Data = cosmosPage.Items.ToList();
-                apiResponse.ContinuationToken = Parser.Base64Encode(cosmosPage.ContinuationToken);
+                apiResponse.ContinuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
             }
             catch (DefaultException e)
             {

@@ -212,9 +212,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 {
                     // Parse Parameters
                     string continuationToken = req.Query["ct"];
-                    continuationToken = string.IsNullOrEmpty(continuationToken)
-                        ? null
-                        : Parser.Base64Decode(continuationToken);
+                    StringEncoder.DecodeContinuationToken(continuationToken);
+                    continuationToken = StringEncoder.DecodeContinuationToken(continuationToken);
 
                     // Create feed options
                     // TODO: Expand Feed Options
@@ -242,7 +241,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         apiResponse.Data.Add(result.ToPackageCore());
                     }
 
-                    apiResponse.ContinuationToken = Parser.Base64Encode(cosmosPage.ContinuationToken);
+                    apiResponse.ContinuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
                 }
                 else
                 {
