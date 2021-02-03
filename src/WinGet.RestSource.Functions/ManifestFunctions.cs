@@ -184,7 +184,6 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <summary>
         /// Manifest Get Function.
         /// This allows us to make Get requests for manifests.
-        /// This also allows us to query manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="id">Package ID.</param>
@@ -192,7 +191,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "manifests/{id?}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "manifests/{id}")]
             HttpRequest req,
             string id,
             ILogger log)
@@ -200,46 +199,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             ApiResponse<Manifest> apiResponse = new ApiResponse<Manifest>();
             try
             {
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    // Parse Parameters
-                    string continuationToken = req.Query["ct"];
-                    continuationToken = string.IsNullOrEmpty(continuationToken)
-                        ? null
-                        : Parser.Base64Decode(continuationToken);
-
-                    // Create feed options
-                    // TODO: Expand Feed Options
-                    FeedOptions feedOptions = new FeedOptions
-                    {
-                        EnableCrossPartitionQuery = true,
-                        MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
-                        RequestContinuation = continuationToken,
-                    };
-
-                    // Get iQueryable
-                    IQueryable<Manifest> query = this.cosmosDatabase.GetIQueryable<Manifest>(feedOptions);
-
-                    // Apply query parameters to query
-                    // TODO: Apply Query Parameters
-
-                    // Finalize Query
-                    IDocumentQuery<Manifest> documentQuery = query.AsDocumentQuery();
-
-                    // Get results
-                    CosmosPage<Manifest> cosmosPage =
-                        await this.cosmosDatabase.GetByDocumentQuery<Manifest>(documentQuery);
-                    apiResponse.Data = cosmosPage.Items.ToList();
-                    apiResponse.ContinuationToken = Parser.Base64Encode(cosmosPage.ContinuationToken);
-                }
-                else
-                {
-                    // Fetch Current Package
-                    CosmosDocument<Manifest> cosmosDocument =
-                        await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
-                    log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
-                    apiResponse.Data.Add(cosmosDocument.Document);
-                }
+                // Fetch Current Package
+                CosmosDocument<Manifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
+                apiResponse.Data.Add(cosmosDocument.Document);
             }
             catch (DefaultException e)
             {
