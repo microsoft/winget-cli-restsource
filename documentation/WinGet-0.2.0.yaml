@@ -19,14 +19,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/packageRequestBody'
+        $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
         201:
-          description: Successfully added a package.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PackageSchema'
+          $ref: '#/components/responses/PackageResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -42,13 +38,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          description: Successfully retrieved a list of packages.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PackageSchema'
+          $ref: '#/components/responses/PackageResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -66,14 +56,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/packageRequestBody'
+        $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
         201:
-          description: Successfully updated a package.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PackageSchema'
+          $ref: '#/components/responses/PackageResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -106,11 +92,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          description: Successfully retrieved a package.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PackageSchema'
+          $ref: '#/components/responses/PackageResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -129,14 +111,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/versionRequestBody'
+        $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
         201:
-          description: Successfully added a version.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VersionSchema'
+          $ref: '#/components/responses/VersionResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -152,13 +130,7 @@ paths:
       description: This will retrieve a set of versions.
       responses:
         200:
-          description: Successfully retrieved a list of versions.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/VersionSchema'
+          $ref: '#/components/responses/VersionResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -177,14 +149,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/versionRequestBody'
+        $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
         201:
-          description: Successfully updated a version.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VersionSchema'
+          $ref: '#/components/responses/VersionResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -217,11 +185,7 @@ paths:
       description: This will retrieve a version.
       responses:
         200:
-          description: Successfully retrieved a package.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VersionSchema'
+          $ref: '#/components/responses/VersionResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -241,14 +205,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/installerRequestBody'
+        $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
         201:
-          description: Successfully added an installer.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InstallerSchema'
+          $ref: '#/components/responses/InstallerResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -264,13 +224,7 @@ paths:
       description: This will retrieve a set of installers.
       responses:
         200:
-          description: Successfully retrieved a list of installers.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InstallerSchema'
+          $ref: '#/components/responses/InstallerResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -290,14 +244,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/installerRequestBody'
+        $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
         201:
-          description: Successfully updated an installer.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InstallerSchema'
+          $ref: '#/components/responses/InstallerResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -330,11 +280,7 @@ paths:
       description: This will retrieve an installer.
       responses:
         200:
-          description: Successfully retrieved a package.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InstallerSchema'
+          $ref: '#/components/responses/InstallerResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -349,14 +295,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/manifestRequestBody'
+        $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
         201:
-          description: Successfully added multiple components.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManifestSchema'
+          $ref: '#/components/responses/ManifestResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -376,14 +318,10 @@ paths:
       security:
         - ApiKeyAuthentication: []
       requestBody:
-        $ref: '#/components/requestBodies/manifestRequestBody'
+        $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
         201:
-          description: Successfully added multiple components.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManifestSchema'
+          $ref: '#/components/responses/ManifestResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -416,11 +354,7 @@ paths:
       description: This will retrieve a manifest.
       responses:
         200:
-          description: Successfully retrieved a manifest.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManifestSchema'
+          $ref: '#/components/responses/ManifestResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -441,13 +375,7 @@ paths:
       description: This will retrieve a set of manifests.
       responses:
         200:
-          description: Successfully retrieved a list of manifests.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ManifestSchema'
+          $ref: '#/components/responses/ManifestResponse'
         400:
           $ref: '#/components/responses/BadRequestError'
         default:
@@ -1077,6 +1005,88 @@ components:
                         items:
                           $ref: '#/components/schemas/InstallerSchema'
 
+    ResponseObjectSchema:
+      description: Base API Response Object
+      properties:
+        ResponseType:
+          type: string
+        Data:
+          type: array
+        ContinuationToken:
+          type: string
+      required:
+        - ResponseType
+        - ContinuationToken
+        - Data
+
+    PackageResponseSchema:
+      description: Package Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PackageSchema'
+        - type: object
+          properties:
+            ResponseType:
+              type: string
+              enum:
+                - Package
+
+    VersionResponseSchema:
+      description: Version Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/VersionSchema'
+        - type: object
+          properties:
+            ResponseType:
+              type: string
+              enum:
+                - Version
+
+    InstallerResponseSchema:
+      description: Installer Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/InstallerSchema'
+        - type: object
+          properties:
+            ResponseType:
+              type: string
+              enum:
+                - Installer
+
+    ManifestResponseSchema:
+      description: Package Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManifestSchema'
+        - type: object
+          properties:
+            ResponseType:
+              type: string
+              enum:
+                - Manifest
+
     # Manifest Search Request Schema
     ManifestSearchRequestSchema:
       description: Model containing manifest search request schema.
@@ -1192,28 +1202,28 @@ components:
 
   # Request Bodies
   requestBodies:
-    packageRequestBody:
+    PackageRequestBody:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PackageSchema'
 
-    versionRequestBody:
+    VersionRequestBody:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/VersionSchema'
 
-    installerRequestBody:
+    InstallerRequestBody:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/InstallerSchema'
 
-    manifestRequestBody:
+    ManifestRequestBody:
       required: true
       content:
         application/json:
@@ -1228,6 +1238,35 @@ components:
             $ref: '#/components/schemas/ManifestSearchRequestSchema'
 
   responses:
+    PackageResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/PackageResponseSchema'
+
+    VersionResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/VersionResponseSchema'
+
+    InstallerResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/InstallerResponseSchema'
+
+    ManifestResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/ManifestResponseSchema'
+
+
     UnauthorizedError:
       description: API key is missing or invalid.
       content:
