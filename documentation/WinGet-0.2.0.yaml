@@ -1008,14 +1008,11 @@ components:
     ResponseObjectSchema:
       description: Base API Response Object
       properties:
-        ResponseType:
-          type: string
         Data:
           type: array
         ContinuationToken:
           type: string
       required:
-        - ResponseType
         - ContinuationToken
         - Data
 
@@ -1029,12 +1026,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/PackageSchema'
-        - type: object
-          properties:
-            ResponseType:
-              type: string
-              enum:
-                - Package
 
     VersionResponseSchema:
       description: Version Response Schema
@@ -1046,12 +1037,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/VersionSchema'
-        - type: object
-          properties:
-            ResponseType:
-              type: string
-              enum:
-                - Version
 
     InstallerResponseSchema:
       description: Installer Response Schema
@@ -1063,12 +1048,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/InstallerSchema'
-        - type: object
-          properties:
-            ResponseType:
-              type: string
-              enum:
-                - Installer
 
     ManifestResponseSchema:
       description: Package Response Schema
@@ -1080,12 +1059,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSchema'
-        - type: object
-          properties:
-            ResponseType:
-              type: string
-              enum:
-                - Manifest
 
     # Manifest Search Request Schema
     ManifestSearchRequestSchema:
