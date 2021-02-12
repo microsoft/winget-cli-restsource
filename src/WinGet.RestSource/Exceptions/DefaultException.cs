@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Exceptions
 {
     using System;
     using System.Net;
+    using System.Net.Http;
     using Microsoft.Azure.Documents;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models;
@@ -88,10 +89,16 @@ namespace Microsoft.WinGet.RestSource.Exceptions
                 case DocumentClientException documentClientException:
                     this.InternalRestError = ProcessDocumentClientException(documentClientException);
                     break;
+                case HttpRequestException httpRequestException:
+                    this.InternalRestError = new InternalRestError(
+                        ErrorConstants.HttpRequestExceptionErrorCode,
+                        ErrorConstants.HttpRequestExceptionErrorMessage,
+                        exception);
+                    break;
                 default:
                     this.InternalRestError = new InternalRestError(
-                        ErrorConstants.ResourceConflictErrorCode,
-                        ErrorConstants.ResourceConflictErrorMessage,
+                        ErrorConstants.UnhandledErrorCode,
+                        ErrorConstants.UnhandledErrorMessage,
                         exception);
                     break;
             }

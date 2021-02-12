@@ -34,6 +34,9 @@
         },
         "uniqueKeyPolicy": {
             "type": "object",
+            "defaultValue": {
+                "uniqueKeys": []
+            },
             "metadata": {
                 "description": "Options."
             }
@@ -50,7 +53,7 @@
             "metadata": {
                 "description": "Options."
             }
-        },
+        }
     },
     "variables": {},
     "resources": [

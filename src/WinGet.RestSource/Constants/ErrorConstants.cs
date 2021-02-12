@@ -114,6 +114,17 @@ namespace Microsoft.WinGet.RestSource.Constants
             "The document Installer does not match resource Installer.";
 
         /// <summary>
+        /// This is the code for when the installer version does not match the document installer.
+        /// </summary>
+        public const int HttpRequestExceptionErrorCode = 11;
+
+        /// <summary>
+        /// This is the message for when the resource installer does not match the document installer.
+        /// </summary>
+        public const string HttpRequestExceptionErrorMessage =
+            "An HTTP Request Exception Occured.";
+
+        /// <summary>
         /// This is the code for a resource Conflict.
         /// </summary>
         public const int ResourceConflictErrorCode = 409;
