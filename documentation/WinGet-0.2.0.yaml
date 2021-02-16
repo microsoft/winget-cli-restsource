@@ -1,0 +1,1298 @@
+openapi: 3.0.1
+info:
+  version: 0.2.0
+  title: Open Windows Catalog API
+  description: This is the API for the Open Windows Catalog.
+  contact:
+    name: Winget Feedback
+    email: winget-feedback@microsoft.com
+
+paths:
+  # Package API Calls
+  /packages:
+
+    post:
+      summary: Add Package Metadata
+      tags:
+        - Packages
+      description: This will create a new package in the repository with its associated metadata.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/PackageRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/PackageResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Package Metadata
+      tags:
+        - Packages
+        - Get
+      description: This will retrieve a set of packages.
+      responses:
+        200:
+          $ref: '#/components/responses/PackageResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{PackageIdentifier}:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+
+    put:
+      summary: Replace Package Metadata
+      tags:
+        - Packages
+      description: This will replace a package in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/PackageRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/PackageResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete a Package
+      tags:
+        - Packages
+      description: This will delete a package in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a package.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Package Metadata
+      tags:
+        - Packages
+        - Get
+      description: This will retrieve a set of packages.
+      responses:
+        200:
+          $ref: '#/components/responses/PackageResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Version API Calls
+  /packages/{PackageIdentifier}/versions:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+
+    post:
+      summary: Add Version Metadata
+      tags:
+        - Versions
+      description: This will create a new version in the repository with its associated metadata.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/VersionRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/VersionResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Version Metadata
+      tags:
+        - Versions
+        - Get
+      description: This will retrieve a set of versions.
+      responses:
+        200:
+          $ref: '#/components/responses/VersionResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{PackageIdentifier}/versions/{PackageVersion}:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+
+    put:
+      summary: Replace Version Metadata
+      tags:
+        - Versions
+      description: This will replace a version in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/VersionRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/VersionResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete a Version
+      tags:
+        - Versions
+      description: This will delete a version in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Version Metadata
+      tags:
+        - Versions
+        - Get
+      description: This will retrieve a version.
+      responses:
+        200:
+          $ref: '#/components/responses/VersionResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Installer API Calls
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+
+    post:
+      summary: Add Installer Metadata
+      tags:
+        - Installers
+      description: This will create a new Installer in the repository with its associated metadata.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/InstallerRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/InstallerResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Installer Metadata
+      tags:
+        - Installers
+        - Get
+      description: This will retrieve a set of installers.
+      responses:
+        200:
+          $ref: '#/components/responses/InstallerResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerSha256}:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+      - $ref: '#/components/parameters/InstallerSha256'
+
+    put:
+      summary: Replace Installer Metadata
+      tags:
+        - Installers
+      description: This will replace an installer in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/InstallerRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/InstallerResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete an Installer
+      tags:
+        - Installers
+      description: This will delete a version in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Installer Metadata
+      tags:
+        - Installers
+        - Get
+      description: This will retrieve an installer.
+      responses:
+        200:
+          $ref: '#/components/responses/InstallerResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /manifests:
+    post:
+      summary: This creates all subcomponents contained in the logical representation of a manifest
+      tags:
+        - Manifests
+      description: This will create all subcomponents contained in the logical representation of a manifest.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/ManifestRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/ManifestResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /manifests/{PackageIdentifier}:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+
+    put:
+      summary: This updates all subcomponents contained in the logical representation of a manifest for a given package id.
+      tags:
+        - Manifests
+      description: This will update all subcomponents contained in the logical representation of a manifest.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/ManifestRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/ManifestResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete a manifest
+      tags:
+        - Manifests
+      description: This will delete a version in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: This returns a manifest
+      tags:
+        - Manifests
+        - Get
+      description: This will retrieve a manifest.
+      responses:
+        200:
+          $ref: '#/components/responses/ManifestResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  # Manifest Search API
+  /manifestSearch:
+    post:
+      summary: This retrieves manifests for a given search request.
+      tags:
+        - Manifests
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/manifestSearchRequestBody'
+      description: This will retrieve a set of manifests.
+      responses:
+        200:
+          $ref: '#/components/responses/ManifestResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+# Reusable Components for API
+components:
+
+  # Security Components
+  securitySchemes:
+    ApiKeyAuthentication:
+      type: apiKey
+      in: query
+      name: code
+
+  # API Schemas
+  schemas:
+
+    # Definitions
+    PackageIdentifier:
+      description: The package unique identifier
+      type: string
+      pattern: "^[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}(\\.[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}){1,3}$"
+      maxLength: 128
+
+    PackageVersion:
+      description: Version Type
+      type: string
+      pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
+      maxLength: 128
+
+    Publisher:
+      description: Publisher Name
+      type: string
+      minLength: 2
+      maxLength: 128
+
+    Author:
+      description: The package author
+      type: string
+      nullable: true
+      minLength: 2
+      maxLength: 256
+
+    PackageName:
+      description: The package name
+      type: string
+      minLength: 2
+      maxLength: 64
+
+    License:
+      description: The package license
+      type: string
+      minLength: 3
+      maxLength: 512
+
+    Copyright:
+      description: The package copyright
+      type: string
+      nullable: true
+      minLength: 3
+      maxLength: 512
+
+    ShortDescription:
+      description: The short package description
+      type: string
+      minLength: 3
+      maxLength: 256
+
+    Description:
+      description: The full package description
+      type: string
+      nullable: true
+      minLength: 3
+      maxLength: 10000
+
+    Locale:
+      description: The package meta-data locale
+      type: string
+      nullable: true
+      pattern: "^([a-zA-Z]{2}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*$"
+      maxLength: 20
+
+    Url:
+      description: URL type
+      type: string
+      nullable: true
+      pattern: "^([Hh][Tt][Tt][Pp][Ss]?)://"
+      maxLength: 2000
+
+    Tag:
+      description: Package moniker or tag
+      type: string
+      nullable: true
+      pattern: "^\\S+$"
+      maxLength: 32
+
+    Tags:
+      description: List of additional package search terms
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 16
+      items:
+        $ref: '#/components/schemas/Tag'
+
+    Channel:
+      type: string
+      nullable: true
+      minLength: 2
+      maxLength: 16
+
+    Platform:
+      description: The installer supported operating system
+      type: array
+      nullable: true
+      items:
+        type: string
+        uniqueItems: true
+        minItems: 1
+        maxItems: 2
+        enum:
+          - Windows.Desktop
+          - Windows.Universal
+
+    MinimumOSVersion:
+      description: The installer minimum operating system version
+      type: string
+      pattern: "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(\\.(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])){0,3}$"
+      nullable: true
+
+    InstallerType:
+      description: Enumeration of supported installer types
+      type: string
+      nullable: true
+      enum:
+        - msix
+        - msi
+        - appx
+        - exe
+        - zip
+        - inno
+        - nullsoft
+        - wix
+        - burn
+        - pwa
+
+    Scope:
+      description: Enumeration of Values for Scope and InstallModes
+      type: string
+      nullable: true
+      enum:
+        - user
+        - machine
+
+    InstallModes:
+      description: List of supported installer modes
+      type: array
+      nullable: true
+      uniqueItems: true
+      minItems: 1
+      maxItems: 2
+      items:
+        $ref: '#/components/schemas/Scope'
+
+    InstallerSwitches:
+      description: Installer Switches
+      type: object
+      properties:
+
+        Silent:
+          description: Silent is the value that should be passed to the installer when user chooses a silent or quiet install
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        SilentWithProgress:
+          description: SilentWithProgress is the value that should be passed to the installer when user chooses a non-interactive install
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        Interactive:
+          description: Interactive is the value that should be passed to the installer when user chooses an interactive install
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        InstallLocation:
+          description: InstallLocation is the value passed to the installer for custom install location. `<INSTALLPATH`> token can be included in the switch value so that winget will replace the token with user provided path
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        Log:
+          description: Log is the value passed to the installer for custom log file path. <LOGPATH> token can be included in the switch value so that winget will replace the token with user provided path
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        Upgrade:
+          description: Upgrade is the value that should be passed to the installer when user chooses an upgrade
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+        Custom:
+          description: Custom switches will be passed directly to the installer by winget
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
+    InstallerSuccessCodes:
+      description: List of supported installer modes
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 16
+      items:
+        type: integer
+        not:
+          enum: [ 0 ]
+
+    UpgradeBehavior:
+      description: The upgrade method
+      type: string
+      nullable: true
+      enum:
+        - install
+        - uninstallPrevious
+
+    Commands:
+      description: List of commands or aliases to run the package
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 16
+      items:
+        type: string
+        minLength: 2
+        maxLength: 40
+
+    Protocols:
+      description: List of protocols the package provides a handler for
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 16
+      items:
+        type: string
+        pattern: "^[a-z][-a-z0-9\\.\\+]*$"
+        maxLength: 39
+
+    FileExtensions:
+      description: List of file extensions the package could support
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 256
+      items:
+        type: string
+        pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
+        maxLength: 40
+
+    Dependencies:
+      description: Installer Switches
+      type: object
+      properties:
+
+        WindowsFeatures:
+          description: List of Windows feature dependencies
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 16
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+
+        WindowsLibraries:
+          description: List of Windows library dependencies
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 16
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+
+        PackageDependencies:
+          description: List of package dependencies from current source
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 16
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+
+        ExternalDependencies:
+          description: List of external package dependencies
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 16
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+
+    PackageFamilyName:
+      description: PackageFamilyName for appx or msix installer. Could be used for correlation of packages across sources
+      type: string
+      nullable: true
+      pattern: "^[A-Za-z0-9][-\\.A-Za-z0-9]+_[A-Za-z0-9]{13}$"
+      maxLength: 255
+
+    ProductCode:
+      description: ProductCode could be used for correlation of packages across sources
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 255
+
+    Capabilities:
+      description: List of appx or msix installer capabilities
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 1000
+      items:
+        type: string
+        minLength: 1
+        maxLength: 40
+
+    RestrictedCapabilities:
+      description: List of appx or msix installer restricted capabilities
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 1000
+      items:
+        type: string
+        minLength: 1
+        maxLength: 40
+
+    InstallerSha256:
+      description: Sha256 is required. Sha256 of the installer
+      type: string
+      pattern: "^[A-Fa-f0-9]{64}$"
+
+    SignatureSha256:
+      description: SignatureSha256 is recommended for appx or msix. It is the sha256 of signature file inside appx or msix. Could be used during streaming install if applicable
+      type: string
+      nullable: true
+      pattern: "^[A-Fa-f0-9]{64}$"
+
+    Architecture:
+      description: The installer target architecture
+      type: string
+      nullable: true
+      enum:
+        - x86
+        - x64
+        - arm
+        - arm64
+        - neutral
+
+    Installer:
+      description: Installer Switches
+      type: object
+      properties:
+        InstallerSha256:
+          $ref: '#/components/schemas/InstallerSha256'
+        InstallerUrl:
+          $ref: '#/components/schemas/Url'
+        Architecture:
+          $ref: '#/components/schemas/Architecture'
+        Channel:
+          $ref: '#/components/schemas/Channel'
+        InstallerLocale:
+          $ref: '#/components/schemas/Locale'
+        Platform:
+          $ref: '#/components/schemas/Platform'
+        MinimumOSVersion:
+          $ref: '#/components/schemas/MinimumOSVersion'
+        InstallerType:
+          $ref: '#/components/schemas/InstallerType'
+        Scope:
+          $ref: '#/components/schemas/Scope'
+        SignatureSha256:
+          $ref: '#/components/schemas/SignatureSha256'
+        InstallModes:
+          $ref: '#/components/schemas/InstallModes'
+        InstallerSwitches:
+          $ref: '#/components/schemas/InstallerSwitches'
+        InstallerSuccessCodes:
+          $ref: '#/components/schemas/InstallerSuccessCodes'
+        UpgradeBehavior:
+          $ref: '#/components/schemas/UpgradeBehavior'
+        Commands:
+          $ref: '#/components/schemas/Commands'
+        Protocols:
+          $ref: '#/components/schemas/Protocols'
+        FileExtensions:
+          $ref: '#/components/schemas/FileExtensions'
+        Dependencies:
+          $ref: '#/components/schemas/Dependencies'
+        PackageFamilyName:
+          $ref: '#/components/schemas/PackageFamilyName'
+        ProductCode:
+          $ref: '#/components/schemas/ProductCode'
+        Capabilities:
+          $ref: '#/components/schemas/Capabilities'
+        RestrictedCapabilities:
+          $ref: '#/components/schemas/RestrictedCapabilities'
+      required:
+        - Architecture
+        - InstallerUrl
+        - InstallerSha256
+
+    # Package Schema
+    PackageSchema:
+      description: Model containing Package Schema
+      allOf:
+        - type: object
+          properties:
+            PackageIdentifier:
+                $ref: '#/components/schemas/PackageIdentifier'
+      required:
+        - PackageIdentifier
+
+    # Version Schema
+    VersionSchema:
+      description: Model containing Version Schema
+      allOf:
+        - type: object
+          properties:
+            PackageVersion:
+              $ref: '#/components/schemas/PackageVersion'
+        - type: object
+          properties:
+            PackageLocale:
+              $ref: '#/components/schemas/Locale'
+        - type: object
+          properties:
+            Publisher:
+              $ref: '#/components/schemas/Publisher'
+        - type: object
+          properties:
+            PublisherUrl:
+              description: The publisher home page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            PublisherSupportUrl:
+              description: The publisher support page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            PrivacyUrl:
+              description: The publisher support page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            Author:
+              $ref: '#/components/schemas/Author'
+        - type: object
+          properties:
+            PackageName:
+              $ref: '#/components/schemas/PackageName'
+        - type: object
+          properties:
+            PackageUrl:
+              description: The package home page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            License:
+              $ref: '#/components/schemas/License'
+        - type: object
+          properties:
+            LicenseUrl:
+              description: The license page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            Copyright:
+              $ref: '#/components/schemas/Copyright'
+        - type: object
+          properties:
+            CopyrightUrl:
+              description: The package copyright page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            ShortDescription:
+              $ref: '#/components/schemas/ShortDescription'
+        - type: object
+          properties:
+            Description:
+              $ref: '#/components/schemas/Description'
+        - type: object
+          properties:
+            Moniker:
+              description: The most common package term
+              $ref: '#/components/schemas/Tag'
+        - type: object
+          properties:
+            Tags:
+              $ref: '#/components/schemas/Tags'
+        - type: object
+          properties:
+            Channel:
+              $ref: '#/components/schemas/Channel'
+        - type: object
+          properties:
+            InstallerLocale:
+              $ref: '#/components/schemas/Locale'
+        - type: object
+          properties:
+            Platform:
+              $ref: '#/components/schemas/Platform'
+        - type: object
+          properties:
+            MinimumOSVersion:
+              $ref: '#/components/schemas/MinimumOSVersion'
+        - type: object
+          properties:
+            InstallerType:
+              $ref: '#/components/schemas/InstallerType'
+        - type: object
+          properties:
+            Scope:
+              $ref: '#/components/schemas/Scope'
+        - type: object
+          properties:
+            InstallModes:
+              $ref: '#/components/schemas/InstallModes'
+        - type: object
+          properties:
+            InstallerSwitches:
+              $ref: '#/components/schemas/InstallerSwitches'
+        - type: object
+          properties:
+            InstallerSuccessCodes:
+              $ref: '#/components/schemas/InstallerSuccessCodes'
+        - type: object
+          properties:
+            UpgradeBehavior:
+              $ref: '#/components/schemas/UpgradeBehavior'
+        - type: object
+          properties:
+            Commands:
+              $ref: '#/components/schemas/Commands'
+        - type: object
+          properties:
+            Protocols:
+              $ref: '#/components/schemas/Protocols'
+        - type: object
+          properties:
+            FileExtensions:
+              $ref: '#/components/schemas/FileExtensions'
+        - type: object
+          properties:
+            Dependencies:
+              $ref: '#/components/schemas/Dependencies'
+        - type: object
+          properties:
+            Commands:
+              $ref: '#/components/schemas/Commands'
+        - type: object
+          properties:
+            PackageFamilyName:
+              $ref: '#/components/schemas/PackageFamilyName'
+        - type: object
+          properties:
+            ProductCode:
+              $ref: '#/components/schemas/ProductCode'
+        - type: object
+          properties:
+            Capabilities:
+              $ref: '#/components/schemas/Capabilities'
+        - type: object
+          properties:
+            RestrictedCapabilities:
+              $ref: '#/components/schemas/RestrictedCapabilities'
+      required:
+        - PackageVersion
+        - Publisher
+        - PackageName
+        - License
+        - ShortDescription
+
+    # Installer Schema
+    InstallerSchema:
+      description: Model containing Installer Schema
+      allOf:
+        - $ref: '#/components/schemas/Installer'
+
+    #Manifest Schema
+    ManifestSchema:
+      description: Model containing Manifest Schema.
+      allOf:
+        - $ref: '#/components/schemas/PackageSchema'
+        - type: object
+          properties:
+            versions:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/VersionSchema'
+                  - type: object
+                    properties:
+                      installers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/InstallerSchema'
+
+    ResponseObjectSchema:
+      description: Base API Response Object
+      properties:
+        Data:
+          type: array
+        ContinuationToken:
+          type: string
+      required:
+        - ContinuationToken
+        - Data
+
+    PackageResponseSchema:
+      description: Package Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PackageSchema'
+
+    VersionResponseSchema:
+      description: Version Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/VersionSchema'
+
+    InstallerResponseSchema:
+      description: Installer Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/InstallerSchema'
+
+    ManifestResponseSchema:
+      description: Package Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManifestSchema'
+
+    # Manifest Search Request Schema
+    ManifestSearchRequestSchema:
+      description: Model containing manifest search request schema.
+      properties:
+        maximumResults:
+          type: integer
+        fetchAllManifests:
+          type: boolean
+        query:
+          $ref: '#/components/schemas/SearchRequestQuerySchema'
+        inclusions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
+
+    # Manifest Search Request Match Type Schema
+    MatchTypeSchema:
+      description: Model containing manifest request match type.
+      type: string
+      enum:
+          - Exact
+          - CaseInsensitive
+          - StartsWith
+          - Substring
+
+    # Manifest Search Request Package Match Field Schema
+    PackageMatchFieldSchema:
+      description: Model containing manifest request package match field schema.
+      type: string
+      enum:
+        - Id
+        - Name
+        - Moniker
+        - Command
+        - Tag
+        - PackageFamilyName
+        - ProductCode
+
+    # Manifest Search Request Package Match Filter Schema
+    SearchRequestPackageMatchFilterSchema:
+      description: Model containing manifest search request Package Match Filter schema.
+      properties:
+        packageMatchField:
+          $ref: '#/components/schemas/PackageMatchFieldSchema'
+        requestMatch:
+          $ref: '#/components/schemas/SearchRequestMatchSchema'
+
+    # Manifest Search Request Match Schema
+    SearchRequestMatchSchema:
+      description: Model containing manifest request match schema.
+      allOf:
+        - type: object
+          properties:
+            keyWord:
+              type: string
+            matchType:
+              $ref: '#/components/schemas/MatchTypeSchema'
+
+    # Manifest Search Request Query Schema
+    SearchRequestQuerySchema:
+      description: Model containing manifest search request Query schema.
+      properties:
+        requestMatch:
+          $ref: '#/components/schemas/SearchRequestMatchSchema'
+
+    # Manifest Search Request Inclusion or Filters Schema
+    SearchRequestInclusionAndFilterSchema:
+      description: Model containing manifest search request Inclusion or filter schema.
+      allOf:
+        - $ref: '#/components/schemas/SearchRequestPackageMatchFilterSchema'
+
+    # Misc Schemas
+    Error:
+      description: A schema for a generic error.
+      properties:
+        ErrorCode:
+          type: integer
+        ErrorMessage:
+          type: string
+      required:
+        - ErrorCode
+        - ErrorMessage
+
+  # Parameters
+  parameters:
+    PackageIdentifier:
+      name: PackageIdentifier
+      in: path
+      description: This is the Package Identifier.
+      required: true
+      schema:
+        $ref: '#/components/schemas/PackageIdentifier'
+
+    PackageVersion:
+      name: PackageVersion
+      in: path
+      description: This is the Package Version.
+      required: true
+      schema:
+        $ref: '#/components/schemas/PackageVersion'
+
+    InstallerSha256:
+      name: InstallerSha256
+      in: path
+      description: This is the Installer Key.
+      required: true
+      schema:
+        $ref: '#/components/schemas/InstallerSha256'
+
+  # Request Bodies
+  requestBodies:
+    PackageRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PackageSchema'
+
+    VersionRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VersionSchema'
+
+    InstallerRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InstallerSchema'
+
+    ManifestRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManifestSchema'
+
+    manifestSearchRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManifestSearchRequestSchema'
+
+  responses:
+    PackageResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/PackageResponseSchema'
+
+    VersionResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/VersionResponseSchema'
+
+    InstallerResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/InstallerResponseSchema'
+
+    ManifestResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/ManifestResponseSchema'
+
+
+    UnauthorizedError:
+      description: API key is missing or invalid.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Error'
+
+    NotFoundError:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: A conflict exists with the resource.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Error'
+
+    BadRequestError:
+      description: Request contains something thats perceived as client error.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Error'
+
+    GenericError:
+      description: An Error Occurred.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Packages
+    description: Everything about packages.
+  - name: Versions
+    description: Everything about versions.
+  - name: Installers
+    description: Everything about installers.
+  - name: Manifests
+    description: Manifests are a collated set of data to aid clients in search and consumption of the data sets.
+  - name: Get
+    description: All Get Calls.
