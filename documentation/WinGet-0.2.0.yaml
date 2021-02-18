@@ -22,7 +22,7 @@ paths:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/PackageResponse'
+          $ref: '#/components/responses/PackageSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -38,7 +38,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          $ref: '#/components/responses/PackageResponse'
+          $ref: '#/components/responses/PackageMultipleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -59,7 +59,7 @@ paths:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/PackageResponse'
+          $ref: '#/components/responses/PackageSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -92,7 +92,7 @@ paths:
       description: This will retrieve a set of packages.
       responses:
         200:
-          $ref: '#/components/responses/PackageResponse'
+          $ref: '#/components/responses/PackageSingleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -114,7 +114,7 @@ paths:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/VersionResponse'
+          $ref: '#/components/responses/VersionSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -130,7 +130,7 @@ paths:
       description: This will retrieve a set of versions.
       responses:
         200:
-          $ref: '#/components/responses/VersionResponse'
+          $ref: '#/components/responses/VersionMultipleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -152,7 +152,7 @@ paths:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/VersionResponse'
+          $ref: '#/components/responses/VersionSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -185,7 +185,7 @@ paths:
       description: This will retrieve a version.
       responses:
         200:
-          $ref: '#/components/responses/VersionResponse'
+          $ref: '#/components/responses/VersionSingleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -208,7 +208,7 @@ paths:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/InstallerResponse'
+          $ref: '#/components/responses/InstallerSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -224,7 +224,7 @@ paths:
       description: This will retrieve a set of installers.
       responses:
         200:
-          $ref: '#/components/responses/InstallerResponse'
+          $ref: '#/components/responses/InstallerMultipleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -247,7 +247,7 @@ paths:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/InstallerResponse'
+          $ref: '#/components/responses/InstallerSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -280,7 +280,7 @@ paths:
       description: This will retrieve an installer.
       responses:
         200:
-          $ref: '#/components/responses/InstallerResponse'
+          $ref: '#/components/responses/InstallerSingleResponse'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -299,7 +299,7 @@ paths:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/ManifestResponse'
+          $ref: '#/components/responses/ManifestSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -322,7 +322,7 @@ paths:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
         201:
-          $ref: '#/components/responses/ManifestResponse'
+          $ref: '#/components/responses/ManifestSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         409:
@@ -355,7 +355,7 @@ paths:
       description: This will retrieve a manifest.
       responses:
         200:
-          $ref: '#/components/responses/ManifestResponse'
+          $ref: '#/components/responses/ManifestSingleResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -1107,7 +1107,7 @@ components:
         - ContinuationToken
         - Data
 
-    PackageResponseSchema:
+    PackageMultipleResponseSchema:
       description: Package Response Schema
       allOf:
         - $ref: '#/components/schemas/ResponseObjectSchema'
@@ -1118,7 +1118,12 @@ components:
               items:
                 $ref: '#/components/schemas/PackageSchema'
 
-    VersionResponseSchema:
+    PackageSingleResponseSchema:
+      description: Package Response Schema
+      allOf:
+        - $ref: '#/components/schemas/PackageSchema'
+
+    VersionMultipleResponseSchema:
       description: Version Response Schema
       allOf:
         - $ref: '#/components/schemas/ResponseObjectSchema'
@@ -1129,7 +1134,12 @@ components:
               items:
                 $ref: '#/components/schemas/VersionSchema'
 
-    InstallerResponseSchema:
+    VersionSingleResponseSchema:
+      description: Version Response Schema
+      allOf:
+        - $ref: '#/components/schemas/VersionSchema'
+
+    InstallerMultipleResponseSchema:
       description: Installer Response Schema
       allOf:
         - $ref: '#/components/schemas/ResponseObjectSchema'
@@ -1140,8 +1150,13 @@ components:
               items:
                 $ref: '#/components/schemas/InstallerSchema'
 
-    ManifestResponseSchema:
-      description: Package Response Schema
+    InstallerSingleResponseSchema:
+      description: Installer Response Schema
+      allOf:
+        - $ref: '#/components/schemas/InstallerSchema'
+
+    ManifestMultipleResponseSchema:
+      description: Manifest Response Schema
       allOf:
         - $ref: '#/components/schemas/ResponseObjectSchema'
         - type: object
@@ -1150,6 +1165,11 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSchema'
+
+    ManifestSingleResponseSchema:
+      description: Manifest Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ManifestSchema'
 
     ManifestSearchResultSchema:
       description: Package Search Result Schema
@@ -1312,34 +1332,63 @@ components:
           schema:
             $ref: '#/components/schemas/ManifestSearchRequestSchema'
 
+  # Response Bodies
   responses:
-    PackageResponse:
+    PackageMultipleResponse:
       description: Package Response
       content:
         application/Json:
           schema:
-            $ref: '#/components/schemas/PackageResponseSchema'
+            $ref: '#/components/schemas/PackageMultipleResponseSchema'
 
-    VersionResponse:
+    PackageSingleResponse:
       description: Package Response
       content:
         application/Json:
           schema:
-            $ref: '#/components/schemas/VersionResponseSchema'
+            $ref: '#/components/schemas/PackageSingleResponseSchema'
 
-    InstallerResponse:
+    VersionMultipleResponse:
       description: Package Response
       content:
         application/Json:
           schema:
-            $ref: '#/components/schemas/InstallerResponseSchema'
+            $ref: '#/components/schemas/VersionMultipleResponseSchema'
 
-    ManifestResponse:
+    VersionSingleResponse:
       description: Package Response
       content:
         application/Json:
           schema:
-            $ref: '#/components/schemas/ManifestResponseSchema'
+            $ref: '#/components/schemas/VersionSingleResponseSchema'
+
+    InstallerMultipleResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/InstallerMultipleResponseSchema'
+
+    InstallerSingleResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/InstallerSingleResponseSchema'
+
+    ManifestMultipleResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/ManifestMultipleResponseSchema'
+
+    ManifestSingleResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/ManifestSingleResponseSchema'
 
     ManifestSearchResponse:
       description: Manifest Search Response
@@ -1353,7 +1402,6 @@ components:
         application/Json:
           schema:
             $ref: '#/components/schemas/InformationSchema'
-
 
     UnauthorizedError:
       description: API key is missing or invalid.
