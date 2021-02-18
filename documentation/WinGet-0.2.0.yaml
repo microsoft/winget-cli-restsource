@@ -1015,24 +1015,11 @@ components:
               $ref: '#/components/schemas/PackageVersion'
         - type: object
           properties:
-            PackageName:
-              $ref: '#/components/schemas/PackageName'
-        - type: object
-          properties:
             Channel:
               $ref: '#/components/schemas/Channel'
-        - type: object
-          properties:
-            PackageFamilyName:
-              $ref: '#/components/schemas/PackageFamilyName'
-        - type: object
-          properties:
-            ProductCode:
-              $ref: '#/components/schemas/ProductCode'
       required:
         - PackageVersion
         - Channel
-        - PackageName
 
     # Manifest Search Response Schema
     ManifestSearchResponseSchema:
@@ -1041,10 +1028,28 @@ components:
         - $ref: '#/components/schemas/PackageSchema'
         - type: object
           properties:
+            PackageName:
+              $ref: '#/components/schemas/PackageName'
+        - type: object
+          properties:
+            Publisher:
+              $ref: '#/components/schemas/Publisher'
+        - type: object
+          properties:
+            PackageFamilyName:
+              $ref: '#/components/schemas/PackageFamilyName'
+        - type: object
+          properties:
+            ProductCode:
+              $ref: '#/components/schemas/ProductCode'
+        - type: object
+          properties:
             versions:
               type: array
               items:
-              $ref: '#/components/schemas/ManifestSearchVersionSchema'
+                $ref: '#/components/schemas/ManifestSearchVersionSchema'
+      required:
+        - PackageName
 
     ResponseObjectSchema:
       description: Base API Response Object
