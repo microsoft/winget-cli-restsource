@@ -286,6 +286,7 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  # Manifest API Calls
   /manifests:
     post:
       summary: This creates all subcomponents contained in the logical representation of a manifest
@@ -381,6 +382,21 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  # Server API Calls
+  /information:
+    get:
+      summary: Get Package Metadata
+      tags:
+        - Server
+        - Get
+      description: This will retrieve a set of packages.
+      responses:
+        200:
+          $ref: '#/components/responses/InformationResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
 # Reusable Components for API
 components:
 
@@ -754,6 +770,21 @@ components:
         - arm64
         - neutral
 
+    SourceIdentifier:
+      description: The source identifier is a unique identifier for the source server.
+      type: string
+      minLength: 3
+      maxLength: 128
+
+    ServerSupportedVersions:
+      description: The API Versions supported by the server
+      type: array
+      uniqueItems: true
+      items:
+        type: string
+        minLength: 1
+        maxLength: 128
+
     Installer:
       description: Installer Switches
       type: object
@@ -1051,6 +1082,20 @@ components:
         - PackageName
         - Publisher
 
+    #Server Schemas:
+    InformationSchema:
+      description: Server Information Schema.
+      allOf:
+        - type: object
+          properties:
+            SourceIdentifier:
+              $ref: '#/components/schemas/SourceIdentifier'
+        - type: object
+          properties:
+            ServerSupportedVersions:
+              $ref: '#/components/schemas/ServerSupportedVersions'
+
+    # Response Object Schemas
     ResponseObjectSchema:
       description: Base API Response Object
       properties:
@@ -1302,6 +1347,13 @@ components:
         application/Json:
           schema:
             $ref: '#/components/schemas/ManifestSearchResultSchema'
+    InformationResponse:
+      description: Package Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/InformationSchema'
+
 
     UnauthorizedError:
       description: API key is missing or invalid.
@@ -1357,5 +1409,7 @@ tags:
     description: Everything about installers.
   - name: Manifests
     description: Manifests are a collated set of data to aid clients in search and consumption of the data sets.
+  - name: Server
+    description: Server Related Functions.
   - name: Get
     description: All Get Calls.
