@@ -375,7 +375,7 @@ paths:
       description: This will retrieve a set of manifests.
       responses:
         200:
-          $ref: '#/components/responses/ManifestResponse'
+          $ref: '#/components/responses/ManifestSearchResponse'
         400:
           $ref: '#/components/responses/BadRequestError'
         default:
@@ -1005,6 +1005,47 @@ components:
                         items:
                           $ref: '#/components/schemas/InstallerSchema'
 
+    # Manifest Search Version Response Schema
+    ManifestSearchVersionSchema:
+      description: Model containing version schema used by Manifest Search Response.
+      allOf:
+        - type: object
+          properties:
+            PackageVersion:
+              $ref: '#/components/schemas/PackageVersion'
+        - type: object
+          properties:
+            PackageName:
+              $ref: '#/components/schemas/PackageName'
+        - type: object
+          properties:
+            Channel:
+              $ref: '#/components/schemas/Channel'
+        - type: object
+          properties:
+            PackageFamilyName:
+              $ref: '#/components/schemas/PackageFamilyName'
+        - type: object
+          properties:
+            ProductCode:
+              $ref: '#/components/schemas/ProductCode'
+      required:
+        - PackageVersion
+        - Channel
+        - PackageName
+
+    # Manifest Search Response Schema
+    ManifestSearchResponseSchema:
+      description: Model containing Manifest Search Response Schema.
+      allOf:
+        - $ref: '#/components/schemas/PackageSchema'
+        - type: object
+          properties:
+            versions:
+              type: array
+              items:
+              $ref: '#/components/schemas/ManifestSearchVersionSchema'
+
     ResponseObjectSchema:
       description: Base API Response Object
       properties:
@@ -1059,6 +1100,17 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSchema'
+
+    ManifestSearchResultSchema:
+      description: Package Search Result Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManifestSearchResponseSchema'
 
     # Manifest Search Request Schema
     ManifestSearchRequestSchema:
@@ -1239,6 +1291,12 @@ components:
           schema:
             $ref: '#/components/schemas/ManifestResponseSchema'
 
+    ManifestSearchResponse:
+      description: Manifest Search Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/ManifestSearchResultSchema'
 
     UnauthorizedError:
       description: API key is missing or invalid.
