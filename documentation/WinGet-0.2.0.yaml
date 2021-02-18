@@ -1019,7 +1019,6 @@ components:
               $ref: '#/components/schemas/Channel'
       required:
         - PackageVersion
-        - Channel
 
     # Manifest Search Response Schema
     ManifestSearchResponseSchema:
@@ -1050,6 +1049,7 @@ components:
                 $ref: '#/components/schemas/ManifestSearchVersionSchema'
       required:
         - PackageName
+        - Publisher
 
     ResponseObjectSchema:
       description: Base API Response Object
