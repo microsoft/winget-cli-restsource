@@ -4,7 +4,7 @@
     "parameters": {
         "storageAccountName": {
             "type": "string",
-            "defaultValue": "[concat('st', 'val', uniquestring(resourceGroup().id))]",
+            "defaultValue": "[concat('st', uniquestring(resourceGroup().id))]",
             "metadata": {
                 "description": "Storage Account Name"
             }
