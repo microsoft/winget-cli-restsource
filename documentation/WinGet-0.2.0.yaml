@@ -1100,11 +1100,12 @@ components:
       description: Base API Response Object
       properties:
         Data:
-          type: array
+          oneOf:
+            - type: object
+            - type: array
         ContinuationToken:
           type: string
       required:
-        - ContinuationToken
         - Data
 
     PackageMultipleResponseSchema:
@@ -1121,7 +1122,11 @@ components:
     PackageSingleResponseSchema:
       description: Package Response Schema
       allOf:
-        - $ref: '#/components/schemas/PackageSchema'
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/PackageSchema'
 
     VersionMultipleResponseSchema:
       description: Version Response Schema
@@ -1137,7 +1142,11 @@ components:
     VersionSingleResponseSchema:
       description: Version Response Schema
       allOf:
-        - $ref: '#/components/schemas/VersionSchema'
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/VersionSchema'
 
     InstallerMultipleResponseSchema:
       description: Installer Response Schema
@@ -1153,7 +1162,11 @@ components:
     InstallerSingleResponseSchema:
       description: Installer Response Schema
       allOf:
-        - $ref: '#/components/schemas/InstallerSchema'
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/InstallerSchema'
 
     ManifestMultipleResponseSchema:
       description: Manifest Response Schema
@@ -1169,7 +1182,11 @@ components:
     ManifestSingleResponseSchema:
       description: Manifest Response Schema
       allOf:
-        - $ref: '#/components/schemas/ManifestSchema'
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/ManifestSchema'
 
     ManifestSearchResultSchema:
       description: Package Search Result Schema
