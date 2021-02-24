@@ -17,7 +17,9 @@ paths:
         - Packages
       description: This will create a new package in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
@@ -54,7 +56,9 @@ paths:
         - Packages
       description: This will replace a package in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
@@ -73,7 +77,9 @@ paths:
         - Packages
       description: This will delete a package in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a package.
@@ -109,7 +115,9 @@ paths:
         - Versions
       description: This will create a new version in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
@@ -147,7 +155,9 @@ paths:
         - Versions
       description: This will replace a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
@@ -166,7 +176,9 @@ paths:
         - Versions
       description: This will delete a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -203,7 +215,9 @@ paths:
         - Locale
       description: This will create a new Locale in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/LocaleRequestBody'
       responses:
@@ -242,7 +256,9 @@ paths:
         - Locale
       description: This will replace an Locale in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/LocaleRequestBody'
       responses:
@@ -261,7 +277,9 @@ paths:
         - Locale
       description: This will delete a Locale in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -298,7 +316,9 @@ paths:
         - Installers
       description: This will create a new Installer in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
@@ -337,7 +357,9 @@ paths:
         - Installers
       description: This will replace an installer in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
@@ -356,7 +378,9 @@ paths:
         - Installers
       description: This will delete an installer in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -389,7 +413,9 @@ paths:
         - Manifests
       description: This will create all subcomponents contained in the logical representation of a manifest.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
@@ -412,7 +438,9 @@ paths:
         - Manifests
       description: This will update all subcomponents contained in the logical representation of a manifest.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
@@ -431,7 +459,9 @@ paths:
         - Manifests
       description: This will delete a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -465,7 +495,9 @@ paths:
       tags:
         - Manifests
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/manifestSearchRequestBody'
       description: This will retrieve a set of manifests.
@@ -497,10 +529,21 @@ components:
 
   # Security Components
   securitySchemes:
-    ApiKeyAuthentication:
+
+    APIAuthenticationQueryCode:
       type: apiKey
       in: query
       name: code
+
+    APIAuthenticationHeaderXFunctionKey:
+      type: apiKey
+      in: header
+      name: x-functions-key
+
+    APIAuthenticationHeaderOcpApimSubscriptionKey:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
 
   # API Schemas
   schemas:
