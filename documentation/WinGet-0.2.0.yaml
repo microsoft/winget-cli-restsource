@@ -10,6 +10,9 @@ info:
 paths:
   # Package API Calls
   /packages:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
 
     post:
       summary: Add Package Metadata
@@ -48,6 +51,8 @@ paths:
 
   /packages/{PackageIdentifier}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -107,6 +112,8 @@ paths:
   # Version API Calls
   /packages/{PackageIdentifier}/versions:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     post:
@@ -146,6 +153,8 @@ paths:
 
   /packages/{PackageIdentifier}/versions/{PackageVersion}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -206,6 +215,8 @@ paths:
   # Locale API Calls
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -246,6 +257,8 @@ paths:
 
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/PackageLocale'
@@ -307,6 +320,8 @@ paths:
   # Installer API Calls
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -347,6 +362,8 @@ paths:
 
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerSha256}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/InstallerSha256'
@@ -407,6 +424,10 @@ paths:
 
   # Manifest API Calls
   /manifests:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+
     post:
       summary: This creates all subcomponents contained in the logical representation of a manifest
       tags:
@@ -430,6 +451,8 @@ paths:
 
   /manifests/{PackageIdentifier}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -490,6 +513,10 @@ paths:
 
   # Manifest Search API
   /manifestSearch:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+
     post:
       summary: This retrieves manifests for a given search request.
       tags:
@@ -547,6 +574,19 @@ components:
 
   # API Schemas
   schemas:
+
+    # API Definitions
+    APIVersion:
+      description: The API Version to use for the request
+      type: string
+      pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
+      maxLength: 128
+
+    ObjectVersion:
+      description: The Object Version to use for the request
+      type: string
+      pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
+      maxLength: 128
 
     # Definitions
     PackageIdentifier:
@@ -1391,10 +1431,27 @@ components:
 
   # Parameters
   parameters:
+
+    APIVersion:
+      name: APIVersion
+      in: header
+      description: This is the API Versions Parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/APIVersion'
+
+    ObjectVersion:
+      name: ObjectVersion
+      in: header
+      description: This is the Object Version Parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/ObjectVersion'
+
     PackageIdentifier:
       name: PackageIdentifier
       in: path
-      description: This is the Package Identifier.
+      description: This is the Package Identifier Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/PackageIdentifier'
@@ -1402,7 +1459,7 @@ components:
     PackageVersion:
       name: PackageVersion
       in: path
-      description: This is the Package Version.
+      description: This is the Package Version Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/PackageVersion'
@@ -1410,7 +1467,7 @@ components:
     PackageLocale:
       name: PackageLocale
       in: path
-      description: This is the Package Locale.
+      description: This is the Package Locale Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/Locale'
@@ -1418,7 +1475,7 @@ components:
     InstallerSha256:
       name: InstallerSha256
       in: path
-      description: This is the Installer Key.
+      description: This is the Installer Key Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/InstallerSha256'
