@@ -191,6 +191,101 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  # Locale API Calls
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+
+    post:
+      summary: Add Locale Metadata
+      tags:
+        - Locale
+      description: This will create a new Locale in the repository with its associated metadata.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/LocaleRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Locale Metadata
+      tags:
+        - Locale
+        - Get
+      description: This will retrieve a set of Locale.
+      responses:
+        200:
+          $ref: '#/components/responses/LocaleMultipleResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
+    parameters:
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+      - $ref: '#/components/parameters/PackageLocale'
+
+    put:
+      summary: Replace Locale Metadata
+      tags:
+        - Locale
+      description: This will replace an Locale in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      requestBody:
+        $ref: '#/components/requestBodies/LocaleRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete an Locale
+      tags:
+        - Locale
+      description: This will delete a Locale in the repository.
+      security:
+        - ApiKeyAuthentication: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Locale Metadata
+      tags:
+        - Locale
+        - Get
+      description: This will retrieve an Locale.
+      responses:
+        200:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
   # Installer API Calls
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
     parameters:
@@ -259,7 +354,7 @@ paths:
       summary: Delete an Installer
       tags:
         - Installers
-      description: This will delete a version in the repository.
+      description: This will delete an installer in the repository.
       security:
         - ApiKeyAuthentication: []
       responses:
@@ -859,6 +954,22 @@ components:
               $ref: '#/components/schemas/PackageVersion'
         - type: object
           properties:
+            DefaultLocale:
+              $ref: '#/components/schemas/Locale'
+        - type: object
+          properties:
+            Channel:
+              $ref: '#/components/schemas/Channel'
+      required:
+        - PackageVersion
+        - DefaultLocale
+
+    # Locale Schema
+    LocaleSchema:
+      description: Model containing Locale Schema
+      allOf:
+        - type: object
+          properties:
             PackageLocale:
               $ref: '#/components/schemas/Locale'
         - type: object
@@ -928,84 +1039,7 @@ components:
           properties:
             Tags:
               $ref: '#/components/schemas/Tags'
-        - type: object
-          properties:
-            Channel:
-              $ref: '#/components/schemas/Channel'
-        - type: object
-          properties:
-            InstallerLocale:
-              $ref: '#/components/schemas/Locale'
-        - type: object
-          properties:
-            Platform:
-              $ref: '#/components/schemas/Platform'
-        - type: object
-          properties:
-            MinimumOSVersion:
-              $ref: '#/components/schemas/MinimumOSVersion'
-        - type: object
-          properties:
-            InstallerType:
-              $ref: '#/components/schemas/InstallerType'
-        - type: object
-          properties:
-            Scope:
-              $ref: '#/components/schemas/Scope'
-        - type: object
-          properties:
-            InstallModes:
-              $ref: '#/components/schemas/InstallModes'
-        - type: object
-          properties:
-            InstallerSwitches:
-              $ref: '#/components/schemas/InstallerSwitches'
-        - type: object
-          properties:
-            InstallerSuccessCodes:
-              $ref: '#/components/schemas/InstallerSuccessCodes'
-        - type: object
-          properties:
-            UpgradeBehavior:
-              $ref: '#/components/schemas/UpgradeBehavior'
-        - type: object
-          properties:
-            Commands:
-              $ref: '#/components/schemas/Commands'
-        - type: object
-          properties:
-            Protocols:
-              $ref: '#/components/schemas/Protocols'
-        - type: object
-          properties:
-            FileExtensions:
-              $ref: '#/components/schemas/FileExtensions'
-        - type: object
-          properties:
-            Dependencies:
-              $ref: '#/components/schemas/Dependencies'
-        - type: object
-          properties:
-            Commands:
-              $ref: '#/components/schemas/Commands'
-        - type: object
-          properties:
-            PackageFamilyName:
-              $ref: '#/components/schemas/PackageFamilyName'
-        - type: object
-          properties:
-            ProductCode:
-              $ref: '#/components/schemas/ProductCode'
-        - type: object
-          properties:
-            Capabilities:
-              $ref: '#/components/schemas/Capabilities'
-        - type: object
-          properties:
-            RestrictedCapabilities:
-              $ref: '#/components/schemas/RestrictedCapabilities'
       required:
-        - PackageVersion
         - Publisher
         - PackageName
         - License
@@ -1024,14 +1058,20 @@ components:
         - $ref: '#/components/schemas/PackageSchema'
         - type: object
           properties:
-            versions:
+            Versions:
               type: array
               items:
                 allOf:
                   - $ref: '#/components/schemas/VersionSchema'
                   - type: object
                     properties:
-                      installers:
+                      Locales:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LocaleSchema'
+                  - type: object
+                    properties:
+                      Installers:
                         type: array
                         items:
                           $ref: '#/components/schemas/InstallerSchema'
@@ -1147,6 +1187,26 @@ components:
           properties:
             Data:
               $ref: '#/components/schemas/VersionSchema'
+
+    LocaleMultipleResponseSchema:
+      description: Locale Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/LocaleSchema'
+
+    LocaleSingleResponseSchema:
+      description: Locale Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/LocaleSchema'
 
     InstallerMultipleResponseSchema:
       description: Installer Response Schema
@@ -1304,6 +1364,14 @@ components:
       schema:
         $ref: '#/components/schemas/PackageVersion'
 
+    PackageLocale:
+      name: PackageLocale
+      in: path
+      description: This is the Package Locale.
+      required: true
+      schema:
+        $ref: '#/components/schemas/Locale'
+
     InstallerSha256:
       name: InstallerSha256
       in: path
@@ -1327,6 +1395,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/VersionSchema'
+
+    LocaleRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LocaleSchema'
 
     InstallerRequestBody:
       required: true
@@ -1366,42 +1441,56 @@ components:
             $ref: '#/components/schemas/PackageSingleResponseSchema'
 
     VersionMultipleResponse:
-      description: Package Response
+      description: Version Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/VersionMultipleResponseSchema'
 
     VersionSingleResponse:
-      description: Package Response
+      description: Version Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/VersionSingleResponseSchema'
 
+    LocaleMultipleResponse:
+      description: Locale Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/LocaleMultipleResponseSchema'
+
+    LocaleSingleResponse:
+      description: Locale Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/LocaleSingleResponseSchema'
+
     InstallerMultipleResponse:
-      description: Package Response
+      description: Installer Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/InstallerMultipleResponseSchema'
 
     InstallerSingleResponse:
-      description: Package Response
+      description: Installer Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/InstallerSingleResponseSchema'
 
     ManifestMultipleResponse:
-      description: Package Response
+      description: Manifest Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/ManifestMultipleResponseSchema'
 
     ManifestSingleResponse:
-      description: Package Response
+      description: Manifest Response
       content:
         application/Json:
           schema:
@@ -1470,6 +1559,8 @@ tags:
     description: Everything about packages.
   - name: Versions
     description: Everything about versions.
+  - name: Locale
+    description: Everything about locale.
   - name: Installers
     description: Everything about installers.
   - name: Manifests
