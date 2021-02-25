@@ -1,0 +1,140 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "defaultValue": "[concat('kv', uniquestring(resourceGroup().id))]",
+            "metadata": {
+                "description": "Name for the KeyVault"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for Key Vault."
+            }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "metadata": {
+                "description": "Key Vault sku."
+            }
+        },
+        "accessPolicies": {
+            "type": "array",
+            "metadata": {
+                "description": "This is the Access Policy for the Key Vault."
+            }
+        },
+        "tenant": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "metadata": {
+                "description": "Tenant ID for Key Vault"
+            }
+        },
+        "enabledForDeployment": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable for VM Access"
+            }
+        },
+        "enabledForTemplateDeployment": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable for ARM Deployment"
+            }
+        },
+        "enabledForDiskEncryption": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable for VM Disk Encryption"
+            }
+        },
+        "enableRbacAuthorization": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable RBAC Access. This is still in preview."
+            }
+        },
+        "enableSoftDelete": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true
+            ],
+            "metadata": {
+                "description": "Enable Soft Delete. The ability to select false is being deprecated and is being enabled for all vaults."
+            }
+        },
+        "softDeleteRetentionInDays": {
+            "type": "int",
+            "defaultValue": 90,
+            "metadata": {
+                "description": "Number of days to keep secrets before purging."
+            }
+        },
+        "enablePurgeProtection": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable Purge Protection."
+            }
+        },
+        "networkAcls": {
+            "type": "object",
+            "defaultValue": {
+                "defaultAction": "allow",
+                "bypass": "AzureServices",
+                "ipRules": [],
+                "virtualNetworkRules": []
+            },
+            "metadata": {
+                "description": "Network ACLS"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2018-02-14",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.KeyVault/vaults",
+            "properties": {
+                "enabledForDeployment": "[parameters('enabledForDeployment')]",
+                "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+                "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+                "enableRbacAuthorization": "[parameters('enableRbacAuthorization')]",
+                "accessPolicies": "[parameters('accessPolicies')]",
+                "tenantId": "[parameters('tenant')]",
+                "sku": {
+                    "name": "[parameters('sku')]",
+                    "family": "A"
+                },
+                "enableSoftDelete": "[parameters('enableSoftDelete')]",
+                "softDeleteRetentionInDays": "[parameters('softDeleteRetentionInDays')]",
+                "enablePurgeProtection": "[parameters('enablePurgeProtection')]",
+                "networkAcls": "[parameters('networkAcls')]"
+            },
+            "tags": {}
+        }
+    ],
+    "outputs": {
+        "keyVaultName": {
+            "type": "string",
+            "value": "[parameters('name')]"
+        },
+        "keyVaultResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.KeyVault/vaults/', parameters('name'))]"
+        }
+    }
+}

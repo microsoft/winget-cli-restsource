@@ -114,6 +114,16 @@ namespace Microsoft.WinGet.RestSource.Constants
             "The document Installer does not match resource Installer.";
 
         /// <summary>
+        /// This is the code for an Http Request Exception.
+        /// </summary>
+        public const int HttpRequestExceptionErrorCode = 11;
+
+        /// <summary>
+        /// This is the message for an Http Request Exception.
+        /// </summary>
+        public const string HttpRequestExceptionErrorMessage = "An HTTP Request Exception Occured.";
+
+        /// <summary>
         /// This is the code for a resource Conflict.
         /// </summary>
         public const int ResourceConflictErrorCode = 409;
@@ -124,12 +134,12 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string ResourceConflictErrorMessage = "A resource conflict exists for this operation.";
 
         /// <summary>
-        /// This is the code for a resource Conflict.
+        /// This is the code for a resource not found.
         /// </summary>
         public const int ResourceNotFoundErrorCode = 404;
 
         /// <summary>
-        /// This is the message for a resource Conflict.
+        /// This is the message for a resource not found.
         /// </summary>
         public const string ResourceNotFoundErrorMessage = "The selected resource was not found.";
 

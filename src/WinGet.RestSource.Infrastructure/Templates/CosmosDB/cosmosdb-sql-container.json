@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cosmosName": {
+            "type": "String",
+            "metadata": {
+                "description": "Cosmos Name."
+            }
+        },
+        "sqlname": {
+            "type": "String",
+            "metadata": {
+                "description": "SQL Name."
+            }
+        },
+        "containerName": {
+            "type": "String",
+            "metadata": {
+                "description": "Container Name."
+            }
+        },
+        "indexingPolicy": {
+            "type": "object",
+            "metadata": {
+                "description": "Options."
+            }
+        },
+        "partitionKey": {
+            "type": "object",
+            "metadata": {
+                "description": "Options."
+            }
+        },
+        "uniqueKeyPolicy": {
+            "type": "object",
+            "defaultValue": {
+                "uniqueKeys": []
+            },
+            "metadata": {
+                "description": "Options."
+            }
+        },
+        "conflictResolutionPolicy": {
+            "type": "object",
+            "metadata": {
+                "description": "Options."
+            }
+        },
+          "options": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "Options."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(parameters('cosmosName'), '/', parameters('sqlname'), '/', parameters('containerName'))]",
+            "properties": {
+                "resource": {
+                    "id": "[parameters('containerName')]",
+                    "indexingPolicy": "[parameters('indexingPolicy')]",
+                    "partitionKey": "[parameters('partitionKey')]",
+                    "uniqueKeyPolicy": "[parameters('uniqueKeyPolicy')]",
+                    "conflictResolutionPolicy": "[parameters('conflictResolutionPolicy')]"
+                },
+                "options": "[parameters('options')]"
+            }
+        }
+    ]
+}
