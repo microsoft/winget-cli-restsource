@@ -842,7 +842,7 @@ components:
         maxLength: 40
 
     Dependencies:
-      description: Installer Switches
+      description: List of dependencies
       type: object
       properties:
 
@@ -875,9 +875,7 @@ components:
           uniqueItems: true
           maxItems: 16
           items:
-            type: string
-            minLength: 1
-            maxLength: 128
+            $ref: '#/components/schemas/PackageIdentifier'
 
         ExternalDependencies:
           description: List of external package dependencies
@@ -964,7 +962,7 @@ components:
         maxLength: 128
 
     Installer:
-      description: Installer Switches
+      description: Installer.
       type: object
       properties:
         InstallerSha256:
@@ -973,8 +971,6 @@ components:
           $ref: '#/components/schemas/Url'
         Architecture:
           $ref: '#/components/schemas/Architecture'
-        Channel:
-          $ref: '#/components/schemas/Channel'
         InstallerLocale:
           $ref: '#/components/schemas/Locale'
         Platform:
@@ -1015,6 +1011,7 @@ components:
         - Architecture
         - InstallerUrl
         - InstallerSha256
+        - InstallerType
 
     # Package Schema
     PackageSchema:
@@ -1038,7 +1035,7 @@ components:
         - type: object
           properties:
             DefaultLocale:
-              $ref: '#/components/schemas/Locale'
+              $ref: '#/components/schemas/DefaultLocale'
         - type: object
           properties:
             Channel:
@@ -1116,17 +1113,29 @@ components:
         - type: object
           properties:
             Moniker:
-              description: The most common package term
+              description: The most common package term. Can only be used in default locale.
               $ref: '#/components/schemas/Tag'
         - type: object
           properties:
             Tags:
               $ref: '#/components/schemas/Tags'
       required:
+        - PackageLocale
+
+    DefaultLocale:
+      description: Model containing DefaultLocale Schema
+      allOf:
+        - $ref: '#/components/schemas/LocaleSchema'
+      required:
         - Publisher
         - PackageName
         - License
         - ShortDescription
+
+    OptionalLocale:
+      description: Model containing OptionalLocale Schema
+      allOf:
+        - $ref: '#/components/schemas/LocaleSchema'
 
     # Installer Schema
     InstallerSchema:
@@ -1151,7 +1160,7 @@ components:
                       Locales:
                         type: array
                         items:
-                          $ref: '#/components/schemas/LocaleSchema'
+                          $ref: '#/components/schemas/OptionalLocale'
                   - type: object
                     properties:
                       Installers:
@@ -1280,7 +1289,7 @@ components:
             Data:
               type: array
               items:
-                $ref: '#/components/schemas/LocaleSchema'
+                $ref: '#/components/schemas/OptionalLocale'
 
     LocaleSingleResponseSchema:
       description: Locale Response Schema
@@ -1289,7 +1298,7 @@ components:
         - type: object
           properties:
             Data:
-              $ref: '#/components/schemas/LocaleSchema'
+              $ref: '#/components/schemas/OptionalLocale'
 
     InstallerMultipleResponseSchema:
       description: Installer Response Schema
@@ -1390,7 +1399,7 @@ components:
       properties:
         packageMatchField:
           $ref: '#/components/schemas/PackageMatchFieldSchema'
-        requestMatch:
+        RequestMatch:
           $ref: '#/components/schemas/SearchRequestMatchSchema'
 
     # Manifest Search Request Match Schema
@@ -1399,16 +1408,16 @@ components:
       allOf:
         - type: object
           properties:
-            keyWord:
+            KeyWord:
               type: string
-            matchType:
+            MatchType:
               $ref: '#/components/schemas/MatchTypeSchema'
 
     # Manifest Search Request Query Schema
     SearchRequestQuerySchema:
       description: Model containing manifest search request Query schema.
       properties:
-        requestMatch:
+        RequestMatch:
           $ref: '#/components/schemas/SearchRequestMatchSchema'
 
     # Manifest Search Request Inclusion or Filters Schema
@@ -1501,7 +1510,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LocaleSchema'
+            $ref: '#/components/schemas/OptionalLocale'
 
     InstallerRequestBody:
       required: true
