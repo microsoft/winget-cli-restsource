@@ -422,17 +422,17 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  # Manifest API Calls
-  /manifests:
+  # Package Manifest API Calls
+  /packageManifests:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/ObjectVersion'
 
     post:
-      summary: This creates all subcomponents contained in the logical representation of a manifest
+      summary: This creates all subcomponents contained in the logical representation of a package manifest
       tags:
-        - Manifests
-      description: This will create all subcomponents contained in the logical representation of a manifest.
+        - Package Manifests
+      description: This will create all subcomponents contained in the logical representation of a package manifest.
       security:
         - APIAuthenticationQueryCode: []
         - APIAuthenticationHeaderXFunctionKey: []
@@ -449,17 +449,17 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /manifests/{PackageIdentifier}:
+  /packageManifests/{PackageIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
-      summary: This updates all subcomponents contained in the logical representation of a manifest for a given package id.
+      summary: This updates all subcomponents contained in the logical representation of a package manifest for a given package id.
       tags:
-        - Manifests
-      description: This will update all subcomponents contained in the logical representation of a manifest.
+        - Package Manifests
+      description: This will update all subcomponents contained in the logical representation of a package manifest.
       security:
         - APIAuthenticationQueryCode: []
         - APIAuthenticationHeaderXFunctionKey: []
@@ -477,9 +477,9 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     delete:
-      summary: Delete a manifest
+      summary: Delete a package manifest
       tags:
-        - Manifests
+        - Package Manifests
       description: This will delete a version in the repository.
       security:
         - APIAuthenticationQueryCode: []
@@ -496,11 +496,13 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
-      summary: This returns a manifest
+      summary: This returns a package manifest
       tags:
-        - Manifests
+        - Package Manifests
         - Get
-      description: This will retrieve a manifest.
+      description: This will retrieve a package manifest.
+      parameters:
+        - $ref: '#/components/parameters/PackageVersionQuery'
       responses:
         200:
           $ref: '#/components/responses/ManifestSingleResponse'
@@ -518,7 +520,7 @@ paths:
       - $ref: '#/components/parameters/ObjectVersion'
 
     post:
-      summary: This retrieves manifests for a given search request.
+      summary: This retrieves package manifests for a given search request.
       tags:
         - Manifests
       security:
@@ -527,7 +529,7 @@ paths:
         - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/manifestSearchRequestBody'
-      description: This will retrieve a set of manifests.
+      description: This will retrieve a set of package manifests.
       responses:
         200:
           $ref: '#/components/responses/ManifestSearchResponse'
@@ -1489,6 +1491,14 @@ components:
       schema:
         $ref: '#/components/schemas/InstallerSha256'
 
+    PackageVersionQuery:
+      name: Version
+      in: query
+      description: This is the version to filter on.
+      required: false
+      schema:
+        $ref: '#/components/schemas/PackageVersion'
+
   # Request Bodies
   requestBodies:
     PackageRequestBody:
@@ -1672,8 +1682,8 @@ tags:
     description: Everything about locale.
   - name: Installers
     description: Everything about installers.
-  - name: Manifests
-    description: Manifests are a collated set of data to aid clients in search and consumption of the data sets.
+  - name: Package Manifests
+    description: Package Manifests are a collated set of data to aid clients in search and consumption of the data sets.
   - name: Server
     description: Server Related Functions.
   - name: Get
