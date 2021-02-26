@@ -1112,11 +1112,6 @@ components:
               $ref: '#/components/schemas/Description'
         - type: object
           properties:
-            Moniker:
-              description: The most common package term. Can only be used in default locale.
-              $ref: '#/components/schemas/Tag'
-        - type: object
-          properties:
             Tags:
               $ref: '#/components/schemas/Tags'
       required:
@@ -1126,6 +1121,11 @@ components:
       description: Model containing DefaultLocale Schema
       allOf:
         - $ref: '#/components/schemas/LocaleSchema'
+        - type: object
+          properties:
+            Moniker:
+              description: The most common package term. Can only be used in default locale.
+              $ref: '#/components/schemas/Tag'
       required:
         - Publisher
         - PackageName
