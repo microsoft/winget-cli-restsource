@@ -503,6 +503,7 @@ paths:
       description: This will retrieve a package manifest.
       parameters:
         - $ref: '#/components/parameters/PackageVersionQuery'
+        - $ref: '#/components/parameters/PackageChannelQuery'
       responses:
         200:
           $ref: '#/components/responses/ManifestSingleResponse'
@@ -522,7 +523,7 @@ paths:
     post:
       summary: This retrieves package manifests for a given search request.
       tags:
-        - Manifests
+        - Package Manifests
       security:
         - APIAuthenticationQueryCode: []
         - APIAuthenticationHeaderXFunctionKey: []
@@ -1516,6 +1517,16 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/PackageVersion'
+      example: 1.0.0
+
+    PackageChannelQuery:
+      name: Channel
+      in: query
+      description: This is the channel to filter on.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Channel'
+      example: beta
 
   # Request Bodies
   requestBodies:
