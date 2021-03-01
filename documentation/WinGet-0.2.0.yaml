@@ -742,6 +742,17 @@ components:
       items:
         $ref: '#/components/schemas/Scope'
 
+    PackageDependency:
+      description: A Package Dependency consists of a Package Identifier and an optional Minimum Version.
+      type: object
+      properties:
+        PackageDependency:
+          $ref: '#/components/schemas/PackageIdentifier'
+        MinimalVersion:
+          $ref: '#/components/schemas/PackageVersion'
+      required:
+        - PackageDependency
+
     InstallerSwitches:
       description: Installer Switches
       type: object
@@ -882,7 +893,7 @@ components:
           uniqueItems: true
           maxItems: 16
           items:
-            $ref: '#/components/schemas/PackageIdentifier'
+            $ref: '#/components/schemas/PackageDependency'
 
         ExternalDependencies:
           description: List of external package dependencies
