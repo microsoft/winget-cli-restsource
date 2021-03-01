@@ -360,13 +360,13 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerSha256}:
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
-      - $ref: '#/components/parameters/InstallerSha256'
+      - $ref: '#/components/parameters/InstallerIdentifier'
 
     put:
       summary: Replace Installer Metadata
@@ -601,6 +601,11 @@ components:
       description: Version Type
       type: string
       pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
+      maxLength: 128
+
+    InstallerIdentifier:
+      description: Version Type
+      type: string
       maxLength: 128
 
     Publisher:
@@ -967,6 +972,8 @@ components:
       description: Installer.
       type: object
       properties:
+        InstallerIdentifier:
+          $ref: '#/components/schemas/InstallerIdentifier'
         InstallerSha256:
           $ref: '#/components/schemas/InstallerSha256'
         InstallerUrl:
@@ -1483,13 +1490,13 @@ components:
       schema:
         $ref: '#/components/schemas/Locale'
 
-    InstallerSha256:
-      name: InstallerSha256
+    InstallerIdentifier:
+      name: InstallerIdentifier
       in: path
       description: This is the Installer Key Parameter.
       required: true
       schema:
-        $ref: '#/components/schemas/InstallerSha256'
+        $ref: '#/components/schemas/InstallerIdentifier'
 
     PackageVersionQuery:
       name: Version
