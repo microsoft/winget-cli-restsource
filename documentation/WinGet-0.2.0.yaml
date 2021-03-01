@@ -751,7 +751,7 @@ components:
         MinimumVersion:
           $ref: '#/components/schemas/PackageVersion'
       required:
-        - PackageDependency
+        - PackageIdentifier
 
     InstallerSwitches:
       description: Installer Switches
