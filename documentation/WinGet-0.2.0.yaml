@@ -10,6 +10,9 @@ info:
 paths:
   # Package API Calls
   /packages:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
 
     post:
       summary: Add Package Metadata
@@ -17,7 +20,9 @@ paths:
         - Packages
       description: This will create a new package in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
@@ -46,6 +51,8 @@ paths:
 
   /packages/{PackageIdentifier}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -54,7 +61,9 @@ paths:
         - Packages
       description: This will replace a package in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/PackageRequestBody'
       responses:
@@ -73,7 +82,9 @@ paths:
         - Packages
       description: This will delete a package in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a package.
@@ -101,6 +112,8 @@ paths:
   # Version API Calls
   /packages/{PackageIdentifier}/versions:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     post:
@@ -109,7 +122,9 @@ paths:
         - Versions
       description: This will create a new version in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
@@ -138,6 +153,8 @@ paths:
 
   /packages/{PackageIdentifier}/versions/{PackageVersion}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -147,7 +164,9 @@ paths:
         - Versions
       description: This will replace a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/VersionRequestBody'
       responses:
@@ -166,7 +185,9 @@ paths:
         - Versions
       description: This will delete a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -191,9 +212,116 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
+  # Locale API Calls
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+
+    post:
+      summary: Add Locale Metadata
+      tags:
+        - Locale
+      description: This will create a new Locale in the repository with its associated metadata.
+      security:
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/LocaleRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        409:
+          $ref: '#/components/responses/Conflict'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Locale Metadata
+      tags:
+        - Locale
+        - Get
+      description: This will retrieve a set of Locale.
+      responses:
+        200:
+          $ref: '#/components/responses/LocaleMultipleResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+      - $ref: '#/components/parameters/PackageIdentifier'
+      - $ref: '#/components/parameters/PackageVersion'
+      - $ref: '#/components/parameters/PackageLocale'
+
+    put:
+      summary: Replace Locale Metadata
+      tags:
+        - Locale
+      description: This will replace an Locale in the repository.
+      security:
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/LocaleRequestBody'
+      responses:
+        201:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    delete:
+      summary: Delete an Locale
+      tags:
+        - Locale
+      description: This will delete a Locale in the repository.
+      security:
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
+      responses:
+        204:
+          description: Successfully deleted a version.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
+    get:
+      summary: Get Locale Metadata
+      tags:
+        - Locale
+        - Get
+      description: This will retrieve an Locale.
+      responses:
+        200:
+          $ref: '#/components/responses/LocaleSingleResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/GenericError'
+
   # Installer API Calls
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -203,7 +331,9 @@ paths:
         - Installers
       description: This will create a new Installer in the repository with its associated metadata.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
@@ -230,11 +360,13 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerSha256}:
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerIdentifier}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
-      - $ref: '#/components/parameters/InstallerSha256'
+      - $ref: '#/components/parameters/InstallerIdentifier'
 
     put:
       summary: Replace Installer Metadata
@@ -242,7 +374,9 @@ paths:
         - Installers
       description: This will replace an installer in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/InstallerRequestBody'
       responses:
@@ -259,9 +393,11 @@ paths:
       summary: Delete an Installer
       tags:
         - Installers
-      description: This will delete a version in the repository.
+      description: This will delete an installer in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -286,15 +422,21 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  # Manifest API Calls
-  /manifests:
+  # Package Manifest API Calls
+  /packageManifests:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+
     post:
-      summary: This creates all subcomponents contained in the logical representation of a manifest
+      summary: This creates all subcomponents contained in the logical representation of a package manifest
       tags:
-        - Manifests
-      description: This will create all subcomponents contained in the logical representation of a manifest.
+        - Package Manifests
+      description: This will create all subcomponents contained in the logical representation of a package manifest.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
@@ -307,17 +449,21 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /manifests/{PackageIdentifier}:
+  /packageManifests/{PackageIdentifier}:
     parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
-      summary: This updates all subcomponents contained in the logical representation of a manifest for a given package id.
+      summary: This updates all subcomponents contained in the logical representation of a package manifest for a given package id.
       tags:
-        - Manifests
-      description: This will update all subcomponents contained in the logical representation of a manifest.
+        - Package Manifests
+      description: This will update all subcomponents contained in the logical representation of a package manifest.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/ManifestRequestBody'
       responses:
@@ -331,12 +477,14 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     delete:
-      summary: Delete a manifest
+      summary: Delete a package manifest
       tags:
-        - Manifests
+        - Package Manifests
       description: This will delete a version in the repository.
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       responses:
         204:
           description: Successfully deleted a version.
@@ -348,11 +496,14 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
-      summary: This returns a manifest
+      summary: This returns a package manifest
       tags:
-        - Manifests
+        - Package Manifests
         - Get
-      description: This will retrieve a manifest.
+      description: This will retrieve a package manifest.
+      parameters:
+        - $ref: '#/components/parameters/PackageVersionQuery'
+        - $ref: '#/components/parameters/PackageChannelQuery'
       responses:
         200:
           $ref: '#/components/responses/ManifestSingleResponse'
@@ -365,15 +516,21 @@ paths:
 
   # Manifest Search API
   /manifestSearch:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ObjectVersion'
+
     post:
-      summary: This retrieves manifests for a given search request.
+      summary: This retrieves package manifests for a given search request.
       tags:
-        - Manifests
+        - Package Manifests
       security:
-        - ApiKeyAuthentication: []
+        - APIAuthenticationQueryCode: []
+        - APIAuthenticationHeaderXFunctionKey: []
+        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/manifestSearchRequestBody'
-      description: This will retrieve a set of manifests.
+      description: This will retrieve a set of package manifests.
       responses:
         200:
           $ref: '#/components/responses/ManifestSearchResponse'
@@ -402,13 +559,37 @@ components:
 
   # Security Components
   securitySchemes:
-    ApiKeyAuthentication:
+
+    APIAuthenticationQueryCode:
       type: apiKey
       in: query
       name: code
 
+    APIAuthenticationHeaderXFunctionKey:
+      type: apiKey
+      in: header
+      name: x-functions-key
+
+    APIAuthenticationHeaderOcpApimSubscriptionKey:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+
   # API Schemas
   schemas:
+
+    # API Definitions
+    APIVersion:
+      description: The API Version to use for the request
+      type: string
+      pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
+      maxLength: 128
+
+    ObjectVersion:
+      description: The Object Version to use for the request
+      type: string
+      pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
+      maxLength: 128
 
     # Definitions
     PackageIdentifier:
@@ -421,6 +602,11 @@ components:
       description: Version Type
       type: string
       pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
+      maxLength: 128
+
+    InstallerIdentifier:
+      description: Version Type
+      type: string
       maxLength: 128
 
     Publisher:
@@ -557,6 +743,17 @@ components:
       items:
         $ref: '#/components/schemas/Scope'
 
+    PackageDependency:
+      description: A Package Dependency consists of a Package Identifier and an optional Minimum Version.
+      type: object
+      properties:
+        PackageIdentifier:
+          $ref: '#/components/schemas/PackageIdentifier'
+        MinimumVersion:
+          $ref: '#/components/schemas/PackageVersion'
+      required:
+        - PackageIdentifier
+
     InstallerSwitches:
       description: Installer Switches
       type: object
@@ -664,7 +861,7 @@ components:
         maxLength: 40
 
     Dependencies:
-      description: Installer Switches
+      description: List of dependencies
       type: object
       properties:
 
@@ -697,9 +894,7 @@ components:
           uniqueItems: true
           maxItems: 16
           items:
-            type: string
-            minLength: 1
-            maxLength: 128
+            $ref: '#/components/schemas/PackageDependency'
 
         ExternalDependencies:
           description: List of external package dependencies
@@ -786,17 +981,17 @@ components:
         maxLength: 128
 
     Installer:
-      description: Installer Switches
+      description: Installer.
       type: object
       properties:
+        InstallerIdentifier:
+          $ref: '#/components/schemas/InstallerIdentifier'
         InstallerSha256:
           $ref: '#/components/schemas/InstallerSha256'
         InstallerUrl:
           $ref: '#/components/schemas/Url'
         Architecture:
           $ref: '#/components/schemas/Architecture'
-        Channel:
-          $ref: '#/components/schemas/Channel'
         InstallerLocale:
           $ref: '#/components/schemas/Locale'
         Platform:
@@ -837,6 +1032,7 @@ components:
         - Architecture
         - InstallerUrl
         - InstallerSha256
+        - InstallerType
 
     # Package Schema
     PackageSchema:
@@ -857,6 +1053,22 @@ components:
           properties:
             PackageVersion:
               $ref: '#/components/schemas/PackageVersion'
+        - type: object
+          properties:
+            DefaultLocale:
+              $ref: '#/components/schemas/DefaultLocale'
+        - type: object
+          properties:
+            Channel:
+              $ref: '#/components/schemas/Channel'
+      required:
+        - PackageVersion
+        - DefaultLocale
+
+    # Locale Schema
+    LocaleSchema:
+      description: Model containing Locale Schema
+      allOf:
         - type: object
           properties:
             PackageLocale:
@@ -921,95 +1133,30 @@ components:
               $ref: '#/components/schemas/Description'
         - type: object
           properties:
-            Moniker:
-              description: The most common package term
-              $ref: '#/components/schemas/Tag'
-        - type: object
-          properties:
             Tags:
               $ref: '#/components/schemas/Tags'
-        - type: object
-          properties:
-            Channel:
-              $ref: '#/components/schemas/Channel'
-        - type: object
-          properties:
-            InstallerLocale:
-              $ref: '#/components/schemas/Locale'
-        - type: object
-          properties:
-            Platform:
-              $ref: '#/components/schemas/Platform'
-        - type: object
-          properties:
-            MinimumOSVersion:
-              $ref: '#/components/schemas/MinimumOSVersion'
-        - type: object
-          properties:
-            InstallerType:
-              $ref: '#/components/schemas/InstallerType'
-        - type: object
-          properties:
-            Scope:
-              $ref: '#/components/schemas/Scope'
-        - type: object
-          properties:
-            InstallModes:
-              $ref: '#/components/schemas/InstallModes'
-        - type: object
-          properties:
-            InstallerSwitches:
-              $ref: '#/components/schemas/InstallerSwitches'
-        - type: object
-          properties:
-            InstallerSuccessCodes:
-              $ref: '#/components/schemas/InstallerSuccessCodes'
-        - type: object
-          properties:
-            UpgradeBehavior:
-              $ref: '#/components/schemas/UpgradeBehavior'
-        - type: object
-          properties:
-            Commands:
-              $ref: '#/components/schemas/Commands'
-        - type: object
-          properties:
-            Protocols:
-              $ref: '#/components/schemas/Protocols'
-        - type: object
-          properties:
-            FileExtensions:
-              $ref: '#/components/schemas/FileExtensions'
-        - type: object
-          properties:
-            Dependencies:
-              $ref: '#/components/schemas/Dependencies'
-        - type: object
-          properties:
-            Commands:
-              $ref: '#/components/schemas/Commands'
-        - type: object
-          properties:
-            PackageFamilyName:
-              $ref: '#/components/schemas/PackageFamilyName'
-        - type: object
-          properties:
-            ProductCode:
-              $ref: '#/components/schemas/ProductCode'
-        - type: object
-          properties:
-            Capabilities:
-              $ref: '#/components/schemas/Capabilities'
-        - type: object
-          properties:
-            RestrictedCapabilities:
-              $ref: '#/components/schemas/RestrictedCapabilities'
       required:
-        - PackageVersion
+        - PackageLocale
+
+    DefaultLocale:
+      description: Model containing DefaultLocale Schema
+      allOf:
+        - $ref: '#/components/schemas/LocaleSchema'
+        - type: object
+          properties:
+            Moniker:
+              description: The most common package term. Can only be used in default locale.
+              $ref: '#/components/schemas/Tag'
+      required:
         - Publisher
         - PackageName
         - License
         - ShortDescription
+
+    OptionalLocale:
+      description: Model containing OptionalLocale Schema
+      allOf:
+        - $ref: '#/components/schemas/LocaleSchema'
 
     # Installer Schema
     InstallerSchema:
@@ -1024,14 +1171,20 @@ components:
         - $ref: '#/components/schemas/PackageSchema'
         - type: object
           properties:
-            versions:
+            Versions:
               type: array
               items:
                 allOf:
                   - $ref: '#/components/schemas/VersionSchema'
                   - type: object
                     properties:
-                      installers:
+                      Locales:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OptionalLocale'
+                  - type: object
+                    properties:
+                      Installers:
                         type: array
                         items:
                           $ref: '#/components/schemas/InstallerSchema'
@@ -1148,6 +1301,26 @@ components:
             Data:
               $ref: '#/components/schemas/VersionSchema'
 
+    LocaleMultipleResponseSchema:
+      description: Locale Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionalLocale'
+
+    LocaleSingleResponseSchema:
+      description: Locale Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/OptionalLocale'
+
     InstallerMultipleResponseSchema:
       description: Installer Response Schema
       allOf:
@@ -1247,7 +1420,7 @@ components:
       properties:
         packageMatchField:
           $ref: '#/components/schemas/PackageMatchFieldSchema'
-        requestMatch:
+        RequestMatch:
           $ref: '#/components/schemas/SearchRequestMatchSchema'
 
     # Manifest Search Request Match Schema
@@ -1256,16 +1429,16 @@ components:
       allOf:
         - type: object
           properties:
-            keyWord:
+            KeyWord:
               type: string
-            matchType:
+            MatchType:
               $ref: '#/components/schemas/MatchTypeSchema'
 
     # Manifest Search Request Query Schema
     SearchRequestQuerySchema:
       description: Model containing manifest search request Query schema.
       properties:
-        requestMatch:
+        RequestMatch:
           $ref: '#/components/schemas/SearchRequestMatchSchema'
 
     # Manifest Search Request Inclusion or Filters Schema
@@ -1288,10 +1461,27 @@ components:
 
   # Parameters
   parameters:
+
+    APIVersion:
+      name: APIVersion
+      in: header
+      description: This is the API Versions Parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/APIVersion'
+
+    ObjectVersion:
+      name: ObjectVersion
+      in: header
+      description: This is the Object Version Parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/ObjectVersion'
+
     PackageIdentifier:
       name: PackageIdentifier
       in: path
-      description: This is the Package Identifier.
+      description: This is the Package Identifier Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/PackageIdentifier'
@@ -1299,18 +1489,44 @@ components:
     PackageVersion:
       name: PackageVersion
       in: path
-      description: This is the Package Version.
+      description: This is the Package Version Parameter.
       required: true
       schema:
         $ref: '#/components/schemas/PackageVersion'
 
-    InstallerSha256:
-      name: InstallerSha256
+    PackageLocale:
+      name: PackageLocale
       in: path
-      description: This is the Installer Key.
+      description: This is the Package Locale Parameter.
       required: true
       schema:
-        $ref: '#/components/schemas/InstallerSha256'
+        $ref: '#/components/schemas/Locale'
+
+    InstallerIdentifier:
+      name: InstallerIdentifier
+      in: path
+      description: This is the Installer Key Parameter.
+      required: true
+      schema:
+        $ref: '#/components/schemas/InstallerIdentifier'
+
+    PackageVersionQuery:
+      name: Version
+      in: query
+      description: This is the version to filter on.
+      required: false
+      schema:
+        $ref: '#/components/schemas/PackageVersion'
+      example: 1.0.0
+
+    PackageChannelQuery:
+      name: Channel
+      in: query
+      description: This is the channel to filter on.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Channel'
+      example: beta
 
   # Request Bodies
   requestBodies:
@@ -1327,6 +1543,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/VersionSchema'
+
+    LocaleRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OptionalLocale'
 
     InstallerRequestBody:
       required: true
@@ -1366,42 +1589,56 @@ components:
             $ref: '#/components/schemas/PackageSingleResponseSchema'
 
     VersionMultipleResponse:
-      description: Package Response
+      description: Version Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/VersionMultipleResponseSchema'
 
     VersionSingleResponse:
-      description: Package Response
+      description: Version Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/VersionSingleResponseSchema'
 
+    LocaleMultipleResponse:
+      description: Locale Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/LocaleMultipleResponseSchema'
+
+    LocaleSingleResponse:
+      description: Locale Response
+      content:
+        application/Json:
+          schema:
+            $ref: '#/components/schemas/LocaleSingleResponseSchema'
+
     InstallerMultipleResponse:
-      description: Package Response
+      description: Installer Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/InstallerMultipleResponseSchema'
 
     InstallerSingleResponse:
-      description: Package Response
+      description: Installer Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/InstallerSingleResponseSchema'
 
     ManifestMultipleResponse:
-      description: Package Response
+      description: Manifest Response
       content:
         application/Json:
           schema:
             $ref: '#/components/schemas/ManifestMultipleResponseSchema'
 
     ManifestSingleResponse:
-      description: Package Response
+      description: Manifest Response
       content:
         application/Json:
           schema:
@@ -1470,10 +1707,12 @@ tags:
     description: Everything about packages.
   - name: Versions
     description: Everything about versions.
+  - name: Locale
+    description: Everything about locale.
   - name: Installers
     description: Everything about installers.
-  - name: Manifests
-    description: Manifests are a collated set of data to aid clients in search and consumption of the data sets.
+  - name: Package Manifests
+    description: Package Manifests are a collated set of data to aid clients in search and consumption of the data sets.
   - name: Server
     description: Server Related Functions.
   - name: Get
