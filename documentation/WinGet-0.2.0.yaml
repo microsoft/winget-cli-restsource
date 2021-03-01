@@ -746,9 +746,9 @@ components:
       description: A Package Dependency consists of a Package Identifier and an optional Minimum Version.
       type: object
       properties:
-        PackageDependency:
+        PackageIdentifier:
           $ref: '#/components/schemas/PackageIdentifier'
-        MinimalVersion:
+        MinimumVersion:
           $ref: '#/components/schemas/PackageVersion'
       required:
         - PackageDependency
