@@ -17,13 +17,12 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Core;
-    using Newtonsoft.Json;
+    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
+    using Microsoft.WinGet.RestSource.Models.Schemas;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.
@@ -55,25 +54,24 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            PackageCore package = null;
+            Package package = null;
 
             try
             {
                 // Parse body as package
-                package = await Parser.StreamParser<PackageCore>(req.Body, log);
-
-                // Validate Parsed Values
-                // TODO: Validate Parsed Values
+                package = await Parser.StreamParser<Package>(req.Body, log);
+                ApiDataValidator.Validate<Package>(package);
 
                 // Convert Package to Manifest for storage
                 Manifest manifest = new Manifest(package);
+                CosmosManifest cManifest = new CosmosManifest(manifest);
 
                 // Create Document and add to cosmos.
-                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = manifest,
+                    Document = cManifest,
                 };
-                await this.cosmosDatabase.Add<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Add<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -86,7 +84,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
+            return new OkObjectResult(FormatJSON.Indented(package, log));
         }
 
         /// <summary>
@@ -108,14 +106,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 // Parse Variables
-                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
                     Id = id,
                     PartitionKey = id,
                 };
 
                 // Delete Document
-                await this.cosmosDatabase.Delete<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Delete<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -146,33 +144,23 @@ namespace Microsoft.WinGet.RestSource.Functions
             string id,
             ILogger log)
         {
-            PackageCore package = null;
+            Package package = null;
 
             try
             {
                 // Parse body as package
-                package = await Parser.StreamParser<PackageCore>(req.Body, log);
-
-                // Validate Parsed Values
-                // TODO: Validate Parsed Values
-                if (package.Id != id)
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.IdDoesNotMatchErrorCode,
-                            ErrorConstants.IdDoesNotMatchErrorMessage));
-                }
+                package = await Parser.StreamParser<Package>(req.Body, log);
+                ApiDataValidator.Validate<Package>(package);
 
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
 
                 // Update Package
-                cosmosDocument.Document.Id = package.Id;
-                cosmosDocument.Document.DefaultLocale = package.DefaultLocale;
+                cosmosDocument.Document.Update(package);
 
                 // Save Package
-                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -185,7 +173,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(JsonConvert.SerializeObject(package, Formatting.Indented));
+            return new OkObjectResult(FormatJSON.Indented(package, log));
         }
 
         /// <summary>
@@ -204,7 +192,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             string id,
             ILogger log)
         {
-            ApiResponse<PackageCore> apiResponse = new ApiResponse<PackageCore>();
+            ApiResponse<Package> apiResponse = new ApiResponse<Package>();
 
             try
             {
@@ -225,20 +213,20 @@ namespace Microsoft.WinGet.RestSource.Functions
                     };
 
                     // Get iQueryable
-                    IQueryable<Manifest> query = this.cosmosDatabase.GetIQueryable<Manifest>(feedOptions);
+                    IQueryable<CosmosManifest> query = this.cosmosDatabase.GetIQueryable<CosmosManifest>(feedOptions);
 
                     // Apply query parameters to query
                     // TODO: Apply Query Parameters
 
                     // Finalize Query
-                    IDocumentQuery<Manifest> documentQuery = query.AsDocumentQuery();
+                    IDocumentQuery<CosmosManifest> documentQuery = query.AsDocumentQuery();
 
                     // Get results
-                    CosmosPage<Manifest> cosmosPage =
-                        await this.cosmosDatabase.GetByDocumentQuery<Manifest>(documentQuery);
-                    foreach (Manifest result in cosmosPage.Items)
+                    CosmosPage<CosmosManifest> cosmosPage =
+                        await this.cosmosDatabase.GetByDocumentQuery<CosmosManifest>(documentQuery);
+                    foreach (CosmosManifest result in cosmosPage.Items)
                     {
-                        apiResponse.Data.Add(result.ToPackageCore());
+                        apiResponse.Data.Add(result.ToPackage());
                     }
 
                     apiResponse.ContinuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
@@ -246,10 +234,9 @@ namespace Microsoft.WinGet.RestSource.Functions
                 else
                 {
                     // Fetch Current Package
-                    CosmosDocument<Manifest> cosmosDocument =
-                        await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
-                    log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
-                    apiResponse.Data.Add(cosmosDocument.Document.ToPackageCore());
+                    CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
+                    log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                    apiResponse.Data.Add(cosmosDocument.Document.ToPackage());
                 }
             }
             catch (DefaultException e)
@@ -266,7 +253,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             return apiResponse.Data.Count switch
             {
                 0 => new NoContentResult(),
-                _ => new OkObjectResult(JsonConvert.SerializeObject(apiResponse, Formatting.Indented))
+                _ => new OkObjectResult(FormatJSON.Indented(apiResponse, log))
             };
         }
     }

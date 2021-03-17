@@ -7,7 +7,7 @@
 namespace Microsoft.WinGet.RestSource.Exceptions
 {
     using System;
-    using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Errors;
 
     /// <summary>
     /// This is for exceptions that occur with the Cosmos Database Client.
