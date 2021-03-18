@@ -11,12 +11,11 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
     /// <summary>
     /// InstallModes.
     /// </summary>
-    public class InstallModes : ApiArray<Enum.Scope>
+    public class InstallModes : ApiArray<Enum.InstallMode>
     {
         private const bool Nullable = true;
         private const bool Unique = true;
-        private const uint Max = 2;
-        private const uint Min = 1;
+        private const uint Max = 3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstallModes"/> class.
@@ -27,7 +26,6 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
             this.MaxItems = Max;
-            this.MinItems = Min;
         }
     }
 }

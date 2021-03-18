@@ -726,22 +726,30 @@ components:
         - pwa
 
     Scope:
-      description: Enumeration of Values for Scope and InstallModes
+      description: Enumeration of Values for Scope
       type: string
       nullable: true
       enum:
         - user
         - machine
 
+    InstallMode:
+      description: Enumeration of Values for InstallModes
+      type: string
+      nullable: true
+      enum:
+        - interactive
+        - silent
+        - silentWithProgress
+
     InstallModes:
       description: List of supported installer modes
       type: array
       nullable: true
       uniqueItems: true
-      minItems: 1
-      maxItems: 2
+      maxItems: 3
       items:
-        $ref: '#/components/schemas/Scope'
+        $ref: '#/components/schemas/InstallMode'
 
     PackageDependency:
       description: A Package Dependency consists of a Package Identifier and an optional Minimum Version.
