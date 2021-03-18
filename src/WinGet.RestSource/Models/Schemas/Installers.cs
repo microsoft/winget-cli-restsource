@@ -4,12 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Linq;
-
 namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using Microsoft.WinGet.RestSource.Models.Core;
 
     /// <summary>
