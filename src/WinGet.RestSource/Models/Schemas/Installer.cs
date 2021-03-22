@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Enum;
@@ -409,27 +410,27 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             unchecked
             {
                 var hashCode = this.InstallerIdentifier != null ? this.InstallerIdentifier.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (this.InstallerSha256 != null ? this.InstallerSha256.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallerUrl != null ? this.InstallerUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Architecture != null ? this.Architecture.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallerLocale != null ? this.InstallerLocale.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Platform != null ? this.Platform.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.MinimumOsVersion != null ? this.MinimumOsVersion.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallerType != null ? this.InstallerType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Scope != null ? this.Scope.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.SignatureSha256 != null ? this.SignatureSha256.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallModes != null ? this.InstallModes.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallerSwitches != null ? this.InstallerSwitches.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallerSuccessCodes != null ? this.InstallerSuccessCodes.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.UpgradeBehavior != null ? this.UpgradeBehavior.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Commands != null ? this.Commands.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Protocols != null ? this.Protocols.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.FileExtensions != null ? this.FileExtensions.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Dependencies != null ? this.Dependencies.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PackageFamilyName != null ? this.PackageFamilyName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.ProductCode != null ? this.ProductCode.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Capabilities != null ? this.Capabilities.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.RestrictedCapabilities != null ? this.RestrictedCapabilities.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerSha256 != null ? this.InstallerSha256.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerUrl != null ? this.InstallerUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Architecture != null ? this.Architecture.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerLocale != null ? this.InstallerLocale.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Platform != null ? this.Platform.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.MinimumOsVersion != null ? this.MinimumOsVersion.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerType != null ? this.InstallerType.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Scope != null ? this.Scope.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.SignatureSha256 != null ? this.SignatureSha256.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallModes != null ? this.InstallModes.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerSwitches != null ? this.InstallerSwitches.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerSuccessCodes != null ? this.InstallerSuccessCodes.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.UpgradeBehavior != null ? this.UpgradeBehavior.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Commands != null ? this.Commands.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Protocols != null ? this.Protocols.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.FileExtensions != null ? this.FileExtensions.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Dependencies != null ? this.Dependencies.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageFamilyName != null ? this.PackageFamilyName.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ProductCode != null ? this.ProductCode.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Capabilities != null ? this.Capabilities.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.RestrictedCapabilities != null ? this.RestrictedCapabilities.GetHashCode() : 0);
                 return hashCode;
             }
         }

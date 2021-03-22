@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
 
     /// <summary>
@@ -155,9 +156,9 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
             unchecked
             {
                 int hashCode = this.WindowsFeatures != null ? this.WindowsFeatures.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (this.WindowsLibraries != null ? this.WindowsLibraries.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PackageDependencies != null ? this.PackageDependencies.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.ExternalDependencies != null ? this.ExternalDependencies.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.WindowsLibraries != null ? this.WindowsLibraries.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageDependencies != null ? this.PackageDependencies.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ExternalDependencies != null ? this.ExternalDependencies.GetHashCode() : 0);
                 return hashCode;
             }
         }

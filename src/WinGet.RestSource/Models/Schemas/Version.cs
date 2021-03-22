@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Strings;
 
@@ -157,8 +158,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             unchecked
             {
                 var hashCode = this.PackageVersion != null ? this.PackageVersion.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (this.Channel != null ? this.Channel.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.DefaultLocale != null ? this.DefaultLocale.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Channel != null ? this.Channel.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.DefaultLocale != null ? this.DefaultLocale.GetHashCode() : 0);
                 return hashCode;
             }
         }

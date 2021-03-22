@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Strings;
@@ -305,20 +306,20 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             unchecked
             {
                 var hashCode = this.PackageLocale != null ? this.PackageLocale.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (this.Publisher != null ? this.Publisher.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PublisherUrl != null ? this.PublisherUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PublisherSupportUrl != null ? this.PublisherSupportUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PrivacyUrl != null ? this.PrivacyUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Author != null ? this.Author.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PackageName != null ? this.PackageName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.PackageUrl != null ? this.PackageUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.License != null ? this.License.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.LicenseUrl != null ? this.LicenseUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Copyright != null ? this.Copyright.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.CopyrightUrl != null ? this.CopyrightUrl.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.ShortDescription != null ? this.ShortDescription.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Description != null ? this.Description.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Tags != null ? this.Tags.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Publisher != null ? this.Publisher.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PublisherUrl != null ? this.PublisherUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PublisherSupportUrl != null ? this.PublisherSupportUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PrivacyUrl != null ? this.PrivacyUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Author != null ? this.Author.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageName != null ? this.PackageName.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageUrl != null ? this.PackageUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.License != null ? this.License.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.LicenseUrl != null ? this.LicenseUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Copyright != null ? this.Copyright.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.CopyrightUrl != null ? this.CopyrightUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ShortDescription != null ? this.ShortDescription.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Description != null ? this.Description.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Tags != null ? this.Tags.GetHashCode() : 0);
                 return hashCode;
             }
         }

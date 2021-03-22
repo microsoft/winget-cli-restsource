@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Strings;
     using PackageLocale = Microsoft.WinGet.RestSource.Models.Strings.Locale;
@@ -73,65 +74,18 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Create Validation Results
             var results = new List<ValidationResult>();
 
-            // Verify Required Fields
-            if (this.Publisher == null)
-            {
-                results.Add(new ValidationResult($"Publisher must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.Publisher, new ValidationContext(this.Publisher, null, null), results);
-
-                if (string.IsNullOrEmpty(this.Publisher.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.Publisher.APIStringName} '{this.Publisher.APIString}' must not be null."));
-                }
-            }
-
-            if (this.PackageName == null)
-            {
-                results.Add(new ValidationResult($"PackageName must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.PackageName, new ValidationContext(this.PackageName, null, null), results);
-
-                if (string.IsNullOrEmpty(this.PackageName.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.PackageName.APIStringName} '{this.PackageName.APIString}' must not be null."));
-                }
-            }
-
-            if (this.License == null)
-            {
-                results.Add(new ValidationResult($"License must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.License, new ValidationContext(this.License, null, null), results);
-
-                if (string.IsNullOrEmpty(this.License.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.License.APIStringName} '{this.License.APIString}' must not be null."));
-                }
-            }
-
-            if (this.ShortDescription == null)
-            {
-                results.Add(new ValidationResult($"ShortDescription must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.ShortDescription, new ValidationContext(this.ShortDescription, null, null), results);
-
-                if (string.IsNullOrEmpty(this.ShortDescription.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.ShortDescription.APIStringName} '{this.ShortDescription.APIString}' must not be null."));
-                }
-            }
-
             // Validate Base
             results.AddRange(base.Validate(validationContext));
+
+            // Verify Required Fields
+            if (this.Moniker == null)
+            {
+                results.Add(new ValidationResult($"Moniker must not be null."));
+            }
+            else
+            {
+                Validator.TryValidateObject(this.Moniker, new ValidationContext(this.Moniker, null, null), results);
+            }
 
             // Return Results
             return results;
@@ -181,7 +135,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             unchecked
             {
                 int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (this.Moniker != null ? this.Moniker.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Moniker != null ? this.Moniker.GetHashCode() : 0);
                 return hashCode;
             }
         }

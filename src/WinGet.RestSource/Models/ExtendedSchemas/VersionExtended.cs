@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
@@ -163,8 +164,8 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             unchecked
             {
                 int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (this.Installers != null ? this.Installers.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Locales != null ? this.Locales.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Installers != null ? this.Installers.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Locales != null ? this.Locales.GetHashCode() : 0);
                 return hashCode;
             }
         }

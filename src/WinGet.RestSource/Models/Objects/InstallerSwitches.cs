@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Strings;
 
@@ -196,12 +197,12 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
             unchecked
             {
                 int hashCode = this.Silent != null ? this.Silent.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (this.SilentWithProgress != null ? this.SilentWithProgress.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Interactive != null ? this.Interactive.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.InstallLocation != null ? this.InstallLocation.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Log != null ? this.Log.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Upgrade != null ? this.Upgrade.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (this.Custom != null ? this.Custom.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.SilentWithProgress != null ? this.SilentWithProgress.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Interactive != null ? this.Interactive.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallLocation != null ? this.InstallLocation.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Log != null ? this.Log.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Upgrade != null ? this.Upgrade.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Custom != null ? this.Custom.GetHashCode() : 0);
                 return hashCode;
             }
         }
