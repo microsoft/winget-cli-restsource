@@ -22,14 +22,14 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string UnhandledErrorMessage = "An unhandled error occured.";
 
         /// <summary>
-        /// This is the code for when the resource ID does not match the document ID.
+        /// This is the code for an data validation error.
         /// </summary>
-        public const int IdDoesNotMatchErrorCode = 2;
+        public const int ValidationFailureErrorCode = 2;
 
         /// <summary>
-        /// This is the message for when the resource ID does not match the document ID.
+        /// This is the message for an data validation error.
         /// </summary>
-        public const string IdDoesNotMatchErrorMessage = "The document ID does not match resource ID.";
+        public const string ValidationFailureErrorMessage = "Data Validation Failed.";
 
         /// <summary>
         /// This is the code for when the object contains no versions.

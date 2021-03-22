@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Models
+namespace Microsoft.WinGet.RestSource.Models.Errors
 {
     using System;
 

@@ -11,7 +11,7 @@ namespace Microsoft.WinGet.RestSource.Exceptions
     using System.Net.Http;
     using Microsoft.Azure.Documents;
     using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Errors;
 
     /// <summary>
     /// This is the base exception for the WinGet.RestSource.

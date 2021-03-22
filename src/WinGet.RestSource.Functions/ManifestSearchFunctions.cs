@@ -23,6 +23,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -103,7 +104,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             return apiResponse.Data.Count switch
             {
                 0 => new NoContentResult(),
-                _ => new OkObjectResult(JsonConvert.SerializeObject(apiResponse, Formatting.Indented))
+                _ => new OkObjectResult(FormatJSON.Indented(apiResponse, log))
             };
         }
     }

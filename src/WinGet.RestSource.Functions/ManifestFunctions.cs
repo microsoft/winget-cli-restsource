@@ -7,22 +7,19 @@
 namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.Documents.Client;
-    using Microsoft.Azure.Documents.Linq;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
+    using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -60,16 +57,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Stream
                 manifest = await Parser.StreamParser<Manifest>(req.Body, log);
-
-                // Validate Parsed Values
-                // TODO: Validate Parsed Values
+                ApiDataValidator.Validate<Manifest>(manifest);
 
                 // Create Document and add to cosmos.
-                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
+                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = manifest,
+                    Document = cosmosManifest,
                 };
-                await this.cosmosDatabase.Add<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Add<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -103,14 +99,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 // Parse Variables
-                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
                     Id = id,
                     PartitionKey = id,
                 };
 
                 // Delete Document
-                await this.cosmosDatabase.Delete<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Delete<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -147,25 +143,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Stream
                 manifest = await Parser.StreamParser<Manifest>(req.Body, log);
-
-                // Validate Parsed Values
-                // TODO: Validate Parsed Values
-                if (manifest.Id != id)
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.IdDoesNotMatchErrorCode,
-                            ErrorConstants.IdDoesNotMatchErrorMessage));
-                }
+                ApiDataValidator.Validate<Package>(manifest);
 
                 // Create Document and add to cosmos.
-                CosmosDocument<Manifest> cosmosDocument = new CosmosDocument<Manifest>
+                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
+                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = manifest,
+                    Document = cosmosManifest,
                     Id = id,
                     PartitionKey = id,
                 };
-                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -200,10 +188,9 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
                 log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
-                apiResponse.Data.Add(cosmosDocument.Document);
+                apiResponse.Data.Add(cosmosDocument.Document.ToManifest());
             }
             catch (DefaultException e)
             {

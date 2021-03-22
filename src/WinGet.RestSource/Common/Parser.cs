@@ -26,6 +26,7 @@ namespace Microsoft.WinGet.RestSource.Common
         public static async Task<T> StreamParser<T>(Stream stream, ILogger log = null)
             where T : class
         {
+            // TODO: Throw Deserialization Error on failure.
             string requestBody = await new StreamReader(stream).ReadToEndAsync();
             T deserializedObject = JsonConvert.DeserializeObject<T>(requestBody);
 

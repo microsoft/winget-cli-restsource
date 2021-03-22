@@ -12,8 +12,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.Documents;
-    using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
@@ -23,7 +21,9 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Models.Errors;
+    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
+    using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -60,19 +60,16 @@ namespace Microsoft.WinGet.RestSource.Functions
             string version,
             ILogger log)
         {
-            InstallerCore installerCore = null;
+            Installer installerCore = null;
 
             try
             {
                 // Parse body as package
-                installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
-
-                // Validate Parsed Values
-                // TODO: Validate Parsed Values
+                installerCore = await Parser.StreamParser<Installer>(req.Body, log);
+                ApiDataValidator.Validate<Installer>(installerCore);
 
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
                 log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // Validate Package Version is not null
@@ -85,7 +82,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Validate Version exists
-                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != version))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -94,15 +91,13 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(
-                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
-                    .First();
+                VersionExtended versionToUpdate = cosmosDocument.Document.Versions.First(versionExtended => versionExtended.PackageVersion == version);
 
-                // Create list if null
-                versionToUpdate.Installers ??= new List<InstallerCore>();
+                // Create Installers if null
+                versionToUpdate.Installers ??= new Installers();
 
                 // If does not exist add
-                if (versionToUpdate.Installers.All(nested => nested.Sha256 != installerCore.Sha256))
+                if (versionToUpdate.Installers.All(nested => nested.InstallerIdentifier != installerCore.InstallerIdentifier))
                 {
                     versionToUpdate.Installers.Add(installerCore);
                 }
@@ -115,12 +110,12 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Replace Version
-                cosmosDocument.Document.Versions = new List<VersionExtended>(
-                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions = new VersionsExtended(cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.PackageVersion != version));
+                cosmosDocument.Document.Versions ??= new VersionsExtended();
                 cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -161,8 +156,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
                 log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // Validate Package Version is not null
@@ -175,7 +169,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Validate Version exists
-                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != version))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -184,9 +178,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(
-                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
-                    .First();
+                VersionExtended versionToUpdate = cosmosDocument.Document.Versions.First(versionExtended => versionExtended.PackageVersion == version);
 
                 // Validate Installer not null
                 if (versionToUpdate.Installers == null)
@@ -198,7 +190,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Verify Installer Exists
-                if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
+                if (versionToUpdate.Installers.All(installer => installer.InstallerIdentifier != sha256))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -207,16 +199,15 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Remove installer
-                versionToUpdate.Installers = new List<InstallerCore>(
-                    versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
+                versionToUpdate.Installers = new Installers(versionToUpdate.Installers.Where(installer => installer.InstallerIdentifier != sha256));
 
                 // Replace Version
-                cosmosDocument.Document.Versions = new List<VersionExtended>(
-                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions = new VersionsExtended(cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.PackageVersion != version));
+                cosmosDocument.Document.Versions ??= new VersionsExtended();
                 cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -254,16 +245,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             string sha256,
             ILogger log)
         {
-            InstallerCore installerCore = null;
+            Installer installerCore = null;
 
             try
             {
                 // Parse body as package
-                installerCore = await Parser.StreamParser<InstallerCore>(req.Body, log);
+                installerCore = await Parser.StreamParser<Installer>(req.Body, log);
+                ApiDataValidator.Validate<Installer>(installerCore);
 
                 // Validate Parsed Values
                 // TODO: Validate Parsed Values
-                if (installerCore.Sha256 != sha256)
+                if (installerCore.InstallerIdentifier != sha256)
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -272,8 +264,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
                 log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // Validate Package Version is not null
@@ -286,7 +278,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Validate Version exists
-                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != version))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -295,9 +287,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(
-                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
-                    .First();
+                VersionExtended versionToUpdate = cosmosDocument.Document.Versions.First(versionExtended => versionExtended.PackageVersion == version);
 
                 // Validate Installer not null
                 if (versionToUpdate.Installers == null)
@@ -309,7 +299,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Verify Installer Exists
-                if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
+                if (versionToUpdate.Installers.All(installer => installer.InstallerIdentifier != sha256))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -318,17 +308,17 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Replace installer
-                versionToUpdate.Installers = new List<InstallerCore>(
-                    versionToUpdate.Installers.Where(installer => installer.Sha256 != sha256));
+                versionToUpdate.Installers = new Installers(versionToUpdate.Installers.Where(installer => installer.InstallerIdentifier != sha256));
+                versionToUpdate.Installers ??= new Installers();
                 versionToUpdate.Installers.Add(installerCore);
 
                 // Replace Version
-                cosmosDocument.Document.Versions = new List<VersionExtended>(
-                    cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version != version));
+                cosmosDocument.Document.Versions = new VersionsExtended(cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.PackageVersion != version));
+                cosmosDocument.Document.Versions ??= new VersionsExtended();
                 cosmosDocument.Document.Versions.Add(versionToUpdate);
 
                 // Save Document
-                await this.cosmosDatabase.Update<Manifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -366,13 +356,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             string sha256,
             ILogger log)
         {
-            ApiResponse<InstallerCore> apiResponse = new ApiResponse<InstallerCore>();
+            ApiResponse<Installer> apiResponse = new ApiResponse<Installer>();
 
             try
             {
                 // Fetch Current Package
-                CosmosDocument<Manifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<Manifest>(id, id);
+                CosmosDocument<CosmosManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
                 log.LogInformation(JsonConvert.SerializeObject(cosmosDocument, Formatting.Indented));
 
                 // Validate Package Version is not null
@@ -385,7 +375,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Validate Version exists
-                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.Version != version))
+                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != version))
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
@@ -394,9 +384,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Get version
-                VersionExtended versionToUpdate = new List<VersionExtended>(
-                        cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.Version == version))
-                    .First();
+                VersionExtended versionToUpdate = cosmosDocument.Document.Versions.First(versionExtended => versionExtended.PackageVersion == version);
 
                 // Validate Installer not null
                 if (versionToUpdate.Installers == null)
@@ -410,9 +398,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Process Installers
                 if (string.IsNullOrWhiteSpace(sha256))
                 {
-                    IEnumerable<InstallerCore> enumerable =
-                        versionToUpdate.Installers.Select(installerCore => new InstallerCore(installerCore));
-                    foreach (InstallerCore installerCore in enumerable)
+                    Installers enumerable = versionToUpdate.Installers;
+                    foreach (Installer installerCore in enumerable)
                     {
                         apiResponse.Data.Add(installerCore);
                     }
@@ -420,7 +407,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 else
                 {
                     // Verify Installer Exists
-                    if (versionToUpdate.Installers.All(installer => installer.Sha256 != sha256))
+                    if (versionToUpdate.Installers.All(installer => installer.InstallerIdentifier != sha256))
                     {
                         throw new InvalidArgumentException(
                             new InternalRestError(
@@ -429,10 +416,9 @@ namespace Microsoft.WinGet.RestSource.Functions
                     }
 
                     // Add Installer(s)
-                    IEnumerable<InstallerCore> enumerable = versionToUpdate.Installers
-                        .Where(installer => installer.Sha256 == sha256)
-                        .Select(installer => new InstallerCore(installer));
-                    foreach (InstallerCore installerCore in enumerable)
+                    IEnumerable<Installer> enumerable = versionToUpdate.Installers
+                        .Where(installer => installer.InstallerIdentifier == sha256);
+                    foreach (Installer installerCore in enumerable)
                     {
                         apiResponse.Data.Add(installerCore);
                     }

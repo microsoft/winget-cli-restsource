@@ -10,7 +10,7 @@ namespace Microsoft.WinGet.RestSource.Common
     using System.Net;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Errors;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -42,9 +42,7 @@ namespace Microsoft.WinGet.RestSource.Common
                 case ErrorConstants.PreconditionFailedErrorCode:
                     return CreateJsonObjectResult((int)HttpStatusCode.PreconditionFailed, internalRestError);
 
-                case ErrorConstants.IdDoesNotMatchErrorCode:
-                case ErrorConstants.VersionDoesNotMatchErrorCode:
-                case ErrorConstants.InstallerDoesNotMatchErrorCode:
+                case ErrorConstants.ValidationFailureErrorCode:
                     return CreateJsonObjectResult((int)HttpStatusCode.BadRequest, internalRestError);
 
                 case ErrorConstants.UnhandledErrorCode:
