@@ -60,10 +60,10 @@ namespace Microsoft.WinGet.RestSource.Functions
                 ApiDataValidator.Validate<Manifest>(manifest);
 
                 // Create Document and add to cosmos.
-                CosmosManifest cManifest = new CosmosManifest(manifest);
+                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
                 CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = cManifest,
+                    Document = cosmosManifest,
                 };
                 await this.cosmosDatabase.Add<CosmosManifest>(cosmosDocument);
             }
@@ -146,10 +146,10 @@ namespace Microsoft.WinGet.RestSource.Functions
                 ApiDataValidator.Validate<Package>(manifest);
 
                 // Create Document and add to cosmos.
-                CosmosManifest cManifest = new CosmosManifest(manifest);
+                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
                 CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = cManifest,
+                    Document = cosmosManifest,
                     Id = id,
                     PartitionKey = id,
                 };

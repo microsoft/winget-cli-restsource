@@ -64,12 +64,12 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 // Convert Package to Manifest for storage
                 Manifest manifest = new Manifest(package);
-                CosmosManifest cManifest = new CosmosManifest(manifest);
+                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
 
                 // Create Document and add to cosmos.
                 CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
                 {
-                    Document = cManifest,
+                    Document = cosmosManifest,
                 };
                 await this.cosmosDatabase.Add<CosmosManifest>(cosmosDocument);
             }

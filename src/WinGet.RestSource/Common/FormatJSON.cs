@@ -6,18 +6,17 @@
 
 namespace Microsoft.WinGet.RestSource.Common
 {
-    using System.IO;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// Helper class that contains JSON helpers used by SmartScreen and Manifest verification components.
+    /// cLASS that contains JSON helpers for printing and exporting data.
     /// </summary>
     public class FormatJSON
     {
         /// <summary>
-        /// Formats an object to a formatted JSON string.
+        /// Formats an object to a custom formatted JSON string.
         /// </summary>
         /// <typeparam name="T">Type must be an object that can be serialized as JSON.</typeparam>
         /// <param name="obj">Generic object that can be serialized as JSON.</param>
@@ -31,7 +30,7 @@ namespace Microsoft.WinGet.RestSource.Common
         }
 
         /// <summary>
-        /// Formats an object to a formatted JSON string.
+        /// Formats an object to an Indented JSON string.
         /// </summary>
         /// <typeparam name="T">Type must be an object that can be serialized as JSON.</typeparam>
         /// <param name="obj">Generic object that can be serialized as JSON.</param>
@@ -43,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.Common
         }
 
         /// <summary>
-        /// Formats an object to a formatted JSON string.
+        /// Formats an object to a non-formatted JSON string.
         /// </summary>
         /// <typeparam name="T">Type must be an object that can be serialized as JSON.</typeparam>
         /// <param name="obj">Generic object that can be serialized as JSON.</param>

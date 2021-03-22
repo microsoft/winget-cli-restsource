@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Common
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
@@ -37,10 +38,7 @@ namespace Microsoft.WinGet.RestSource.Common
             if (!valid)
             {
                 string error = string.Join(seperator, ErrorConstants.ValidationFailureErrorMessage);
-                foreach (ValidationResult validationResult in results)
-                {
-                    error = string.Join(seperator, error, validationResult.ErrorMessage);
-                }
+                error = results.Aggregate(error, (current, validationResult) => string.Join(seperator, current, validationResult.ErrorMessage));
 
                 throw new InvalidArgumentException(
                     new InternalRestError(

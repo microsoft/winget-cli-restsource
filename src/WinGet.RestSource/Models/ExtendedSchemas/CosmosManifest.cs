@@ -24,9 +24,9 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosManifest"/> class.
         /// </summary>
-        /// <param name="cmanifest">manifest.</param>
-        public CosmosManifest(CosmosManifest cmanifest)
-            : base(cmanifest)
+        /// <param name="cosmosManifest">manifest.</param>
+        public CosmosManifest(CosmosManifest cosmosManifest)
+            : base(cosmosManifest)
         {
         }
 
