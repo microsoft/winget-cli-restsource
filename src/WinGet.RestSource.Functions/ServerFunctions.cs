@@ -44,7 +44,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InformationGet)]
         public IActionResult InformationGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "information")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "information")]
             HttpRequest req,
             ILogger log)
         {

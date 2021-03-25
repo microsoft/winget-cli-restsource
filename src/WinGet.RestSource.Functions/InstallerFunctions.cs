@@ -217,7 +217,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.InstallerGet)]
         public async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(
-                AuthorizationLevel.Function,
+                AuthorizationLevel.Anonymous,
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier?}")]
             HttpRequest req,
