@@ -18,13 +18,11 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// This class contains the functions for searching manifests.
@@ -56,14 +54,16 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            ApiResponse<Manifest> apiResponse = new ApiResponse<Manifest>();
+            List<PackageManifest> manifests = new List<PackageManifest>();
+            string continuationToken = null;
             ManifestSearch manifestSearch = null;
+
             try
             {
                 manifestSearch = await Parser.StreamParser<ManifestSearch>(req.Body, log);
 
                 // Create feed options
-                int maxItemCount = manifestSearch.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage
+                int maxItemCount = manifestSearch.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage && manifestSearch.MaximumResults > 0
                     ? manifestSearch.MaximumResults
                     : FunctionSettingsConstants.MaxResultsPerPage;
 
@@ -76,19 +76,19 @@ namespace Microsoft.WinGet.RestSource.Functions
                 };
 
                 // Get iQueryable
-                IQueryable<Manifest> query = this.cosmosDatabase.GetIQueryable<Manifest>(feedOptions);
+                IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions);
 
                 // Apply query parameters to query
                 // TODO: Apply Query Parameters
 
                 // Finalize Query
-                IDocumentQuery<Manifest> documentQuery = query.AsDocumentQuery();
+                IDocumentQuery<PackageManifest> documentQuery = query.AsDocumentQuery();
 
                 // Get results
-                CosmosPage<Manifest> cosmosPage =
-                    await this.cosmosDatabase.GetByDocumentQuery<Manifest>(documentQuery);
-                apiResponse.Data = cosmosPage.Items.ToList();
-                apiResponse.ContinuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
+                CosmosPage<PackageManifest> cosmosPage =
+                    await this.cosmosDatabase.GetByDocumentQuery<PackageManifest>(documentQuery);
+                manifests = cosmosPage.Items.ToList();
+                continuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
             }
             catch (DefaultException e)
             {
@@ -101,10 +101,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return apiResponse.Data.Count switch
+            return manifests.Count() switch
             {
                 0 => new NoContentResult(),
-                _ => new OkObjectResult(FormatJSON.Indented(apiResponse, log))
+                1 => new OkObjectResult(new ApiResponse<PackageManifest>(manifests.First(), continuationToken)),
+                _ => new OkObjectResult(new ApiResponse<List<PackageManifest>>(manifests, continuationToken)),
             };
         }
     }

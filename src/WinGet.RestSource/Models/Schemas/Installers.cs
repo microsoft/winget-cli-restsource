@@ -9,7 +9,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Models.Errors;
 
     /// <summary>
     /// Installers.
@@ -36,6 +40,77 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.SetDefaults();
         }
 
+        /// <summary>
+        /// Add new Installer.
+        /// </summary>
+        /// <param name="obj">Installer to add.</param>
+        public new void Add(Installer obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify installer does not exist
+            this.AssertInstallerDoesNotExists(obj.InstallerIdentifier);
+
+            base.Add(obj);
+        }
+
+        /// <summary>
+        /// Update an Installer.
+        /// </summary>
+        /// <param name="obj">New Installer.</param>
+        public void Update(Installer obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify installer exists
+            this.AssertInstallerExists(obj.InstallerIdentifier);
+
+            // Update
+            this[this.FindIndex(0, installer => installer.InstallerIdentifier == obj.InstallerIdentifier)].Update(obj);
+        }
+
+        /// <summary>
+        /// Remove an Installer.
+        /// </summary>
+        /// <param name="installerIdentifier">Installer Identifier to remove.</param>
+        /// <returns>Bool.</returns>
+        public bool Remove(string installerIdentifier)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(installerIdentifier);
+
+            // Verify installer exists
+            this.AssertInstallerExists(installerIdentifier);
+
+            this.RemoveAll(installer => installer.InstallerIdentifier == installerIdentifier);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get Installers.
+        /// </summary>
+        /// <param name="installerIdentifier">Installer Identifier to get.</param>
+        /// <returns>Installers.</returns>
+        public Installers Get(string installerIdentifier)
+        {
+            Installers installers = new Installers();
+
+            if (string.IsNullOrWhiteSpace(installerIdentifier))
+            {
+                installers = this;
+            }
+            else
+            {
+                this.AssertInstallerExists(installerIdentifier);
+                installers.Add(this[this.FindIndex(0, installer => installer.InstallerIdentifier == installerIdentifier)]);
+            }
+
+            return installers;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -58,6 +133,33 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.APIArrayName = nameof(Installers);
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
+        }
+
+        private bool InstallerExists(string installerIdentifier)
+        {
+            return this.Any(p => p.InstallerIdentifier == installerIdentifier);
+        }
+
+        private void AssertInstallerExists(string installerIdentifier)
+        {
+            if (!this.InstallerExists(installerIdentifier))
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.InstallerDoesNotExistErrorCode,
+                        ErrorConstants.InstallerDoesNotExistErrorMessage));
+            }
+        }
+
+        private void AssertInstallerDoesNotExists(string installerIdentifier)
+        {
+            if (this.InstallerExists(installerIdentifier))
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.InstallerAlreadyExistsErrorCode,
+                        ErrorConstants.InstallerAlreadyExistsErrorMessage));
+            }
         }
     }
 }

@@ -37,11 +37,18 @@ namespace Microsoft.WinGet.RestSource.Serializers
         /// <returns>ApiString.</returns>
         public override ApiString ReadJson(JsonReader reader, Type objectType, ApiString existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            string s = (string)reader.Value;
+            // Read APIString value.
+            string value = (string)reader.Value;
 
+            // If value is null return null.
+            if (value == null)
+            {
+                return null;
+            }
+
+            // Create dynamic object, set value, and return
             dynamic d = Activator.CreateInstance(objectType);
-            d.SetString(s);
-
+            d.SetString(value);
             return d;
         }
     }

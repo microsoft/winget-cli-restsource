@@ -24,6 +24,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
 
     /// <summary>
     /// This class contains the functions for interacting with versions.
@@ -47,46 +48,34 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make post requests for versions.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="id">Package ID.</param>
+        /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionPost)]
         public async Task<IActionResult> VersionsPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{id}/versions")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions")]
             HttpRequest req,
-            string id,
+            string packageIdentifier,
             ILogger log)
         {
-            Models.Schemas.Version version = null;
+            Version version = null;
 
             try
             {
-                // Parse body as package
-                version = await Parser.StreamParser<Models.Schemas.Version>(req.Body, log);
-                ApiDataValidator.Validate<Models.Schemas.Version>(version);
+                // Parse body as Version
+                version = await Parser.StreamParser<Version>(req.Body, log);
+                ApiDataValidator.Validate<Version>(version);
 
                 // Fetch Current Package
-                CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Create list if null
-                cosmosDocument.Document.Versions ??= new VersionsExtended();
-
-                // If does not exist add
-                if (cosmosDocument.Document.Versions.All(nested => nested.PackageVersion != version.PackageVersion))
-                {
-                    cosmosDocument.Document.Versions.Add(new VersionExtended(version));
-                }
-                else
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.VersionAlreadyExistsErrorCode,
-                            ErrorConstants.VersionAlreadyExistsErrorMessage));
-                }
+                // Add Version
+                cosmosDocument.Document.AddVersion(version);
 
                 // Save Document
-                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
+                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -99,7 +88,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(FormatJSON.Indented(version, log));
+            return new OkObjectResult(new ApiResponse<Version>(version));
         }
 
         /// <summary>
@@ -122,34 +111,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 // Fetch Current Package
-                CosmosDocument<CosmosManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Validate Package Version is not null
-                if (cosmosDocument.Document.Versions == null)
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.VersionsIsNullErrorCode,
-                            ErrorConstants.VersionsIsNullErrorMessage));
-                }
-
-                // Validate Version exists
-                if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != packageVersion))
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.VersionDoesNotExistErrorCode,
-                            ErrorConstants.VersionDoesNotExistErrorMessage));
-                }
-
-                // Delete it
-                cosmosDocument.Document.Versions = new VersionsExtended(cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.PackageVersion != packageVersion));
+                // Remove Version
+                cosmosDocument.Document.RemoveVersion(packageVersion);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
                 // Save Package
-                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
+                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -182,14 +154,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Models.Schemas.Version version = null;
+            Version version = null;
 
             try
             {
-                // Parse body as package
-                version = await Parser.StreamParser<Models.Schemas.Version>(req.Body, log);
-                ApiDataValidator.Validate<Models.Schemas.Version>(version);
+                // Parse body as Version
+                version = await Parser.StreamParser<Version>(req.Body, log);
+                ApiDataValidator.Validate<Version>(version);
 
+                // Validate Versions Match
                 if (version.PackageVersion != packageVersion)
                 {
                     throw new InvalidArgumentException(
@@ -199,32 +172,15 @@ namespace Microsoft.WinGet.RestSource.Functions
                 }
 
                 // Fetch Current Package
-                CosmosDocument<CosmosManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // If version does not exist, throw
-                if (cosmosDocument.Document.Versions == null ||
-                    cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != packageVersion))
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.VersionDoesNotExistErrorCode,
-                            ErrorConstants.VersionDoesNotExistErrorMessage));
-                }
-
-                // Delete Current Version
-                cosmosDocument.Document.Versions = new VersionsExtended(cosmosDocument.Document.Versions.Where(versionExtended => versionExtended.PackageVersion != packageVersion));
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Create list if null
-                cosmosDocument.Document.Versions ??= new VersionsExtended();
-
-                // Add Updated Version
-                cosmosDocument.Document.Versions.Add(new VersionExtended(version));
+                // Update
+                cosmosDocument.Document.Versions.Update(version);
 
                 // Save Package
-                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
+                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -237,7 +193,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(version);
+            return new OkObjectResult(new ApiResponse<Version>(version));
         }
 
         /// <summary>
@@ -257,52 +213,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            ApiResponse<Models.Schemas.Version> apiResponse = new ApiResponse<Models.Schemas.Version>();
+            List<Version> versions = new List<Version>();
 
             try
             {
                 // Fetch Current Package
-                CosmosDocument<CosmosManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Validate Package Contains Versions
-                if (cosmosDocument.Document.Versions == null)
-                {
-                    throw new InvalidArgumentException(
-                        new InternalRestError(
-                            ErrorConstants.VersionsIsNullErrorCode,
-                            ErrorConstants.VersionsIsNullErrorMessage));
-                }
-
-                // Process Version Request.
-                if (string.IsNullOrWhiteSpace(packageVersion))
-                {
-                    foreach (Models.Schemas.Version versionCore in cosmosDocument.Document.Versions.Select(
-                        versionExtended => new Models.Schemas.Version(versionExtended)))
-                    {
-                        apiResponse.Data.Add(versionCore);
-                    }
-                }
-                else
-                {
-                    // If version does not exist, throw an error
-                    if (cosmosDocument.Document.Versions.All(versionExtended => versionExtended.PackageVersion != packageVersion))
-                    {
-                        throw new InvalidArgumentException(
-                            new InternalRestError(
-                                ErrorConstants.VersionDoesNotExistErrorCode,
-                                ErrorConstants.VersionDoesNotExistErrorMessage));
-                    }
-
-                    IEnumerable<Models.Schemas.Version> enumerable = cosmosDocument.Document.Versions
-                        .Where(versionExtended => versionExtended.PackageVersion == packageVersion)
-                        .Select(versionExtended => new Models.Schemas.Version(versionExtended));
-                    foreach (Models.Schemas.Version versionCore in enumerable)
-                    {
-                        apiResponse.Data.Add(versionCore);
-                    }
-                }
+                // Get Versions and convert.
+                VersionsExtended extended = cosmosDocument.Document.GetVersion(packageVersion);
+                versions.AddRange(extended.Select(ver => new Version(ver)));
             }
             catch (DefaultException e)
             {
@@ -315,10 +236,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return apiResponse.Data.Count switch
+            return versions.Count switch
             {
                 0 => new NoContentResult(),
-                _ => new OkObjectResult(FormatJSON.Indented(apiResponse, log))
+                1 => new OkObjectResult(new ApiResponse<Version>(versions.First())),
+                _ => new OkObjectResult(new ApiResponse<List<Version>>(versions)),
             };
         }
     }

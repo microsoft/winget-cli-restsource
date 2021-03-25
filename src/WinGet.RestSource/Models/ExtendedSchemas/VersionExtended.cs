@@ -8,8 +8,11 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
 
@@ -96,6 +99,144 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             this.Locales = obj.Locales;
         }
 
+        /// <summary>
+        /// Add an Installer.
+        /// </summary>
+        /// <param name="installer">Installer to Add.</param>
+        public void AddInstaller(Installer installer)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(installer);
+
+            // If Installers are null instantiate.
+            if (this.Installers == null)
+            {
+                this.Installers = new Installers();
+            }
+
+            this.Installers.Add(installer);
+        }
+
+        /// <summary>
+        /// Update Installer.
+        /// </summary>
+        /// <param name="obj">Installer to Update.</param>
+        public void UpdateInstaller(Installer obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify Installers is not null.
+            this.AssertInstallersNotNull();
+
+            this.Installers.Update(obj);
+        }
+
+        /// <summary>
+        /// Remove Installer.
+        /// </summary>
+        /// <param name="installerIdentifier">Installer Identifier.</param>
+        /// <returns>Bool.</returns>
+        public bool RemoveInstaller(string installerIdentifier)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(installerIdentifier);
+
+            // Verify Installers is not null.
+            this.AssertInstallersNotNull();
+
+            this.Installers.Remove(installerIdentifier);
+
+            if (this.Installers.Count == 0)
+            {
+                this.Installers = null;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get Installer.
+        /// </summary>
+        /// <param name="installerIdentifier">Installer Identifier.</param>
+        /// <returns>Installers.</returns>
+        public Installers GetInstaller(string installerIdentifier)
+        {
+            // Verify Installers is not null.
+            this.AssertInstallersNotNull();
+
+            return this.Installers.Get(installerIdentifier);
+        }
+
+        /// <summary>
+        /// Add an Locale.
+        /// </summary>
+        /// <param name="locale">Locale to Add.</param>
+        public void AddLocale(Locale locale)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(locale);
+
+            // If Locales are null instantiate.
+            if (this.Locales == null)
+            {
+                this.Locales = new Locales();
+            }
+
+            this.Locales.Add(locale);
+        }
+
+        /// <summary>
+        /// Update Locale.
+        /// </summary>
+        /// <param name="obj">Locale to Update.</param>
+        public void UpdateLocale(Locale obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify Locales is not null.
+            this.AssertLocalesNotNull();
+
+            this.Locales.Update(obj);
+        }
+
+        /// <summary>
+        /// Remove Locale.
+        /// </summary>
+        /// <param name="packageLocale">Installer Identifier.</param>
+        /// <returns>Bool.</returns>
+        public bool RemoveLocale(string packageLocale)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(packageLocale);
+
+            // Verify Locale is not null.
+            this.AssertLocalesNotNull();
+
+            this.Locales.Remove(packageLocale);
+
+            if (this.Locales.Count == 0)
+            {
+                this.Locales = null;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get Installer.
+        /// </summary>
+        /// <param name="packageLocale">Package Locale.</param>
+        /// <returns>Installers.</returns>
+        public Locales GetLocale(string packageLocale)
+        {
+            // Verify Installers is not null.
+            this.AssertLocalesNotNull();
+
+            return this.Locales.Get(packageLocale);
+        }
+
         /// <inheritdoc />
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -167,6 +308,29 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Installers != null ? this.Installers.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Locales != null ? this.Locales.GetHashCode() : 0);
                 return hashCode;
+            }
+        }
+
+        private void AssertInstallersNotNull()
+        {
+            if (this.Installers == null)
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.InstallerIsNullErrorCode,
+                        ErrorConstants.InstallerIsNullErrorMessage));
+            }
+        }
+
+        private void AssertLocalesNotNull()
+        {
+            // Verify Locales is not null.
+            if (this.Locales == null)
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.LocaleIsNullErrorCode,
+                        ErrorConstants.LocaleIsNullErrorMessage));
             }
         }
     }

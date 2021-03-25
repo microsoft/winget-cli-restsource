@@ -77,12 +77,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Validate Base
             results.AddRange(base.Validate(validationContext));
 
-            // Verify Required Fields
-            if (this.Moniker == null)
-            {
-                results.Add(new ValidationResult($"Moniker must not be null."));
-            }
-            else
+            // Validate Optional Members
+            if (this.Moniker != null)
             {
                 Validator.TryValidateObject(this.Moniker, new ValidationContext(this.Moniker, null, null), results);
             }

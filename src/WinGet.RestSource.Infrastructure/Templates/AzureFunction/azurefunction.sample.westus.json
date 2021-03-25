@@ -5,6 +5,9 @@
         "location": {
             "value": "westus"
         },
+        "serverIdenifier": {
+            "value": ""
+        },
         "functionName": {
             "value": ""
         },

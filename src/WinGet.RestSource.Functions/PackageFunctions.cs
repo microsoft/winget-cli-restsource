@@ -7,6 +7,7 @@
 namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -27,7 +28,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     /// <summary>
     /// This class contains the functions for interacting with packages.
     /// </summary>
-    /// TODO: Refactor duplicate code to library.
     public class PackageFunctions
     {
         private readonly ICosmosDatabase cosmosDatabase;
@@ -63,15 +63,15 @@ namespace Microsoft.WinGet.RestSource.Functions
                 ApiDataValidator.Validate<Package>(package);
 
                 // Convert Package to Manifest for storage
-                Manifest manifest = new Manifest(package);
-                CosmosManifest cosmosManifest = new CosmosManifest(manifest);
+                PackageManifest packageManifest = new PackageManifest(package);
+                CosmosPackageManifest cosmosPackageManifest = new CosmosPackageManifest(packageManifest);
 
                 // Create Document and add to cosmos.
-                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
                 {
-                    Document = cosmosManifest,
+                    Document = cosmosPackageManifest,
                 };
-                await this.cosmosDatabase.Add<CosmosManifest>(cosmosDocument);
+                await this.cosmosDatabase.Add<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -84,7 +84,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(FormatJSON.Indented(package, log));
+            return new OkObjectResult(new ApiResponse<Package>(package));
         }
 
         /// <summary>
@@ -93,27 +93,27 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This will delete all sub resources as well.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="id">Package ID.</param>
+        /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageDelete)]
         public async Task<IActionResult> PackageDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{packageIdentifier}")]
             HttpRequest req,
-            string id,
+            string packageIdentifier,
             ILogger log)
         {
             try
             {
                 // Parse Variables
-                CosmosDocument<CosmosManifest> cosmosDocument = new CosmosDocument<CosmosManifest>
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
                 {
-                    Id = id,
-                    PartitionKey = id,
+                    Id = packageIdentifier,
+                    PartitionKey = packageIdentifier,
                 };
 
                 // Delete Document
-                await this.cosmosDatabase.Delete<CosmosManifest>(cosmosDocument);
+                await this.cosmosDatabase.Delete<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -134,14 +134,14 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to make put requests for packages.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="id">Package ID.</param>
+        /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackagePut)]
         public async Task<IActionResult> PackagesPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{id}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{packageIdentifier}")]
             HttpRequest req,
-            string id,
+            string packageIdentifier,
             ILogger log)
         {
             Package package = null;
@@ -153,14 +153,14 @@ namespace Microsoft.WinGet.RestSource.Functions
                 ApiDataValidator.Validate<Package>(package);
 
                 // Fetch Current Package
-                CosmosDocument<CosmosManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
 
                 // Update Package
                 cosmosDocument.Document.Update(package);
 
                 // Save Package
-                await this.cosmosDatabase.Update<CosmosManifest>(cosmosDocument);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
             catch (DefaultException e)
             {
@@ -173,7 +173,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(FormatJSON.Indented(package, log));
+            return new OkObjectResult(new ApiResponse<Package>(package));
         }
 
         /// <summary>
@@ -182,24 +182,25 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This also allows us to query manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="id">Package ID.</param>
+        /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageGet)]
         public async Task<IActionResult> PackagesGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packages/{id?}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packages/{packageIdentifier?}")]
             HttpRequest req,
-            string id,
+            string packageIdentifier,
             ILogger log)
         {
-            ApiResponse<Package> apiResponse = new ApiResponse<Package>();
+            List<Package> packages = new List<Package>();
+            string continuationToken = null;
 
             try
             {
-                if (string.IsNullOrWhiteSpace(id))
+                if (string.IsNullOrWhiteSpace(packageIdentifier))
                 {
                     // Parse Parameters
-                    string continuationToken = req.Query["ct"];
+                    continuationToken = req.Query["ct"];
                     StringEncoder.DecodeContinuationToken(continuationToken);
                     continuationToken = StringEncoder.DecodeContinuationToken(continuationToken);
 
@@ -213,30 +214,30 @@ namespace Microsoft.WinGet.RestSource.Functions
                     };
 
                     // Get iQueryable
-                    IQueryable<CosmosManifest> query = this.cosmosDatabase.GetIQueryable<CosmosManifest>(feedOptions);
+                    IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
 
                     // Apply query parameters to query
                     // TODO: Apply Query Parameters
 
                     // Finalize Query
-                    IDocumentQuery<CosmosManifest> documentQuery = query.AsDocumentQuery();
+                    IDocumentQuery<CosmosPackageManifest> documentQuery = query.AsDocumentQuery();
 
                     // Get results
-                    CosmosPage<CosmosManifest> cosmosPage =
-                        await this.cosmosDatabase.GetByDocumentQuery<CosmosManifest>(documentQuery);
-                    foreach (CosmosManifest result in cosmosPage.Items)
+                    CosmosPage<CosmosPackageManifest> cosmosPage = await this.cosmosDatabase.GetByDocumentQuery<CosmosPackageManifest>(documentQuery);
+                    foreach (CosmosPackageManifest result in cosmosPage.Items)
                     {
-                        apiResponse.Data.Add(result.ToPackage());
+                        packages.Add(result.ToPackage());
                     }
 
-                    apiResponse.ContinuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
+                    continuationToken = StringEncoder.EncodeContinuationToken(cosmosPage.ContinuationToken);
                 }
                 else
                 {
                     // Fetch Current Package
-                    CosmosDocument<CosmosManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosManifest>(id, id);
+                    CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                     log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-                    apiResponse.Data.Add(cosmosDocument.Document.ToPackage());
+                    packages.Add(cosmosDocument.Document.ToPackage());
+                    continuationToken = null;
                 }
             }
             catch (DefaultException e)
@@ -250,10 +251,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return apiResponse.Data.Count switch
+            return packages.Count switch
             {
                 0 => new NoContentResult(),
-                _ => new OkObjectResult(FormatJSON.Indented(apiResponse, log))
+                1 => new OkObjectResult(new ApiResponse<Package>(packages.First(), continuationToken)),
+                _ => new OkObjectResult(new ApiResponse<List<Package>>(packages, continuationToken)),
             };
         }
     }

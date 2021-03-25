@@ -9,7 +9,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Models.Errors;
 
     /// <summary>
     /// Locales.
@@ -37,6 +41,77 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.SetDefaults();
         }
 
+        /// <summary>
+        /// Add new Locale.
+        /// </summary>
+        /// <param name="obj">Locale to add.</param>
+        public new void Add(Locale obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify locale does not exist
+            this.AssertLocaleDoesNotExists(obj.PackageLocale);
+
+            base.Add(obj);
+        }
+
+        /// <summary>
+        /// Update an Locale.
+        /// </summary>
+        /// <param name="obj">New Locale.</param>
+        public void Update(Locale obj)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(obj);
+
+            // Verify locale exists
+            this.AssertLocaleExists(obj.PackageLocale);
+
+            // Update
+            this[this.FindIndex(0, installer => installer.PackageLocale == obj.PackageLocale)].Update(obj);
+        }
+
+        /// <summary>
+        /// Remove an Locale.
+        /// </summary>
+        /// <param name="packageLocale">Package Locale to remove.</param>
+        /// <returns>Bool.</returns>
+        public bool Remove(string packageLocale)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(packageLocale);
+
+            // Verify locale exists
+            this.AssertLocaleExists(packageLocale);
+
+            this.RemoveAll(locale => locale.PackageLocale == packageLocale);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get Installers.
+        /// </summary>
+        /// <param name="packageLocale">Package Locale to get.</param>
+        /// <returns>Installers.</returns>
+        public Locales Get(string packageLocale)
+        {
+            Locales locales = new Locales();
+
+            if (string.IsNullOrWhiteSpace(packageLocale))
+            {
+                locales = this;
+            }
+            else
+            {
+                this.AssertLocaleExists(packageLocale);
+                locales.Add(this[this.FindIndex(0, locale => locale.PackageLocale == packageLocale)]);
+            }
+
+            return locales;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -59,6 +134,33 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.APIArrayName = nameof(Locales);
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
+        }
+
+        private bool LocaleExists(string packageLocale)
+        {
+            return this.Any(p => p.PackageLocale == packageLocale);
+        }
+
+        private void AssertLocaleExists(string installerIdentifier)
+        {
+            if (!this.LocaleExists(installerIdentifier))
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.LocaleDoesNotExistErrorCode,
+                        ErrorConstants.LocaleDoesNotExistErrorMessage));
+            }
+        }
+
+        private void AssertLocaleDoesNotExists(string installerIdentifier)
+        {
+            if (this.LocaleExists(installerIdentifier))
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.LocaleAlreadyExistsErrorCode,
+                        ErrorConstants.LocaleAlreadyExistsErrorMessage));
+            }
         }
     }
 }

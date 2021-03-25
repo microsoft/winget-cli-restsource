@@ -46,5 +46,36 @@ namespace Microsoft.WinGet.RestSource.Common
                         error));
             }
         }
+
+        /// <summary>
+        /// Asserts an object is not null, and throws a validation error if it is.
+        /// </summary>
+        /// <param name="obj">Object to Test.</param>
+        /// <typeparam name="T">Type of Object.</typeparam>
+        public static void NotNull<T>(T obj)
+        {
+            if (obj == null)
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.ValidationFailureErrorCode,
+                        ErrorConstants.ValidationFailureErrorMessage));
+            }
+        }
+
+        /// <summary>
+        /// Asserts a string is not null, and throws a validation error if it is.
+        /// </summary>
+        /// <param name="str">String to Test.</param>
+        public static void NotNull(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new InvalidArgumentException(
+                    new InternalRestError(
+                        ErrorConstants.ValidationFailureErrorCode,
+                        ErrorConstants.ValidationFailureErrorMessage));
+            }
+        }
     }
 }

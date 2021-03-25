@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="InstallerFunctions.cs" company="Microsoft Corporation">
+// <copyright file="LocaleFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -26,52 +26,52 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Models.Schemas;
 
     /// <summary>
-    /// This class contains the functions for interacting with installers.
+    /// This class contains the functions for interacting with locales.
     /// </summary>
-    public class InstallerFunctions
+    public class LocaleFunctions
     {
         private readonly ICosmosDatabase cosmosDatabase;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstallerFunctions"/> class.
+        /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
         /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public InstallerFunctions(ICosmosDatabase cosmosDatabase)
+        public LocaleFunctions(ICosmosDatabase cosmosDatabase)
         {
             this.cosmosDatabase = cosmosDatabase;
         }
 
         /// <summary>
-        /// Installer Post Function.
-        /// This allows us to make post requests for installers.
+        /// Locale Post Function.
+        /// This allows us to make post requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerPost)]
-        public async Task<IActionResult> InstallerPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers")]
+        [FunctionName(FunctionConstants.LocalePost)]
+        public async Task<IActionResult> LocalePostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
             ILogger log)
         {
-            Installer installer = null;
+            Locale locale = null;
 
             try
             {
-                // Parse body as installer
-                installer = await Parser.StreamParser<Installer>(req.Body, log);
-                ApiDataValidator.Validate<Installer>(installer);
+                // Parse body as locale
+                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                ApiDataValidator.Validate<Locale>(locale);
 
                 // Fetch Current Package
                 CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Add Installer
-                cosmosDocument.Document.AddInstaller(installer, packageVersion);
+                // Add Locale
+                cosmosDocument.Document.AddLocale(locale, packageVersion);
 
                 // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
@@ -88,29 +88,29 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Installer>(installer));
+            return new OkObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
-        /// Installer Delete Function.
-        /// This allows us to make delete requests for versions.
+        /// Locale Delete Function.
+        /// This allows us to make delete requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerDelete)]
-        public async Task<IActionResult> InstallerDeleteAsync(
+        [FunctionName(FunctionConstants.LocaleDelete)]
+        public async Task<IActionResult> LocaleDeleteAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
                 FunctionConstants.FunctionDelete,
-                Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier}")]
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
+            string packageLocale,
             ILogger log)
         {
             try
@@ -119,8 +119,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Remove Installer
-                cosmosDocument.Document.RemoveInstaller(installerIdentifier, packageVersion);
+                // Remove locale
+                cosmosDocument.Document.RemoveLocale(packageLocale, packageVersion);
 
                 // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
@@ -141,41 +141,41 @@ namespace Microsoft.WinGet.RestSource.Functions
         }
 
         /// <summary>
-        /// Installer Put Function.
-        /// This allows us to make put requests for installers.
+        /// Locale Put Function.
+        /// This allows us to make put requests for locale.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerPut)]
-        public async Task<IActionResult> InstallerPutAsync(
+        [FunctionName(FunctionConstants.LocalePut)]
+        public async Task<IActionResult> LocalePutAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
                 FunctionConstants.FunctionPut,
-                Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier}")]
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
+            string packageLocale,
             ILogger log)
         {
-            Installer installer = null;
+            Locale locale = null;
 
             try
             {
                 // Parse body as package
-                installer = await Parser.StreamParser<Installer>(req.Body, log);
-                ApiDataValidator.Validate<Installer>(installer);
+                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                ApiDataValidator.Validate<Locale>(locale);
 
-                if (installer.InstallerIdentifier != installerIdentifier)
+                if (locale.PackageLocale != packageLocale)
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
-                            ErrorConstants.InstallerDoesNotMatchErrorCode,
-                            ErrorConstants.InstallerDoesNotMatchErrorMessage));
+                            ErrorConstants.LocaleDoesNotMatchErrorCode,
+                            ErrorConstants.LocaleDoesNotMatchErrorMessage));
                 }
 
                 // Fetch Current Package
@@ -183,8 +183,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                     await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Update Installer
-                cosmosDocument.Document.UpdateInstaller(installer, packageVersion);
+                // Update locale
+                cosmosDocument.Document.UpdateLocale(locale, packageVersion);
 
                 // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
@@ -201,32 +201,32 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Installer>(installer));
+            return new OkObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
-        /// Installer Get Function.
-        /// This allows us to make get requests for installers.
+        /// Locale Get Function.
+        /// This allows us to make put requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerGet)]
-        public async Task<IActionResult> InstallerGetAsync(
+        [FunctionName(FunctionConstants.LocaleGet)]
+        public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
                 FunctionConstants.FunctionGet,
-                Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier?}")]
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
+            string packageLocale,
             ILogger log)
         {
-            List<Installer> installers = new List<Installer>();
+            List<Locale> locales = new List<Locale>();
 
             try
             {
@@ -235,8 +235,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                     await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                Installers cosmosInstallers = cosmosDocument.Document.GetInstaller(installerIdentifier, packageVersion);
-                installers.AddRange(cosmosInstallers.Select(installer => new Installer(installer)));
+                Locales cosmosLocales = cosmosDocument.Document.GetLocale(packageLocale, packageVersion);
+                locales.AddRange(cosmosLocales.Select(locale => new Locale(locale)));
             }
             catch (DefaultException e)
             {
@@ -249,11 +249,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return installers.Count switch
+            return locales.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(new ApiResponse<Installer>(installers.First())),
-                _ => new OkObjectResult(new ApiResponse<List<Installer>>(installers)),
+                1 => new OkObjectResult(new ApiResponse<Locale>(locales.First())),
+                _ => new OkObjectResult(new ApiResponse<List<Locale>>(locales)),
             };
         }
     }
