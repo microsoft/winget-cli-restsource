@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Errors;
@@ -88,7 +89,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Version>(version));
+            return new ApiObjectResult(new ApiResponse<Version>(version));
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Version>(version));
+            return new ApiObjectResult(new ApiResponse<Version>(version));
         }
 
         /// <summary>
@@ -239,8 +240,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             return versions.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(new ApiResponse<Version>(versions.First())),
-                _ => new OkObjectResult(new ApiResponse<List<Version>>(versions)),
+                1 => new ApiObjectResult(new ApiResponse<Version>(versions.First())),
+                _ => new ApiObjectResult(new ApiResponse<List<Version>>(versions)),
             };
         }
     }

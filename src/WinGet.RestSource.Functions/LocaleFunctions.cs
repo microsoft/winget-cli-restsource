@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Errors;
@@ -88,7 +89,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Locale>(locale));
+            return new ApiObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
@@ -201,7 +202,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Locale>(locale));
+            return new ApiObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
@@ -252,8 +253,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             return locales.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(new ApiResponse<Locale>(locales.First())),
-                _ => new OkObjectResult(new ApiResponse<List<Locale>>(locales)),
+                1 => new ApiObjectResult(new ApiResponse<Locale>(locales.First())),
+                _ => new ApiObjectResult(new ApiResponse<List<Locale>>(locales)),
             };
         }
     }

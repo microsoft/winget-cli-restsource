@@ -20,10 +20,12 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.
@@ -84,7 +86,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Package>(package));
+            return new ApiObjectResult(new ApiResponse<Package>(package), 203, NullValueHandling.Ignore, Formatting.None);
         }
 
         /// <summary>
@@ -173,7 +175,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new OkObjectResult(new ApiResponse<Package>(package));
+            return new ApiObjectResult(new ApiResponse<Package>(package), 203, NullValueHandling.Ignore, Formatting.None);
         }
 
         /// <summary>
@@ -254,8 +256,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             return packages.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new OkObjectResult(new ApiResponse<Package>(packages.First(), continuationToken)),
-                _ => new OkObjectResult(new ApiResponse<List<Package>>(packages, continuationToken)),
+                1 => new ApiObjectResult(new ApiResponse<Package>(packages.First(), continuationToken), 203, NullValueHandling.Ignore, Formatting.None),
+                _ => new ApiObjectResult(new ApiResponse<List<Package>>(packages, continuationToken), 203, NullValueHandling.Ignore, Formatting.None),
             };
         }
     }

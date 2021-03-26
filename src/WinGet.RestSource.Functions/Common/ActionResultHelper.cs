@@ -4,11 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Common
+namespace Microsoft.WinGet.RestSource.Functions.Common
 {
     using System;
     using System.Net;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Errors;
 
@@ -22,7 +21,7 @@ namespace Microsoft.WinGet.RestSource.Common
         /// </summary>
         /// <param name="internalRestError">Error to process.</param>
         /// <returns>Object Result.</returns>
-        public static ObjectResult ProcessError(InternalRestError internalRestError)
+        public static ApiObjectResult ProcessError(InternalRestError internalRestError)
         {
             switch (internalRestError.ErrorCode)
             {
@@ -58,7 +57,7 @@ namespace Microsoft.WinGet.RestSource.Common
         /// </summary>
         /// <param name="exception">Exception.</param>
         /// <returns>Object Result.</returns>
-        public static ObjectResult UnhandledError(Exception exception = null)
+        public static ApiObjectResult UnhandledError(Exception exception = null)
         {
             InternalRestError internalRestError = new InternalRestError(
                 ErrorConstants.UnhandledErrorCode,
@@ -73,12 +72,9 @@ namespace Microsoft.WinGet.RestSource.Common
         /// <param name="data">Data to Return.</param>
         /// <param name="code">Return Code.</param>
         /// <returns>Object Result.</returns>
-        private static ObjectResult CreateObjectResult(object data, int code = 200)
+        private static ApiObjectResult CreateObjectResult(object data, int code)
         {
-            return new ObjectResult(data)
-            {
-                StatusCode = code,
-            };
+            return new ApiObjectResult(data, code);
         }
     }
 }
