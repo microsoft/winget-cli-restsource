@@ -7,17 +7,16 @@
 namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Schemas;
 
     /// <summary>
@@ -65,7 +64,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new ApiObjectResult(information);
+            return new ApiObjectResult(new ApiResponse<Information>(information));
         }
     }
 }

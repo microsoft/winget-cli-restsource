@@ -12,7 +12,6 @@ paths:
   /packages:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
 
     post:
       summary: Add Package Metadata
@@ -52,7 +51,6 @@ paths:
   /packages/{PackageIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -113,7 +111,6 @@ paths:
   /packages/{PackageIdentifier}/versions:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     post:
@@ -154,7 +151,6 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -216,7 +212,6 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -258,7 +253,6 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/PackageLocale'
@@ -321,7 +315,6 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -363,7 +356,6 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/InstallerIdentifier'
@@ -426,7 +418,6 @@ paths:
   /packageManifests:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
 
     post:
       summary: This creates all subcomponents contained in the logical representation of a package manifest
@@ -452,7 +443,6 @@ paths:
   /packageManifests/{PackageIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -518,7 +508,6 @@ paths:
   /manifestSearch:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
-      - $ref: '#/components/parameters/ObjectVersion'
 
     post:
       summary: This retrieves package manifests for a given search request.
@@ -581,12 +570,6 @@ components:
     # API Definitions
     APIVersion:
       description: The API Version to use for the request
-      type: string
-      pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
-      maxLength: 128
-
-    ObjectVersion:
-      description: The Object Version to use for the request
       type: string
       pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
       maxLength: 128
@@ -1369,6 +1352,15 @@ components:
             Data:
               $ref: '#/components/schemas/ManifestSchema'
 
+    InformationResponseSchema:
+      description: Manifest Response Schema
+      allOf:
+        - $ref: '#/components/schemas/ResponseObjectSchema'
+        - type: object
+          properties:
+            Data:
+              $ref: '#/components/schemas/InformationSchema'
+
     ManifestSearchResultSchema:
       description: Package Search Result Schema
       allOf:
@@ -1471,20 +1463,12 @@ components:
   parameters:
 
     APIVersion:
-      name: APIVersion
+      name: Version
       in: header
       description: This is the API Versions Parameter.
       required: false
       schema:
         $ref: '#/components/schemas/APIVersion'
-
-    ObjectVersion:
-      name: ObjectVersion
-      in: header
-      description: This is the Object Version Parameter.
-      required: false
-      schema:
-        $ref: '#/components/schemas/ObjectVersion'
 
     PackageIdentifier:
       name: PackageIdentifier
@@ -1658,12 +1642,13 @@ components:
         application/Json:
           schema:
             $ref: '#/components/schemas/ManifestSearchResultSchema'
+
     InformationResponse:
       description: Package Response
       content:
         application/Json:
           schema:
-            $ref: '#/components/schemas/InformationSchema'
+            $ref: '#/components/schemas/InformationResponseSchema'
 
     UnauthorizedError:
       description: API key is missing or invalid.

@@ -19,7 +19,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using Commands = Microsoft.WinGet.RestSource.Models.Arrays.Commands;
     using Dependencies = Microsoft.WinGet.RestSource.Models.Objects.Dependencies;
     using FileExtensions = Microsoft.WinGet.RestSource.Models.Arrays.FileExtensions;
-    using Platform = Microsoft.WinGet.RestSource.Models.Enum.Platform;
+    using Platform = Microsoft.WinGet.RestSource.Models.Arrays.Platform;
     using Protocols = Microsoft.WinGet.RestSource.Models.Arrays.Protocols;
 
     /// <summary>

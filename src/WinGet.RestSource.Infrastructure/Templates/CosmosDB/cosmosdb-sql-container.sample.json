@@ -9,7 +9,7 @@
             "value": "WinGet"
         },
         "containerName": {
-            "value": "Manifest"
+            "value": "Manifests"
         },
         "indexingPolicy": {
             "value": {
