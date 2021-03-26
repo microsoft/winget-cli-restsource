@@ -86,7 +86,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new ApiObjectResult(new ApiResponse<Package>(package), 203, NullValueHandling.Ignore, Formatting.None);
+            return new ApiObjectResult(new ApiResponse<Package>(package));
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new ApiObjectResult(new ApiResponse<Package>(package), 203, NullValueHandling.Ignore, Formatting.None);
+            return new ApiObjectResult(new ApiResponse<Package>(package));
         }
 
         /// <summary>
@@ -256,8 +256,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             return packages.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<Package>(packages.First(), continuationToken), 203, NullValueHandling.Ignore, Formatting.None),
-                _ => new ApiObjectResult(new ApiResponse<List<Package>>(packages, continuationToken), 203, NullValueHandling.Ignore, Formatting.None),
+                1 => new ApiObjectResult(new ApiResponse<Package>(packages.First(), continuationToken)),
+                _ => new ApiObjectResult(new ApiResponse<List<Package>>(packages, continuationToken)),
             };
         }
     }
