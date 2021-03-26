@@ -167,7 +167,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             {
                 Validator.TryValidateObject(this.PackageLocale, new ValidationContext(this.PackageLocale, null, null), results);
 
-                // URL Are generally nullable, but not in this instance.
                 if (string.IsNullOrEmpty(this.PackageLocale.APIString))
                 {
                     results.Add(new ValidationResult($"{this.PackageLocale.APIStringName} '{this.PackageLocale.APIString}' must not be null."));
