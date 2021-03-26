@@ -75,8 +75,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// Remove an Installer.
         /// </summary>
         /// <param name="installerIdentifier">Installer Identifier to remove.</param>
-        /// <returns>Bool.</returns>
-        public bool Remove(string installerIdentifier)
+        public void Remove(string installerIdentifier)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(installerIdentifier);
@@ -85,8 +84,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.AssertInstallerExists(installerIdentifier);
 
             this.RemoveAll(installer => installer.InstallerIdentifier == installerIdentifier);
-
-            return true;
         }
 
         /// <summary>

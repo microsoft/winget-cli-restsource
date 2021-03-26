@@ -136,8 +136,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// Remove Installer.
         /// </summary>
         /// <param name="installerIdentifier">Installer Identifier.</param>
-        /// <returns>Bool.</returns>
-        public bool RemoveInstaller(string installerIdentifier)
+        public void RemoveInstaller(string installerIdentifier)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(installerIdentifier);
@@ -151,8 +150,6 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             {
                 this.Installers = null;
             }
-
-            return true;
         }
 
         /// <summary>
@@ -205,8 +202,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// Remove Locale.
         /// </summary>
         /// <param name="packageLocale">Installer Identifier.</param>
-        /// <returns>Bool.</returns>
-        public bool RemoveLocale(string packageLocale)
+        public void RemoveLocale(string packageLocale)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(packageLocale);
@@ -220,8 +216,6 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             {
                 this.Locales = null;
             }
-
-            return true;
         }
 
         /// <summary>

@@ -76,8 +76,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// Remove an Locale.
         /// </summary>
         /// <param name="packageLocale">Package Locale to remove.</param>
-        /// <returns>Bool.</returns>
-        public bool Remove(string packageLocale)
+        public void Remove(string packageLocale)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(packageLocale);
@@ -86,8 +85,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.AssertLocaleExists(packageLocale);
 
             this.RemoveAll(locale => locale.PackageLocale == packageLocale);
-
-            return true;
         }
 
         /// <summary>

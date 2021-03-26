@@ -78,8 +78,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// Remove an Installer.
         /// </summary>
         /// <param name="packageVersion">Installer Identifier to remove.</param>
-        /// <returns>Bool.</returns>
-        public bool Remove(string packageVersion)
+        public void Remove(string packageVersion)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(packageVersion);
@@ -89,8 +88,6 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
 
             // Remove
             this.RemoveAll(versionExtended => versionExtended.PackageVersion == packageVersion);
-
-            return true;
         }
 
         /// <summary>
