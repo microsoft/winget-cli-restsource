@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="CosmosManifest.cs" company="Microsoft Corporation">
+// <copyright file="CosmosPackageManifest.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -12,30 +12,30 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
     /// <summary>
     /// This is a manifest, which is an extension of the package core model, and the extended version model.
     /// </summary>
-    public class CosmosManifest : Manifest
+    public class CosmosPackageManifest : PackageManifest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CosmosManifest"/> class.
+        /// Initializes a new instance of the <see cref="CosmosPackageManifest"/> class.
         /// </summary>
-        public CosmosManifest()
+        public CosmosPackageManifest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CosmosManifest"/> class.
+        /// Initializes a new instance of the <see cref="CosmosPackageManifest"/> class.
         /// </summary>
-        /// <param name="cosmosManifest">manifest.</param>
-        public CosmosManifest(CosmosManifest cosmosManifest)
-            : base(cosmosManifest)
+        /// <param name="cosmosPackageManifest">manifest.</param>
+        public CosmosPackageManifest(CosmosPackageManifest cosmosPackageManifest)
+            : base(cosmosPackageManifest)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CosmosManifest"/> class.
+        /// Initializes a new instance of the <see cref="CosmosPackageManifest"/> class.
         /// </summary>
-        /// <param name="manifest">manifest.</param>
-        public CosmosManifest(Manifest manifest)
-            : base(manifest)
+        /// <param name="packageManifest">manifest.</param>
+        public CosmosPackageManifest(PackageManifest packageManifest)
+            : base(packageManifest)
         {
         }
 
@@ -49,10 +49,10 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// Converts to a Package Core.
         /// </summary>
         /// <returns>Package Core.</returns>
-        public Manifest ToManifest()
+        public PackageManifest ToManifest()
         {
-            Manifest manifest = new Manifest(this);
-            return manifest;
+            PackageManifest packageManifest = new PackageManifest(this);
+            return packageManifest;
         }
     }
 }

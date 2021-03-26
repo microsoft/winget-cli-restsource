@@ -96,7 +96,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
             if (this.DefaultLocale == null)
             {
-                results.Add(new ValidationResult($"PackageVersion must not be null."));
+                results.Add(new ValidationResult($"DefaultLocale must not be null."));
             }
             else
             {

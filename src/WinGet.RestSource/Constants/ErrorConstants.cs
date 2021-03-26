@@ -124,6 +124,46 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string HttpRequestExceptionErrorMessage = "An HTTP Request Exception Occured.";
 
         /// <summary>
+        /// This is the code for when the object contains no locales.
+        /// </summary>
+        public const int LocaleIsNullErrorCode = 12;
+
+        /// <summary>
+        /// This is the message for when the object contains no locales.
+        /// </summary>
+        public const string LocaleIsNullErrorMessage = "The selected locale contains no locale information.";
+
+        /// <summary>
+        /// This is the code for when an version does not contain the selected locale.
+        /// </summary>
+        public const int LocaleDoesNotExistErrorCode = 13;
+
+        /// <summary>
+        /// This is the message for when an installer does not contain the selected package.
+        /// </summary>
+        public const string LocaleDoesNotExistErrorMessage = "The locale for the selected version does not exist.";
+
+        /// <summary>
+        /// This is the code for when a locales already exists.
+        /// </summary>
+        public const int LocaleAlreadyExistsErrorCode = 14;
+
+        /// <summary>
+        /// This is the message for when a locales already exists.
+        /// </summary>
+        public const string LocaleAlreadyExistsErrorMessage = "The specified locale already exists.";
+
+        /// <summary>
+        /// This is the code for when the locale does not match the document locales.
+        /// </summary>
+        public const int LocaleDoesNotMatchErrorCode = 15;
+
+        /// <summary>
+        /// This is the message for when the locales does not match the document locales.
+        /// </summary>
+        public const string LocaleDoesNotMatchErrorMessage = "The document locale does not match resource locale.";
+
+        /// <summary>
         /// This is the code for a resource Conflict.
         /// </summary>
         public const int ResourceConflictErrorCode = 409;

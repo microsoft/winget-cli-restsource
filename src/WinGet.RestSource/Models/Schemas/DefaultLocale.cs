@@ -74,15 +74,60 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Create Validation Results
             var results = new List<ValidationResult>();
 
+            // Validate Required fields that are optional in base.
+            if (this.Publisher == null)
+            {
+                results.Add(new ValidationResult($"Publisher must not be null."));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(this.Publisher.APIString))
+                {
+                    results.Add(new ValidationResult($"{this.Publisher.APIStringName} '{this.Publisher.APIString}' must not be null."));
+                }
+            }
+
+            if (this.PackageName == null)
+            {
+                results.Add(new ValidationResult($"PackageName must not be null."));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(this.PackageName.APIString))
+                {
+                    results.Add(new ValidationResult($"{this.PackageName.APIStringName} '{this.PackageName.APIString}' must not be null."));
+                }
+            }
+
+            if (this.License == null)
+            {
+                results.Add(new ValidationResult($"License must not be null."));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(this.License.APIString))
+                {
+                    results.Add(new ValidationResult($"{this.License.APIStringName} '{this.License.APIString}' must not be null."));
+                }
+            }
+
+            if (this.ShortDescription == null)
+            {
+                results.Add(new ValidationResult($"ShortDescription must not be null."));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(this.ShortDescription.APIString))
+                {
+                    results.Add(new ValidationResult($"{this.ShortDescription.APIStringName} '{this.ShortDescription.APIString}' must not be null."));
+                }
+            }
+
             // Validate Base
             results.AddRange(base.Validate(validationContext));
 
-            // Verify Required Fields
-            if (this.Moniker == null)
-            {
-                results.Add(new ValidationResult($"Moniker must not be null."));
-            }
-            else
+            // Validate Optional Members
+            if (this.Moniker != null)
             {
                 Validator.TryValidateObject(this.Moniker, new ValidationContext(this.Moniker, null, null), results);
             }

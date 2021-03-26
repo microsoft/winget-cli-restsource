@@ -1,5 +1,5 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="VersionFunctions.cs" company="Microsoft Corporation">
+// -----------------------------------------------------------------------
+// <copyright file="LocaleFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -25,54 +25,54 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
 
     /// <summary>
-    /// This class contains the functions for interacting with versions.
+    /// This class contains the functions for interacting with locales.
     /// </summary>
-    /// TODO: Refactor duplicate code to library.
-    public class VersionFunctions
+    public class LocaleFunctions
     {
         private readonly ICosmosDatabase cosmosDatabase;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VersionFunctions"/> class.
+        /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
         /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public VersionFunctions(ICosmosDatabase cosmosDatabase)
+        public LocaleFunctions(ICosmosDatabase cosmosDatabase)
         {
             this.cosmosDatabase = cosmosDatabase;
         }
 
         /// <summary>
-        /// Version Post Function.
-        /// This allows us to make post requests for versions.
+        /// Locale Post Function.
+        /// This allows us to make post requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
+        /// <param name="packageVersion">Version ID.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionPost)]
-        public async Task<IActionResult> VersionsPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions")]
+        [FunctionName(FunctionConstants.LocalePost)]
+        public async Task<IActionResult> LocalePostAsync(
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales")]
             HttpRequest req,
             string packageIdentifier,
+            string packageVersion,
             ILogger log)
         {
-            Version version = null;
+            Locale locale = null;
 
             try
             {
-                // Parse body as Version
-                version = await Parser.StreamParser<Version>(req.Body, log);
-                ApiDataValidator.Validate<Version>(version);
+                // Parse body as locale
+                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                ApiDataValidator.Validate<Locale>(locale);
 
                 // Fetch Current Package
                 CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Add Version
-                cosmosDocument.Document.AddVersion(version);
+                // Add Locale
+                cosmosDocument.Document.AddLocale(locale, packageVersion);
 
                 // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
@@ -89,38 +89,41 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new ApiObjectResult(new ApiResponse<Version>(version));
+            return new ApiObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
-        /// Version Delete Function.
-        /// This allows us to make Delete requests for versions.
+        /// Locale Delete Function.
+        /// This allows us to make delete requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionDelete)]
-        public async Task<IActionResult> VersionsDeleteAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{packageIdentifier}/versions/{packageVersion}")]
+        [FunctionName(FunctionConstants.LocaleDelete)]
+        public async Task<IActionResult> LocaleDeleteAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionDelete,
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
+            string packageLocale,
             ILogger log)
         {
             try
             {
                 // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Remove Version
-                cosmosDocument.Document.RemoveVersion(packageVersion);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Remove locale
+                cosmosDocument.Document.RemoveLocale(packageLocale, packageVersion);
 
-                // Save Package
+                // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
                 await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
@@ -139,47 +142,52 @@ namespace Microsoft.WinGet.RestSource.Functions
         }
 
         /// <summary>
-        /// Version Put Function.
-        /// This allows us to make put requests for versions.
+        /// Locale Put Function.
+        /// This allows us to make put requests for locale.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionPut)]
-        public async Task<IActionResult> VersionsPutAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{packageIdentifier}/versions/{packageVersion}")]
+        [FunctionName(FunctionConstants.LocalePut)]
+        public async Task<IActionResult> LocalePutAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionPut,
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
+            string packageLocale,
             ILogger log)
         {
-            Version version = null;
+            Locale locale = null;
 
             try
             {
-                // Parse body as Version
-                version = await Parser.StreamParser<Version>(req.Body, log);
-                ApiDataValidator.Validate<Version>(version);
+                // Parse body as package
+                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                ApiDataValidator.Validate<Locale>(locale);
 
-                // Validate Versions Match
-                if (version.PackageVersion != packageVersion)
+                if (locale.PackageLocale != packageLocale)
                 {
                     throw new InvalidArgumentException(
                         new InternalRestError(
-                            ErrorConstants.VersionDoesNotMatchErrorCode,
-                            ErrorConstants.VersionDoesNotMatchErrorMessage));
+                            ErrorConstants.LocaleDoesNotMatchErrorCode,
+                            ErrorConstants.LocaleDoesNotMatchErrorMessage));
                 }
 
                 // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Update
-                cosmosDocument.Document.Versions.Update(version);
+                // Update locale
+                cosmosDocument.Document.UpdateLocale(locale, packageVersion);
 
-                // Save Package
+                // Save Document
                 ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
                 await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
             }
@@ -194,37 +202,42 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return new ApiObjectResult(new ApiResponse<Version>(version));
+            return new ApiObjectResult(new ApiResponse<Locale>(locale));
         }
 
         /// <summary>
-        /// Version Get Function.
-        /// This allows us to make get requests for versions.
+        /// Locale Get Function.
+        /// This allows us to make put requests for locales.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
+        /// <param name="packageLocale">Package locale.</param>
         /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionGet)]
-        public async Task<IActionResult> VersionsGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packages/{packageIdentifier}/versions/{packageVersion?}")]
+        [FunctionName(FunctionConstants.LocaleGet)]
+        public async Task<IActionResult> LocaleGetAsync(
+            [HttpTrigger(
+                AuthorizationLevel.Anonymous,
+                FunctionConstants.FunctionGet,
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
+            string packageLocale,
             ILogger log)
         {
-            List<Version> versions = new List<Version>();
+            List<Locale> locales = new List<Locale>();
 
             try
             {
                 // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
+                CosmosDocument<CosmosPackageManifest> cosmosDocument =
+                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
                 log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
 
-                // Get Versions and convert.
-                VersionsExtended extended = cosmosDocument.Document.GetVersion(packageVersion);
-                versions.AddRange(extended.Select(ver => new Version(ver)));
+                Locales cosmosLocales = cosmosDocument.Document.GetLocale(packageLocale, packageVersion);
+                locales.AddRange(cosmosLocales.Select(locale => new Locale(locale)));
             }
             catch (DefaultException e)
             {
@@ -237,11 +250,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return versions.Count switch
+            return locales.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<Version>(versions.First())),
-                _ => new ApiObjectResult(new ApiResponse<List<Version>>(versions)),
+                1 => new ApiObjectResult(new ApiResponse<Locale>(locales.First())),
+                _ => new ApiObjectResult(new ApiResponse<List<Locale>>(locales)),
             };
         }
     }

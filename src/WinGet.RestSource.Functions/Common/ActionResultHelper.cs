@@ -4,14 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Common
+namespace Microsoft.WinGet.RestSource.Functions.Common
 {
     using System;
     using System.Net;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Errors;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// This Creates Action Results.
@@ -23,31 +21,34 @@ namespace Microsoft.WinGet.RestSource.Common
         /// </summary>
         /// <param name="internalRestError">Error to process.</param>
         /// <returns>Object Result.</returns>
-        public static ObjectResult ProcessError(InternalRestError internalRestError)
+        public static ApiObjectResult ProcessError(InternalRestError internalRestError)
         {
             switch (internalRestError.ErrorCode)
             {
                 case ErrorConstants.ResourceConflictErrorCode:
                 case ErrorConstants.VersionAlreadyExistsErrorCode:
                 case ErrorConstants.InstallerAlreadyExistsErrorCode:
-                    return CreateJsonObjectResult((int)HttpStatusCode.Conflict, internalRestError);
+                case ErrorConstants.LocaleAlreadyExistsErrorCode:
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.Conflict);
 
                 case ErrorConstants.ResourceNotFoundErrorCode:
                 case ErrorConstants.VersionsIsNullErrorCode:
                 case ErrorConstants.VersionDoesNotExistErrorCode:
                 case ErrorConstants.InstallerIsNullErrorCode:
                 case ErrorConstants.InstallerDoesNotExistErrorCode:
-                    return CreateJsonObjectResult((int)HttpStatusCode.NotFound, internalRestError);
+                case ErrorConstants.LocaleIsNullErrorCode:
+                case ErrorConstants.LocaleDoesNotExistErrorCode:
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.NotFound);
 
                 case ErrorConstants.PreconditionFailedErrorCode:
-                    return CreateJsonObjectResult((int)HttpStatusCode.PreconditionFailed, internalRestError);
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.PreconditionFailed);
 
                 case ErrorConstants.ValidationFailureErrorCode:
-                    return CreateJsonObjectResult((int)HttpStatusCode.BadRequest, internalRestError);
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.BadRequest);
 
                 case ErrorConstants.UnhandledErrorCode:
                 default:
-                    return CreateJsonObjectResult((int)HttpStatusCode.InternalServerError, internalRestError);
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -56,7 +57,7 @@ namespace Microsoft.WinGet.RestSource.Common
         /// </summary>
         /// <param name="exception">Exception.</param>
         /// <returns>Object Result.</returns>
-        public static ObjectResult UnhandledError(Exception exception = null)
+        public static ApiObjectResult UnhandledError(Exception exception = null)
         {
             InternalRestError internalRestError = new InternalRestError(
                 ErrorConstants.UnhandledErrorCode,
@@ -68,19 +69,12 @@ namespace Microsoft.WinGet.RestSource.Common
         /// <summary>
         /// This creates a JSON based Object Result.
         /// </summary>
-        /// <param name="code">Return Code.</param>
         /// <param name="data">Data to Return.</param>
-        /// <param name="formatting">Formatting to use. Default is indented.</param>
+        /// <param name="code">Return Code.</param>
         /// <returns>Object Result.</returns>
-        private static ObjectResult CreateJsonObjectResult(
-            int code,
-            object data,
-            Formatting formatting = Formatting.Indented)
+        private static ApiObjectResult CreateObjectResult(object data, int code)
         {
-            return new ObjectResult(JsonConvert.SerializeObject(data, formatting))
-            {
-                StatusCode = code,
-            };
+            return new ApiObjectResult(data, code);
         }
     }
 }

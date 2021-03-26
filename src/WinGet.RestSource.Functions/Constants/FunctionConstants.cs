@@ -115,5 +115,30 @@ namespace Microsoft.WinGet.RestSource.Functions.Constants
         /// Installer Get Function Name.
         /// </summary>
         public const string InstallerGet = "InstallerGet";
+
+        /// <summary>
+        /// Locale Post Function Name.
+        /// </summary>
+        public const string LocalePost = "LocalePost";
+
+        /// <summary>
+        /// Locale Delete Function Name.
+        /// </summary>
+        public const string LocaleDelete = "LocaleDelete";
+
+        /// <summary>
+        /// Locale Put Function Name.
+        /// </summary>
+        public const string LocalePut = "LocalePut";
+
+        /// <summary>
+        /// Locale Get Function Name.
+        /// </summary>
+        public const string LocaleGet = "LocaleGet";
+
+        /// <summary>
+        /// Information Get Function Name.
+        /// </summary>
+        public const string InformationGet = "InformationGet";
     }
 }
