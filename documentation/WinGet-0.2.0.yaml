@@ -668,6 +668,7 @@ components:
         $ref: '#/components/schemas/Tag'
 
     Channel:
+      description: This field is not supported by the client yet. The client will set this to null when processing.
       type: string
       nullable: true
       minLength: 2
@@ -695,7 +696,6 @@ components:
     InstallerType:
       description: Enumeration of supported installer types
       type: string
-      nullable: true
       enum:
         - msix
         - msi
@@ -899,14 +899,14 @@ components:
             maxLength: 128
 
     PackageFamilyName:
-      description: PackageFamilyName for appx or msix installer. Could be used for correlation of packages across sources
+      description: PackageFamilyName for appx or msix installer. Could be used for correlation of packages across sources. This is restricted to appx or msix.
       type: string
       nullable: true
       pattern: "^[A-Za-z0-9][-\\.A-Za-z0-9]+_[A-Za-z0-9]{13}$"
       maxLength: 255
 
     ProductCode:
-      description: ProductCode could be used for correlation of packages across sources
+      description: ProductCode could be used for correlation of packages across sources. This is restricted to exe, inno, msi, nullsoft, wix, or burn.
       type: string
       nullable: true
       minLength: 1
@@ -1376,17 +1376,17 @@ components:
     ManifestSearchRequestSchema:
       description: Model containing manifest search request schema.
       properties:
-        maximumResults:
+        MaximumResults:
           type: integer
-        fetchAllManifests:
+        FetchAllManifests:
           type: boolean
-        query:
+        Query:
           $ref: '#/components/schemas/SearchRequestQuerySchema'
-        inclusions:
+        Inclusions:
           type: array
           items:
             $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
-        filters:
+        Filters:
           type: array
           items:
             $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
@@ -1418,7 +1418,7 @@ components:
     SearchRequestPackageMatchFilterSchema:
       description: Model containing manifest search request Package Match Filter schema.
       properties:
-        packageMatchField:
+        PackageMatchField:
           $ref: '#/components/schemas/PackageMatchFieldSchema'
         RequestMatch:
           $ref: '#/components/schemas/SearchRequestMatchSchema'
