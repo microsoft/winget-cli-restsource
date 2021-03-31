@@ -5,6 +5,16 @@
 trigger:
 - master
 
+# PR triggers
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - pipelines/*
+    - src/*
+
 jobs:
 - job: 'BuildTestPublish'
   displayName: 'Build Test & Publish'
