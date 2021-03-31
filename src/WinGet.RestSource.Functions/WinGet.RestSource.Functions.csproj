@@ -14,7 +14,7 @@
         <NoWarn>1701;1702;NU1701</NoWarn>
         <WarningsAsErrors/>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,7 +23,7 @@
         <NoWarn>1701;1702;NU1701;</NoWarn>
         <WarningsAsErrors/>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

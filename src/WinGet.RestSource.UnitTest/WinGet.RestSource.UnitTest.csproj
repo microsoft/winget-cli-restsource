@@ -10,14 +10,14 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsAsErrors/>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.UnitTest\Microsoft.Winget.RestSource.UnitTest.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.UnitTest\Microsoft.Winget.RestSource.UnitTest.Documentation.xml</DocumentationFile>
         <NoWarn>1701;1702;NU1701</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsAsErrors/>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.UnitTest\Microsoft.Winget.RestSource.UnitTest.xml</DocumentationFile>
+        <DocumentationFile>$(SolutionDir)WinGet.RestSource.UnitTest\Microsoft.Winget.RestSource.UnitTest.Documentation.xml</DocumentationFile>
         <NoWarn>1701;1702;NU1701</NoWarn>
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
