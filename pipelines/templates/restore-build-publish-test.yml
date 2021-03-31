@@ -1,7 +1,7 @@
 # Template helper to restore, build, and publish
 
 steps:
-# Restore
+## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
   inputs:
@@ -11,7 +11,7 @@ steps:
     nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGEt.config'
     restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
 
-# Build
+## Build
 - task: VSBuild@1
   displayName: Build
   inputs:
@@ -19,7 +19,29 @@ steps:
     configuration: '$(BuildConfiguration)'
     clean: true
 
-# Component Governance
+## Publish
+# Publish ARM Templates
+- template: copy-and-publish.yml
+  parameters:
+    name: WinGet.Restsource.Infrastructure
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+
+# Publish Rest Function App
+- template: package-and-publish.yml
+  parameters:
+    name: WinGet.RestSource.Functions
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
+    buildconfig: '$(BuildConfiguration)'
+    zipAfterPublish: True
+
+## Run Unit Tests
+- template: run-unittests.yml
+  parameters:
+    name: WinGet.RestSource.UnitTest
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    dll: Microsoft.WinGet.RestSource.UnitTest.dll
+
+## Component Governance
 - task: ComponentGovernanceComponentDetection@0
   displayName: Component Governance
   inputs:

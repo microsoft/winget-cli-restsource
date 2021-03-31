@@ -1,0 +1,22 @@
+# Template helper to package projects (using DotNetCoreCLI Publish Command) and publish them as an artifact
+parameters:
+  name: ''
+  projects: ''
+  buildconfig: ''
+  zipAfterPublish: ''
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Package Azure Function: WinGet.RestSource-${{ parameters.name }}'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '${{ parameters.projects }}'
+    arguments: '--configuration ${{ parameters.buildconfig }} --output $(Build.ArtifactStagingDirectory)\${{ parameters.name }} --no-restore'
+    zipAfterPublish: ${{ parameters.zipAfterPublish }}
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.name }}'
+    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'

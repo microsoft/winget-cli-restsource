@@ -1,0 +1,19 @@
+# Template helper to copy files and publish them as an artifact
+parameters:
+  name: ''
+  source: ''
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: ${{ parameters.name }}'
+  inputs:
+    SourceFolder: ${{ parameters.source }}
+    TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.name }}'
+    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'
