@@ -31,5 +31,5 @@ steps:
   displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
   condition: succeededOrFailed()
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\TestOutput'
+    PathtoPublish: '$(Agent.TempDirectory)\TestResults'
     ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'
