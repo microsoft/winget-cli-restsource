@@ -5,9 +5,19 @@
 trigger:
 - master
 
+# PR triggers
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - pipelines/*
+    - src/*
+
 jobs:
 - job: 'BuildTestPublish'
-  displayName: 'Build Test & Publish'
+  displayName: 'Build, Publish & Test'
   timeoutInMinutes: 60
   pool:
     vmImage: windows-2019

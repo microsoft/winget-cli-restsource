@@ -356,8 +356,7 @@ src/.idea/
 src/WinGet.RestSource.Functions/local.settings.json
 
 # Exclude Documentation XML
-src/WinGet.RestSource.Functions/Microsoft.WinGet.RestSource.Functions.xml
-src/WinGet.RestSource/Microsoft.WinGet.RestSource.xml
+src/*/Microsoft.WinGet.RestSource*.Documentation.xml
 
 # Developer ARM template
 src/WinGet.RestSource.Infrastructure/**/*.dev.*json
