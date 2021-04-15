@@ -596,7 +596,7 @@ components:
       description: Publisher Name
       type: string
       minLength: 2
-      maxLength: 128
+      maxLength: 256
 
     Author:
       description: The package author
@@ -609,7 +609,7 @@ components:
       description: The package name
       type: string
       minLength: 2
-      maxLength: 64
+      maxLength: 256
 
     License:
       description: The package license
@@ -656,7 +656,8 @@ components:
       type: string
       nullable: true
       pattern: "^\\S+$"
-      maxLength: 32
+      minLength: 1
+      maxLength: 40
 
     Tags:
       description: List of additional package search terms
@@ -671,7 +672,7 @@ components:
       description: This field is not supported by the client yet. The client will set this to null when processing.
       type: string
       nullable: true
-      minLength: 2
+      minLength: 1
       maxLength: 16
 
     Platform:
@@ -694,7 +695,7 @@ components:
       nullable: true
 
     InstallerType:
-      description: Enumeration of supported installer types
+      description: Enumeration of supported installer types.
       type: string
       enum:
         - msix
@@ -797,7 +798,7 @@ components:
           type: string
           nullable: true
           minLength: 1
-          maxLength: 512
+          maxLength: 2048
 
     InstallerSuccessCodes:
       description: List of supported installer modes
@@ -826,7 +827,7 @@ components:
       maxItems: 16
       items:
         type: string
-        minLength: 2
+        minLength: 1
         maxLength: 40
 
     Protocols:
@@ -838,7 +839,7 @@ components:
       items:
         type: string
         pattern: "^[a-z][-a-z0-9\\.\\+]*$"
-        maxLength: 39
+        maxLength: 2048
 
     FileExtensions:
       description: List of file extensions the package could support
@@ -849,7 +850,7 @@ components:
       items:
         type: string
         pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
-        maxLength: 40
+        maxLength: 64
 
     Dependencies:
       description: List of dependencies
