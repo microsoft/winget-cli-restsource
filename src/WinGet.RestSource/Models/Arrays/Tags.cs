@@ -6,17 +6,19 @@
 
 namespace Microsoft.WinGet.RestSource.Models.Arrays
 {
+    using System;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// Tags.
     /// </summary>
-    public class Tags : ApiArray<Tag>
+    public class Tags : ApiArray<string>
     {
         private const bool Nullable = true;
         private const bool Unique = true;
         private const uint Max = 16;
+        private static readonly Type Validator = typeof(TagValidator);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Tags"/> class.
@@ -27,6 +29,7 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
             this.MaxItems = Max;
+            this.MemberValidator = Validator;
         }
     }
 }

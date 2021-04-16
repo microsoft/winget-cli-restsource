@@ -10,7 +10,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// InstallerSwitches.
@@ -36,37 +36,44 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <summary>
         /// Gets or sets Silent.
         /// </summary>
-        public Switch Silent { get; set; }
+        [SwitchValidator]
+        public string Silent { get; set; }
 
         /// <summary>
         /// Gets or sets SilentWithProgress.
         /// </summary>
-        public Switch SilentWithProgress { get; set; }
+        [SwitchValidator]
+        public string SilentWithProgress { get; set; }
 
         /// <summary>
         /// Gets or sets Interactive.
         /// </summary>
-        public Switch Interactive { get; set; }
+        [SwitchValidator]
+        public string Interactive { get; set; }
 
         /// <summary>
         /// Gets or sets InstallLocation.
         /// </summary>
-        public Switch InstallLocation { get; set; }
+        [SwitchValidator]
+        public string InstallLocation { get; set; }
 
         /// <summary>
         /// Gets or sets Log.
         /// </summary>
-        public Switch Log { get; set; }
+        [SwitchValidator]
+        public string Log { get; set; }
 
         /// <summary>
         /// Gets or sets Upgrade.
         /// </summary>
-        public Switch Upgrade { get; set; }
+        [SwitchValidator]
+        public string Upgrade { get; set; }
 
         /// <summary>
         /// Gets or sets Custom.
         /// </summary>
-        public Switch Custom { get; set; }
+        [SwitchValidator]
+        public string Custom { get; set; }
 
         /// <summary>
         /// Operator==.
@@ -105,47 +112,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // Create Validation Results
-            var results = new List<ValidationResult>();
-
-            // Validate Optional Members
-            if (this.Silent != null)
-            {
-                Validator.TryValidateObject(this.Silent, new ValidationContext(this.Silent, null, null), results);
-            }
-
-            if (this.SilentWithProgress != null)
-            {
-                Validator.TryValidateObject(this.SilentWithProgress, new ValidationContext(this.SilentWithProgress, null, null), results);
-            }
-
-            if (this.Interactive != null)
-            {
-                Validator.TryValidateObject(this.Interactive, new ValidationContext(this.Interactive, null, null), results);
-            }
-
-            if (this.InstallLocation != null)
-            {
-                Validator.TryValidateObject(this.InstallLocation, new ValidationContext(this.InstallLocation, null, null), results);
-            }
-
-            if (this.Log != null)
-            {
-                Validator.TryValidateObject(this.Log, new ValidationContext(this.Log, null, null), results);
-            }
-
-            if (this.Upgrade != null)
-            {
-                Validator.TryValidateObject(this.Upgrade, new ValidationContext(this.Upgrade, null, null), results);
-            }
-
-            if (this.Custom != null)
-            {
-                Validator.TryValidateObject(this.Custom, new ValidationContext(this.Custom, null, null), results);
-            }
-
-            // Return Results
-            return results;
+            return new List<ValidationResult>();
         }
 
         /// <inheritdoc />

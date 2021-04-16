@@ -6,16 +6,18 @@
 
 namespace Microsoft.WinGet.RestSource.Models.Arrays
 {
+    using System;
     using Microsoft.WinGet.RestSource.Models.Core;
 
     /// <summary>
     /// RestrictedCapabilities.
     /// </summary>
-    public class RestrictedCapabilities : ApiArray<Strings.Capabilities>
+    public class RestrictedCapabilities : ApiArray<string>
     {
         private const bool Nullable = true;
         private const bool Unique = true;
         private const uint Max = 1000;
+        private static readonly Type Validator = typeof(Capabilities);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestrictedCapabilities"/> class.
@@ -26,6 +28,7 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
             this.MaxItems = Max;
+            this.MemberValidator = Validator;
         }
     }
 }

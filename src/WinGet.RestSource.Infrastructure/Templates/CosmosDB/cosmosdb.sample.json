@@ -48,6 +48,9 @@
                 },
                 {
                     "ipAddressOrRange": "52.187.184.26"
+                },
+                {
+                    "ipAddressOrRange": "0.0.0.0"
                 }
             ]
         },

@@ -10,6 +10,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Validators;
 
     /// <summary>
     /// Dependencies.
@@ -89,24 +90,25 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
             // Create Validation Results
             var results = new List<ValidationResult>();
 
+            // Validate Optional Members
             if (this.WindowsLibraries != null)
             {
-                Validator.TryValidateObject(this.WindowsLibraries, new ValidationContext(this.WindowsLibraries, null, null), results);
+                ApiDataValidator.Validate(this.WindowsLibraries, results);
             }
 
             if (this.WindowsFeatures != null)
             {
-                Validator.TryValidateObject(this.WindowsFeatures, new ValidationContext(this.WindowsFeatures, null, null), results);
+                ApiDataValidator.Validate(this.WindowsFeatures, results);
             }
 
             if (this.PackageDependencies != null)
             {
-                Validator.TryValidateObject(this.PackageDependencies, new ValidationContext(this.PackageDependencies, null, null), results);
+                ApiDataValidator.Validate(this.PackageDependencies, results);
             }
 
             if (this.ExternalDependencies != null)
             {
-                Validator.TryValidateObject(this.ExternalDependencies, new ValidationContext(this.ExternalDependencies, null, null), results);
+                ApiDataValidator.Validate(this.ExternalDependencies, results);
             }
 
             // Return Results

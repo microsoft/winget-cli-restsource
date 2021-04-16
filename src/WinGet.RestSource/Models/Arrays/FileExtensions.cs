@@ -6,16 +6,19 @@
 
 namespace Microsoft.WinGet.RestSource.Models.Arrays
 {
+    using System;
     using Microsoft.WinGet.RestSource.Models.Core;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// FileExtensions.
     /// </summary>
-    public class FileExtensions : ApiArray<Strings.FileExtensions>
+    public class FileExtensions : ApiArray<string>
     {
         private const bool Nullable = true;
         private const bool Unique = true;
         private const uint Max = 256;
+        private static readonly Type Validator = typeof(FileExtensionsValidator);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExtensions"/> class.
@@ -26,6 +29,7 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
             this.MaxItems = Max;
+            this.MemberValidator = Validator;
         }
     }
 }

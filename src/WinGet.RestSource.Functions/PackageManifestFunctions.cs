@@ -16,28 +16,28 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
+    using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with manifests.
     /// </summary>
     public class PackageManifestFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
+        private readonly IApiDataStore dataStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageManifestFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public PackageManifestFunctions(ICosmosDatabase cosmosDatabase)
+        /// <param name="dataStore">Data Store.</param>
+        public PackageManifestFunctions(IApiDataStore dataStore)
         {
-            this.cosmosDatabase = cosmosDatabase;
+            this.dataStore = dataStore;
         }
 
         /// <summary>
@@ -53,20 +53,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             PackageManifest packageManifest = null;
+
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
-                ApiDataValidator.Validate<PackageManifest>(packageManifest);
+                ApiDataValidator.Validate(packageManifest);
 
-                // Create Document and add to cosmos.
-                CosmosPackageManifest cPackageManifest = new CosmosPackageManifest(packageManifest);
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
-                {
-                    Document = cPackageManifest,
-                };
-                await this.cosmosDatabase.Add<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.AddPackageManifest(packageManifest);
             }
             catch (DefaultException e)
             {
@@ -97,17 +96,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
-                // Parse Variables
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
-                {
-                    Id = packageIdentifier,
-                    PartitionKey = packageIdentifier,
-                };
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                // Delete Document
-                await this.cosmosDatabase.Delete<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.DeletePackageManifest(packageIdentifier);
             }
             catch (DefaultException e)
             {
@@ -138,23 +134,28 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             PackageManifest packageManifest = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
-                ApiDataValidator.Validate<PackageManifest>(packageManifest);
+                ApiDataValidator.Validate(packageManifest);
 
-                // Create Document and add to cosmos.
-                CosmosPackageManifest cPackageManifest = new CosmosPackageManifest(packageManifest);
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
+                // Validate Versions Match
+                if (packageManifest.PackageIdentifier != packageIdentifier)
                 {
-                    Document = cPackageManifest,
-                    Id = packageIdentifier,
-                    PartitionKey = packageIdentifier,
-                };
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                    throw new InvalidArgumentException(
+                        new InternalRestError(
+                            ErrorConstants.PackageDoesNotMatchErrorCode,
+                            ErrorConstants.PackageDoesNotMatchErrorMessage));
+                }
+
+                await this.dataStore.UpdatePackageManifest(packageIdentifier, packageManifest);
             }
             catch (DefaultException e)
             {
@@ -180,18 +181,20 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier?}")]
             HttpRequest req,
             string packageIdentifier,
             ILogger log)
         {
-            List<PackageManifest> manifests = new List<PackageManifest>();
+            Dictionary<string, string> headers = null;
+            ApiDataPage<PackageManifest> manifests = new ApiDataPage<PackageManifest>();
+
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-                manifests.Add(cosmosDocument.Document.ToManifest());
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
+                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, req.Query);
             }
             catch (DefaultException e)
             {
@@ -204,10 +207,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return manifests.Count switch
+            return manifests.Items.Count switch
             {
                 0 => new NoContentResult(),
-                _ => new ApiObjectResult(new ApiResponse<PackageManifest>(manifests.First())),
+                1 => new ApiObjectResult(new ApiResponse<PackageManifest>(manifests.Items.First(), manifests.ContinuationToken)),
+                _ => new ApiObjectResult(new ApiResponse<List<PackageManifest>>(manifests.Items.ToList(), manifests.ContinuationToken)),
             };
         }
     }

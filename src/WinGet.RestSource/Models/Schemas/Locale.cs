@@ -11,8 +11,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
-    using PackageLocale = Microsoft.WinGet.RestSource.Models.Strings.Locale;
+    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// Locale.
@@ -38,72 +38,86 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets PackageLocale.
         /// </summary>
-        public PackageLocale PackageLocale { get; set; }
+        [LocaleValidator]
+        public string PackageLocale { get; set; }
 
         /// <summary>
         /// Gets or sets Publisher.
         /// </summary>
-        public Publisher Publisher { get; set; }
+        [PublisherValidator]
+        public string Publisher { get; set; }
 
         /// <summary>
         /// Gets or sets PublisherUrl.
         /// </summary>
-        public Url PublisherUrl { get; set; }
+        [UrlValidator]
+        public string PublisherUrl { get; set; }
 
         /// <summary>
         /// Gets or sets PublisherSupportUrl.
         /// </summary>
-        public Url PublisherSupportUrl { get; set; }
+        [UrlValidator]
+        public string PublisherSupportUrl { get; set; }
 
         /// <summary>
         /// Gets or sets PrivacyUrl.
         /// </summary>
-        public Url PrivacyUrl { get; set; }
+        [UrlValidator]
+        public string PrivacyUrl { get; set; }
 
         /// <summary>
         /// Gets or sets Author.
         /// </summary>
-        public Author Author { get; set; }
+        [AuthorValidator]
+        public string Author { get; set; }
 
         /// <summary>
         /// Gets or sets PackageName.
         /// </summary>
-        public PackageName PackageName { get; set; }
+        [PackageNameValidator]
+        public string PackageName { get; set; }
 
         /// <summary>
         /// Gets or sets PackageUrl.
         /// </summary>
-        public Url PackageUrl { get; set; }
+        [UrlValidator]
+        public string PackageUrl { get; set; }
 
         /// <summary>
         /// Gets or sets License.
         /// </summary>
-        public License License { get; set; }
+        [LicenseValidator]
+        public string License { get; set; }
 
         /// <summary>
         /// Gets or sets LicenseUrl.
         /// </summary>
-        public Url LicenseUrl { get; set; }
+        [UrlValidator]
+        public string LicenseUrl { get; set; }
 
         /// <summary>
         /// Gets or sets Copyright.
         /// </summary>
-        public Copyright Copyright { get; set; }
+        [CopyrightValidator]
+        public string Copyright { get; set; }
 
         /// <summary>
         /// Gets or sets CopyrightUrl.
         /// </summary>
-        public Url CopyrightUrl { get; set; }
+        [UrlValidator]
+        public string CopyrightUrl { get; set; }
 
         /// <summary>
         /// Gets or sets ShortDescription.
         /// </summary>
-        public ShortDescription ShortDescription { get; set; }
+        [ShortDescriptionValidator]
+        public string ShortDescription { get; set; }
 
         /// <summary>
         /// Gets or sets Description.
         /// </summary>
-        public Description Description { get; set; }
+        [DescriptionValidator]
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets Tags.
@@ -158,90 +172,9 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Create Validation Results
             var results = new List<ValidationResult>();
 
-            // Verify Required Fields
-            if (this.PackageLocale == null)
-            {
-                results.Add(new ValidationResult($"PackageLocale must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.PackageLocale, new ValidationContext(this.PackageLocale, null, null), results);
-
-                if (string.IsNullOrEmpty(this.PackageLocale.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.PackageLocale.APIStringName} '{this.PackageLocale.APIString}' must not be null."));
-                }
-            }
-
-            // Validate Optional Members
-            if (this.Publisher != null)
-            {
-                Validator.TryValidateObject(this.Publisher, new ValidationContext(this.Publisher, null, null), results);
-            }
-
-            if (this.PublisherUrl != null)
-            {
-                Validator.TryValidateObject(this.PublisherUrl, new ValidationContext(this.PublisherUrl, null, null), results);
-            }
-
-            if (this.PublisherSupportUrl != null)
-            {
-                Validator.TryValidateObject(this.PublisherSupportUrl, new ValidationContext(this.PublisherSupportUrl, null, null), results);
-            }
-
-            if (this.PrivacyUrl != null)
-            {
-                Validator.TryValidateObject(this.PrivacyUrl, new ValidationContext(this.PrivacyUrl, null, null), results);
-            }
-
-            if (this.Author != null)
-            {
-                Validator.TryValidateObject(this.Author, new ValidationContext(this.Author, null, null), results);
-            }
-
-            if (this.PackageName != null)
-            {
-                Validator.TryValidateObject(this.PackageName, new ValidationContext(this.PackageName, null, null), results);
-            }
-
-            if (this.PackageUrl != null)
-            {
-                Validator.TryValidateObject(this.PackageUrl, new ValidationContext(this.PackageUrl, null, null), results);
-            }
-
-            if (this.License != null)
-            {
-                Validator.TryValidateObject(this.License, new ValidationContext(this.License, null, null), results);
-            }
-
-            if (this.LicenseUrl != null)
-            {
-                Validator.TryValidateObject(this.LicenseUrl, new ValidationContext(this.LicenseUrl, null, null), results);
-            }
-
-            if (this.Copyright != null)
-            {
-                Validator.TryValidateObject(this.Copyright, new ValidationContext(this.Copyright, null, null), results);
-            }
-
-            if (this.CopyrightUrl != null)
-            {
-                Validator.TryValidateObject(this.CopyrightUrl, new ValidationContext(this.CopyrightUrl, null, null), results);
-            }
-
-            if (this.ShortDescription != null)
-            {
-                Validator.TryValidateObject(this.ShortDescription, new ValidationContext(this.ShortDescription, null, null), results);
-            }
-
-            if (this.Description != null)
-            {
-                Validator.TryValidateObject(this.Description, new ValidationContext(this.Description, null, null), results);
-            }
-
             if (this.Tags != null)
             {
-                Validator.TryValidateObject(this.Tags, new ValidationContext(this.Tags, null, null), results);
+                ApiDataValidator.Validate(this.Tags, results);
             }
 
             // Return Results

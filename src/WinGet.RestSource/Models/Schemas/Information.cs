@@ -8,7 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
-    using Microsoft.WinGet.RestSource.Models.Strings;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// Server Information.
@@ -20,10 +20,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// </summary>
         public Information()
         {
-            SourceIdentifier sourceIdentifier = new SourceIdentifier()
-            {
-                APIString = ApiConstants.ServerIdentifier,
-            };
             this.SourceIdentifier = ApiConstants.SourceIdentifier;
             this.ServerSupportedVersions = ApiConstants.ServerSupportedVersions;
         }
@@ -31,7 +27,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets sourceIdentifier.
         /// </summary>
-        public SourceIdentifier SourceIdentifier { get; }
+        [SourceIdentifierValidator]
+        public string SourceIdentifier { get; }
 
         /// <summary>
         /// Gets serverSupportedVersions.

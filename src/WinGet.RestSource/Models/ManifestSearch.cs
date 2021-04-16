@@ -6,8 +6,6 @@
 
 namespace Microsoft.WinGet.RestSource.Models
 {
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Manifest Search Schema.
     /// </summary>
@@ -34,19 +32,16 @@ namespace Microsoft.WinGet.RestSource.Models
         /// <summary>
         /// Gets or sets continuation token.
         /// </summary>
-        [JsonProperty("continuationToken")]
         public string ContinuationToken { get; set; }
 
         /// <summary>
         /// Gets or sets maximum results.
         /// </summary>
-        [JsonProperty("maximumResults")]
         public int MaximumResults { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to fetch all manifests.
         /// </summary>
-        [JsonProperty("fetchAllManifests")]
         public bool FetchAllManifests { get; set; }
     }
 }

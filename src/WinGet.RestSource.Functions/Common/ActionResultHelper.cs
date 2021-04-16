@@ -43,9 +43,17 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
                 case ErrorConstants.PreconditionFailedErrorCode:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.PreconditionFailed);
 
+                case ErrorConstants.PackageDoesNotMatchErrorCode:
+                case ErrorConstants.VersionDoesNotMatchErrorCode:
+                case ErrorConstants.InstallerDoesNotMatchErrorCode:
+                case ErrorConstants.LocaleDoesNotMatchErrorCode:
                 case ErrorConstants.ValidationFailureErrorCode:
+                case ErrorConstants.HeadersAreNullErrorCode:
+                case ErrorConstants.ServerVersionNotSupportedErrorCode:
+                case ErrorConstants.ToManyContinuationTokensErrorCode:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.BadRequest);
 
+                case ErrorConstants.HttpRequestExceptionErrorCode:
                 case ErrorConstants.UnhandledErrorCode:
                 default:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.InternalServerError);

@@ -6,15 +6,18 @@
 
 namespace Microsoft.WinGet.RestSource.Models.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// API Array.
     /// </summary>
     /// <typeparam name="T">IValidatableObject.</typeparam>
-    public class ApiArray<T> : List<T>,  IApiData<T>
+    public class ApiArray<T> : List<T>, IApiData<T>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiArray{T}"/> class.
@@ -30,7 +33,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         /// </summary>
         /// <param name="enumerable">Enumerable.</param>
         public ApiArray(IEnumerable<T> enumerable)
-        : base(enumerable)
+            : base(enumerable)
         {
             this.SetDefaults();
         }
@@ -66,6 +69,11 @@ namespace Microsoft.WinGet.RestSource.Models.Core
         protected uint MaxItems { get; set; }
 
         /// <summary>
+        /// Gets or sets MaxItems.
+        /// </summary>
+        protected Type MemberValidator { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -87,6 +95,16 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             return !Equals(left, right);
         }
 
+        /// <summary>
+        /// Make Distinct.
+        /// </summary>
+        public void MakeDistinct()
+        {
+            List<T> distinctList = this.Distinct().ToList();
+            this.Clear();
+            this.AddRange(distinctList);
+        }
+
         /// <inheritdoc />
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -96,16 +114,24 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             // Check if Null and Not Allowed
             if (!this.AllowNull && this.Count == 0)
             {
-                results.Add(new ValidationResult($"{this.APIArrayName} must not be empty."));
+                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} must not be empty."));
                 return results;
             }
 
             // Validate All Member Objects
-            if (this.ValidateMembers)
+            if (this.MemberValidator != null)
+            {
+                var d = Activator.CreateInstance(this.MemberValidator) as IApiStringValidator;
+                foreach (T member in this)
+                {
+                    results.Add(d.ValidateApiString(member, validationContext));
+                }
+            }
+            else if (this.ValidateMembers)
             {
                 foreach (T member in this)
                 {
-                    Validator.TryValidateObject(member, new ValidationContext(member, null, null), results);
+                    ApiDataValidator.Validate(member, results);
                 }
             }
 
@@ -114,7 +140,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             {
                 if (this.Count < this.MinItems)
                 {
-                    results.Add(new ValidationResult($"{this.APIArrayName} does not meet minimum item requirement: {this.MinItems}."));
+                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} does not meet minimum item requirement: {this.MinItems}."));
                 }
             }
 
@@ -123,7 +149,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             {
                 if (this.Count > this.MaxItems)
                 {
-                    results.Add(new ValidationResult($"{this.APIArrayName} does not meet maximum item requirement: {this.MaxItems}."));
+                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} does not meet maximum item requirement: {this.MaxItems}."));
                 }
             }
 
@@ -132,7 +158,7 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             {
                 if (this.Distinct().Count() < this.Count())
                 {
-                    results.Add(new ValidationResult($"{this.APIArrayName} does not meet unique item requirement: {this}."));
+                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} does not meet unique item requirement."));
                 }
             }
 

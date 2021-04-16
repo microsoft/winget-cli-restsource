@@ -35,6 +35,8 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
+      parameters:
+        - $ref: '#/components/parameters/ContinuationTokenQuery'
       summary: Get Package Metadata
       tags:
         - Packages
@@ -135,6 +137,8 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
+      parameters:
+        - $ref: '#/components/parameters/ContinuationTokenQuery'
       summary: Get Version Metadata
       tags:
         - Versions
@@ -237,6 +241,8 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
+      parameters:
+        - $ref: '#/components/parameters/ContinuationTokenQuery'
       summary: Get Locale Metadata
       tags:
         - Locale
@@ -340,6 +346,8 @@ paths:
           $ref: '#/components/responses/GenericError'
 
     get:
+      parameters:
+        - $ref: '#/components/parameters/ContinuationTokenQuery'
       summary: Get Installer Metadata
       tags:
         - Installers
@@ -497,8 +505,6 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/ManifestSingleResponse'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
         404:
           $ref: '#/components/responses/NotFoundError'
         default:
@@ -508,15 +514,12 @@ paths:
   /manifestSearch:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/ContinuationToken'
 
     post:
       summary: This retrieves package manifests for a given search request.
       tags:
         - Package Manifests
-      security:
-        - APIAuthenticationQueryCode: []
-        - APIAuthenticationHeaderXFunctionKey: []
-        - APIAuthenticationHeaderOcpApimSubscriptionKey: []
       requestBody:
         $ref: '#/components/requestBodies/manifestSearchRequestBody'
       description: This will retrieve a set of package manifests.
@@ -580,6 +583,11 @@ components:
       type: string
       pattern: "^[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}(\\.[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}){1,3}$"
       maxLength: 128
+
+    ContinuationToken:
+      description: A generic continuation token to be used by the server.
+      type: string
+      maxLength: 1024
 
     PackageVersion:
       description: Version Type
@@ -971,6 +979,7 @@ components:
         type: string
         minLength: 1
         maxLength: 128
+      minItems: 1
 
     Installer:
       description: Installer.
@@ -1219,10 +1228,12 @@ components:
               $ref: '#/components/schemas/ProductCode'
         - type: object
           properties:
-            versions:
+            Versions:
               type: array
+              minItems: 1
               items:
                 $ref: '#/components/schemas/ManifestSearchVersionSchema'
+
       required:
         - PackageName
         - Publisher
@@ -1239,6 +1250,9 @@ components:
           properties:
             ServerSupportedVersions:
               $ref: '#/components/schemas/ServerSupportedVersions'
+      required:
+        - SourceIdentifier
+        - ServerSupportedVersions
 
     # Response Object Schemas
     ResponseObjectSchema:
@@ -1373,27 +1387,9 @@ components:
               items:
                 $ref: '#/components/schemas/ManifestSearchResponseSchema'
 
-    # Manifest Search Request Schema
-    ManifestSearchRequestSchema:
-      description: Model containing manifest search request schema.
-      properties:
-        MaximumResults:
-          type: integer
-        FetchAllManifests:
-          type: boolean
-        Query:
-          $ref: '#/components/schemas/SearchRequestQuerySchema'
-        Inclusions:
-          type: array
-          items:
-            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
-        Filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
 
     # Manifest Search Request Match Type Schema
-    MatchTypeSchema:
+    MatchType:
       description: Model containing manifest request match type.
       type: string
       enum:
@@ -1403,44 +1399,61 @@ components:
           - Substring
 
     # Manifest Search Request Package Match Field Schema
-    PackageMatchFieldSchema:
+    PackageMatchField:
       description: Model containing manifest request package match field schema.
       type: string
       enum:
-        - Id
-        - Name
+        - PackageIdentifier
+        - PackageName
         - Moniker
         - Command
         - Tag
         - PackageFamilyName
         - ProductCode
 
-    # Manifest Search Request Package Match Filter Schema
-    SearchRequestPackageMatchFilterSchema:
-      description: Model containing manifest search request Package Match Filter schema.
-      properties:
-        PackageMatchField:
-          $ref: '#/components/schemas/PackageMatchFieldSchema'
-        RequestMatch:
-          $ref: '#/components/schemas/SearchRequestMatchSchema'
+    KeyWord:
+      description: Search Keyword.
+      type: string
+      maxLength: 255
 
     # Manifest Search Request Match Schema
-    SearchRequestMatchSchema:
+    SearchRequestMatch:
       description: Model containing manifest request match schema.
       allOf:
         - type: object
           properties:
             KeyWord:
-              type: string
+              $ref: '#/components/schemas/KeyWord'
             MatchType:
-              $ref: '#/components/schemas/MatchTypeSchema'
+              $ref: '#/components/schemas/MatchType'
 
-    # Manifest Search Request Query Schema
-    SearchRequestQuerySchema:
-      description: Model containing manifest search request Query schema.
+    # Manifest Search Request Package Match Filter Schema
+    SearchRequestPackageMatchFilterSchema:
+      description: Model containing manifest search request Package Match Filter schema.
       properties:
+        PackageMatchField:
+          $ref: '#/components/schemas/PackageMatchField'
         RequestMatch:
-          $ref: '#/components/schemas/SearchRequestMatchSchema'
+          $ref: '#/components/schemas/SearchRequestMatch'
+
+    # Manifest Search Request Schema
+    ManifestSearchRequestSchema:
+      description: Model containing manifest search request schema.
+      properties:
+        MaximumResults:
+          type: integer
+        FetchAllManifests:
+          type: boolean
+        Query:
+          $ref: '#/components/schemas/SearchRequestMatch'
+        Inclusions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
+        Filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchRequestInclusionAndFilterSchema'
 
     # Manifest Search Request Inclusion or Filters Schema
     SearchRequestInclusionAndFilterSchema:
@@ -1470,6 +1483,14 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/APIVersion'
+
+    ContinuationToken:
+      name: Version
+      in: header
+      description: This is a generic continuation token as a header parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/ContinuationToken'
 
     PackageIdentifier:
       name: PackageIdentifier
@@ -1519,6 +1540,15 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/Channel'
+      example: beta
+
+    ContinuationTokenQuery:
+      name: ContinuationToken
+      in: query
+      description: This is a generic continuation token as a query parameter.
+      required: false
+      schema:
+        $ref: '#/components/schemas/ContinuationToken'
       example: beta
 
   # Request Bodies

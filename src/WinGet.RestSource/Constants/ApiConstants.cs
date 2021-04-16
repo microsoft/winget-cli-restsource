@@ -8,7 +8,6 @@ namespace Microsoft.WinGet.RestSource.Constants
 {
     using System;
     using Microsoft.WinGet.RestSource.Models.Arrays;
-    using Microsoft.WinGet.RestSource.Models.Strings;
 
     /// <summary>
     /// API Constants.
@@ -23,20 +22,15 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// Source Identifier.
         /// </summary>
-        public static readonly SourceIdentifier SourceIdentifier = new SourceIdentifier()
-        {
-            APIString = ApiConstants.ServerIdentifier,
-        };
+        public static readonly string SourceIdentifier = ApiConstants.ServerIdentifier;
 
         /// <summary>
         /// Server Supported Versions.
         /// </summary>
         public static readonly ApiVersions ServerSupportedVersions = new ApiVersions()
         {
-            new ApiVersion()
-            {
-                APIString = "0.2.0",
-            },
+            "1.0.0",
+            "0.2.0",
         };
 
         /// <summary>

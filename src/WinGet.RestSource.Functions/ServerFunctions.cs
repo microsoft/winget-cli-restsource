@@ -12,10 +12,10 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Schemas;
 

@@ -17,29 +17,27 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with locales.
     /// </summary>
     public class LocaleFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
+        private readonly IApiDataStore dataStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public LocaleFunctions(ICosmosDatabase cosmosDatabase)
+        /// <param name="dataStore">Data Store.</param>
+        public LocaleFunctions(IApiDataStore dataStore)
         {
-            this.cosmosDatabase = cosmosDatabase;
+            this.dataStore = dataStore;
         }
 
         /// <summary>
@@ -59,24 +57,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Locale locale = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as locale
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
-                ApiDataValidator.Validate<Locale>(locale);
+                ApiDataValidator.Validate(locale);
 
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Add Locale
-                cosmosDocument.Document.AddLocale(locale, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.AddLocale(packageIdentifier, packageVersion, locale);
             }
             catch (DefaultException e)
             {
@@ -114,18 +107,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                // Remove locale
-                cosmosDocument.Document.RemoveLocale(packageLocale, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
             {
@@ -163,13 +152,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Locale locale = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as package
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
-                ApiDataValidator.Validate<Locale>(locale);
+                ApiDataValidator.Validate(locale);
 
                 if (locale.PackageLocale != packageLocale)
                 {
@@ -179,17 +172,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                             ErrorConstants.LocaleDoesNotMatchErrorMessage));
                 }
 
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Update locale
-                cosmosDocument.Document.UpdateLocale(locale, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.UpdateLocale(packageIdentifier, packageVersion, packageLocale, locale);
             }
             catch (DefaultException e)
             {
@@ -227,17 +210,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            List<Locale> locales = new List<Locale>();
+            Dictionary<string, string> headers = null;
+            ApiDataPage<Locale> locales = new ApiDataPage<Locale>();
 
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                Locales cosmosLocales = cosmosDocument.Document.GetLocale(packageLocale, packageVersion);
-                locales.AddRange(cosmosLocales.Select(locale => new Locale(locale)));
+                locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale, null);
             }
             catch (DefaultException e)
             {
@@ -250,11 +231,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return locales.Count switch
+            return locales.Items.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<Locale>(locales.First())),
-                _ => new ApiObjectResult(new ApiResponse<List<Locale>>(locales)),
+                1 => new ApiObjectResult(new ApiResponse<Locale>(locales.Items.First(), locales.ContinuationToken)),
+                _ => new ApiObjectResult(new ApiResponse<List<Locale>>(locales.Items.ToList(), locales.ContinuationToken)),
             };
         }
     }

@@ -8,12 +8,12 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -242,12 +242,12 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             // Validate Optional Members
             if (this.Installers != null)
             {
-                Validator.TryValidateObject(this.Installers, new ValidationContext(this.Installers, null, null), results);
+                ApiDataValidator.Validate(this.Installers, results);
             }
 
             if (this.Locales != null)
             {
-                Validator.TryValidateObject(this.Locales, new ValidationContext(this.Locales, null, null), results);
+                ApiDataValidator.Validate(this.Locales, results);
             }
 
             // Return Results

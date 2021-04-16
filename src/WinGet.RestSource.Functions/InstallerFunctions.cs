@@ -17,29 +17,27 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with installers.
     /// </summary>
     public class InstallerFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
+        private readonly IApiDataStore dataStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstallerFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public InstallerFunctions(ICosmosDatabase cosmosDatabase)
+        /// <param name="dataStore">Data Store.</param>
+        public InstallerFunctions(IApiDataStore dataStore)
         {
-            this.cosmosDatabase = cosmosDatabase;
+            this.dataStore = dataStore;
         }
 
         /// <summary>
@@ -59,24 +57,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Installer installer = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as installer
                 installer = await Parser.StreamParser<Installer>(req.Body, log);
-                ApiDataValidator.Validate<Installer>(installer);
+                ApiDataValidator.Validate(installer);
 
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Add Installer
-                cosmosDocument.Document.AddInstaller(installer, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.AddInstaller(packageIdentifier, packageVersion, installer);
             }
             catch (DefaultException e)
             {
@@ -114,18 +107,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                // Remove Installer
-                cosmosDocument.Document.RemoveInstaller(installerIdentifier, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.DeleteInstaller(packageIdentifier, packageVersion, installerIdentifier);
             }
             catch (DefaultException e)
             {
@@ -163,13 +152,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Installer installer = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as package
                 installer = await Parser.StreamParser<Installer>(req.Body, log);
-                ApiDataValidator.Validate<Installer>(installer);
+                ApiDataValidator.Validate(installer);
 
                 if (installer.InstallerIdentifier != installerIdentifier)
                 {
@@ -179,17 +172,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                             ErrorConstants.InstallerDoesNotMatchErrorMessage));
                 }
 
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Update Installer
-                cosmosDocument.Document.UpdateInstaller(installer, packageVersion);
-
-                // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.UpdateInstaller(packageIdentifier, packageVersion, installerIdentifier, installer);
             }
             catch (DefaultException e)
             {
@@ -227,17 +210,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
-            List<Installer> installers = new List<Installer>();
+            Dictionary<string, string> headers = null;
+            ApiDataPage<Installer> installers = new ApiDataPage<Installer>();
 
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                Installers cosmosInstallers = cosmosDocument.Document.GetInstaller(installerIdentifier, packageVersion);
-                installers.AddRange(cosmosInstallers.Select(installer => new Installer(installer)));
+                installers = await this.dataStore.GetInstallers(packageIdentifier, packageVersion, installerIdentifier, null);
             }
             catch (DefaultException e)
             {
@@ -250,11 +231,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return installers.Count switch
+            return installers.Items.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<Installer>(installers.First())),
-                _ => new ApiObjectResult(new ApiResponse<List<Installer>>(installers)),
+                1 => new ApiObjectResult(new ApiResponse<Installer>(installers.Items.First(), installers.ContinuationToken)),
+                _ => new ApiObjectResult(new ApiResponse<List<Installer>>(installers.Items.ToList(), installers.ContinuationToken)),
             };
         }
     }

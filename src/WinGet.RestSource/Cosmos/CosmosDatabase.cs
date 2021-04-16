@@ -12,6 +12,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
+    using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Exceptions;
 
     /// <summary>
@@ -187,16 +188,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public async Task<CosmosPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
+        public async Task<ApiDataPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
             where T : class
         {
-            CosmosPage<T> cosmosPage = new CosmosPage<T>();
+            ApiDataPage<T> apiDataPage = new ApiDataPage<T>();
 
             try
             {
                 FeedResponse<T> response = await documentQuery.ExecuteNextAsync<T>();
-                cosmosPage.ContinuationToken = response.ResponseContinuation;
-                cosmosPage.Items = response.ToList<T>();
+                apiDataPage.ContinuationToken = response.ResponseContinuation;
+                apiDataPage.Items = response.ToList<T>();
             }
             catch (DocumentClientException documentClientException)
             {
@@ -208,7 +209,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Return the model
-            return cosmosPage;
+            return apiDataPage;
         }
     }
 }
