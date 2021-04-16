@@ -126,6 +126,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Create feed options
             FeedOptions feedOptions = new FeedOptions
             {
+                ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
                 EnableCrossPartitionQuery = true,
                 MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
                 RequestContinuation = continuationToken,
@@ -415,6 +416,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Create feed options
             FeedOptions feedOptions = new FeedOptions
             {
+                ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
                 EnableCrossPartitionQuery = true,
                 MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
                 RequestContinuation = continuationToken,
@@ -481,6 +483,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Create feed options for inclusion search: -1 so we can get all matches in inclusion, then filter down.
             FeedOptions feedOptions = new FeedOptions
             {
+                ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
                 EnableCrossPartitionQuery = true,
                 MaxItemCount = -1,
                 RequestContinuation = null,

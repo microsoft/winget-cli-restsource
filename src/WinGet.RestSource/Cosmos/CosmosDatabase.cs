@@ -13,6 +13,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
     using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
 
     /// <summary>
@@ -137,7 +138,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             {
                 if (feedOptions == null)
                 {
-                    feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+                    feedOptions = new FeedOptions { ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb };
                 }
 
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(this.database, this.collection);

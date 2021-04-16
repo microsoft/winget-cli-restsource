@@ -36,5 +36,10 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// This is the Cosmos Account Key.
         /// </summary>
         public const string CosmosAccountKeySetting = "CosmosAccountKey";
+
+        /// <summary>
+        /// This is the maximum continuation token from cosmos db in kb.
+        /// </summary>
+        public const int ResponseContinuationTokenLimitInKb = 3;
     }
 }

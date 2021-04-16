@@ -587,7 +587,7 @@ components:
     ContinuationToken:
       description: A generic continuation token to be used by the server.
       type: string
-      maxLength: 1024
+      maxLength: 4096
 
     PackageVersion:
       description: Version Type
