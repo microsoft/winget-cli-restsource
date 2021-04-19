@@ -1195,13 +1195,13 @@ components:
               $ref: '#/components/schemas/Channel'
         - type: object
           properties:
-            PackageFamilyName:
+            PackageFamilyNames:
               type: array
               items:
                 $ref: '#/components/schemas/PackageFamilyName'
         - type: object
           properties:
-            ProductCode:
+            ProductCodes:
               type: array
               items:
                 $ref: '#/components/schemas/ProductCode'
