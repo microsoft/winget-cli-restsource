@@ -7,6 +7,7 @@
 namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
 {
     using System.Collections.Generic;
+    using Microsoft.WinGet.RestSource.Constants.Enumerations;
 
     /// <summary>
     /// PackageMatchFieldValidator.
@@ -15,13 +16,13 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
     {
         private List<string> enumList = new List<string>
         {
-            "PackageIdentifier",
-            "PackageName",
-            "Moniker",
-            "Command",
-            "Tag",
-            "PackageFamilyName",
-            "ProductCode",
+            PackageMatchFields.PackageIdentifier,
+            PackageMatchFields.PackageName,
+            PackageMatchFields.Moniker,
+            PackageMatchFields.Command,
+            PackageMatchFields.Tag,
+            PackageMatchFields.PackageFamilyName,
+            PackageMatchFields.ProductCode,
         };
 
         /// <summary>

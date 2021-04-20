@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
+    using Microsoft.WinGet.RestSource.Constants.Enumerations;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
@@ -32,19 +33,23 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     /// </summary>
     public class CosmosDataStore : IApiDataStore
     {
+        private const string ShortDescription = "ShortDescription";
+
+        private const int AllElements = -1;
+
         private readonly ICosmosDatabase cosmosDatabase;
         private readonly ILogger<CosmosDataStore> log;
 
         private readonly List<string> queryList = new List<string>()
         {
-            "PackageIdentifier",
-            "PackageName",
-            "Moniker",
-            "Command",
-            "Tag",
-            "PackageFamilyName",
-            "ProductCode",
-            "ShortDescription",
+            PackageMatchFields.PackageIdentifier,
+            PackageMatchFields.PackageName,
+            PackageMatchFields.Moniker,
+            PackageMatchFields.Command,
+            PackageMatchFields.Tag,
+            PackageMatchFields.PackageFamilyName,
+            PackageMatchFields.ProductCode,
+            ShortDescription,
         };
 
         /// <summary>
@@ -118,7 +123,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string continuationToken = null;
             if (queryParameters != null)
             {
-                continuationToken = queryParameters["ContinuationToken"];
+                continuationToken = queryParameters[QueryConstants.ContinuationToken];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -210,7 +215,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string continuationToken = null;
             if (queryParameters != null)
             {
-                continuationToken = queryParameters["ContinuationToken"];
+                continuationToken = queryParameters[QueryConstants.ContinuationToken];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -278,7 +283,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string continuationToken = null;
             if (queryParameters != null)
             {
-                continuationToken = queryParameters["ContinuationToken"];
+                continuationToken = queryParameters[QueryConstants.ContinuationToken];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -346,7 +351,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string continuationToken = null;
             if (queryParameters != null)
             {
-                continuationToken = queryParameters["ContinuationToken"];
+                continuationToken = queryParameters[QueryConstants.ContinuationToken];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -408,7 +413,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string continuationToken = null;
             if (queryParameters != null)
             {
-                continuationToken = queryParameters["ContinuationToken"];
+                continuationToken = queryParameters[QueryConstants.ContinuationToken];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -440,7 +445,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             apiDataDocument.ContinuationToken = apiDataDocument.ContinuationToken != null ? StringEncoder.EncodeContinuationToken(apiDataDocument.ContinuationToken) : null;
 
             // Apply Version Filter
-            string versionFilter = queryParameters["Version"];
+            string versionFilter = queryParameters[QueryConstants.Version];
             if (!string.IsNullOrEmpty(versionFilter))
             {
                 foreach (PackageManifest pm in apiDataDocument.Items)
@@ -453,7 +458,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Apply Channel Filter
-            string channelFilter = queryParameters["Channel"];
+            string channelFilter = queryParameters[QueryConstants.Channel];
             if (!string.IsNullOrEmpty(channelFilter))
             {
                 foreach (PackageManifest pm in apiDataDocument.Items)
@@ -485,7 +490,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             {
                 ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
                 EnableCrossPartitionQuery = true,
-                MaxItemCount = -1,
+                MaxItemCount = AllElements,
                 RequestContinuation = null,
             };
 
@@ -562,9 +567,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
                 // Process Continuation Token
                 ApiContinuationToken token = null;
-                if (headers.ContainsKey("ContinuationToken"))
+                if (headers.ContainsKey(HeaderConstants.ContinuationToken))
                 {
-                    token = Parser.StringParser<ApiContinuationToken>(StringEncoder.DecodeContinuationToken(headers["ContinuationToken"]));
+                    token = Parser.StringParser<ApiContinuationToken>(StringEncoder.DecodeContinuationToken(headers[HeaderConstants.ContinuationToken]));
                 }
                 else
                 {
@@ -617,138 +622,138 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             switch (packageMatchField, requestMatch.MatchType)
             {
-                case ("PackageIdentifier", "Exact"):
+                case (PackageMatchFields.PackageIdentifier, MatchType.Exact):
                     expression = manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord);
                     break;
 
-                case ("PackageIdentifier", "CaseInsensitive"):
+                case (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive):
                     expression = manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower());
                     break;
 
-                case ("PackageIdentifier", "StartsWith"):
+                case (PackageMatchFields.PackageIdentifier, MatchType.StartsWith):
                     expression = manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord);
                     break;
 
-                case ("PackageIdentifier", "Substring"):
+                case (PackageMatchFields.PackageIdentifier, MatchType.Substring):
                     expression = manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord);
                     break;
 
-                case ("PackageName", "Exact"):
+                case (PackageMatchFields.PackageName, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord));
                     break;
 
-                case ("PackageName", "CaseInsensitive"):
+                case (PackageMatchFields.PackageName, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower()));
                     break;
 
-                case ("PackageName", "StartsWith"):
+                case (PackageMatchFields.PackageName, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord));
                     break;
 
-                case ("PackageName", "Substring"):
+                case (PackageMatchFields.PackageName, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord));
                     break;
 
-                case ("Moniker", "Exact"):
+                case (PackageMatchFields.Moniker, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord));
                     break;
 
-                case ("Moniker", "CaseInsensitive"):
+                case (PackageMatchFields.Moniker, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower()));
                     break;
 
-                case ("Moniker", "StartsWith"):
+                case (PackageMatchFields.Moniker, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord));
                     break;
 
-                case ("Moniker", "Substring"):
+                case (PackageMatchFields.Moniker, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord));
                     break;
 
-                case ("Command", "Exact"):
+                case (PackageMatchFields.Command, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.Commands.Any(command => command.Equals(requestMatch.KeyWord))));
                     break;
 
-                case ("Command", "CaseInsensitive"):
+                case (PackageMatchFields.Command, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower()))));
                     break;
 
-                case ("Command", "StartsWith"):
+                case (PackageMatchFields.Command, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord))));
                     break;
 
-                case ("Command", "Substring"):
+                case (PackageMatchFields.Command, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.Commands.Any(command => command.Contains(requestMatch.KeyWord))));
                     break;
 
-                case ("Tag", "Exact"):
+                case (PackageMatchFields.Tag, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord)))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))));
                     break;
 
-                case ("Tag", "CaseInsensitive"):
+                case (PackageMatchFields.Tag, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower())))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))));
                     break;
 
-                case ("Tag", "StartsWith"):
+                case (PackageMatchFields.Tag, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord)))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))));
                     break;
 
-                case ("Tag", "Substring"):
+                case (PackageMatchFields.Tag, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord)))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))));
                     break;
 
-                case ("PackageFamilyName", "Exact"):
+                case (PackageMatchFields.PackageFamilyName, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.PackageFamilyName.Equals(requestMatch.KeyWord)));
                     break;
 
-                case ("PackageFamilyName", "CaseInsensitive"):
+                case (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower())));
                     break;
 
-                case ("PackageFamilyName", "StartsWith"):
+                case (PackageMatchFields.PackageFamilyName, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.PackageFamilyName.StartsWith(requestMatch.KeyWord)));
                     break;
 
-                case ("PackageFamilyName", "Substring"):
+                case (PackageMatchFields.PackageFamilyName, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.PackageFamilyName.Contains(requestMatch.KeyWord)));
                     break;
 
-                case ("ProductCode", "Exact"):
+                case (PackageMatchFields.ProductCode, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.ProductCode.Equals(requestMatch.KeyWord)));
                     break;
 
-                case ("ProductCode", "CaseInsensitive"):
+                case (PackageMatchFields.ProductCode, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower())));
                     break;
 
-                case ("ProductCode", "StartsWith"):
+                case (PackageMatchFields.ProductCode, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.ProductCode.StartsWith(requestMatch.KeyWord)));
                     break;
 
-                case ("ProductCode", "Substring"):
+                case (PackageMatchFields.ProductCode, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.Installers.Any(installer => installer.ProductCode.Contains(requestMatch.KeyWord)));
                     break;
 
-                case ("ShortDescription", "Exact"):
+                case (ShortDescription, MatchType.Exact):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.ShortDescription.Equals(requestMatch.KeyWord)));
                     break;
 
-                case ("ShortDescription", "CaseInsensitive"):
+                case (ShortDescription, MatchType.CaseInsensitive):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower()))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())));
                     break;
 
-                case ("ShortDescription", "StartsWith"):
+                case (ShortDescription, MatchType.StartsWith):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.ShortDescription.StartsWith(requestMatch.KeyWord)));
                     break;
 
-                case ("ShortDescription", "Substring"):
+                case (ShortDescription, MatchType.Substring):
                     expression = manifest => manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord))
                         || manifest.Versions.Any(extended => extended.Locales.Any(locale => locale.ShortDescription.Contains(requestMatch.KeyWord)));
                     break;

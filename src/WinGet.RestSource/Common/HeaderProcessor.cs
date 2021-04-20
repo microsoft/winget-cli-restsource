@@ -38,10 +38,10 @@ namespace Microsoft.WinGet.RestSource.Common
             Dictionary<string, string> headers = new Dictionary<string, string>();
 
             // Process Version
-            ProcessVersion(headers, headerDictionary["Version"]);
+            ProcessVersion(headers, headerDictionary[HeaderConstants.Version]);
 
             // Process ContinuationToken
-            ProcessContinuationToken(headers, headerDictionary["ContinuationToken"]);
+            ProcessContinuationToken(headers, headerDictionary[HeaderConstants.ContinuationToken]);
 
             // Return Dictionary
             return headers;
@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Common
         {
             if (versions.Count == 0)
             {
-                headers.Add("Version", ApiConstants.ServerSupportedVersions.OrderBy(System.Version.Parse).ToList().Last());
+                headers.Add(HeaderConstants.Version, ApiConstants.ServerSupportedVersions.OrderBy(System.Version.Parse).ToList().Last());
             }
             else
             {
@@ -64,7 +64,7 @@ namespace Microsoft.WinGet.RestSource.Common
                             ErrorConstants.ServerVersionNotSupportedErrorMessage));
                 }
 
-                headers.Add("Version", joinedVersions.Last());
+                headers.Add(HeaderConstants.Version, joinedVersions.Last());
             }
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.WinGet.RestSource.Common
                         ErrorConstants.ToManyContinuationTokensErrorMessage));
             }
 
-            headers.Add("ContinuationToken", continuationTokens.First());
+            headers.Add(HeaderConstants.ContinuationToken, continuationTokens.First());
         }
     }
 }

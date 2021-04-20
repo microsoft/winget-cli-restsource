@@ -24,7 +24,7 @@ namespace Microsoft.WinGet.RestSource.Common
         public int MaxResults { get; set; }
 
         /// <summary>
-        /// Gets or sets MaxResults.
+        /// Gets or sets Index.
         /// </summary>
         public int Index { get; set; }
 

@@ -7,6 +7,7 @@
 namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
 {
     using System.Collections.Generic;
+    using Microsoft.WinGet.RestSource.Constants.Enumerations;
 
     /// <summary>
     /// MatchTypeValidatorSchema.
@@ -16,10 +17,10 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
         private const bool Nullable = true;
         private List<string> enumList = new List<string>
         {
-            "Exact",
-            "CaseInsensitive",
-            "StartsWith",
-            "Substring",
+            MatchType.Exact,
+            MatchType.CaseInsensitive,
+            MatchType.StartsWith,
+            MatchType.Substring,
         };
 
         /// <summary>
