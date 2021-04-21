@@ -1193,6 +1193,18 @@ components:
           properties:
             Channel:
               $ref: '#/components/schemas/Channel'
+        - type: object
+          properties:
+            PackageFamilyNames:
+              type: array
+              items:
+                $ref: '#/components/schemas/PackageFamilyName'
+        - type: object
+          properties:
+            ProductCodes:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductCode'
       required:
         - PackageVersion
 
@@ -1211,15 +1223,7 @@ components:
               $ref: '#/components/schemas/Publisher'
         - type: object
           properties:
-            PackageFamilyName:
-              $ref: '#/components/schemas/PackageFamilyName'
-        - type: object
-          properties:
-            ProductCode:
-              $ref: '#/components/schemas/ProductCode'
-        - type: object
-          properties:
-            versions:
+            Versions:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSearchVersionSchema'
