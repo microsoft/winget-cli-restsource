@@ -1223,7 +1223,7 @@ components:
               $ref: '#/components/schemas/Publisher'
         - type: object
           properties:
-            versions:
+            Versions:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSearchVersionSchema'
