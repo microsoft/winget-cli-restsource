@@ -13,7 +13,8 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     {
         private const bool Nullable = true;
         private const string Pattern = "^\\S+$";
-        private const uint Max = 32;
+        private const uint Min = 1;
+        private const uint Max = 40;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TagValidator"/> class.
@@ -22,6 +23,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         {
             this.AllowNull = Nullable;
             this.MatchPattern = Pattern;
+            this.MinLength = Min;
             this.MaxLength = Max;
         }
     }

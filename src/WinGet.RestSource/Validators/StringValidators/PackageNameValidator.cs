@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     public class PackageNameValidator : ApiStringValidator
     {
         private const uint Min = 2;
-        private const uint Max = 64;
+        private const uint Max = 256;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageNameValidator"/> class.

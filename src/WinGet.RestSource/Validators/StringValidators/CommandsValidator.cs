@@ -11,7 +11,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     /// </summary>
     public class CommandsValidator : ApiStringValidator
     {
-        private const uint Min = 2;
+        private const uint Min = 1;
         private const uint Max = 40;
 
         /// <summary>

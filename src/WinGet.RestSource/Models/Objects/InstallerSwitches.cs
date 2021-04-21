@@ -72,7 +72,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <summary>
         /// Gets or sets Custom.
         /// </summary>
-        [SwitchValidator]
+        [CustomSwitchValidator]
         public string Custom { get; set; }
 
         /// <summary>

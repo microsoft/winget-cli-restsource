@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     public class FileExtensionsValidator : ApiStringValidator
     {
         private const string Pattern = "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$";
-        private const uint Max = 40;
+        private const uint Max = 64;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileExtensionsValidator"/> class.

@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     public class ChannelValidator : ApiStringValidator
     {
         private const bool Nullable = true;
-        private const uint Min = 2;
+        private const uint Min = 1;
         private const uint Max = 16;
 
         /// <summary>
