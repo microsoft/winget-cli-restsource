@@ -26,5 +26,25 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
         }
+
+        /// <summary>
+        /// Merge in a Search Version.
+        /// </summary>
+        /// <param name="searchVersions">Search Versions.</param>
+        public void Merge(SearchVersions searchVersions)
+        {
+            foreach (SearchVersion searchVersion in searchVersions)
+            {
+                if (this.Exists(searchVersion.ConsolidationExpression))
+                {
+                    int ind = this.FindIndex(searchVersion.ConsolidationExpression);
+                    this[ind].Merge(searchVersion);
+                }
+                else
+                {
+                    this.Add(searchVersion);
+                }
+            }
+        }
     }
 }

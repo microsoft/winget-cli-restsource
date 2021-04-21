@@ -33,32 +33,101 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// Initializes a new instance of the <see cref="ManifestSearchResponse"/> class.
         /// </summary>
         /// <param name="packageIdentifier">Package Identifier.</param>
-        /// <param name="packageVersion">Package Version.</param>
-        /// <param name="channel">Channel.</param>
         /// <param name="packageName">Package Name.</param>
         /// <param name="publisher">Publisher.</param>
-        /// <param name="packageFamilyName">Package Family Name.</param>
-        /// <param name="productCode">Product Code.</param>
+        /// <param name="searchVersions">Search Versions.</param>
         public ManifestSearchResponse(
             string packageIdentifier = null,
-            string packageVersion = null,
-            string channel = null,
             string packageName = null,
             string publisher = null,
-            string packageFamilyName = null,
-            string productCode = null)
+            SearchVersions searchVersions = null)
         {
             this.PackageIdentifier = packageIdentifier;
             this.PackageName = packageName;
             this.Publisher = publisher;
-            this.PackageFamilyName = packageFamilyName;
-            this.ProductCode = productCode;
+            this.Versions = searchVersions;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestSearchResponse"/> class.
+        /// </summary>
+        /// <param name="packageIdentifier">Package Identifier.</param>
+        /// <param name="packageName">Package Name.</param>
+        /// <param name="publisher">Publisher.</param>
+        /// <param name="searchVersion">Search Version.</param>
+        public ManifestSearchResponse(
+            string packageIdentifier = null,
+            string packageName = null,
+            string publisher = null,
+            SearchVersion searchVersion = null)
+        {
+            this.PackageIdentifier = packageIdentifier;
+            this.PackageName = packageName;
+            this.Publisher = publisher;
+            this.Versions = new SearchVersions()
+            {
+                searchVersion,
+            };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestSearchResponse"/> class.
+        /// </summary>
+        /// <param name="packageIdentifier">Package Identifier.</param>
+        public ManifestSearchResponse(
+            string packageIdentifier = null)
+        {
+            this.PackageIdentifier = packageIdentifier;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManifestSearchResponse"/> class.
+        /// </summary>
+        /// <param name="packageIdentifier">Package Identifier.</param>
+        /// <param name="packageName">Package Name.</param>
+        /// <param name="publisher">Publisher.</param>
+        /// <param name="packageVersion">Package Version.</param>
+        /// <param name="channel">Channel.</param>
+        /// <param name="packageFamilyName">Package Family Name.</param>
+        /// <param name="productCode">Product Code.</param>
+        public ManifestSearchResponse(
+            string packageIdentifier = null,
+            string packageName = null,
+            string publisher = null,
+            string packageVersion = null,
+            string channel = null,
+            string packageFamilyName = null,
+            string productCode = null)
+        {
+            PackageFamilyNames pfn = null;
+            if (!string.IsNullOrEmpty(packageFamilyName))
+            {
+                pfn = new PackageFamilyNames
+                {
+                    packageName,
+                };
+            }
+
+            ProductCodes pc = null;
+            if (!string.IsNullOrEmpty(productCode))
+            {
+                pc = new ProductCodes()
+                {
+                    productCode,
+                };
+            }
+
+            this.PackageIdentifier = packageIdentifier;
+            this.PackageName = packageName;
+            this.Publisher = publisher;
             this.Versions = new SearchVersions()
             {
                 new SearchVersion()
                 {
                     PackageVersion = packageVersion,
                     Channel = channel,
+                    PackageFamilyNames = pfn,
+                    ProductCodes = pc,
                 },
             };
         }
@@ -80,18 +149,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// </summary>
         [PublisherValidator]
         public string Publisher { get; set; }
-
-        /// <summary>
-        /// Gets or sets PackageFamilyName.
-        /// </summary>
-        [PackageFamilyNameValidator]
-        public string PackageFamilyName { get; set; }
-
-        /// <summary>
-        /// Gets or sets ProductCode.
-        /// </summary>
-        [ProductCodeValidator]
-        public string ProductCode { get; set; }
 
         /// <summary>
         /// Gets or sets SearchVersions.
@@ -141,48 +198,46 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
             foreach (VersionExtended extended in manifest.Versions)
             {
-                response.AddRange(GetSearchVersions(manifest.PackageIdentifier, extended));
-            }
+                if (extended.Installers == null)
+                {
+                    response.Add(new ManifestSearchResponse(
+                        packageIdentifier: manifest.PackageIdentifier,
+                        packageName: extended.DefaultLocale.PackageName,
+                        publisher: extended.DefaultLocale.Publisher,
+                        packageVersion: extended.PackageVersion,
+                        channel: extended.Channel));
+                }
+                else
+                {
+                    PackageFamilyNames packageFamilyNames = new PackageFamilyNames();
+                    ProductCodes productCodes = new ProductCodes();
+                    foreach (Installer installer in extended.Installers)
+                    {
+                        if (!string.IsNullOrEmpty(installer.PackageFamilyName) && !packageFamilyNames.Contains(installer.PackageFamilyName))
+                        {
+                            packageFamilyNames.Add(installer.PackageFamilyName);
+                        }
 
-            return response;
-        }
+                        if (!string.IsNullOrEmpty(installer.ProductCode) && !productCodes.Contains(installer.ProductCode))
+                        {
+                            productCodes.Add(installer.ProductCode);
+                        }
+                    }
 
-        /// <summary>
-        /// Creates a new set of Manifest Search Response.
-        /// </summary>
-        /// <param name="packageIdentifier">Package identifier.</param>
-        /// <param name="extended">Version Extended.</param>
-        /// <returns>Manifest Search Responses.</returns>
-        public static List<ManifestSearchResponse> GetSearchVersions(string packageIdentifier, VersionExtended extended = null)
-        {
-            List<ManifestSearchResponse> response = new List<ManifestSearchResponse>();
-            if (extended == null)
-            {
-                response.Add(new ManifestSearchResponse(packageIdentifier));
-                return response;
-            }
+                    SearchVersion searchVersion = new SearchVersion
+                    {
+                        PackageVersion = extended.PackageVersion,
+                        Channel = extended.Channel,
+                        PackageFamilyNames = packageFamilyNames.Count > 0 ? packageFamilyNames : null,
+                        ProductCodes = productCodes.Count > 0 ? productCodes : null,
+                    };
 
-            if (extended.Installers == null)
-            {
-                response.Add(new ManifestSearchResponse(
-                    packageIdentifier,
-                    extended.PackageVersion,
-                    extended.Channel,
-                    extended.DefaultLocale.PackageName,
-                    extended.DefaultLocale.Publisher));
-                return response;
-            }
-
-            foreach (var installer in extended.Installers)
-            {
-                response.Add(new ManifestSearchResponse(
-                    packageIdentifier,
-                    extended.PackageVersion,
-                    extended.Channel,
-                    extended.DefaultLocale.PackageName,
-                    extended.DefaultLocale.Publisher,
-                    installer.PackageFamilyName,
-                    installer.ProductCode));
+                    response.Add(new ManifestSearchResponse(
+                        packageIdentifier: manifest.PackageIdentifier,
+                        packageName: extended.DefaultLocale.PackageName,
+                        publisher: extended.DefaultLocale.Publisher,
+                        searchVersion: searchVersion));
+                }
             }
 
             return response;
@@ -191,49 +246,37 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Consolidates Manifest Search Responses.
         /// </summary>
-        /// <param name="manifests">manifests.</param>
+        /// <param name="manifestSearchResponses">manifests.</param>
         /// <returns>Manifest Search Responses.</returns>
-        public static List<ManifestSearchResponse> Consolidate(List<ManifestSearchResponse> manifests)
+        public static List<ManifestSearchResponse> Consolidate(List<ManifestSearchResponse> manifestSearchResponses)
         {
             List<ManifestSearchResponse> list = new List<ManifestSearchResponse>();
-            if (manifests == null)
+            if (manifestSearchResponses == null)
             {
                 return list;
             }
 
-            foreach (ManifestSearchResponse response in manifests)
+            foreach (ManifestSearchResponse response in manifestSearchResponses)
             {
-                // Create Consolidation Predicate.
-                Predicate<ManifestSearchResponse> consolidationExpression = x =>
+                // Create Consolidation Predicate for search Response..
+                bool MSRConsolidationExpression(ManifestSearchResponse x) =>
                     Equals(response.PackageIdentifier, x.PackageIdentifier)
                     && Equals(response.PackageName, x.PackageName)
-                    && Equals(response.Publisher, x.Publisher)
-                    && Equals(response.PackageFamilyName, x.PackageFamilyName)
-                    && Equals(response.ProductCode, x.ProductCode);
+                    && Equals(response.Publisher, x.Publisher);
 
                 // If exists in results update otherwise add
-                if (list.Exists(consolidationExpression))
+                if (list.Exists(MSRConsolidationExpression))
                 {
                     // Get index
-                    int index = list.FindIndex(consolidationExpression);
+                    int searchResponseIndex = list.FindIndex(MSRConsolidationExpression);
 
                     // Verify versions exists
-                    if (list[index].Versions == null)
+                    if (list[searchResponseIndex].Versions == null && response.Versions != null)
                     {
-                        list[index].Versions = new SearchVersions();
+                        list[searchResponseIndex].Versions = new SearchVersions();
                     }
 
-                    // If response versions exists - add.
-                    if (response.Versions != null)
-                    {
-                        foreach (SearchVersion searchVersion in response.Versions)
-                        {
-                            if (!list[index].Versions.Contains(searchVersion))
-                            {
-                                list[index].Versions.Add(searchVersion);
-                            }
-                        }
-                    }
+                    list[searchResponseIndex].Versions.Merge(response.Versions);
                 }
                 else
                 {
@@ -252,8 +295,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.PackageIdentifier = obj.PackageIdentifier;
             this.PackageName = obj.PackageName;
             this.Publisher = obj.Publisher;
-            this.PackageFamilyName = obj.PackageFamilyName;
-            this.ProductCode = obj.ProductCode;
             this.Versions = obj.Versions;
         }
 
@@ -289,8 +330,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             return Equals(this.PackageIdentifier, other.PackageIdentifier) &&
                    Equals(this.PackageName, other.PackageName) &&
                    Equals(this.Publisher, other.Publisher) &&
-                   Equals(this.PackageFamilyName, other.PackageFamilyName) &&
-                   Equals(this.ProductCode, other.ProductCode) &&
                    Equals(this.Versions, other.Versions);
         }
 
@@ -323,8 +362,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 var hashCode = this.PackageIdentifier != null ? this.PackageIdentifier.GetHashCode() : 0;
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageName != null ? this.PackageName.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Publisher != null ? this.Publisher.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageFamilyName != null ? this.PackageFamilyName.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ProductCode != null ? this.ProductCode.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Versions != null ? this.Versions.GetHashCode() : 0);
                 return hashCode;
             }
