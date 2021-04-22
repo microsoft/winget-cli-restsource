@@ -10,8 +10,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
-    using PackageLocale = Microsoft.WinGet.RestSource.Models.Strings.Locale;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// Locale.
@@ -37,7 +36,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets Moniker.
         /// </summary>
-        public Tag Moniker { get; set; }
+        [TagValidator]
+        public string Moniker { get; set; }
 
         /// <summary>
         /// Operator==.
@@ -75,62 +75,28 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             var results = new List<ValidationResult>();
 
             // Validate Required fields that are optional in base.
-            if (this.Publisher == null)
+            if (string.IsNullOrEmpty(this.Publisher))
             {
-                results.Add(new ValidationResult($"Publisher must not be null."));
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(this.Publisher.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.Publisher.APIStringName} '{this.Publisher.APIString}' must not be null."));
-                }
+                results.Add(new ValidationResult($"{nameof(this.Publisher)} in {validationContext.ObjectType} must not be null."));
             }
 
-            if (this.PackageName == null)
+            if (string.IsNullOrEmpty(this.PackageName))
             {
-                results.Add(new ValidationResult($"PackageName must not be null."));
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(this.PackageName.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.PackageName.APIStringName} '{this.PackageName.APIString}' must not be null."));
-                }
+                results.Add(new ValidationResult($"{nameof(this.PackageName)} in {validationContext.ObjectType} must not be null."));
             }
 
-            if (this.License == null)
+            if (string.IsNullOrEmpty(this.License))
             {
-                results.Add(new ValidationResult($"License must not be null."));
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(this.License.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.License.APIStringName} '{this.License.APIString}' must not be null."));
-                }
+                results.Add(new ValidationResult($"{nameof(this.License)} in {validationContext.ObjectType} must not be null."));
             }
 
-            if (this.ShortDescription == null)
+            if (string.IsNullOrEmpty(this.ShortDescription))
             {
-                results.Add(new ValidationResult($"ShortDescription must not be null."));
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(this.ShortDescription.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.ShortDescription.APIStringName} '{this.ShortDescription.APIString}' must not be null."));
-                }
+                results.Add(new ValidationResult($"{nameof(this.ShortDescription)} in {validationContext.ObjectType} must not be null."));
             }
 
             // Validate Base
             results.AddRange(base.Validate(validationContext));
-
-            // Validate Optional Members
-            if (this.Moniker != null)
-            {
-                Validator.TryValidateObject(this.Moniker, new ValidationContext(this.Moniker, null, null), results);
-            }
 
             // Return Results
             return results;
@@ -149,8 +115,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 return true;
             }
 
-            return Equals(this, other)
-                   && Equals(this.Moniker, other.Moniker);
+            return Equals(this, other) && Equals(this.Moniker, other.Moniker);
         }
 
         /// <inheritdoc />

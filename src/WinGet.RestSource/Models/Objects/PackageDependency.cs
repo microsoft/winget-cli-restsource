@@ -8,8 +8,9 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// PackageDependency.
@@ -35,12 +36,14 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <summary>
         /// Gets or sets PackageIdentifier.
         /// </summary>
-        public PackageIdentifier PackageIdentifier { get; set; }
+        [PackageIdentifierValidator]
+        public string PackageIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets MinimumVersion.
         /// </summary>
-        public PackageVersion MinimumVersion { get; set; }
+        [PackageVersionValidator]
+        public string MinimumVersion { get; set; }
 
         /// <summary>
         /// Operator==.
@@ -77,20 +80,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc/>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // Create Validation Results
-            var results = new List<ValidationResult>();
-
-            // Validate Required Members
-            Validator.TryValidateObject(this.PackageIdentifier, new ValidationContext(this.PackageIdentifier, null, null), results);
-
-            // Validate Optional Members
-            if (this.MinimumVersion != null)
-            {
-                Validator.TryValidateObject(this.MinimumVersion, new ValidationContext(this.MinimumVersion, null, null), results);
-            }
-
-            // Return Results
-            return results;
+            return new List<ValidationResult>();
         }
 
         /// <inheritdoc />
@@ -135,7 +125,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         {
             unchecked
             {
-                return ((this.PackageIdentifier != null ? this.PackageIdentifier.GetHashCode() : 0) * 397) ^ (this.MinimumVersion != null ? this.MinimumVersion.GetHashCode() : 0);
+                return ((this.PackageIdentifier != null ? this.PackageIdentifier.GetHashCode() : 0) * ApiConstants.HashCodeConstant) ^ (this.MinimumVersion != null ? this.MinimumVersion.GetHashCode() : 0);
             }
         }
     }

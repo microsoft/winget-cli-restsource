@@ -9,8 +9,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
-    using Newtonsoft.Json;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// PackageCore.
@@ -36,7 +35,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets PackageIdentifier.
         /// </summary>
-        public PackageIdentifier PackageIdentifier { get; set; }
+        [PackageIdentifierValidator]
+        public string PackageIdentifier { get; set; }
 
         /// <summary>
         /// Operator==.
@@ -69,21 +69,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc/>
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // Create Validation Results
-            var results = new List<ValidationResult>();
-
-            // Verify Required Fields
-            if (this.PackageIdentifier == null)
-            {
-                results.Add(new ValidationResult($"PackageIdentifier must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.PackageIdentifier, new ValidationContext(this.PackageIdentifier, null, null), results);
-            }
-
-            // Return Results
-            return results;
+            return new List<ValidationResult>();
         }
 
         /// <inheritdoc />

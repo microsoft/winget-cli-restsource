@@ -11,10 +11,10 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Enum;
     using Microsoft.WinGet.RestSource.Models.Objects;
-    using Microsoft.WinGet.RestSource.Models.Strings;
-    using Architecture = Microsoft.WinGet.RestSource.Models.Enum.Architecture;
+    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Validators.EnumValidators;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
     using Capabilities = Microsoft.WinGet.RestSource.Models.Arrays.Capabilities;
     using Commands = Microsoft.WinGet.RestSource.Models.Arrays.Commands;
     using Dependencies = Microsoft.WinGet.RestSource.Models.Objects.Dependencies;
@@ -46,27 +46,32 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets InstallerIdentifier.
         /// </summary>
-        public InstallerIdentifier InstallerIdentifier { get; set; }
+        [InstallerIdentifierValidator]
+        public string InstallerIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets InstallerSha256.
         /// </summary>
-        public InstallerSha256 InstallerSha256 { get; set; }
+        [InstallerSha256Validator]
+        public string InstallerSha256 { get; set; }
 
         /// <summary>
         /// Gets or sets InstallerUrl.
         /// </summary>
-        public Url InstallerUrl { get; set; }
+        [UrlValidator]
+        public string InstallerUrl { get; set; }
 
         /// <summary>
         /// Gets or sets Architecture.
         /// </summary>
-        public Architecture Architecture { get; set; }
+        [ArchitectureValidator]
+        public string Architecture { get; set; }
 
         /// <summary>
         /// Gets or sets InstallerLocale.
         /// </summary>
-        public Locale InstallerLocale { get; set; }
+        [LocaleValidator]
+        public string InstallerLocale { get; set; }
 
         /// <summary>
         /// Gets or sets Platform.
@@ -76,22 +81,26 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets MinimumOsVersion.
         /// </summary>
-        public MinimumOSVersion MinimumOsVersion { get; set; }
+        [MinimumOSVersionValidator]
+        public string MinimumOsVersion { get; set; }
 
         /// <summary>
         /// Gets or sets InstallerType.
         /// </summary>
-        public InstallerType InstallerType { get; set; }
+        [InstallerTypeValidator]
+        public string InstallerType { get; set; }
 
         /// <summary>
         /// Gets or sets Scope.
         /// </summary>
-        public Scope Scope { get; set; }
+        [ScopeValidator]
+        public string Scope { get; set; }
 
         /// <summary>
         /// Gets or sets SignatureSha256.
         /// </summary>
-        public SignatureSha256 SignatureSha256 { get; set; }
+        [SignatureSha256Validator]
+        public string SignatureSha256 { get; set; }
 
         /// <summary>
         /// Gets or sets InstallModes.
@@ -111,7 +120,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets UpgradeBehavior.
         /// </summary>
-        public UpgradeBehavior UpgradeBehavior { get; set; }
+        [UpgradeBehaviorValidator]
+        public string UpgradeBehavior { get; set; }
 
         /// <summary>
         /// Gets or sets Commands.
@@ -136,12 +146,14 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets PackageFamilyName.
         /// </summary>
-        public PackageFamilyName PackageFamilyName { get; set; }
+        [PackageFamilyNameValidator]
+        public string PackageFamilyName { get; set; }
 
         /// <summary>
         /// Gets or sets ProductCode.
         /// </summary>
-        public ProductCode ProductCode { get; set; }
+        [ProductCodeValidator]
+        public string ProductCode { get; set; }
 
         /// <summary>
         /// Gets or sets Capabilities.
@@ -208,138 +220,61 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Create Validation Results
             var results = new List<ValidationResult>();
 
-            // Verify Required Fields
-            if (this.InstallerIdentifier != null)
+            // URL Are generally nullable, but not in this instance.
+            if (string.IsNullOrEmpty(this.InstallerUrl))
             {
-                Validator.TryValidateObject(this.InstallerIdentifier, new ValidationContext(this.InstallerIdentifier, null, null), results);
+                results.Add(new ValidationResult($"{nameof(this.InstallerUrl)} in {validationContext.ObjectType} must not be null."));
             }
 
-            if (this.InstallerSha256 == null)
-            {
-                results.Add(new ValidationResult($"InstallerSha256 must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.InstallerSha256, new ValidationContext(this.InstallerSha256, null, null), results);
-            }
-
-            if (this.InstallerUrl == null)
-            {
-                results.Add(new ValidationResult($"InstallerUrl must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.InstallerUrl, new ValidationContext(this.InstallerUrl, null, null), results);
-
-                // URL Are generally nullable, but not in this instance.
-                if (string.IsNullOrEmpty(this.InstallerUrl.APIString))
-                {
-                    results.Add(new ValidationResult($"{this.InstallerUrl.APIStringName} '{this.InstallerUrl.APIString}' must not be null."));
-                }
-            }
-
-            if (this.Architecture == null)
-            {
-                results.Add(new ValidationResult($"Architecture must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.Architecture, new ValidationContext(this.Architecture, null, null), results);
-            }
-
-            if (this.InstallerType == null)
-            {
-                results.Add(new ValidationResult($"InstallerType must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.InstallerType, new ValidationContext(this.InstallerType, null, null), results);
-            }
-
-            // Validate Optional Members
-            if (this.InstallerLocale != null)
-            {
-                Validator.TryValidateObject(this.InstallerLocale, new ValidationContext(this.InstallerLocale, null, null), results);
-            }
-
+            // Optional Objects
             if (this.Platform != null)
             {
-                Validator.TryValidateObject(this.Platform, new ValidationContext(this.Platform, null, null), results);
-            }
-
-            if (this.MinimumOsVersion != null)
-            {
-                Validator.TryValidateObject(this.MinimumOsVersion, new ValidationContext(this.MinimumOsVersion, null, null), results);
-            }
-
-            if (this.Scope != null)
-            {
-                Validator.TryValidateObject(this.Scope, new ValidationContext(this.Scope, null, null), results);
-            }
-
-            if (this.SignatureSha256 != null)
-            {
-                Validator.TryValidateObject(this.SignatureSha256, new ValidationContext(this.SignatureSha256, null, null), results);
+                ApiDataValidator.Validate(this.Platform, results);
             }
 
             if (this.InstallModes != null)
             {
-                Validator.TryValidateObject(this.InstallModes, new ValidationContext(this.InstallModes, null, null), results);
+                ApiDataValidator.Validate(this.InstallModes, results);
             }
 
             if (this.InstallerSwitches != null)
             {
-                Validator.TryValidateObject(this.InstallerSwitches, new ValidationContext(this.InstallerSwitches, null, null), results);
+                ApiDataValidator.Validate(this.InstallerSwitches, results);
             }
 
             if (this.InstallerSuccessCodes != null)
             {
-                Validator.TryValidateObject(this.InstallerSuccessCodes, new ValidationContext(this.InstallerSuccessCodes, null, null), results);
-            }
-
-            if (this.UpgradeBehavior != null)
-            {
-                Validator.TryValidateObject(this.UpgradeBehavior, new ValidationContext(this.UpgradeBehavior, null, null), results);
+                ApiDataValidator.Validate(this.InstallerSwitches, results);
             }
 
             if (this.Commands != null)
             {
-                Validator.TryValidateObject(this.Commands, new ValidationContext(this.Commands, null, null), results);
+                ApiDataValidator.Validate(this.Commands, results);
             }
 
             if (this.Protocols != null)
             {
-                Validator.TryValidateObject(this.Protocols, new ValidationContext(this.Protocols, null, null), results);
+                ApiDataValidator.Validate(this.Protocols, results);
             }
 
             if (this.FileExtensions != null)
             {
-                Validator.TryValidateObject(this.FileExtensions, new ValidationContext(this.FileExtensions, null, null), results);
+                ApiDataValidator.Validate(this.FileExtensions, results);
             }
 
             if (this.Dependencies != null)
             {
-                Validator.TryValidateObject(this.Dependencies, new ValidationContext(this.Dependencies, null, null), results);
-            }
-
-            if (this.PackageFamilyName != null)
-            {
-                Validator.TryValidateObject(this.PackageFamilyName, new ValidationContext(this.PackageFamilyName, null, null), results);
-            }
-
-            if (this.ProductCode != null)
-            {
-                Validator.TryValidateObject(this.ProductCode, new ValidationContext(this.ProductCode, null, null), results);
+                ApiDataValidator.Validate(this.Dependencies, results);
             }
 
             if (this.Capabilities != null)
             {
-                Validator.TryValidateObject(this.Capabilities, new ValidationContext(this.Capabilities, null, null), results);
+                ApiDataValidator.Validate(this.Capabilities, results);
             }
 
             if (this.RestrictedCapabilities != null)
             {
-                Validator.TryValidateObject(this.RestrictedCapabilities, new ValidationContext(this.RestrictedCapabilities, null, null), results);
+                ApiDataValidator.Validate(this.RestrictedCapabilities, results);
             }
 
             // Return Results

@@ -9,12 +9,12 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
-    using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
 
     /// <summary>
     /// VersionsExtended.
@@ -299,7 +299,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
             // Verify Unique version numbers
             if (this.Select(obj => obj.PackageVersion).Distinct().Count() < this.Count())
             {
-                results.Add(new ValidationResult($"{this.APIArrayName} does not meet unique item requirement: {this}."));
+                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} does not meet unique item requirement."));
             }
 
             return results;

@@ -22,9 +22,19 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string UnhandledErrorMessage = "An unhandled error occured.";
 
         /// <summary>
+        /// This is the code for when the resource version does not match the document version.
+        /// </summary>
+        public const int PackageDoesNotMatchErrorCode = 2;
+
+        /// <summary>
+        /// This is the message for when the resource version does not match the document version.
+        /// </summary>
+        public const string PackageDoesNotMatchErrorMessage = "The document PackageIdentifier does not match resource PackageIdentifier.";
+
+        /// <summary>
         /// This is the code for an data validation error.
         /// </summary>
-        public const int ValidationFailureErrorCode = 2;
+        public const int ValidationFailureErrorCode = 3;
 
         /// <summary>
         /// This is the message for an data validation error.
@@ -34,7 +44,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the object contains no versions.
         /// </summary>
-        public const int VersionsIsNullErrorCode = 3;
+        public const int VersionsIsNullErrorCode = 4;
 
         /// <summary>
         /// This is the message for when the object contains no versions.
@@ -44,7 +54,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when a version does not contain the selected package.
         /// </summary>
-        public const int VersionDoesNotExistErrorCode = 4;
+        public const int VersionDoesNotExistErrorCode = 5;
 
         /// <summary>
         /// This is the message for when a version does not contain the selected package.
@@ -54,7 +64,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when a Version already exists.
         /// </summary>
-        public const int VersionAlreadyExistsErrorCode = 5;
+        public const int VersionAlreadyExistsErrorCode = 6;
 
         /// <summary>
         /// This is the message for when a Version already exists.
@@ -64,7 +74,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the resource version does not match the document version.
         /// </summary>
-        public const int VersionDoesNotMatchErrorCode = 6;
+        public const int VersionDoesNotMatchErrorCode = 7;
 
         /// <summary>
         /// This is the message for when the resource version does not match the document version.
@@ -74,7 +84,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the object contains no versions.
         /// </summary>
-        public const int InstallerIsNullErrorCode = 7;
+        public const int InstallerIsNullErrorCode = 8;
 
         /// <summary>
         /// This is the message for when the object contains no versions.
@@ -84,7 +94,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when an installer does not contain the selected package.
         /// </summary>
-        public const int InstallerDoesNotExistErrorCode = 8;
+        public const int InstallerDoesNotExistErrorCode = 9;
 
         /// <summary>
         /// This is the message for when an installer does not contain the selected package.
@@ -95,7 +105,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when a Version already exists.
         /// </summary>
-        public const int InstallerAlreadyExistsErrorCode = 9;
+        public const int InstallerAlreadyExistsErrorCode = 10;
 
         /// <summary>
         /// This is the message for when a Version already exists.
@@ -105,7 +115,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the installer version does not match the document installer.
         /// </summary>
-        public const int InstallerDoesNotMatchErrorCode = 10;
+        public const int InstallerDoesNotMatchErrorCode = 11;
 
         /// <summary>
         /// This is the message for when the resource installer does not match the document installer.
@@ -116,7 +126,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for an Http Request Exception.
         /// </summary>
-        public const int HttpRequestExceptionErrorCode = 11;
+        public const int HttpRequestExceptionErrorCode = 12;
 
         /// <summary>
         /// This is the message for an Http Request Exception.
@@ -126,7 +136,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the object contains no locales.
         /// </summary>
-        public const int LocaleIsNullErrorCode = 12;
+        public const int LocaleIsNullErrorCode = 13;
 
         /// <summary>
         /// This is the message for when the object contains no locales.
@@ -136,7 +146,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when an version does not contain the selected locale.
         /// </summary>
-        public const int LocaleDoesNotExistErrorCode = 13;
+        public const int LocaleDoesNotExistErrorCode = 14;
 
         /// <summary>
         /// This is the message for when an installer does not contain the selected package.
@@ -146,7 +156,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when a locales already exists.
         /// </summary>
-        public const int LocaleAlreadyExistsErrorCode = 14;
+        public const int LocaleAlreadyExistsErrorCode = 15;
 
         /// <summary>
         /// This is the message for when a locales already exists.
@@ -156,12 +166,42 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the code for when the locale does not match the document locales.
         /// </summary>
-        public const int LocaleDoesNotMatchErrorCode = 15;
+        public const int LocaleDoesNotMatchErrorCode = 16;
 
         /// <summary>
         /// This is the message for when the locales does not match the document locales.
         /// </summary>
         public const string LocaleDoesNotMatchErrorMessage = "The document locale does not match resource locale.";
+
+        /// <summary>
+        /// This is the code for when the headers are not provided.
+        /// </summary>
+        public const int HeadersAreNullErrorCode = 17;
+
+        /// <summary>
+        /// This is the message for when the headers are not provided.
+        /// </summary>
+        public const string HeadersAreNullErrorMessage = "The request did not provide any headers.";
+
+        /// <summary>
+        /// This is the code for when an unsupported version is requested.
+        /// </summary>
+        public const int ServerVersionNotSupportedErrorCode = 18;
+
+        /// <summary>
+        /// This is the message for when an unsupported version is requested.
+        /// </summary>
+        public const string ServerVersionNotSupportedErrorMessage = "The requested version is not supported by the server.";
+
+        /// <summary>
+        /// This is the code for when to many continuation tokens are provided.
+        /// </summary>
+        public const int ToManyContinuationTokensErrorCode = 19;
+
+        /// <summary>
+        /// This is the message for when to many continuation tokens are provided.
+        /// </summary>
+        public const string ToManyContinuationTokensErrorMessage = "To many continuations were provided by the server.";
 
         /// <summary>
         /// This is the code for a resource Conflict.

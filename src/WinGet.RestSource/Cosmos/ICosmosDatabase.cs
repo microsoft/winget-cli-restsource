@@ -6,12 +6,11 @@
 
 namespace Microsoft.WinGet.RestSource.Cosmos
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
+    using Microsoft.WinGet.RestSource.Common;
 
     /// <summary>
     /// This provides an interface for CosmosDatabase.
@@ -81,7 +80,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <param name="documentQuery">Document Query.</param>
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
-        Task<CosmosPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
+        Task<ApiDataPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
             where T : class;
     }
 }

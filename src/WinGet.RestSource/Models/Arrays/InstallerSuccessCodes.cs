@@ -9,7 +9,6 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// InstallerSuccessCodes.
@@ -38,13 +37,13 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
         {
             List<ValidationResult> results = new List<ValidationResult>();
 
-            // Base
+            // Check Base
             results.AddRange(base.Validate(validationContext));
 
             // Not Zero
             if (this.Contains(0))
             {
-                results.Add(new ValidationResult($"{this.APIArrayName} May not contain an installer success code of 0."));
+                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer success code of 0."));
             }
 
             return results;

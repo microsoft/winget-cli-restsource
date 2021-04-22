@@ -10,7 +10,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
-    using Microsoft.WinGet.RestSource.Models.Strings;
+    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// This is the core version model.
@@ -36,12 +37,14 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <summary>
         /// Gets or sets PackageVersion.
         /// </summary>
-        public PackageVersion PackageVersion { get; set; }
+        [PackageVersionValidator]
+        public string PackageVersion { get; set; }
 
         /// <summary>
         /// Gets or sets Channel.
         /// </summary>
-        public Channel Channel { get; set; }
+        [ChannelValidator]
+        public string Channel { get; set; }
 
         /// <summary>
         /// Gets or sets DefaultLocale.
@@ -85,28 +88,13 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             var results = new List<ValidationResult>();
 
             // Verify Required Fields
-            if (this.PackageVersion == null)
-            {
-                results.Add(new ValidationResult($"PackageVersion must not be null."));
-            }
-            else
-            {
-                Validator.TryValidateObject(this.PackageVersion, new ValidationContext(this.PackageVersion, null, null), results);
-            }
-
             if (this.DefaultLocale == null)
             {
-                results.Add(new ValidationResult($"DefaultLocale must not be null."));
+                results.Add(new ValidationResult($"{nameof(this.DefaultLocale)} in {validationContext.ObjectType} must not be null."));
             }
             else
             {
-                Validator.TryValidateObject(this.DefaultLocale, new ValidationContext(this.DefaultLocale, null, null), results);
-            }
-
-            // Validate Optional Members
-            if (this.Channel != null)
-            {
-                Validator.TryValidateObject(this.Channel, new ValidationContext(this.Channel, null, null), results);
+                ApiDataValidator.Validate(this.DefaultLocale, results);
             }
 
             // Return Results

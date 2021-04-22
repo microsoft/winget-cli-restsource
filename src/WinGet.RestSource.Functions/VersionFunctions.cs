@@ -17,14 +17,11 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Models;
     using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Validators;
     using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
 
     /// <summary>
@@ -33,15 +30,15 @@ namespace Microsoft.WinGet.RestSource.Functions
     /// TODO: Refactor duplicate code to library.
     public class VersionFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
+        private readonly IApiDataStore dataStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public VersionFunctions(ICosmosDatabase cosmosDatabase)
+        /// <param name="dataStore">Data Store.</param>
+        public VersionFunctions(IApiDataStore dataStore)
         {
-            this.cosmosDatabase = cosmosDatabase;
+            this.dataStore = dataStore;
         }
 
         /// <summary>
@@ -59,24 +56,20 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Version version = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as Version
                 version = await Parser.StreamParser<Version>(req.Body, log);
-                ApiDataValidator.Validate<Version>(version);
-
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Add Version
-                cosmosDocument.Document.AddVersion(version);
+                ApiDataValidator.Validate(version);
 
                 // Save Document
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.AddVersion(packageIdentifier, version);
             }
             catch (DefaultException e)
             {
@@ -109,20 +102,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument =
-                    await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                // Remove Version
-                cosmosDocument.Document.RemoveVersion(packageVersion);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Save Package
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.DeleteVersion(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
             {
@@ -155,13 +142,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
             Version version = null;
 
             try
             {
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
+
                 // Parse body as Version
                 version = await Parser.StreamParser<Version>(req.Body, log);
-                ApiDataValidator.Validate<Version>(version);
+                ApiDataValidator.Validate(version);
 
                 // Validate Versions Match
                 if (version.PackageVersion != packageVersion)
@@ -172,16 +163,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                             ErrorConstants.VersionDoesNotMatchErrorMessage));
                 }
 
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
-
-                // Update
-                cosmosDocument.Document.Versions.Update(version);
-
-                // Save Package
-                ApiDataValidator.Validate<PackageManifest>(cosmosDocument.Document);
-                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+                await this.dataStore.UpdateVersion(packageIdentifier, packageVersion, version);
             }
             catch (DefaultException e)
             {
@@ -214,17 +196,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            List<Version> versions = new List<Version>();
+            Dictionary<string, string> headers = null;
+            ApiDataPage<Version> versions = new ApiDataPage<Version>();
 
             try
             {
-                // Fetch Current Package
-                CosmosDocument<CosmosPackageManifest> cosmosDocument = await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
-                log.LogInformation(FormatJSON.Indented(cosmosDocument, log));
+                // Parse Headers
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                // Get Versions and convert.
-                VersionsExtended extended = cosmosDocument.Document.GetVersion(packageVersion);
-                versions.AddRange(extended.Select(ver => new Version(ver)));
+                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion, null);
             }
             catch (DefaultException e)
             {
@@ -237,11 +217,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return versions.Count switch
+            return versions.Items.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<Version>(versions.First())),
-                _ => new ApiObjectResult(new ApiResponse<List<Version>>(versions)),
+                1 => new ApiObjectResult(new ApiResponse<Version>(versions.Items.First(), versions.ContinuationToken)),
+                _ => new ApiObjectResult(new ApiResponse<List<Version>>(versions.Items.ToList(), versions.ContinuationToken)),
             };
         }
     }
