@@ -281,7 +281,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 else
                 {
                     // Add
-                    response.Versions.MakeDistinct();
+                    if (response.Versions != null)
+                    {
+                        response.Versions.MakeDistinct();
+                    }
+
                     list.Add(response);
                 }
             }

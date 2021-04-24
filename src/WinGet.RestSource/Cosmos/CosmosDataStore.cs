@@ -477,8 +477,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         public async Task<ApiDataPage<ManifestSearchResponse>> SearchPackageManifests(ManifestSearchRequest manifestSearchRequest, Dictionary<string, string> headers, IQueryCollection queryParameters)
         {
             // Create Working Set and return
-            ApiDataPage<ManifestSearchResponse> manifestSearchResponse = new ApiDataPage<ManifestSearchResponse>();
+            ApiDataPage<ManifestSearchResponse> apiDataPage = new ApiDataPage<ManifestSearchResponse>();
             List<PackageManifest> manifests = new List<PackageManifest>();
+            List<ManifestSearchResponse> manifestSearchResponse = new List<ManifestSearchResponse>();
 
             // Process maximum results
             int maxItemCount = manifestSearchRequest.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage && manifestSearchRequest.MaximumResults > 0
@@ -494,76 +495,97 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 RequestContinuation = null,
             };
 
-            // Process Inclusions
-            Models.Arrays.SearchRequestPackageMatchFilter inclusions = new Models.Arrays.SearchRequestPackageMatchFilter();
-            if (manifestSearchRequest.Inclusions != null)
+            if (manifestSearchRequest.FetchAllManifests)
             {
-                inclusions.AddRange(manifestSearchRequest.Inclusions);
+                IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
+                IDocumentQuery<CosmosPackageManifest> documentQuery = query.AsDocumentQuery();
+                ApiDataPage<CosmosPackageManifest> apiDataDocument = await this.cosmosDatabase.GetByDocumentQuery<CosmosPackageManifest>(documentQuery);
+                manifests.AddRange(apiDataDocument.Items);
             }
-
-            // Convert Query to inclusions to submit to cosmos
-            if (manifestSearchRequest.Query != null)
+            else
             {
-                inclusions.AddRange(this.queryList.Select(q => new Models.Objects.SearchRequestPackageMatchFilter()
+                // Process Inclusions
+                Models.Arrays.SearchRequestPackageMatchFilter inclusions = new Models.Arrays.SearchRequestPackageMatchFilter();
+                if (manifestSearchRequest.Inclusions != null)
                 {
-                    PackageMatchField = q,
-                    RequestMatch = manifestSearchRequest.Query,
-                }));
-            }
+                    inclusions.AddRange(manifestSearchRequest.Inclusions);
+                }
 
-            // Submit Inclusions to Cosmos
-            // Due to join limitation on Cosmos - we are submitting each predicate separately.
-            // TODO: Create a more efficient search - but this will suffice for now for a light weight reference.
-            if (inclusions.Count > 0)
-            {
-                List<Task<ApiDataPage<PackageManifest>>> taskSet = new List<Task<ApiDataPage<PackageManifest>>>();
-                foreach (string packageMatchField in inclusions.Select(inc => inc.PackageMatchField).Distinct())
+                // Convert Query to inclusions to submit to cosmos
+                if (manifestSearchRequest.Query != null)
                 {
-                    // Create Predicate for search
-                    ExpressionStarter<PackageManifest> inclusionPredicate = PredicateBuilder.New<PackageManifest>();
-                    foreach (SearchRequestPackageMatchFilter matchFilter in inclusions.Where(inc => inc.PackageMatchField.Equals(packageMatchField)))
+                    inclusions.AddRange(this.queryList.Select(q => new Models.Objects.SearchRequestPackageMatchFilter()
                     {
-                        inclusionPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                        PackageMatchField = q,
+                        RequestMatch = manifestSearchRequest.Query,
+                    }));
+                }
+
+                // Submit Inclusions to Cosmos
+                // Due to join limitation on Cosmos - we are submitting each predicate separately.
+                // TODO: Create a more efficient search - but this will suffice for now for a light weight reference.
+                if (inclusions.Count > 0)
+                {
+                    List<Task<ApiDataPage<PackageManifest>>> taskSet = new List<Task<ApiDataPage<PackageManifest>>>();
+                    foreach (string packageMatchField in inclusions.Select(inc => inc.PackageMatchField).Distinct())
+                    {
+                        // Create Predicate for search
+                        ExpressionStarter<PackageManifest> inclusionPredicate = PredicateBuilder.New<PackageManifest>();
+                        foreach (SearchRequestPackageMatchFilter matchFilter in inclusions.Where(inc => inc.PackageMatchField.Equals(packageMatchField)))
+                        {
+                            inclusionPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                        }
+
+                        // Create Document Query
+                        IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions);
+                        query = query.Where(inclusionPredicate);
+                        IDocumentQuery<PackageManifest> documentQuery = query.AsDocumentQuery();
+
+                        // Submit Query to Cosmos
+                        taskSet.Add(Task.Run(() => this.cosmosDatabase.GetByDocumentQuery(documentQuery)));
                     }
 
-                    // Create Document Query
-                    IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions);
-                    query = query.Where(inclusionPredicate);
-                    IDocumentQuery<PackageManifest> documentQuery = query.AsDocumentQuery();
+                    // Wait for Cosmos Queries to complete
+                    await Task.WhenAll(taskSet.ToArray());
 
-                    // Submit Query to Cosmos
-                    taskSet.Add(Task.Run(() => this.cosmosDatabase.GetByDocumentQuery(documentQuery)));
+                    // Process Manifests from Cosmos
+                    foreach (Task<ApiDataPage<PackageManifest>> task in taskSet)
+                    {
+                        manifests.AddRange(task.Result.Items);
+                    }
+
+                    manifests = manifests.Distinct().ToList();
                 }
 
-                // Wait for Cosmos Queries to complete
-                await Task.WhenAll(taskSet.ToArray());
-
-                // Process Manifests from Cosmos
-                foreach (Task<ApiDataPage<PackageManifest>> task in taskSet)
+                // Process Filters
+                if (manifestSearchRequest.Filters != null)
                 {
-                    manifests.AddRange(task.Result.Items);
-                }
+                    ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
+                    foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
+                    {
+                        filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                    }
 
-                manifests = manifests.Distinct().ToList();
+                    manifests = manifests.Where(filterPredicate).ToList();
+                }
             }
 
-            // Process Filters
-            if (manifestSearchRequest.Filters != null)
+            // Consolidate Results
+            foreach (PackageManifest manifest in manifests)
             {
-                ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
-                foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
+                foreach (ManifestSearchResponse response in ManifestSearchResponse.GetSearchVersions(manifest))
                 {
-                    filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                    manifestSearchResponse.Add(response);
                 }
-
-                manifests = manifests.Where(filterPredicate).ToList();
             }
+
+            manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse);
 
             // Process results
             int totalResults = manifests.Count;
             if (totalResults > maxItemCount)
             {
-                manifests = manifests.OrderBy(manifest => manifest.PackageIdentifier).ToList();
+                manifestSearchResponse = manifestSearchResponse.OrderBy(manifest => manifest.PackageIdentifier).ToList();
 
                 // Process Continuation Token
                 ApiContinuationToken token = null;
@@ -581,16 +603,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 }
 
                 // If index miss-match dump results and return no content.
-                if (token.Index > manifests.Count - 1)
+                if (token.Index > manifestSearchResponse.Count - 1)
                 {
-                    manifests = new List<PackageManifest>();
+                    manifestSearchResponse = new List<ManifestSearchResponse>();
                     token = null;
                 }
                 else
                 {
                     int elementsRemaining = totalResults - token.Index;
                     int elements = elementsRemaining < token.MaxResults ? elementsRemaining : token.MaxResults;
-                    manifests = manifests.GetRange(token.Index, elements);
+                    manifestSearchResponse = manifestSearchResponse.GetRange(token.Index, elements);
 
                     token.Index += elements;
                     if (token.Index == totalResults)
@@ -599,21 +621,12 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                     }
                 }
 
-                manifestSearchResponse.ContinuationToken = token != null ? StringEncoder.EncodeContinuationToken(FormatJSON.None(token)) : null;
+                apiDataPage.ContinuationToken = token != null ? StringEncoder.EncodeContinuationToken(FormatJSON.None(token)) : null;
             }
 
-            // Consolidate Results
-            foreach (PackageManifest manifest in manifests)
-            {
-                foreach (ManifestSearchResponse response in ManifestSearchResponse.GetSearchVersions(manifest))
-                {
-                    manifestSearchResponse.Items.Add(response);
-                }
-            }
+            apiDataPage.Items = ManifestSearchResponse.Consolidate(manifestSearchResponse.ToList());
 
-            manifestSearchResponse.Items = ManifestSearchResponse.Consolidate(manifestSearchResponse.Items.ToList());
-
-            return manifestSearchResponse;
+            return apiDataPage;
         }
 
         private Expression<Func<PackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
