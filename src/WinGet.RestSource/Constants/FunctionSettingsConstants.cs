@@ -14,6 +14,6 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// Maximum results per page.
         /// </summary>
-        public const int MaxResultsPerPage = 20;
+        public const int MaxResultsPerPage = 2;
     }
 }

@@ -481,11 +481,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             List<PackageManifest> manifests = new List<PackageManifest>();
             List<ManifestSearchResponse> manifestSearchResponse = new List<ManifestSearchResponse>();
 
-            // Process maximum results
-            int maxItemCount = manifestSearchRequest.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage && manifestSearchRequest.MaximumResults > 0
-                ? manifestSearchRequest.MaximumResults
-                : FunctionSettingsConstants.MaxResultsPerPage;
-
             // Create feed options for inclusion search: -1 so we can get all matches in inclusion, then filter down.
             FeedOptions feedOptions = new FeedOptions
             {
@@ -579,14 +574,21 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 }
             }
 
-            manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse);
+            manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse).OrderBy(manifest => manifest.PackageIdentifier).ToList();
 
             // Process results
-            int totalResults = manifests.Count;
-            if (totalResults > maxItemCount)
+            if (manifestSearchResponse.Count > manifestSearchRequest.MaximumResults && manifestSearchRequest.MaximumResults > 0)
             {
-                manifestSearchResponse = manifestSearchResponse.OrderBy(manifest => manifest.PackageIdentifier).ToList();
+                manifestSearchResponse = manifestSearchResponse.GetRange(0, manifestSearchRequest.MaximumResults);
+            }
 
+            int maxPageCount = manifestSearchRequest.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage && manifestSearchRequest.MaximumResults > 0
+                ? manifestSearchRequest.MaximumResults
+                : FunctionSettingsConstants.MaxResultsPerPage;
+
+            int totalResults = manifestSearchResponse.Count;
+            if (totalResults > maxPageCount)
+            {
                 // Process Continuation Token
                 ApiContinuationToken token = null;
                 if (headers.ContainsKey(HeaderConstants.ContinuationToken))
@@ -598,7 +600,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                     token = new ApiContinuationToken()
                     {
                         Index = 0,
-                        MaxResults = maxItemCount,
+                        MaxPageSize = maxPageCount,
                     };
                 }
 
@@ -611,7 +613,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 else
                 {
                     int elementsRemaining = totalResults - token.Index;
-                    int elements = elementsRemaining < token.MaxResults ? elementsRemaining : token.MaxResults;
+                    int elements = elementsRemaining < token.MaxPageSize ? elementsRemaining : token.MaxPageSize;
                     manifestSearchResponse = manifestSearchResponse.GetRange(token.Index, elements);
 
                     token.Index += elements;
