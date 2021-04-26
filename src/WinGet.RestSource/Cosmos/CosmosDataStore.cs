@@ -490,7 +490,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 RequestContinuation = null,
             };
 
-            if (manifestSearchRequest.FetchAllManifests)
+            if (manifestSearchRequest.FetchAllManifests || (manifestSearchRequest.Inclusions == null && manifestSearchRequest.Query == null))
             {
                 IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
                 IDocumentQuery<CosmosPackageManifest> documentQuery = query.AsDocumentQuery();
