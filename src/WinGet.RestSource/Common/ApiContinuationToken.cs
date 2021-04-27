@@ -19,9 +19,9 @@ namespace Microsoft.WinGet.RestSource.Common
         }
 
         /// <summary>
-        /// Gets or sets MaxResults.
+        /// Gets or sets MaxPageSize.
         /// </summary>
-        public int MaxResults { get; set; }
+        public int MaxPageSize { get; set; }
 
         /// <summary>
         /// Gets or sets Index.

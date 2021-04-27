@@ -526,6 +526,8 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/ManifestSearchResponse'
+        204:
+          description: No results were found.
         400:
           $ref: '#/components/responses/BadRequestError'
         default:
