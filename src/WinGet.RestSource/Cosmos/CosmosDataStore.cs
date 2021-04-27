@@ -551,18 +551,18 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
                     manifests = manifests.Distinct().ToList();
                 }
+            }
 
-                // Process Filters
-                if (manifestSearchRequest.Filters != null)
+            // Process Filters
+            if (manifestSearchRequest.Filters != null)
+            {
+                ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
+                foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
                 {
-                    ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
-                    foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
-                    {
-                        filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
-                    }
-
-                    manifests = manifests.Where(filterPredicate).ToList();
+                    filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
                 }
+
+                manifests = manifests.Where(filterPredicate).ToList();
             }
 
             // Consolidate Results
