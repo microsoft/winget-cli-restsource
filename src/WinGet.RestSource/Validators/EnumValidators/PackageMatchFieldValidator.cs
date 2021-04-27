@@ -23,6 +23,7 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
             PackageMatchFields.Tag,
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
+            PackageMatchFields.NormalizedPackageNameAndPublisher,
         };
 
         /// <summary>

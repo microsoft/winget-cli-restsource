@@ -1403,6 +1403,9 @@ components:
           - CaseInsensitive
           - StartsWith
           - Substring
+          - Wildcard
+          - Fuzzy
+          - FuzzySubstring
 
     # Manifest Search Request Package Match Field Schema
     PackageMatchField:
@@ -1416,6 +1419,7 @@ components:
         - Tag
         - PackageFamilyName
         - ProductCode
+        - NormalizedPackageNameAndPublisher
 
     KeyWord:
       description: Search Keyword.

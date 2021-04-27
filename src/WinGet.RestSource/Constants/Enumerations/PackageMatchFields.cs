@@ -45,5 +45,10 @@ namespace Microsoft.WinGet.RestSource.Constants.Enumerations
         /// ProductCode.
         /// </summary>
         public const string ProductCode = "ProductCode";
+
+        /// <summary>
+        /// ProductCode.
+        /// </summary>
+        public const string NormalizedPackageNameAndPublisher = "NormalizedPackageNameAndPublisher";
     }
 }
