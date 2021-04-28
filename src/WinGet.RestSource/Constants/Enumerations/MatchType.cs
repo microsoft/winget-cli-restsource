@@ -30,5 +30,20 @@ namespace Microsoft.WinGet.RestSource.Constants.Enumerations
         /// Substring.
         /// </summary>
         public const string Substring = "Substring";
+
+        /// <summary>
+        /// Wildcard.
+        /// </summary>
+        public const string Wildcard = "Wildcard";
+
+        /// <summary>
+        /// Fuzzy.
+        /// </summary>
+        public const string Fuzzy = "Fuzzy";
+
+        /// <summary>
+        /// FuzzySubstring.
+        /// </summary>
+        public const string FuzzySubstring = "FuzzySubstring";
     }
 }
