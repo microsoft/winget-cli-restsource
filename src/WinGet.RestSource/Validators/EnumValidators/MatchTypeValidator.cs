@@ -21,6 +21,9 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
             MatchType.CaseInsensitive,
             MatchType.StartsWith,
             MatchType.Substring,
+            MatchType.Wildcard,
+            MatchType.Fuzzy,
+            MatchType.FuzzySubstring,
         };
 
         /// <summary>

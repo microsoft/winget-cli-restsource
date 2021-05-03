@@ -49,6 +49,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             PackageMatchFields.Tag,
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
+            PackageMatchFields.NormalizedPackageNameAndPublisher,
             ShortDescription,
         };
 
@@ -528,7 +529,13 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                         ExpressionStarter<PackageManifest> inclusionPredicate = PredicateBuilder.New<PackageManifest>();
                         foreach (SearchRequestPackageMatchFilter matchFilter in inclusions.Where(inc => inc.PackageMatchField.Equals(packageMatchField)))
                         {
-                            inclusionPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                            // Some package match fields or types might not be supported by current version of search.
+                            // So we will check the supported list before adding any predicates.
+                            if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
+                                this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
+                            {
+                                inclusionPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                            }
                         }
 
                         // Create Document Query
@@ -559,7 +566,17 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
                 foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
                 {
-                    filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                    ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
+                    foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
+                    {
+                        if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
+                                this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
+                        {
+                            filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                        }
+                    }
+
+                    manifests = manifests.Where(filterPredicate).ToList();
                 }
 
                 manifests = manifests.Where(filterPredicate).ToList();
@@ -629,6 +646,43 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             apiDataPage.Items = ManifestSearchResponse.Consolidate(manifestSearchResponse.ToList());
 
             return apiDataPage;
+        }
+
+        private bool IsPackageMatchFieldSupported(string packageMatchField)
+        {
+            bool isPackageMatchFieldSupported = false;
+
+            switch (packageMatchField)
+            {
+                case PackageMatchFields.PackageIdentifier:
+                case PackageMatchFields.PackageName:
+                case PackageMatchFields.PackageFamilyName:
+                case PackageMatchFields.ProductCode:
+                case PackageMatchFields.Tag:
+                case PackageMatchFields.Command:
+                case PackageMatchFields.Moniker:
+                    isPackageMatchFieldSupported = true;
+                    break;
+            }
+
+            return isPackageMatchFieldSupported;
+        }
+
+        private bool IsMatchTypeSupported(string matchType)
+        {
+            bool isMatchTypeSupported = false;
+
+            switch (matchType)
+            {
+                case MatchType.Exact:
+                case MatchType.CaseInsensitive:
+                case MatchType.StartsWith:
+                case MatchType.Substring:
+                    isMatchTypeSupported = true;
+                    break;
+            }
+
+            return isMatchTypeSupported;
         }
 
         private Expression<Func<PackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
