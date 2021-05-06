@@ -566,23 +566,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
                 foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
                 {
-                    ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
-                    foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
+                    if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
+                        this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
                     {
-                        if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
-                                this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
-                        {
-                            filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
-                        }
+                        filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
                     }
-
-                    manifests = manifests.Where(filterPredicate).ToList();
                 }
 
                 manifests = manifests.Where(filterPredicate).ToList();
             }
 
-            // Consolidate Results
             foreach (PackageManifest manifest in manifests)
             {
                 foreach (ManifestSearchResponse response in ManifestSearchResponse.GetSearchVersions(manifest))
@@ -591,6 +584,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 }
             }
 
+            // Consolidate Results
             manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse).OrderBy(manifest => manifest.PackageIdentifier).ToList();
 
             // Process results
