@@ -558,25 +558,24 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
                     manifests = manifests.Distinct().ToList();
                 }
-
-                // Process Filters
-                if (manifestSearchRequest.Filters != null)
-                {
-                    ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
-                    foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
-                    {
-                        if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
-                                this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
-                        {
-                            filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
-                        }
-                    }
-
-                    manifests = manifests.Where(filterPredicate).ToList();
-                }
             }
 
-            // Consolidate Results
+            // Process Filters
+            if (manifestSearchRequest.Filters != null)
+            {
+                ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
+                foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
+                {
+                    if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
+                        this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
+                    {
+                        filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
+                    }
+                }
+
+                manifests = manifests.Where(filterPredicate).ToList();
+            }
+
             foreach (PackageManifest manifest in manifests)
             {
                 foreach (ManifestSearchResponse response in ManifestSearchResponse.GetSearchVersions(manifest))
@@ -585,6 +584,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 }
             }
 
+            // Consolidate Results
             manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse).OrderBy(manifest => manifest.PackageIdentifier).ToList();
 
             // Process results
