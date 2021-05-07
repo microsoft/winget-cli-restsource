@@ -659,7 +659,7 @@ components:
       type: string
       nullable: true
       pattern: "^([Hh][Tt][Tt][Pp][Ss]?)://"
-      maxLength: 2000
+      maxLength: 2048
 
     Tag:
       description: Package moniker or tag
