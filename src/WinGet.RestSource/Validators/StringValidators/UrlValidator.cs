@@ -13,7 +13,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     {
         private const bool Nullable = true;
         private const string Pattern = "^([Hh][Tt][Tt][Pp][Ss]?)://";
-        private const uint Max = 2000;
+        private const uint Max = 2048;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UrlValidator"/> class.
