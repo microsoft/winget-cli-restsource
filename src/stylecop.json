@@ -6,7 +6,7 @@
     },
     "documentationRules": {
       "companyName": "Microsoft Corporation",
-      "copyrightText": "    Copyright (c) {companyName}. All rights reserved.",
+      "copyrightText": "    Copyright (c) {companyName}. Licensed under the MIT License.",
       "documentExposedElements": true,
       "documentInterfaces": true,
       "documentInternalElements": true,
