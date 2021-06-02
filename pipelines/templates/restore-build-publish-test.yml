@@ -38,7 +38,7 @@ steps:
 - template: run-unittests.yml
   parameters:
     name: WinGet.RestSource.UnitTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net5.0'
     dll: Microsoft.WinGet.RestSource.UnitTest.dll
 
 ## Component Governance
