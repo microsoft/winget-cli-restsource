@@ -26,7 +26,7 @@ namespace Microsoft.WinGet.RestSource.Common
         /// <returns>A formatted JSON String.</returns>
         public static string Custom<T>(T obj, Formatting format, NullValueHandling nullValueHandling, ILogger log = null)
         {
-            return Format(obj, Formatting.Indented, NullValueHandling.Ignore, log);
+            return Format(obj, format, nullValueHandling, log);
         }
 
         /// <summary>
