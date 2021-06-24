@@ -30,7 +30,6 @@ namespace Microsoft.WinGet.RestSource.Constants
         public static readonly ApiVersions ServerSupportedVersions = new ApiVersions()
         {
             "1.0.0",
-            "0.2.0",
         };
 
         /// <summary>
