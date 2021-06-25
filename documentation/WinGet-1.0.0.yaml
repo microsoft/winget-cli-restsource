@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 0.2.0
+  version: 1.0.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
