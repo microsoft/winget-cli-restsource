@@ -1044,6 +1044,25 @@ components:
       type: string
       nullable: true
       pattern: "^[A-Z]{2}$"
+
+    Markets:
+      description: The installer markets
+      type: object
+      properties:
+        AllowedMarkets:
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/Market'
+        ExcludedMarkets:
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/Market'
       
     InstallerAbortsTerminal:
       description: Indicates whether the installer will abort terminal.
@@ -1209,6 +1228,8 @@ components:
           $ref: '#/components/schemas/UnsupportedOSArchitectures'
         AppsAndFeaturesEntries:
           $ref: '#/components/schemas/AppsAndFeaturesEntries'
+        Markets:
+          $ref: '#/components/schemas/Markets'
       required:
         - Architecture
         - InstallerType
