@@ -699,6 +699,43 @@ components:
       items:
         $ref: '#/components/schemas/Tag'
 
+    Agreement:
+      description: One Agreement entry.
+      type: object
+      properties:
+        AgreementLabel:
+          description: The label of the agreement. i.e. EULA, AgeRating, etc
+          type: string
+          minLength: 1
+          maxLength: 40
+        Agreement:
+          description: The agreement text content.
+          nullable: true
+          type: string
+          minLength: 3
+          maxLength: 10000
+        AgreementUrl:
+          description: The agreement url.
+          $ref: '#/components/schemas/Url'
+      required:
+        - AgreementLabel
+
+    Agreements:
+      description: List of agreements.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 128
+      items:
+        $ref: '#/components/schemas/Agreement'
+
+    ReleaseNotes:
+      description: Package release notes.
+      type: string
+      nullable: true
+      minLength: 3
+      maxLength: 10000
+
     Channel:
       description: This field is not supported by the client yet. The client will set this to null when processing.
       type: string
@@ -979,16 +1016,23 @@ components:
       nullable: true
       pattern: "^[A-Fa-f0-9]{64}$"
 
-    Architecture:
-      description: The installer target architecture.
+    ArchitectureNonNeutral:
+      description: The architecture non neutral.
       type: string
       enum:
         - x86
         - x64
         - arm
         - arm64
-        - neutral
-        
+
+    Architecture:
+      description: The installer target architecture.
+      oneOf:
+        - $ref: '#/components/schemas/ArchitectureNonNeutral'
+        - type: string
+          enum:
+            - neutral
+
     ProductId:
       description: The Microsoft Store product id.
       type: string
@@ -1000,6 +1044,66 @@ components:
       type: string
       nullable: true
       pattern: "^[A-Z]{2}$"
+      
+    InstallerAbortsTerminal:
+      description: Indicates whether the installer will abort terminal.
+      type: boolean
+    
+    ReleaseDate:
+      description: The installer release date.
+      nullable: true
+      type: string
+      format: date
+      
+    InstallLocationRequired:
+      description: Indicates whether the installer requires an install location provided.
+      type: boolean
+
+    AutoPin:
+      description: Indicates whether the installer should be pinned by default from upgrade.
+      type: boolean
+
+    UnsupportedOSArchitectures:
+      description: List of OS architectures the installer does not support.
+      type: array
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/ArchitectureNonNeutral'
+        
+    AppsAndFeaturesEntry:
+      description: Various key values under installer's ARP entry.
+      type: object
+      properties:
+        AppName:
+          description: The DisplayName
+          type: string
+          nullable: true
+          minLength: 2
+          maxLength: 256
+        AppPublisher:
+          description: The Publisher
+          type: string
+          nullable: true
+          minLength: 2
+          maxLength: 256
+        AppVersion:
+          description: The DisplayVersion
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 128
+        ProductCode:
+          $ref: '#/components/schemas/ProductCode'
+        UpgradeCode:
+          $ref: '#/components/schemas/ProductCode'
+          
+    AppsAndFeaturesEntries:
+      description: List of ARP entries.
+      type: array
+      uniqueItems: true
+      maxItems: 128
+      items:
+        $ref: '#/components/schemas/AppsAndFeaturesEntry'
 
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
@@ -1061,6 +1165,8 @@ components:
           $ref: '#/components/schemas/MinimumOSVersion'
         InstallerType:
           $ref: '#/components/schemas/InstallerType'
+        NestedInstallerType:
+          $ref: '#/components/schemas/InstallerType'
         Scope:
           $ref: '#/components/schemas/Scope'
         SignatureSha256:
@@ -1091,10 +1197,20 @@ components:
           $ref: '#/components/schemas/RestrictedCapabilities'
         ProductId:
           $ref: '#/components/schemas/ProductId'
+        InstallerAbortsTerminal:
+          $ref: '#/components/schemas/InstallerAbortsTerminal'
+        ReleaseDate:
+          $ref: '#/components/schemas/ReleaseDate'
+        InstallLocationRequired:
+          $ref: '#/components/schemas/InstallLocationRequired'
+        AutoPin:
+          $ref: '#/components/schemas/AutoPin'
+        UnsupportedOSArchitectures:
+          $ref: '#/components/schemas/UnsupportedOSArchitectures'
+        AppsAndFeaturesEntries:
+          $ref: '#/components/schemas/AppsAndFeaturesEntries'
       required:
         - Architecture
-        - InstallerUrl
-        - InstallerSha256
         - InstallerType
 
     # Package Schema
@@ -1198,6 +1314,19 @@ components:
           properties:
             Tags:
               $ref: '#/components/schemas/Tags'
+        - type: object
+          properties:
+            ReleaseNotes:
+              $ref: '#/components/schemas/ReleaseNotes'
+        - type: object
+          properties:
+            ReleaseNotesUrl:
+              description: The release notes page
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            Agreements:
+              $ref: '#/components/schemas/Agreements'
       required:
         - PackageLocale
 
@@ -1452,9 +1581,8 @@ components:
         - type: object
           properties:
             Data:
-              oneOf:
-                - type: object
-                  nullable: true
+              nullable: true
+              allOf:
                 - $ref: '#/components/schemas/ManifestSchema'
             UnsupportedQueryParameters:
               $ref: '#/components/schemas/QueryParameterArray'
