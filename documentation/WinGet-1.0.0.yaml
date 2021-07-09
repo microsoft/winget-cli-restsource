@@ -548,9 +548,8 @@ paths:
   # Server API Calls
   /information:
     parameters:
-      - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/Windows-Package-Manager'
-      
+
     get:
       summary: Get Server Information.
       tags:
@@ -598,7 +597,7 @@ components:
     Windows-Package-Manager:
       description: Custom header value to be passed along all rest calls from winget.
       type: string
-      maxLength: 10000
+      maxLength: 1024
 
     # Definitions
     PackageIdentifier:
@@ -704,27 +703,26 @@ components:
       type: object
       properties:
         AgreementLabel:
-          description: The label of the agreement. i.e. EULA, AgeRating, etc
+          description: The label of the Agreement. i.e. EULA, AgeRating, etc. This field should be localized.
+                       Either Agreement or AgreementUrl is required.
+                       When we show the agreements, we would Bold the AgreementL
           type: string
           minLength: 1
-          maxLength: 40
+          maxLength: 100
         Agreement:
           description: The agreement text content.
           nullable: true
           type: string
-          minLength: 3
+          minLength: 1
           maxLength: 10000
         AgreementUrl:
           description: The agreement url.
           $ref: '#/components/schemas/Url'
-      required:
-        - AgreementLabel
 
     Agreements:
-      description: List of agreements.
+      description: List of agreements. Agreements are shown in the order of this list.
       type: array
       nullable: true
-      uniqueItems: true
       maxItems: 128
       items:
         $ref: '#/components/schemas/Agreement'
@@ -733,7 +731,7 @@ components:
       description: Package release notes.
       type: string
       nullable: true
-      minLength: 3
+      minLength: 1
       maxLength: 10000
 
     Channel:
@@ -1033,7 +1031,7 @@ components:
           enum:
             - neutral
 
-    ProductId:
+    MSStoreProductIdentifier:
       description: The Microsoft Store product id.
       type: string
       nullable: true
@@ -1045,25 +1043,27 @@ components:
       nullable: true
       pattern: "^[A-Z]{2}$"
 
+    MarketArray:
+      description: Array of markets.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 256
+      items:
+        $ref: '#/components/schemas/Market'
+
     Markets:
       description: The installer markets
-      type: object
-      properties:
-        AllowedMarkets:
-          type: array
-          nullable: true
-          uniqueItems: true
-          maxItems: 256
-          items:
-            $ref: '#/components/schemas/Market'
-        ExcludedMarkets:
-          type: array
-          nullable: true
-          uniqueItems: true
-          maxItems: 256
-          items:
-            $ref: '#/components/schemas/Market'
-      
+      oneOf:
+        - type: object
+          properties:
+            AllowedMarkets:
+              $ref: '#/components/schemas/MarketArray'
+        - type: object
+          properties:
+            ExcludedMarkets:
+              $ref: '#/components/schemas/MarketArray'
+
     InstallerAbortsTerminal:
       description: Indicates whether the installer will abort terminal.
       type: boolean
@@ -1078,7 +1078,7 @@ components:
       description: Indicates whether the installer requires an install location provided.
       type: boolean
 
-    AutoPin:
+    RequireExplicitUpgrade:
       description: Indicates whether the installer should be pinned by default from upgrade.
       type: boolean
 
@@ -1093,20 +1093,20 @@ components:
       description: Various key values under installer's ARP entry.
       type: object
       properties:
-        AppName:
-          description: The DisplayName
+        DisplayName:
+          description: The DisplayName registry value.
           type: string
           nullable: true
-          minLength: 2
+          minLength: 1
           maxLength: 256
-        AppPublisher:
-          description: The Publisher
+        Publisher:
+          description: The Publisher registry value.
           type: string
           nullable: true
-          minLength: 2
+          minLength: 1
           maxLength: 256
-        AppVersion:
-          description: The DisplayVersion
+        DisplayVersion:
+          description: The DisplayVersion registry value.
           type: string
           nullable: true
           minLength: 1
@@ -1115,7 +1115,9 @@ components:
           $ref: '#/components/schemas/ProductCode'
         UpgradeCode:
           $ref: '#/components/schemas/ProductCode'
-          
+        InstallerType:
+          $ref: '#/components/schemas/InstallerType'
+
     AppsAndFeaturesEntries:
       description: List of ARP entries.
       type: array
@@ -1130,11 +1132,18 @@ components:
       minLength: 3
       maxLength: 128
       
-    SourceAgreement:
-      description: The source agreement users must accept before using the source.
-      type: string
-      minLength: 3
-      maxLength: 10000
+    SourceAgreements:
+      description: The source agreements users must accept before using the source.
+      type: object
+      properties:
+        AgreementsIdentifier:
+          type: string
+          minLength: 1
+          maxLength: 128
+        Agreements:
+          $ref: '#/components/schemas/Agreements'
+      required:
+        - AgreementsIdentifier
 
     ServerSupportedVersions:
       description: The API Versions supported by the server.
@@ -1165,7 +1174,7 @@ components:
           - Market
 
     Installer:
-      description: Installer.
+      description: Installer. If InstallerType is msstore, MSStoreProductIdentifier is required. In other cases, InstallerUrl and InstallerSha256 are required.
       type: object
       properties:
         InstallerIdentifier:
@@ -1183,8 +1192,6 @@ components:
         MinimumOSVersion:
           $ref: '#/components/schemas/MinimumOSVersion'
         InstallerType:
-          $ref: '#/components/schemas/InstallerType'
-        NestedInstallerType:
           $ref: '#/components/schemas/InstallerType'
         Scope:
           $ref: '#/components/schemas/Scope'
@@ -1214,16 +1221,16 @@ components:
           $ref: '#/components/schemas/Capabilities'
         RestrictedCapabilities:
           $ref: '#/components/schemas/RestrictedCapabilities'
-        ProductId:
-          $ref: '#/components/schemas/ProductId'
+        MSStoreProductIdentifier:
+          $ref: '#/components/schemas/MSStoreProductIdentifier'
         InstallerAbortsTerminal:
           $ref: '#/components/schemas/InstallerAbortsTerminal'
         ReleaseDate:
           $ref: '#/components/schemas/ReleaseDate'
         InstallLocationRequired:
           $ref: '#/components/schemas/InstallLocationRequired'
-        AutoPin:
-          $ref: '#/components/schemas/AutoPin'
+        RequireExplicitUpgrade:
+          $ref: '#/components/schemas/RequireExplicitUpgrade'
         UnsupportedOSArchitectures:
           $ref: '#/components/schemas/UnsupportedOSArchitectures'
         AppsAndFeaturesEntries:
@@ -1290,7 +1297,7 @@ components:
         - type: object
           properties:
             PrivacyUrl:
-              description: The publisher support page
+              description: The privacy page
               $ref: '#/components/schemas/Url'
         - type: object
           properties:
@@ -1464,8 +1471,8 @@ components:
               $ref: '#/components/schemas/SourceIdentifier'
         - type: object
           properties:
-            SourceAgreement:
-              $ref: '#/components/schemas/SourceAgreement'
+            SourceAgreements:
+              $ref: '#/components/schemas/SourceAgreements'
         - type: object
           properties:
             ServerSupportedVersions:
