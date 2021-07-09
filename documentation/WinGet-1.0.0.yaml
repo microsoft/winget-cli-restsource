@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.0.0
+  version: 1.1.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -12,6 +12,7 @@ paths:
   /packages:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
 
     post:
       summary: Add Package Metadata
@@ -53,6 +54,7 @@ paths:
   /packages/{PackageIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -113,6 +115,7 @@ paths:
   /packages/{PackageIdentifier}/versions:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     post:
@@ -155,6 +158,7 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -216,6 +220,7 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -259,6 +264,7 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/PackageLocale'
@@ -321,6 +327,7 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
 
@@ -364,6 +371,7 @@ paths:
   /packages/{PackageIdentifier}/versions/{PackageVersion}/installers/{InstallerIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
       - $ref: '#/components/parameters/PackageVersion'
       - $ref: '#/components/parameters/InstallerIdentifier'
@@ -426,6 +434,7 @@ paths:
   /packageManifests:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
 
     post:
       summary: This creates all subcomponents contained in the logical representation of a package manifest
@@ -451,6 +460,7 @@ paths:
   /packageManifests/{PackageIdentifier}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/PackageIdentifier'
 
     put:
@@ -502,6 +512,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PackageVersionQuery'
         - $ref: '#/components/parameters/PackageChannelQuery'
+        - $ref: '#/components/parameters/PackageMarketQuery'
       responses:
         200:
           $ref: '#/components/responses/ManifestSingleResponse'
@@ -514,6 +525,7 @@ paths:
   /manifestSearch:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
       - $ref: '#/components/parameters/ContinuationToken'
 
     post:
@@ -535,12 +547,16 @@ paths:
 
   # Server API Calls
   /information:
+    parameters:
+      - $ref: '#/components/parameters/APIVersion'
+      - $ref: '#/components/parameters/Windows-Package-Manager'
+      
     get:
-      summary: Get Package Metadata
+      summary: Get Server Information.
       tags:
         - Server
         - Get
-      description: This will retrieve a set of packages.
+      description: This will retrieve server information.
       responses:
         200:
           $ref: '#/components/responses/InformationResponse'
@@ -578,6 +594,11 @@ components:
       type: string
       pattern: "^([0-9]+\\.){0,3}(\\*|[0-9]+)$"
       maxLength: 128
+      
+    Windows-Package-Manager:
+      description: Custom header value to be passed along all rest calls from winget.
+      type: string
+      maxLength: 10000
 
     # Definitions
     PackageIdentifier:
@@ -718,6 +739,7 @@ components:
         - wix
         - burn
         - pwa
+        - msstore
 
     Scope:
       description: Enumeration of Values for Scope
@@ -948,6 +970,7 @@ components:
     InstallerSha256:
       description: Sha256 is required. Sha256 of the installer
       type: string
+      nullable: true
       pattern: "^[A-Fa-f0-9]{64}$"
 
     SignatureSha256:
@@ -957,24 +980,41 @@ components:
       pattern: "^[A-Fa-f0-9]{64}$"
 
     Architecture:
-      description: The installer target architecture
+      description: The installer target architecture.
       type: string
-      nullable: true
       enum:
         - x86
         - x64
         - arm
         - arm64
         - neutral
+        
+    ProductId:
+      description: The Microsoft Store product id.
+      type: string
+      nullable: true
+      pattern: "^[A-Za-z0-9]{12}$"
+        
+    Market:
+      description: The installer target market.
+      type: string
+      nullable: true
+      pattern: "^[A-Z]{2}$"
 
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
       type: string
       minLength: 3
       maxLength: 128
+      
+    SourceAgreement:
+      description: The source agreement users must accept before using the source.
+      type: string
+      minLength: 3
+      maxLength: 10000
 
     ServerSupportedVersions:
-      description: The API Versions supported by the server
+      description: The API Versions supported by the server.
       type: array
       uniqueItems: true
       items:
@@ -982,6 +1022,24 @@ components:
         minLength: 1
         maxLength: 128
       minItems: 1
+      
+    PackageMatchFieldArray:
+      description: The Package Match Fields not supported by the server.
+      type: array
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/PackageMatchField'
+    
+    QueryParameterArray:
+      description: The query parameter not supported by the server.
+      type: array
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - Version
+          - Channel
+          - Market
 
     Installer:
       description: Installer.
@@ -1031,6 +1089,8 @@ components:
           $ref: '#/components/schemas/Capabilities'
         RestrictedCapabilities:
           $ref: '#/components/schemas/RestrictedCapabilities'
+        ProductId:
+          $ref: '#/components/schemas/ProductId'
       required:
         - Architecture
         - InstallerUrl
@@ -1254,8 +1314,28 @@ components:
               $ref: '#/components/schemas/SourceIdentifier'
         - type: object
           properties:
+            SourceAgreement:
+              $ref: '#/components/schemas/SourceAgreement'
+        - type: object
+          properties:
             ServerSupportedVersions:
               $ref: '#/components/schemas/ServerSupportedVersions'
+        - type: object
+          properties:
+            UnsupportedPackageMatchFields:
+              $ref: '#/components/schemas/PackageMatchFieldArray'
+        - type: object
+          properties:
+            RequiredPackageMatchFields:
+              $ref: '#/components/schemas/PackageMatchFieldArray'
+        - type: object
+          properties:
+            UnsupportedQueryParameters:
+              $ref: '#/components/schemas/QueryParameterArray'
+        - type: object
+          properties:
+            RequiredQueryParameters:
+              $ref: '#/components/schemas/QueryParameterArray'
       required:
         - SourceIdentifier
         - ServerSupportedVersions
@@ -1269,7 +1349,8 @@ components:
             - type: object
             - type: array
         ContinuationToken:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/ContinuationToken'
       required:
         - Data
 
@@ -1371,7 +1452,14 @@ components:
         - type: object
           properties:
             Data:
-              $ref: '#/components/schemas/ManifestSchema'
+              oneOf:
+                - type: object
+                  nullable: true
+                - $ref: '#/components/schemas/ManifestSchema'
+            UnsupportedQueryParameters:
+              $ref: '#/components/schemas/QueryParameterArray'
+            RequiredQueryParameters:
+              $ref: '#/components/schemas/QueryParameterArray'
 
     InformationResponseSchema:
       description: Manifest Response Schema
@@ -1392,20 +1480,23 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ManifestSearchResponseSchema'
-
+            RequiredPackageMatchFields:
+              $ref: '#/components/schemas/PackageMatchFieldArray'
+            UnsupportedPackageMatchFields:
+              $ref: '#/components/schemas/PackageMatchFieldArray'
 
     # Manifest Search Request Match Type Schema
     MatchType:
       description: Model containing manifest request match type.
       type: string
       enum:
-          - Exact
-          - CaseInsensitive
-          - StartsWith
-          - Substring
-          - Wildcard
-          - Fuzzy
-          - FuzzySubstring
+        - Exact
+        - CaseInsensitive
+        - StartsWith
+        - Substring
+        - Wildcard
+        - Fuzzy
+        - FuzzySubstring
 
     # Manifest Search Request Package Match Field Schema
     PackageMatchField:
@@ -1420,6 +1511,7 @@ components:
         - PackageFamilyName
         - ProductCode
         - NormalizedPackageNameAndPublisher
+        - Market
 
     KeyWord:
       description: Search Keyword.
@@ -1493,9 +1585,17 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/APIVersion'
+        
+    Windows-Package-Manager:
+      name: Windows-Package-Manager
+      in: header
+      description: This is the Windows-Package-Manager custom header.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Windows-Package-Manager'
 
     ContinuationToken:
-      name: Version
+      name: ContinuationToken
       in: header
       description: This is a generic continuation token as a header parameter.
       required: false
@@ -1551,6 +1651,15 @@ components:
       schema:
         $ref: '#/components/schemas/Channel'
       example: beta
+      
+    PackageMarketQuery:
+      name: Market
+      in: query
+      description: This is the market to filter on.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Market'
+      example: US
 
     ContinuationTokenQuery:
       name: ContinuationToken
