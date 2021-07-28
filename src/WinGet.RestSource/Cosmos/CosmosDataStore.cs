@@ -372,10 +372,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         public async Task AddPackageManifest(PackageManifest packageManifest)
         {
             // Create Document and add to cosmos.
-            CosmosPackageManifest cPackageManifest = new CosmosPackageManifest(packageManifest);
+            CosmosPackageManifest cosmosPackageManifest = new CosmosPackageManifest(packageManifest);
             CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
             {
-                Document = cPackageManifest,
+                Document = cosmosPackageManifest,
             };
             await this.cosmosDatabase.Add<CosmosPackageManifest>(cosmosDocument);
         }
@@ -397,10 +397,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <inheritdoc />
         public async Task UpdatePackageManifest(string packageIdentifier, PackageManifest packageManifest)
         {
-            CosmosPackageManifest cPackageManifest = new CosmosPackageManifest(packageManifest);
+            CosmosPackageManifest cosmosPackageManifest = new CosmosPackageManifest(packageManifest);
             CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
             {
-                Document = cPackageManifest,
+                Document = cosmosPackageManifest,
                 Id = packageIdentifier,
                 PartitionKey = packageIdentifier,
             };
@@ -449,11 +449,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             string versionFilter = queryParameters[QueryConstants.Version];
             if (!string.IsNullOrEmpty(versionFilter))
             {
-                foreach (PackageManifest pm in apiDataDocument.Items)
+                foreach (PackageManifest packageManifest in apiDataDocument.Items)
                 {
-                    if (pm.Versions != null)
+                    if (packageManifest.Versions != null)
                     {
-                        pm.Versions = new VersionsExtended(pm.Versions.Where(extended => extended.PackageVersion.Equals(versionFilter)));
+                        packageManifest.Versions = new VersionsExtended(packageManifest.Versions.Where(extended => extended.PackageVersion.Equals(versionFilter)));
                     }
                 }
             }
