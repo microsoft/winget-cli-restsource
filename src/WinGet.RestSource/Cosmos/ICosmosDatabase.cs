@@ -65,7 +65,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             where T : class;
 
         /// <summary>
-        /// This will retrieve a document by ID and Partition3 Key.
+        /// This will retrieve a document by ID and Partition Key.
         /// </summary>
         /// <param name="id">Document ID.</param>
         /// <param name="partitionKey">Partition Key.</param>
@@ -75,7 +75,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             where T : class;
 
         /// <summary>
-        /// This will retrieve a document by ID and Partition3 Key.
+        /// This will retrieve a document by document query.
         /// </summary>
         /// <param name="documentQuery">Document Query.</param>
         /// <typeparam name="T">Document Type.</typeparam>

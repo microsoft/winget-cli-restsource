@@ -6,11 +6,11 @@ These ARM templates are meant to be reusable in order to provide a number of dif
 
 ## Elements
 
-### API Managment
+### API Management
 
 This can be placed in front of the function apps to provide AAD authentication or failover-routing.
 
-### Applicaiton Insights
+### Application Insights
 
 This is used for logging and analytics.
 
@@ -24,7 +24,7 @@ This is the Function App that executes on the ASP.
 
 ### Front Door
 
-This can be used to add failover properties to either the Azure Function Runtimes and/or in front of multiple API Mangment instances (to save money over the premium instances).
+This can be used to add failover properties to either the Azure Function Runtimes and/or in front of multiple API Management instances (to save money over the premium instances).
 
 ### Key Vault
 

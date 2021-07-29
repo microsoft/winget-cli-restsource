@@ -51,7 +51,10 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InstallerPost)]
         public async Task<IActionResult> InstallerPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers")]
+            [HttpTrigger(
+                AuthorizationLevel.Function,
+                FunctionConstants.FunctionPost,
+                Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
