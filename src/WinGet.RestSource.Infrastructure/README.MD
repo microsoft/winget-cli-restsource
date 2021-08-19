@@ -6,11 +6,11 @@ These ARM templates are meant to be reusable in order to provide a number of dif
 
 ## Elements
 
-### API Managment
+### API Management
 
 This can be placed in front of the function apps to provide AAD authentication or failover-routing.
 
-### Applicaiton Insights
+### Application Insights
 
 This is used for logging and analytics.
 

@@ -8,12 +8,29 @@
         "accessPolicies": {
             "value": [
                 {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "2cd7b9e6-3be0-4685-a2d8-188c6c8a284e",
                     "permissions": {
                         "keys": [],
                         "secrets": [
-                            "Get"
+                            "Get",
+                            "Set"
+                        ],
+                        "certificates": []
+                    },
+                    "metadata": {
+                        "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+                    }
+                },
+                {
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "ceb4ee28-252c-4a2d-a251-a095ffb6259f",
+                    "permissions": {
+                        "keys": [],
+                        "secrets": [
+                            "Get",
+                            "Set",
+                            "List"
                         ],
                         "certificates": []
                     },
