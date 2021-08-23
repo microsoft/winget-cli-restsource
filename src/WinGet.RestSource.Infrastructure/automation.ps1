@@ -1,14 +1,56 @@
-param(
-    [Parameter(Position=0)] $ResourcePrefix     = "rpm-",
-    [Parameter(Position=1)] $Index              = "02",
-    [Parameter(Position=2)] $AzResourceGroup    = "WinGet_PrivateRepo_",
-    [Parameter(Position=3)] $AzSubscriptionName = "1. Visual Studio Enterprise Subscription",
-    [Parameter(Position=4)] $AzLocation         = "westus",
-    [Parameter(Position=5)] $WorkingDirectory   = $PSScriptRoot
-)
+<#
+    .SYNOPSIS
+    Sets up a Windows Package Manager private repository.
+    
+    .DESCRIPTION
+    This script will generate new parameter files, that can be used to create the necessary Azure resources to host the Windows Package Manager private repository. Uploads the compiled rest apis to the newly created Azure function.
 
-## Script Begins
-$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory
+    This script will:
+        1. Connect to your Azure Subscription (prompt for authentication).
+        2. Create Parameter files to be used with the ARM Templates.
+        3. Use the Parameter files and ARM Template files to create the Azure resources.
+        4. Creates secure keys in the Azure Keyvault.
+        5. Publish the Windows Package Manager private repository functions to the Azure Function.
+    
+    .PARAMETER ResourcePrefix
+    Azure resources will be created with the "ResourcePrefix" prefixed to the name.
+    
+    .PARAMETER Index
+    Azure resources will be created with the "Index" sufixed to the name.
+    
+    .PARAMETER AzResourceGroup
+    Azure Resource Group that will be created or used to group the Azure resources being created by this script.
+    
+    .PARAMETER AzSubscriptionName
+    Azure Subscription that will have the Azure Resource Group and Azure resources created in (optional).
+    
+    .PARAMETER AzLocation
+    Azure location that will be used for the created resources. (Default: westus)
+    
+    .PARAMETER WorkingDirectory
+    Local file repository that will be referenced by this script. Used to locate the Template files, and identifies where the Parameters will be created (Default: Script Location).
+    
+    .EXAMPLE
+    .\automation.ps1 -ResourcePrefix "contoso-" -Index "Demo" -AzResourceGroup "WinGet_PrivateRepo_Demo"
+
+    .EXAMPLE
+    .\automation.ps1 -ResourcePrefix "contoso-" -Index "001" -AzResourceGroup "WinGet_PrivateRepo" -AzLocation "westus"
+
+    .EXAMPLE
+    .\automation.ps1 -ResourcePrefix "contoso-" -Index "Prod" -AzResourceGroup "WinGet_PrivateRepo_Prod" -AzSubscription "Contoso Global"    
+
+    .NOTES
+    Something
+    #>
+
+param(
+    [Parameter(Position=0, Mandatory=$true)]  [string]$ResourcePrefix,
+    [Parameter(Position=1, Mandatory=$true)]  [string]$Index,
+    [Parameter(Position=2, Mandatory=$true)]  [string]$AzResourceGroup,
+    [Parameter(Position=3, Mandatory=$false)] [string]$AzSubscriptionName,
+    [Parameter(Position=4, Mandatory=$false)] [string]$AzLocation         = "westus",
+    [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = $PSScriptRoot
+)
 
 Function New-WinGetRepo
 {
@@ -20,64 +62,86 @@ Function New-WinGetRepo
         [Parameter(Position=4)] [string]$AzLocation,
         [Parameter(Position=5)] [string]$WorkingDirectory = $PSScriptRoot
     )
+    Begin
+    {
+        $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
+        $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
+    }
+    Process
+    {
+        ## Create Folders for the Parameter and Template folder paths
+        $Result = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
+        If($Result)
+            { Write-Host "Created Directory to contain the ARM Parameter files ($($Result.FullName))." }
 
-    $ParameterFolderPath = "$WorkingDirectory\Parameters"
-    $TemplateFolderPath  = "$WorkingDirectory\Templates"
-    $AzResourceGroup     = $("$AzResourceGroup$Index").Replace("-","")
+        #### Connect to Azure ####
+        $Result = Connect-Azure -AzSubscriptionName $AzSubscriptionName
 
-    ## Create Folders for the Parameter and Template folder paths
-    $Result = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
-    If($Result)
-        { Write-Host "Created Directory to contain the ARM Parameter files ($($Result.FullName))." }
+        ## If the connection to azure attempt fails.. then exit.
+        If(!$($Result))
+            { Throw "Failed to connect to Azure" }
 
-    #### Connect to Azure ####
-    $Result = Connect-Azure -AzSubscriptionName $AzSubscriptionName
+        #### Create Resource Group ####
+        New-AzureResourceGroup -AzResourceGroupName $AzResourceGroup
 
-    ## If the attempt fails.. then exit.
-    If(!$($Result))
-        { Throw "Failed to connect to Azure" }
+        #### Creates the ARM Parameter files ####
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Index $Index -ResourcePrefix $ResourcePrefix -AzLocation $AzLocation
 
-    #### Create Resource Group ####
-    New-AzureResourceGroup -AzResourceGroupName $AzResourceGroup
+        #### Verifies ARM Parameters are correct ####
+        $Result = Test-ARMTemplate -ARMObjects $ARMObjects
 
-    #### Creates the ARM Parameter files ####
-    $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Index $Index -ResourcePrefix $ResourcePrefix -AzLocation $AzLocation
+        ## If the attempt fails.. then exit.
+        If($($Result))
+            { Throw "ARM Template and Parameter testing failed" }
 
-    #### Verifies ARM Parameters are correct ####
-    $Result = Test-ARMTemplate -ARMObjects $ARMObjects
-
-    ## If the attempt fails.. then exit.
-    If($($Result))
-        { Throw "ARM Template and Parameter testing failed" }
-
-    #### Creates Azure Objects with ARM Templates and Parameters ####
-    New-ARMObjects -ARMObjects $ARMObjects -WorkingDirectory $WorkingDirectory
-
-    Return $ARMObjects
+        #### Creates Azure Objects with ARM Templates and Parameters ####
+        New-ARMObjects -ARMObjects $ARMObjects -WorkingDirectory $WorkingDirectory
+    }
+    End
+    {
+        Return $ARMObjects
+    }
 }
 
 Function Connect-Azure
 {
     Param(
-        [Parameter(Position=0, Mandatory=$true)] [string]$AzSubscriptionName
+        [Parameter(Position=0, Mandatory=$false)] [string]$AzSubscriptionName
     )
     Begin
-    {}
+    {
+        If($null -eq $AzSubscriptionName)
+            { $AzSubscriptionName = "" }
+    }
     Process
     {
         ## Connect to Azure Environment
         Write-Host "`n`nConnecting to Azure Environment"
-        $Result = Connect-AzAccount -SubscriptionName $AzSubscriptionName -ErrorVariable Azerror -WarningAction SilentlyContinue
+        IF($AzSubscriptionName.Equals(""))
+        {
+            ## Connects to Azure without a pre-defined Subscription. Uses the default Subscription.
+            $Result = Connect-AzAccount -ErrorVariable Azerror -WarningAction SilentlyContinue
+        }
+        else 
+        {
+            ## Connects to Azure with a pre-defined Subscription.
+            $Result = Connect-AzAccount -SubscriptionName $AzSubscriptionName -ErrorVariable Azerror -WarningAction SilentlyContinue
+        }
     }
     End
     {
         ## Verifies connection to Azure was successful.
         If($Azerror)
         { 
+            ## Connection to Azure failed.
             Write-Host "  Failed to connect to Azure Environment...`n  $Azerror" -ForegroundColor Red
             Return $false
         }
+
+        ## Retrieves the connected Azure Subscription
+        $AzSubscriptionName = $(Get-AzContext).Subscription.Name
         
+        ## Connection to Azure was successful.
         Write-Host "  Connected to Azure Environment: `n    Subscription ID: $AzSubscriptionName"
         Return $true
     }
@@ -107,7 +171,7 @@ Function New-AzureResourceGroup
     }
     End
     {
-        IF(!$RGError)
+        IF(!$RGerror)
         {
             ## Resource Group already exists, do nothing
             Write-Host "Resource Group $AzResourceGroupName already exists, will not recreate..." -ForegroundColor Yellow
@@ -140,18 +204,18 @@ Function New-ARMParameterObject
     Begin
     {
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $($ResourcePrefix + "appinsight" + $Index)
-        $KeyVaultName       = $($ResourcePrefix + "keyvault" + $Index)
-        $StorageAccountName = $($ResourcePrefix + "sa" + $Index).Replace("-", "")   # Doesn't support special characters
-        $aspName            = $($ResourcePrefix + "asp" + $Index)
-        $CDBAccountName     = $($ResourcePrefix + "cdba" + $Index)
-        $CDBDatabaseName    = $("WinGet")
-        $FunctionName       = $($ResourcePrefix + "function" + $Index)
-        $FrontDoorName      = $($ResourcePrefix + "frontdoor" + $Index)
+        $AppInsightsName    = $($ResourcePrefix + "appinsight" + $Index)            # Name that will be assigned to the Azure AppInsights.
+        $KeyVaultName       = $($ResourcePrefix + "keyvault" + $Index)              # Name that will be assigned to the Azure Keyvault.
+        $StorageAccountName = $($ResourcePrefix + "sa" + $Index).Replace("-", "")   # Name that will be assigned to the Azure Storage Account. Doesn't support special characters.
+        $aspName            = $($ResourcePrefix + "asp" + $Index)                   # Name that will be assigned to the Azure ASP.
+        $CDBAccountName     = $($ResourcePrefix + "cdba" + $Index)                  # Name that will be assigned to the Azure Cosmos Database Account.
+        $CDBDatabaseName    = $("WinGet")                                           # Name of the Cosmos Database - Value must match the name found in the Compiled Windows Package Manager Functions (CompiledFunctions.zip).
+        $FunctionName       = $($ResourcePrefix + "function" + $Index)              # Name that will be assigned to the Azure Function.
+        $FrontDoorName      = $($ResourcePrefix + "frontdoor" + $Index)             # Name that will be assigned to the Azure Front Door (Currently not created by this script, and not required to use a single instance of the Windows Package Manager private repository).
 
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
-        $AzKVStorageSecretName = "AzStorageAccountKey"
-        $AzTenantID            = $(Get-AzContext).Tenant.Id     # This is the Azure Tenant ID
+        $AzKVStorageSecretName = "AzStorageAccountKey"                              # The name that will be used to specify the Azure Keyvault Connection string. Do not change.
+        $AzTenantID            = $(Get-AzContext).Tenant.Id                         # This is the Azure Tenant ID
         $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID     # This is your User Account ID. Permissions are being set to your account to update the KeyVault.
         
         ## This is specific to the JSON file creation
@@ -160,6 +224,7 @@ Function New-ARMParameterObject
     }
     Process
     {    
+        ## Creates a PowerShell object array to contain the details of the Parameter files.
         $ARMObjects = @(
             @{  ObjectType = "AppInsight"
                 AzName     = "ContosoAppInsight"
@@ -475,17 +540,20 @@ Function New-ARMParameterObject
             # }
         )
 
+        ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.
         Write-Host "`n`nCreating JSON Parameter files for Azure Object Creation:"
 
         ## Creates each JSON Parameter file inside of a Parameter folder in the working directory
-        foreach ($object in $ARMObjects) 
+        foreach ($object in $ARMObjects)
         {
+            ## Converts the structure of the variable to a JSON file.
             Write-Host "  Creating the Parameter file for $($Object.ObjectType) in the following location:`n    $($Object.ParameterPath)"
             $Object.Parameters | ConvertTo-Json -Depth 7 | Out-File -FilePath $Object.ParameterPath -Force
         }
     }
     End
     {
+        ## Returns the completed object.
         Return $ARMObjects
     }
 }
@@ -503,6 +571,8 @@ Function Test-ARMTemplate
     {
         Write-Host "Verifying the ARM Resource Templates and Parameters are valid:"
         $TestResults = ""
+
+        ## Parses through all ARM Parameter objects to validate they are properly configured.
         Foreach($Object in $ARMObjects)
         {
             ## Validates that each ARM object will work.
@@ -512,6 +582,7 @@ Function Test-ARMTemplate
             ## If the ARM object fails validation, report error to screen.
             IF($Result -ne "")
             { 
+                ## Testing fails.
                 Write-Host "    ERROR:  $Result" -ForegroundColor Red
                 $TestResults += "$($Object.ObjectType):`n$Result`n`n"
             }
@@ -519,6 +590,7 @@ Function Test-ARMTemplate
     }
     End
     {
+        ## Returns the TestResults.
         Return $TestResults
     }
 }
@@ -532,25 +604,24 @@ Function New-ARMObjects
     Begin
     {
         Write-Host "`n"
+
         ## Path to the compiled Functions compressed into a Zip file for upload to Azure Function
         $ArchiveFunctionZip = "$WorkingDirectory\CompiledFunctions.zip"
         
-        ## Imports the Parameter Files
+        ## Imports the contents of the Parameter Files for reference and logging purposes:
         $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount"}).ParameterPath) | ConvertFrom-Json
         $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) | ConvertFrom-Json
-        #$jsonASP            = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "asp"}).ParameterPath) | ConvertFrom-Json
         $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
         $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) | ConvertFrom-Json
 
-        ## Name of target Keyvault
-        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value
-        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value
-        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value
+        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value                         # Name of the Azure Keyvault
+        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value     # Name of the Azure Storage Account
+        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value                             # Name of the Azure Cosmos Database Account
 
         ## Azure Keyvault Secret Names
-        $AzStorageAccountKeyName      = "AzStorageAccountKey"
-        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"
-        $CosmosAccountKeyKeyName      = "CosmosAccountKey"
+        $AzStorageAccountKeyName      = "AzStorageAccountKey"       # Do not change
+        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"     # Do not change
+        $CosmosAccountKeyKeyName      = "CosmosAccountKey"          # Do not change
 
         ## Azure Storage Account Connection String Endpoint Suffix
         $AzEndpointSuffix     = "core.windows.net"
@@ -564,15 +635,15 @@ Function New-ARMObjects
         {
             Write-Host "  Creating the Azure Object - $($Object.ObjectType)"
     
+            ## If the object to be created is an Azure Function, then complete these pre-required steps before creating the Azure Function.
             If($Object.ObjectType -eq "Function")
             {
-                #$ServerIdentifier = $jsonASP.parameters.aspName.value
                 Write-Host "    Creating KeyVault Secrets:"
 
-                ## Creates the Azure Storage Account Connection String
+                ## Creates a reference to the Azure Storage Account Connection String as a Secret in the Azure Keyvault.
                 $AzStorageAccountKey  = $(Get-AzStorageAccountKey -ResourceGroupName $AzResourceGroup -Name $AzStorageAccountName)[0].Value
 
-                ## Azure Keyvault Secrets
+                ## Retrieves the required information from the previously created Azure objects. Values will be used to generate required information for the Azure Keyvault.
                 $CosmosAccountEndpointValue       = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccount -ResourceGroupName $AzResourceGroup).DocumentEndpoint) -AsPlainText -Force
                 $CosmosAccountKeyValue            = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccountKey -ResourceGroupName $AzResourceGroup -Name $CosmosAccountName).PrimaryMasterKey) -AsPlainText -Force
                 $AzStorageAccountConnectionString = ConvertTo-SecureString -String "DefaultEndpointsProtocol=https;AccountName=$AzStorageAccountName;AccountKey=$AzStorageAccountKey;EndpointSuffix=$AzEndpointSuffix" -AsPlainText -Force
@@ -598,9 +669,10 @@ Function New-ARMObjects
             Write-Host "    Creating $($Object.ObjectType) following the ARM Parameter File..."
             $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror
     
-            ## Sets a sleep of 5 seconds after object creation to allow Azure to update creation status.
-            Start-Sleep -Seconds 5
+            ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
+            Start-Sleep -Seconds 10
     
+            ## Verifies that no error occured when creating the Azure resource
             If($objerror)
             {
                 ## Creating the object following the ARM template failed.
@@ -608,18 +680,59 @@ Function New-ARMObjects
                 Return
             }
             else 
-                { Write-Host "      $($Object.ObjectType) was successfully created." }
+            {
+                ## Creatung the object was successful
+                Write-Host "      $($Object.ObjectType) was successfully created."
+            }
     
             ## Copy GitHub Functions to newly created Azure Function
             If($Object.ObjectType -eq "Function")
             {
+                ## Gets the Azure Function Name from the Parameter JSON file contents.
                 $AzFunctionName = $jsonFunction.parameters.functionName.value
     
-                Write-Host "    Copying function files to the Azure Function."
-                $Result = Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
+                ## Verifies the presence of the "CompiledFunctions.zip" file.
+                Write-Host "    Confirming Compiled Azure Functions is present"
+                IF(Test-Path $ArchiveFunctionZip)
+                {
+                    ## The "CompiledFunctions.zip" was found in the working directory
+                    Write-Host "      File Path Found: $ArchiveFunctionZip"
+
+                    ## Uploads the Windows Package Manager functions to the Azure Function.
+                    Write-Host "    Copying function files to the Azure Function."
+                    $Result = Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
+                }
+                else 
+                {
+                    ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
+                    Write-Host "      File Path not found: $ArchiveFunctionZip" -ForegroundColor Red
+                }
             }
         }
     }
     End
     {}
 }
+
+## Incorporates the indexing into the Azure Resource Group Name. Not required.
+$AzResourceGroup = $("$AzResourceGroup$Index").Replace("-","")
+$GenerateString  = $true
+
+## Script Begins
+$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory
+
+#Creates a spacing between the last step and the next
+Write-Host "`n"
+
+$AzSubscriptionName = $(Get-AzContext).Subscription.Name
+$jsonFunction       = Get-Content -Path $($Result.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
+$AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
+$AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $AzResourceGroup).DefaultHostName
+
+## Post script Run Informational:
+#### Instructions on how to add the repository to your Windows Package Manager Client
+Write-Host "Use the following command to register the new private repository with your Windows Package Manager Client:" -ForegroundColor Yellow
+Write-Host "  winget source add -n ""PrivateRepo"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest""" -ForegroundColor Yellow
+
+#### For more information about how to use the solution, visit the aka.ms link.
+Write-Host "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"
