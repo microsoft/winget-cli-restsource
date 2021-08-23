@@ -1,10 +1,46 @@
 
+
 Function New-WinGetManifest
 {
+    <#
+    .SYNOPSIS
+    Submits Manifest files to the Azure Private REpository
+    
+    .DESCRIPTION
+    By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager Private Repository, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
+    
+    .PARAMETER PrivateRepoName
+    Name of the Windows Package Manager Private repository. Can be identified by running: "winget source list" and using the Repository Name
+    
+    .PARAMETER AzureFunctionName
+    Name of the Azure Function that hosts the Private Repository
+    
+    .PARAMETER ManifestFilePath
+    Path to the JSON manifest file that will be uploaded to the Private Repository
+    
+    .PARAMETER AzureSubscriptionName
+    [Optional] The Subscription name contains the Windows Package Manager Private Repository
+    
+    .EXAMPLE
+    New-WinGetManifest -PrivateRepoName "Private" -ManifestFilePath "C:\Temp\App.json"
+
+    .EXAMPLE
+    New-WinGetManifest -PrivateRepoName "Private" -ManifestFilePath "C:\Temp\App.json" -AzureSubscriptionName "Subscription"
+    
+    .EXAMPLE
+    New-WinGetManifest AzureFunctionName "contoso-function-prod" -ManifestFilePath "C:\Temp\App.json"
+
+    .EXAMPLE
+    New-WinGetManifest AzureFunctionName "contoso-function-prod" -ManifestFilePath "C:\Temp\App.json" -AzureSubscriptionName "Subscription"
+
+    .NOTES
+    General notes
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     Param(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="WinGet")] [string]$PrivateRepoName,
-        [Parameter(Position=0, Mandatory=$true,  ParameterSetName="Azure")] [string]$AzureFunctionName,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")]  [string]$AzureFunctionName,
         [Parameter(Position=1, Mandatory=$true)]  [string]$ManifestFilePath,
         [Parameter(Position=2, Mandatory=$false)] [string]$AzureSubscriptionName
     )
@@ -51,7 +87,7 @@ Function New-WinGetManifest
 
         ## Gets the JSON Content for posting to Private Repo
         $ApplicationManifest = Get-Content -Path $ManifestFilePath -Raw
-        $ApplicationManifest = "'" + $($ApplicationManifest -replace "`t|`n|`r|  ","") + "'"
+        $ApplicationManifest = $($ApplicationManifest -replace "`t|`n|`r|  ","")
         $ApplicationManifest = $($($($($ApplicationManifest -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}")
     }
     Process
@@ -65,7 +101,7 @@ Function New-WinGetManifest
         
         
 
-        Write-Host "`n`nInvoke-RestMethod ""$AzFunctionURL"" `n`t-Headers $apiHeader `n`t-Method ""$apiMethod"" `n`t-Body ""$ApplicationManifest"" `n`t-ContentType ""$apiContentType"""
+        #Write-Host "`n`nInvoke-RestMethod ""$AzFunctionURL"" `n`t-Headers $apiHeader `n`t-Method ""$apiMethod"" `n`t-Body ""$ApplicationManifest"" `n`t-ContentType ""$apiContentType"""
 
         $Response = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest -ContentType $apiContentType
     }
