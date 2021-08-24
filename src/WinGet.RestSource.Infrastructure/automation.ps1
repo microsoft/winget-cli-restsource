@@ -681,7 +681,7 @@ Function New-ARMObjects
             }
             else 
             {
-                ## Creatung the object was successful
+                ## Creating the object was successful
                 Write-Host "      $($Object.ObjectType) was successfully created."
             }
     

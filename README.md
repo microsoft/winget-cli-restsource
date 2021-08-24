@@ -1,5 +1,27 @@
+# Windows Package Manager Repository
 
-# Contributing
+## Create a new private repository in Azure
+To simply the creation of a Windows Package Manager private repository, the `automation.ps1` PowerShell script is offered. This script will create new Elements required to host a Windows Package Manager private repository in Azure.
+
+The `automation.ps1` script has the following parameter inputs:
+| Required | Parameter          | Description                                                                                                                |
+|----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Yes      | ResourcePrefix     | A string of letters which will be prefixed to your newly created Azure resources.                                          |
+| Yes      | Index              | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                |
+| Yes      | AzResourceGroup    | The Resource Group that will be used to contain the Azure resources.                                                       |
+| No       | AzSubscriptionName | The name of the Azure Subscription that will be used to pay for the Azure resources.                                       |
+| No       | AzLocation         | The Azure location where the Azure resources will be created. (Default: westus)                                            |
+| No       | WorkingDirectory   | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created. |
+
+For more information on how to manually implement your Windows Package Manager in Azure, please visit our Docs.
+
+**Example:**
+
+.\src\WinGet.RestSource.Infrastructure\automation.ps1 -ResourcePrefix "contoso-" -Index "Demo" -AzResourceGroup "WinGet_PrivateRepo_Demo"
+
+
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
