@@ -143,8 +143,8 @@ The Windows Package Manager Rest Source contains the required APIs required to p
     - Resource Group: "WinGet_PrivateRepo"
 
 1. In the **App Service Plan details** ensure that the following values have been set:
-    - Name: contoso_asp_demo
-    - Operating System: Linux
+    - Name: contoso-asp-demo
+    - Operating System: Windows
     - Region: West US
 
 1. In the **Pricing Tier** section, ensure that the following values have been set:
@@ -368,11 +368,130 @@ The Windows Package Manager Rest Source contains the required APIs required to p
     - Region: West US
 1. Select the **Next** button.
 1. In the **Hosting** section, Set the following:
-    - Storage Account: contoso
+    - Storage Account: contosoaccountdemo
+    - Operating System: Windows
+    - Plan type: App service plan
+    - Windows Plan (West US): contoso-asp-demo
+1. Select the **Next : Monitoring** button.
+1. In the **Monitoring** section, set the following:
+    - Enable Application Insights: Yes
+    - Application Insights: contoso_appinsights_demo
+1. Select the **Review + create** button.
+1. Assuming the Validation has passed, select the **Create** button.
+1. Wait for the deployment to complete before going to the next section.
 
+1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
+1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+1. Select **contoso_function_demo** for the Function from the list of resources.
+1. Select **Identity** from the left side navigation.
+1. In the **Identity** section, set the following:
+    - Status: On
+    
+
+
+*The following instructions assumes that your Key Vault name is: contoso-keyvault-demo. If this is incorrect, please update the URI's replacing this with the name of your Azure Key Vault.*
+
+1. Configure Application Settings for the Storage Account Connection Key
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: AzureWebJobsStorage
+        - Value: @Microsoft.KeyVault(SecretUri=https://contoso-keyvault-demo.vault.azure.net/secrets/AzStorageAccountKey/)
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Cosmos SB Account Endpoint.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: CosmosAccountEndpoint
+        - Value: @Microsoft.KeyVault(SecretUri=https://contoso-keyvault-demo.vault.azure.net/secrets/CosmosAccountEndpoint/)
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Cosmos DB Account Key.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: CosmosAccountKey
+        - Value: @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/CosmosAccountKey/)
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Function Name.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: FunctionName
+        - Value: contoso-function-demo
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Server Identifier.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: ServerIdentifier
+        - Value: contoso-asp-demo
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Website content Azure File Connection String.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: WEBSITE_CONTENTAZUREFILECONNECTIONSTRING
+        - Value: @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/AzStorageAccountKey/)
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Website content Website Content Share.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: WEBSITE_CONTENTSHARE
+        - Value: azfun-pkgman3pr-westus-test
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Website Load Certificates.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: WEBSITE_LOAD_CERTIFICATES
+        - Value: *
+        - Deployment slot setting: Disabled
+
+1. Configure Application Settings for the Website runs from packages.
+    1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+    1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+    1. Select **contoso-function-demo** for the Key Vault in the list of resources.
+    1. Select **Configuration** from the left side navigation.
+    1. Select **+ New application setting** from the **Application settings** section.
+    1. In the **Add/Edit application settings** page, enter the following:
+        - Name: WEBSITE_RUN_FROM_PACKAGE
+        - Value: 1
+        - Deployment slot setting: Disabled
 
 #### Import Windows Package Manager API
-
 
 **How to:**
 
