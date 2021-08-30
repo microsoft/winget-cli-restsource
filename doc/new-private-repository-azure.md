@@ -420,7 +420,6 @@ For more information on Azure Functions, visit their Docs site: [Introduction to
 1. Select **Identity** from the left side navigation.
 1. In the **Identity** section, set the following:
     - Status: On
-    
 
 *The following instructions assumes that your Key Vault name is: ***contoso-keyvault-demo***. If this does not match to your Azure environment, please update the URI's replacing this with the name of your Azure Key Vault.*
 
