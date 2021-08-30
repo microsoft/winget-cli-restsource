@@ -1,4 +1,11 @@
-
+---
+Description: Details how to create a Windows Package Manager private repository.
+title: Windows Package Manager private repository
+ms.date: 08/30/2021
+ms.topic: article
+keywords: windows, package manager, windows package manager, private repo, private repository
+ms.localizationpriority: medium
+---
 
 # Windows Package Mananger private repository
 
