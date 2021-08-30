@@ -1,10 +1,10 @@
 
 
-# New private repository
+# Windows Package Mananger private repository
 
+The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a private respository that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
 
-
-## PowerShell script - automated
+## Automatically create a private repository
 
 A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private repository.
 
@@ -34,10 +34,11 @@ The PowerShell script has been configured to work with `Get-Help` providing furt
 
 1. When the script completes, it'll display a command that can be used to include the Private repository to your Windows Package Manager client.
 
-## Azure Portal - manually
+## Manually create a private repository
 
+The following instructions will provide a walkthrough on how to manually create a Windows Package Manager private repository in Azure. Each section will provide you with details pertaining to the specific object being created, and the functionality that it will provide.
 
-The following instructions makes the following assumptions:
+The following instructions assumes the following Azure objects are named as follows:
 | Azure Resource          | Value                      |
 |-------------------------|----------------------------|
 | Azure Resource Group    | WinGet_PrivateRepo         |
