@@ -49,7 +49,7 @@ The following instructions makes the following assumptions:
 
 ### Extract the Windows Package Manager Rest Source
 
-The Windows Package Manager Rest Source contains the required APIs required to provide a Windows Package Manager private repository.
+The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager private repository.
 
 **How to:**
 
@@ -92,6 +92,7 @@ For more information on Azure Application Insights, visit their Docs site: [What
 
 ### Storage Account
 
+An Azure storage account contains all of your Azure Storage data objects: blobs, file shares, queues, tables, and disks. The Storage account created below will be used to store the Azure Function binaries, 
 
 For more information on Azure Storage Accounts, visit their Docs site: [Storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
@@ -136,8 +137,11 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. After your deployment has completed, continue to the steps in the next section.
 
 
-### App Service Plan
+### App Service plan
 
+An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager private repository will operate within this Azure App Service plan allowing it to scale to the demand.
+
+For more information on App Service plans, visit their Docs site: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
 **How to:**
 
@@ -145,14 +149,14 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
 1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
 1. At the top of the window, select the **+ Create** button.
-1. In the search bar, type in "*App Service Plan*".
-1. Select **App Service Plan** from the search results.
+1. In the search bar, type in "*App Service plan*".
+1. Select **App Service plan** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription" 
     - Resource Group: "WinGet_PrivateRepo"
 
-1. In the **App Service Plan details** ensure that the following values have been set:
+1. In the **App Service plan details** ensure that the following values have been set:
     - Name: contoso-asp-demo
     - Operating System: Windows
     - Region: West US
@@ -164,11 +168,17 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. Assuming the Validation has passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
 
-### Cosmos Database
+### Azure Cosmos Database
 
+Azure Cosmos DB is a fully managed platform-as-a-service (PaaS). 
 
-#### Cosmos Account
+For more information on Cosmos Databases, visit their Docs site: [Welcome to Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction).
 
+#### Azure Cosmos account
+
+The Azure Cosmos account is the fundamental unit of global distribtution and high availability. Your Azure Cosmos account contains a unique DNS name, and can virtually manage an unlimited amount of data and provisioned throughput. We will first create our Azure Cosmos account, before creating the individual Windows Package Manager Azure Cosmos database.
+
+For more information on Azure Cosmos database, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#elements-in-an-azure-cosmos-account)
 
 **How to:**
 
@@ -218,8 +228,11 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. After your deployment has completed, continue to the steps in the next section.
 
 
-#### Cosmos Database
+#### Azure Cosmos database
 
+A single or multiple Azure Cosmos databases can be created under a specific Azure Cosmos account. The Azure Cosmos Database is analogous to a namespace. 
+
+For more information on Azure Cosmos database, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-databases)
 
 **How to:**
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
@@ -238,14 +251,21 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
         - Partition key: /id
 1. Select the **Ok** button.
 
-#### Cosmos Container
+#### Azure Cosmos container
 
+An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions. This allows for the Windows Package Manager application manifests, and database to span multiple Azure regions.
+
+For more information on Azure Cosmos containers, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
 
 **How to:**
 
+N/A
 
+### Azure Key Vault
 
-### Key Vault
+An Azure Key Vault centralizes the storage of application secrets, allowing you to control their distribution. The Key Vault greatly reduces the chances that secrets may be accidentally leaked. We will use the Azure Key Vault to securely store specific connection account details that will be used by the Azure Function.
+
+For more information on Azure Key Vault, visit their Docs site: [About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
 
 **How to:**
 
@@ -255,11 +275,11 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. Select *contoso-cdba-demo* from the list of resources.
 1. Select the **Create 'Items' container** button next to **Step 1**.
 
-#### Key Vault Secrets
+#### Azure Key Vault Secrets
 
+Azure Key Vault Secrets provide secure storage of generic secrets, such as passwords and database connection strings. Using the Azure Key Vault previously created, we will create secrets for each of the following:
 
-
-| Key Vault Secrets     | Description                                 |
+| Key Vault secret name | Description                                 |
 |-----------------------|---------------------------------------------|
 | AzStorageAccountKey   | Connection string to Azure Storage Account. |
 | CosmosAccountEndpoint | Endpoint                                    |
@@ -354,8 +374,11 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
         - Enabled: Yes
     1. Select the **Create** button.
 
-### Function
+### Azure Function
 
+An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager private repository, responding to rest api requests.
+
+For more information on Azure Functions, visit their Docs site: [Introduction to Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 
 **How to:**
 
@@ -380,7 +403,7 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 1. In the **Hosting** section, Set the following:
     - Storage Account: contosoaccountdemo
     - Operating System: Windows
-    - Plan type: App service plan
+    - Plan type: App Service plan
     - Windows Plan (West US): contoso-asp-demo
 1. Select the **Next : Monitoring** button.
 1. In the **Monitoring** section, set the following:
