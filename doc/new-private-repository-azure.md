@@ -70,7 +70,7 @@ The Windows Package Manager Rest Source contains the APIs required to provide a 
 
 Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights is will be used to monitor the health of the Windows Package Manager private repository, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
 
-For more information on Azure Application Insights, visit their Docs site: [What is Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
+For more information on Azure Application Insights, visit their Docs article: [What is Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
 
 **How to:**
 
@@ -102,7 +102,7 @@ For more information on Azure Application Insights, visit their Docs site: [What
 
 An Azure storage account contains all of your Azure Storage data objects: blobs, file shares, queues, tables, and disks. The Storage account created below will be used to store the Azure Function binaries, 
 
-For more information on Azure Storage Accounts, visit their Docs site: [Storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
+For more information on Azure Storage Accounts, visit their Docs article: [Storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
 **How to:**
 
@@ -149,7 +149,7 @@ For more information on Azure Storage Accounts, visit their Docs site: [Storage 
 
 An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager private repository will operate within this Azure App Service plan allowing it to scale to the demand.
 
-For more information on App Service plans, visit their Docs site: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
+For more information on App Service plans, visit their Docs article: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
 **How to:**
 
@@ -180,13 +180,13 @@ For more information on App Service plans, visit their Docs site: [Azure App Ser
 
 Azure Cosmos DB is a fully managed platform-as-a-service (PaaS). 
 
-For more information on Cosmos Databases, visit their Docs site: [Welcome to Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction).
+For more information on Cosmos Databases, visit their Docs article: [Welcome to Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction).
 
 #### Azure Cosmos account
 
 The Azure Cosmos account is the fundamental unit of global distribtution and high availability. Your Azure Cosmos account contains a unique DNS name, and can virtually manage an unlimited amount of data and provisioned throughput. We will first create our Azure Cosmos account, before creating the individual Windows Package Manager Azure Cosmos database.
 
-For more information on Azure Cosmos database, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#elements-in-an-azure-cosmos-account)
+For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#elements-in-an-azure-cosmos-account)
 
 **How to:**
 
@@ -240,7 +240,7 @@ For more information on Azure Cosmos database, visit their Docs site: [Azure Cos
 
 A single or multiple Azure Cosmos databases can be created under a specific Azure Cosmos account. The Azure Cosmos Database is analogous to a namespace. 
 
-For more information on Azure Cosmos database, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-databases)
+For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-databases)
 
 **How to:**
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
@@ -263,7 +263,7 @@ For more information on Azure Cosmos database, visit their Docs site: [Azure Cos
 
 An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions. This allows for the Windows Package Manager application manifests, and database to span multiple Azure regions.
 
-For more information on Azure Cosmos containers, visit their Docs site: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
+For more information on Azure Cosmos containers, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
 
 **How to:**
 
@@ -273,7 +273,7 @@ N/A
 
 An Azure Key Vault centralizes the storage of application secrets, allowing you to control their distribution. The Key Vault greatly reduces the chances that secrets may be accidentally leaked. We will use the Azure Key Vault to securely store specific connection account details that will be used by the Azure Function.
 
-For more information on Azure Key Vault, visit their Docs site: [About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
+For more information on Azure Key Vault, visit their Docs article: [About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
 
 **How to:**
 
@@ -386,7 +386,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager private repository, responding to rest api requests.
 
-For more information on Azure Functions, visit their Docs site: [Introduction to Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
+For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 
 **How to:**
 
