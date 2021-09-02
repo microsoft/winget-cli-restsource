@@ -20,6 +20,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Errors;
     using Microsoft.WinGet.RestSource.Models.Schemas;
     using Microsoft.WinGet.RestSource.Validators;
@@ -188,6 +189,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         {
             Dictionary<string, string> headers = null;
             ApiDataPage<PackageManifest> manifests = new ApiDataPage<PackageManifest>();
+            QueryParameters unsupportedQueryParameters;
+            QueryParameters requiredQueryParameters;
 
             try
             {
@@ -195,6 +198,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 manifests = await this.dataStore.GetPackageManifests(packageIdentifier, req.Query);
+                unsupportedQueryParameters = UnsupportedAndRequiredFieldsHelper.GetUnsupportedQueryParametersFromRequest(req.Query, ApiConstants.UnsupportedQueryParameters);
+                requiredQueryParameters = UnsupportedAndRequiredFieldsHelper.GetRequiredQueryParametersFromRequest(req.Query, ApiConstants.RequiredQueryParameters);
             }
             catch (DefaultException e)
             {
@@ -210,8 +215,16 @@ namespace Microsoft.WinGet.RestSource.Functions
             return manifests.Items.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<PackageManifest>(manifests.Items.First(), manifests.ContinuationToken)),
-                _ => new ApiObjectResult(new ApiResponse<List<PackageManifest>>(manifests.Items.ToList(), manifests.ContinuationToken)),
+                1 => new ApiObjectResult(new GetPackageManifestApiResponse<PackageManifest>(manifests.Items.First(), manifests.ContinuationToken)
+                {
+                    UnsupportedQueryParameters = unsupportedQueryParameters,
+                    RequiredQueryParameters = requiredQueryParameters,
+                }),
+                _ => new ApiObjectResult(new GetPackageManifestApiResponse<List<PackageManifest>>(manifests.Items.ToList(), manifests.ContinuationToken)
+                {
+                    UnsupportedQueryParameters = unsupportedQueryParameters,
+                    RequiredQueryParameters = requiredQueryParameters,
+                }),
             };
         }
     }

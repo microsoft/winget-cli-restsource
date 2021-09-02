@@ -20,8 +20,14 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// </summary>
         public Information()
         {
-            this.SourceIdentifier = ApiConstants.SourceIdentifier;
+            this.SourceIdentifier = string.IsNullOrEmpty(ApiConstants.SourceIdentifier) ? "TestSource" : ApiConstants.SourceIdentifier;
             this.ServerSupportedVersions = ApiConstants.ServerSupportedVersions;
+
+            // This is an example of unsupported package match field.
+            this.UnsupportedPackageMatchFields = ApiConstants.UnSupportedPackageMatchFields;
+            this.RequiredPackageMatchFields = ApiConstants.RequiredPackageMatchFields;
+            this.UnsupportedQueryParameters = ApiConstants.UnsupportedQueryParameters;
+            this.RequiredQueryParameters = ApiConstants.RequiredQueryParameters;
         }
 
         /// <summary>
@@ -34,5 +40,25 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// Gets serverSupportedVersions.
         /// </summary>
         public ApiVersions ServerSupportedVersions { get; }
+
+        /// <summary>
+        /// Gets UnsupportedPackageMatchFields.
+        /// </summary>
+        public PackageMatchFields UnsupportedPackageMatchFields { get; }
+
+        /// <summary>
+        /// Gets RequiredPackageMatchFields.
+        /// </summary>
+        public PackageMatchFields RequiredPackageMatchFields { get; }
+
+        /// <summary>
+        /// Gets UnsupportedQueryParameters.
+        /// </summary>
+        public QueryParameters UnsupportedQueryParameters { get; }
+
+        /// <summary>
+        /// Gets RequiredQueryParameters.
+        /// </summary>
+        public QueryParameters RequiredQueryParameters { get; }
     }
 }
