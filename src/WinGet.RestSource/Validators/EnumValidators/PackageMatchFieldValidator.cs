@@ -24,6 +24,7 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
             PackageMatchFields.NormalizedPackageNameAndPublisher,
+            PackageMatchFields.Market,
         };
 
         /// <summary>

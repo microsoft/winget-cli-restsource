@@ -50,5 +50,10 @@ namespace Microsoft.WinGet.RestSource.Constants.Enumerations
         /// NormalizedPackageNameAndPublisher.
         /// </summary>
         public const string NormalizedPackageNameAndPublisher = "NormalizedPackageNameAndPublisher";
+
+        /// <summary>
+        /// Market.
+        /// </summary>
+        public const string Market = "Market";
     }
 }
