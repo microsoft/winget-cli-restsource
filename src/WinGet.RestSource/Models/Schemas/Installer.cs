@@ -388,6 +388,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                    && Equals(this.PackageFamilyName, other.PackageFamilyName)
                    && Equals(this.ProductCode, other.ProductCode)
                    && Equals(this.Capabilities, other.Capabilities)
+                   && Equals(this.RestrictedCapabilities, other.RestrictedCapabilities)
                    && Equals(this.MSStoreProductIdentifier, other.MSStoreProductIdentifier)
                    && Equals(this.InstallerAbortsTerminal, other.InstallerAbortsTerminal)
                    && Equals(this.ReleaseDate, other.ReleaseDate)

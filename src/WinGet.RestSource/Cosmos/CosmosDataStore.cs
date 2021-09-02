@@ -472,7 +472,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Apply Market Filter. Return only those results that have Market value in installers that match the Market filter.
-            // If Markets is null or markets do not match filter, exclude it from results.
+            // If Markets object is null or markets do not match filter, exclude them from results.
             string marketFilter = queryParameters[QueryConstants.Market];
             this.ApplyMarketFilter(apiDataDocument.Items, marketFilter);
             return apiDataDocument;
@@ -655,12 +655,12 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             if (!string.IsNullOrEmpty(marketFilter))
             {
-                foreach (PackageManifest pm in packageManifests)
+                foreach (PackageManifest packageManifest in packageManifests)
                 {
-                    if (pm.Versions != null)
+                    if (packageManifest.Versions != null)
                     {
                         HashSet<string> versionsWithoutInstallers = new HashSet<string>();
-                        foreach (var version in pm.Versions)
+                        foreach (VersionExtended version in packageManifest.Versions)
                         {
                             if (version.Installers != null)
                             {
@@ -676,7 +676,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                                     }
                                 }
 
-                                foreach (string installer in installersNotMatchingFilter)
+                                foreach (var installer in installersNotMatchingFilter)
                                 {
                                     version.RemoveInstaller(installer);
                                 }
@@ -690,7 +690,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
                         foreach (var version in versionsWithoutInstallers)
                         {
-                            pm.RemoveVersion(version);
+                            packageManifest.RemoveVersion(version);
                         }
                     }
                 }
