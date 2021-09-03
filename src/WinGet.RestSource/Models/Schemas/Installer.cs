@@ -174,6 +174,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
         /// <summary>
         /// Gets or sets a value indicating whether InstallerAbortsTerminal is set.
+        /// This indicates if the package aborts the terminal during installation.
         /// </summary>
         public bool InstallerAbortsTerminal { get; set; }
 
