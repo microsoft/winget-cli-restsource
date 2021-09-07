@@ -474,7 +474,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 {
                     if (pm.Versions != null)
                     {
-                        pm.Versions = new VersionsExtended(pm.Versions.Where(extended => extended.Channel.Equals(channelFilter)));
+                        pm.Versions = new VersionsExtended(pm.Versions.Where(extended => extended.Channel != null && extended.Channel.Equals(channelFilter)));
                     }
                 }
             }

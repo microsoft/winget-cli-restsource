@@ -35,6 +35,7 @@ namespace Microsoft.WinGet.RestSource.Constants
 
         /// <summary>
         /// Unsupported package match fields.
+        /// Note: NormalizedPackageNameAndPublisher field is added here to demonstrate how this property can be used.
         /// </summary>
         public static readonly PackageMatchFields UnSupportedPackageMatchFields = new PackageMatchFields()
         {
@@ -44,26 +45,17 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// Required package match fields.
         /// </summary>
-        public static readonly PackageMatchFields RequiredPackageMatchFields = new PackageMatchFields()
-        {
-            Enumerations.PackageMatchFields.Market,
-        };
+        public static readonly PackageMatchFields RequiredPackageMatchFields = new PackageMatchFields();
 
         /// <summary>
         /// Unsupported query parameters.
         /// </summary>
-        public static readonly QueryParameters UnsupportedQueryParameters = new QueryParameters()
-        {
-            QueryConstants.Version,
-        };
+        public static readonly QueryParameters UnsupportedQueryParameters = new QueryParameters();
 
         /// <summary>
         /// Required query paramters.
         /// </summary>
-        public static readonly QueryParameters RequiredQueryParameters = new QueryParameters()
-        {
-            QueryConstants.Market,
-        };
+        public static readonly QueryParameters RequiredQueryParameters = new QueryParameters();
 
         /// <summary>
         /// Gets server Identifier.

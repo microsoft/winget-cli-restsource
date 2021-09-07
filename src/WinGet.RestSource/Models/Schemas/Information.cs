@@ -21,19 +21,19 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// </summary>
         public Information()
         {
-            this.SourceIdentifier = string.IsNullOrEmpty(ApiConstants.SourceIdentifier) ? "TestSource" : ApiConstants.SourceIdentifier;
+            this.SourceIdentifier = string.IsNullOrEmpty(ApiConstants.SourceIdentifier) ? "DefaultSourceIdentifier" : ApiConstants.SourceIdentifier;
             this.ServerSupportedVersions = ApiConstants.ServerSupportedVersions;
 
-            // Examples of how Unsupported and Required Package match fields and query parameters can be used.
+            // Example of how Unsupported Package match fields can be used.
             this.UnsupportedPackageMatchFields = ApiConstants.UnSupportedPackageMatchFields;
             this.RequiredPackageMatchFields = ApiConstants.RequiredPackageMatchFields;
             this.UnsupportedQueryParameters = ApiConstants.UnsupportedQueryParameters;
             this.RequiredQueryParameters = ApiConstants.RequiredQueryParameters;
 
-            // Example of a Soruce Agreement.
+            // Example of a Source Agreement.
             this.SourceAgreements = new SourceAgreementExtended()
             {
-                AgreementsIdentifier = "Hi Agreement",
+                AgreementsIdentifier = "Agreement Id",
                 Agreements = new Agreements(),
             };
         }

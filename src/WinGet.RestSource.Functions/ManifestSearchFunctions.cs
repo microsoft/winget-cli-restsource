@@ -83,15 +83,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return manifestSearchResponse.Items.Count() switch
+            return new ApiObjectResult(new SearchApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items?.ToList(), manifestSearchResponse.ContinuationToken)
             {
-                0 => new NoContentResult(),
-                _ => new ApiObjectResult(new SearchApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items.ToList(), manifestSearchResponse.ContinuationToken)
-                {
-                    UnsupportedPackageMatchFields = unsupportedFields,
-                    RequiredPackageMatchFields = requiredFields,
-                }),
-            };
+                UnsupportedPackageMatchFields = unsupportedFields,
+                RequiredPackageMatchFields = requiredFields,
+            });
         }
     }
 }
