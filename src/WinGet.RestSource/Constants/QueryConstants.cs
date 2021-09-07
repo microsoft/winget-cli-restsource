@@ -22,6 +22,11 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string Channel = "Channel";
 
         /// <summary>
+        /// Query Market.
+        /// </summary>
+        public const string Market = "Market";
+
+        /// <summary>
         /// Query Continuation Token.
         /// </summary>
         public const string ContinuationToken = "ContinuationToken";
