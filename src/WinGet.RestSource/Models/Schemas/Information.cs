@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
+    using Microsoft.WinGet.RestSource.Models.Objects;
     using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
@@ -23,11 +24,18 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.SourceIdentifier = string.IsNullOrEmpty(ApiConstants.SourceIdentifier) ? "TestSource" : ApiConstants.SourceIdentifier;
             this.ServerSupportedVersions = ApiConstants.ServerSupportedVersions;
 
-            // This is an example of unsupported package match field.
+            // Examples of how Unsupported and Required Package match fields and query parameters can be used.
             this.UnsupportedPackageMatchFields = ApiConstants.UnSupportedPackageMatchFields;
             this.RequiredPackageMatchFields = ApiConstants.RequiredPackageMatchFields;
             this.UnsupportedQueryParameters = ApiConstants.UnsupportedQueryParameters;
             this.RequiredQueryParameters = ApiConstants.RequiredQueryParameters;
+
+            // Example of a Soruce Agreement.
+            this.SourceAgreements = new SourceAgreementExtended()
+            {
+                AgreementsIdentifier = "Hi Agreement",
+                Agreements = new Agreements(),
+            };
         }
 
         /// <summary>
@@ -40,6 +48,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// Gets serverSupportedVersions.
         /// </summary>
         public ApiVersions ServerSupportedVersions { get; }
+
+        /// <summary>
+        /// Gets SourceAgreements.
+        /// </summary>
+        public SourceAgreementExtended SourceAgreements { get; }
 
         /// <summary>
         /// Gets UnsupportedPackageMatchFields.
