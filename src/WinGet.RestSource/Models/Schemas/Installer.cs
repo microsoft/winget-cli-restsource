@@ -174,6 +174,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
         /// <summary>
         /// Gets or sets a value indicating whether InstallerAbortsTerminal is set.
+        /// This indicates if the package aborts the terminal during installation.
         /// </summary>
         public bool InstallerAbortsTerminal { get; set; }
 
@@ -189,7 +190,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         public bool InstallLocationRequired { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the installer should be pinned by default from upgrade.
+        /// Gets or sets a value indicating whether the installer requires explicit upgrade.
         /// </summary>
         public bool RequireExplicitUpgrade { get; set; }
 

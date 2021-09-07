@@ -410,11 +410,21 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <inheritdoc />
         public async Task<ApiDataPage<PackageManifest>> GetPackageManifests(string packageIdentifier, IQueryCollection queryParameters)
         {
+            // Note: GetPackageManifests should use query parameters as predicates when querying all package manifests. Currently, query parameters
+            // are only exposed for GetPackageManifests with a PackageIdentifier input. Whenever query parameters are exposed to querying all
+            // package manifests, this method should utilize search predicates to filter on query parameters.
+
             // Process Continuation token
             string continuationToken = null;
+            string versionFilter = null;
+            string channelFilter = null;
+            string marketFilter = null;
             if (queryParameters != null)
             {
                 continuationToken = queryParameters[QueryConstants.ContinuationToken];
+                versionFilter = queryParameters[QueryConstants.Version];
+                channelFilter = queryParameters[QueryConstants.Channel];
+                marketFilter = queryParameters[QueryConstants.Market];
             }
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
@@ -446,7 +456,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             apiDataDocument.ContinuationToken = apiDataDocument.ContinuationToken != null ? StringEncoder.EncodeContinuationToken(apiDataDocument.ContinuationToken) : null;
 
             // Apply Version Filter
-            string versionFilter = queryParameters[QueryConstants.Version];
             if (!string.IsNullOrEmpty(versionFilter))
             {
                 foreach (PackageManifest packageManifest in apiDataDocument.Items)
@@ -459,7 +468,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Apply Channel Filter
-            string channelFilter = queryParameters[QueryConstants.Channel];
             if (!string.IsNullOrEmpty(channelFilter))
             {
                 foreach (PackageManifest pm in apiDataDocument.Items)
@@ -473,8 +481,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             // Apply Market Filter. Return only those results that have Market value in installers that match the Market filter.
             // If Markets object is null or markets do not match filter, exclude them from results.
-            string marketFilter = queryParameters[QueryConstants.Market];
-            this.ApplyMarketFilter(apiDataDocument.Items, marketFilter);
+            if (!string.IsNullOrEmpty(marketFilter))
+            {
+                this.ApplyMarketFilter(apiDataDocument.Items, marketFilter);
+            }
+
             return apiDataDocument;
         }
 

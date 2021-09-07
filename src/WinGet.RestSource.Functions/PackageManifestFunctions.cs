@@ -197,7 +197,8 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, req.Query);
+                // Schema supports query parameters only when PackageIdentifier is specified.
+                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, string.IsNullOrWhiteSpace(packageIdentifier) ? null : req.Query);
                 unsupportedQueryParameters = UnsupportedAndRequiredFieldsHelper.GetUnsupportedQueryParametersFromRequest(req.Query, ApiConstants.UnsupportedQueryParameters);
                 requiredQueryParameters = UnsupportedAndRequiredFieldsHelper.GetRequiredQueryParametersFromRequest(req.Query, ApiConstants.RequiredQueryParameters);
             }
