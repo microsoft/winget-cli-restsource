@@ -1,59 +1,5 @@
 
-class ARMObject
-{
-    [ValidateSet("AppInsight", "Keyvault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")]
-    [ValidateNotNullOrEmpty()][string] $ObjectType
-    [ValidateNotNullOrEmpty()][string] $ParameterPath
-    [ValidateNotNullOrEmpty()][string] $TemplatePath
-    $Parameters = @{
-        '$Schema' = "1.0.0.0"
-        contentVersion = "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
-        Parameters = @{}
-    }
 
-    ARMObject ([System.Collections.Hashtable]$Var)
-    {
-        $this.ObjectType    = $Var.ObjectType
-        $this.ParameterPath = $Var.ParameterPath
-        $this.TemplatePath  = $Var.TemplatePath
-        $this.Parameters.contentVersion = $Var.TemplatePath.contentVersion
-        $this.Parameters.Parameters     = $Var.TemplatePath.Parameters
-        IF($null -ne $Var.TemplatePath.'$Schema')
-            { $this.Parameters.'$Schema'      = $Var.TemplatePath.'$Schema' }
-        IF($null -ne $Var.TemplatePath.contentVersion)
-            { $this.Parameters.contentVersion = $Var.TemplatePath.contentVersion }
-        IF($null -ne $Var.TemplatePath.Parameters)
-            { $this.Parameters.Parameters     = $Var.TemplatePath.Parameters }
-    }
-    ARMObject ([string] $a, [string] $b, [string] $c)
-    {
-        $this.ObjectType    = $a
-        $this.ParameterPath = $b
-        $this.TemplatePath  = $c
-    }
-    ARMObject ([string] $a, [string] $b, [string] $c, $d)
-    {
-        $this.ObjectType    = $a
-        $this.ParameterPath = $b
-        $this.TemplatePath  = $c
-        $this.Parameters    = $d
-    }
-    [boolean]TestParameterPath()
-    {
-        Return Test-Path -Path $this.ParameterPath
-    }
-    [boolean]TestTemplatePath()
-    {
-        Return Test-Path -Path $this.TemplatePath
-    }
-}
-
-#Function Test-PowerShellModules
-#{
-#    Param(
-#        $AzModules = @(@{"Az.Accounts"})
-#    )
-#}
 
 Function New-WinGetManifest
 {
