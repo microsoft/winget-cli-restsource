@@ -37,7 +37,7 @@ bld/
 #wwwroot/
 
 # Scripted Generated Parameter files and folder
-src\WinGet.RestSource.Infrastructure\Parameters
+src\WinGet.RestSource.Infrastructure\Parameters\*.json
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
