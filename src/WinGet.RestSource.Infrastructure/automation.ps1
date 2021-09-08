@@ -11,6 +11,13 @@
         3. Use the Parameter files and ARM Template files to create the Azure resources.
         4. Creates secure keys in the Azure Keyvault.
         5. Publish the Windows Package Manager private repository functions to the Azure Function.
+
+    The following Azure Modules are used by this script:
+        Az.Resources --> Get-AzResourceGroup, New-AzResourceGroup, Get-AzADUser, Test-AzResourceGroupDeployment, New-AzResourceGroupDeployment
+        Az.Accounts  --> Connect-AzAccount, Get-AzContext, Set-AzContext
+        Az.KeyVault  --> Set-AzKeyVaultSecret
+        Az.Websites  --> Publish-AzWebapp
+        Az.Functions --> Get-AzFunctionApp
     
     .PARAMETER ResourcePrefix
     Azure resources will be created with the "ResourcePrefix" prefixed to the name.
@@ -52,6 +59,26 @@ param(
     [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = $PSScriptRoot
 )
 
+Function Test-RequiredModules
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
+    )
+    Begin
+    {}
+    Process
+    {
+        ## Determinds if the PowerShell Module is missing, If missing Returns the name of the missing module
+        IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
+            { $Result = $RequiredModule }
+    }
+    End
+    {
+        ## Returns a value only if the module is missing
+        Return $Result
+    }
+}
+
 Function New-WinGetRepo
 {
     param(
@@ -66,9 +93,27 @@ Function New-WinGetRepo
     {
         $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
         $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
+        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
     Process
     {
+        ## Test that the Required Azure Modules are installed
+        $Result = @()
+        foreach( $RequiredModule in $RequiredModules )
+            { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
+        
+        IF( $Result )
+        {
+            ## Modules have been identified as missing
+            $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+            ##$Result | Foreach { $ErrorMessage += "`n  - $_ "}
+            $ErrorMessage += "    Run the following command to install the missing modules: Import-Module Az`n"
+            
+            Write-Host $ErrorMessage -ForegroundColor Yellow
+            
+            Throw "Unable to run script, missing required PowerShell modules..."
+        }
+
         ## Create Folders for the Parameter and Template folder paths
         $Result = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
         If($Result)
