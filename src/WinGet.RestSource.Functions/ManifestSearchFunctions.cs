@@ -69,7 +69,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);
 
-                unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnSupportedPackageMatchFields);
+                unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnsupportedPackageMatchFields);
                 requiredFields = UnsupportedAndRequiredFieldsHelper.GetRequiredPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.RequiredPackageMatchFields);
             }
             catch (DefaultException e)

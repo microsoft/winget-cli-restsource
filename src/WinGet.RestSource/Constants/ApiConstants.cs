@@ -35,9 +35,9 @@ namespace Microsoft.WinGet.RestSource.Constants
 
         /// <summary>
         /// Unsupported package match fields.
-        /// Note: NormalizedPackageNameAndPublisher field is added here to demonstrate how this property can be used.
+        /// Note: NormalizedPackageNameAndPublisher field support is currently not implemented. There is a GitHub issue for this.
         /// </summary>
-        public static readonly PackageMatchFields UnSupportedPackageMatchFields = new PackageMatchFields()
+        public static readonly PackageMatchFields UnsupportedPackageMatchFields = new PackageMatchFields()
         {
             Enumerations.PackageMatchFields.NormalizedPackageNameAndPublisher,
         };
