@@ -35,7 +35,8 @@ namespace Microsoft.WinGet.RestSource.Constants
 
         /// <summary>
         /// Unsupported package match fields.
-        /// Note: NormalizedPackageNameAndPublisher field support is currently not implemented. There is a GitHub issue for this.
+        /// Note: NormalizedPackageNameAndPublisher field support is currently not implemented.
+        /// GitHub Issue: https://github.com/microsoft/winget-cli-restsource/issues/59.
         /// </summary>
         public static readonly PackageMatchFields UnsupportedPackageMatchFields = new PackageMatchFields()
         {

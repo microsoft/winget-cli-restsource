@@ -23,7 +23,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         {
             if (string.IsNullOrEmpty(ApiConstants.SourceIdentifier))
             {
-                throw new System.ArgumentNullException("SourceIdentifier is not configured.");
+                throw new System.ArgumentNullException("SourceIdentifier environment variable is not configured and needs to be setup.");
             }
 
             this.SourceIdentifier = ApiConstants.SourceIdentifier;
