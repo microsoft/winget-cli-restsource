@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="AgreementLabelValidator.cs" company="Microsoft Corporation">
+// <copyright file="AgreementsIdentifierValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -7,18 +7,18 @@
 namespace Microsoft.WinGet.RestSource.Validators.StringValidators
 {
     /// <summary>
-    /// AgreementLabelValidator.
+    /// AgreementIdentifierValidator.
     /// </summary>
-    public class AgreementLabelValidator : ApiStringValidator
+    public class AgreementsIdentifierValidator : ApiStringValidator
     {
-        private const bool Nullable = true;
-        private const uint Max = 100;
+        private const bool Nullable = false;
+        private const uint Max = 128;
         private const uint Min = 1;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AgreementLabelValidator"/> class.
+        /// Initializes a new instance of the <see cref="AgreementsIdentifierValidator"/> class.
         /// </summary>
-        public AgreementLabelValidator()
+        public AgreementsIdentifierValidator()
         {
             this.AllowNull = Nullable;
             this.MaxLength = Max;
