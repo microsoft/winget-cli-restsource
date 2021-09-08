@@ -11,6 +11,13 @@
         3. Use the Parameter files and ARM Template files to create the Azure resources.
         4. Creates secure keys in the Azure Keyvault.
         5. Publish the Windows Package Manager private repository functions to the Azure Function.
+
+    The following Azure Modules are used by this script:
+        Az.Resources --> Get-AzResourceGroup, New-AzResourceGroup, Get-AzADUser, Test-AzResourceGroupDeployment, New-AzResourceGroupDeployment
+        Az.Accounts  --> Connect-AzAccount, Get-AzContext, Set-AzContext
+        Az.KeyVault  --> Set-AzKeyVaultSecret
+        Az.Websites  --> Publish-AzWebapp
+        Az.Functions --> Get-AzFunctionApp
     
     .PARAMETER ResourcePrefix
     Azure resources will be created with the "ResourcePrefix" prefixed to the name.
@@ -30,6 +37,9 @@
     .PARAMETER WorkingDirectory
     Local file repository that will be referenced by this script. Used to locate the Template files, and identifies where the Parameters will be created (Default: Script Location).
     
+    .PARAMETER ShowConnectionInstructions
+    Outputs to the screen after all Azure objects have been created, the command to add the new private repository to your Windows Package Manager client.
+
     .EXAMPLE
     .\automation.ps1 -ResourcePrefix "contoso-" -Index "Demo" -AzResourceGroup "WinGet_PrivateRepo_Demo"
 
@@ -37,7 +47,7 @@
     .\automation.ps1 -ResourcePrefix "contoso-" -Index "001" -AzResourceGroup "WinGet_PrivateRepo" -AzLocation "westus"
 
     .EXAMPLE
-    .\automation.ps1 -ResourcePrefix "contoso-" -Index "Prod" -AzResourceGroup "WinGet_PrivateRepo_Prod" -AzSubscription "Contoso Global"    
+    .\automation.ps1 -ResourcePrefix "contoso-" -Index "Prod" -AzResourceGroup "WinGet_PrivateRepo_Prod" -AzSubscription "Contoso Global" -ShowConnectionInstructions
 
     .NOTES
     Something
@@ -52,6 +62,26 @@ param(
     [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = $PSScriptRoot
 )
 
+Function Test-RequiredModules
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
+    )
+    Begin
+    {}
+    Process
+    {
+        ## Determinds if the PowerShell Module is missing, If missing Returns the name of the missing module
+        IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
+            { $Result = $RequiredModule }
+    }
+    End
+    {
+        ## Returns a value only if the module is missing
+        Return $Result
+    }
+}
+
 Function New-WinGetRepo
 {
     param(
@@ -60,15 +90,32 @@ Function New-WinGetRepo
         [Parameter(Position=2)] [string]$AzResourceGroup,
         [Parameter(Position=3)] [string]$AzSubscriptionName,
         [Parameter(Position=4)] [string]$AzLocation,
-        [Parameter(Position=5)] [string]$WorkingDirectory = $PSScriptRoot
+        [Parameter(Position=5)] [string]$WorkingDirectory = $PSScriptRoot,
+        [Parameter(Position=6)] [switch]$ShowConnectionInstructions
     )
     Begin
     {
         $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
         $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
+        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
     Process
     {
+        ## Test that the Required Azure Modules are installed
+        $Result = @()
+        foreach( $RequiredModule in $RequiredModules )
+            { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
+        
+        IF( $Result )
+        {
+            ## Modules have been identified as missing
+            $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+            $ErrorMessage += "    Run the following command to install the missing modules: Import-Module Az`n"
+            
+            Write-Host $ErrorMessage -ForegroundColor Yellow
+            Throw "Unable to run script, missing required PowerShell modules..."
+        }
+
         ## Create Folders for the Parameter and Template folder paths
         $Result = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
         If($Result)
@@ -96,6 +143,26 @@ Function New-WinGetRepo
 
         #### Creates Azure Objects with ARM Templates and Parameters ####
         New-ARMObjects -ARMObjects $ARMObjects -WorkingDirectory $WorkingDirectory
+
+        #Creates a spacing between the last step and the next
+        Write-Host "`n"
+
+        ## Shows how to connect local Windows Package Manager Client to newly created private repository
+        IF($ShowConnectionInstructions)
+        {
+            $AzSubscriptionName = $(Get-AzContext).Subscription.Name
+            $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
+            $AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
+            $AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $AzResourceGroup).DefaultHostName
+
+            ## Post script Run Informational:
+            #### Instructions on how to add the repository to your Windows Package Manager Client
+            Write-Host "Use the following command to register the new private repository with your Windows Package Manager Client:" -ForegroundColor Yellow
+            Write-Host "  winget source add -n ""PrivateRepo"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest""" -ForegroundColor Yellow
+
+            #### For more information about how to use the solution, visit the aka.ms link.
+            Write-Host "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"
+        }
     }
     End
     {
@@ -214,7 +281,7 @@ Function New-ARMParameterObject
         $FrontDoorName      = $($ResourcePrefix + "frontdoor" + $Index)             # Name that will be assigned to the Azure Front Door (Currently not created by this script, and not required to use a single instance of the Windows Package Manager private repository).
 
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
-        $AzKVStorageSecretName = "AzStorageAccountKey"                              # The name that will be used to specify the Azure Keyvault Connection string. Do not change.
+        $AzKVStorageSecretName = "AzStorageAccountKey"                              # The name that will be used to specify the Azure Keyvault Connection string. Do not change!
         $AzTenantID            = $(Get-AzContext).Tenant.Id                         # This is the Azure Tenant ID
         $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID     # This is your User Account ID. Permissions are being set to your account to update the KeyVault.
         
@@ -227,7 +294,6 @@ Function New-ARMParameterObject
         ## Creates a PowerShell object array to contain the details of the Parameter files.
         $ARMObjects = @(
             @{  ObjectType = "AppInsight"
-                AzName     = "ContosoAppInsight"
                 ParameterPath  = "$ParameterFolderPath\applicationinsights.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\ApplicationInsights\applicationinsights.json"
                 Error      = ""
@@ -240,7 +306,6 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "Keyvault"
-                AzName     = "ContosoKV"
                 ParameterPath  = "$ParameterFolderPath\keyvault.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\KeyVault\keyvault.json"
                 Error      = ""
@@ -714,25 +779,8 @@ Function New-ARMObjects
     {}
 }
 
-## Incorporates the indexing into the Azure Resource Group Name. Not required.
+## Removes unsupported characters from the Resource Group Name
 $AzResourceGroup = $("$AzResourceGroup$Index").Replace("-","")
-$GenerateString  = $true
 
 ## Script Begins
-$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory
-
-#Creates a spacing between the last step and the next
-Write-Host "`n"
-
-$AzSubscriptionName = $(Get-AzContext).Subscription.Name
-$jsonFunction       = Get-Content -Path $($Result.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
-$AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
-$AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $AzResourceGroup).DefaultHostName
-
-## Post script Run Informational:
-#### Instructions on how to add the repository to your Windows Package Manager Client
-Write-Host "Use the following command to register the new private repository with your Windows Package Manager Client:" -ForegroundColor Yellow
-Write-Host "  winget source add -n ""PrivateRepo"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest""" -ForegroundColor Yellow
-
-#### For more information about how to use the solution, visit the aka.ms link.
-Write-Host "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"
+$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory -ShowConnectionInstructions
