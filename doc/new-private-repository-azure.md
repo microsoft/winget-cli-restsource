@@ -13,7 +13,7 @@ The Windows Package Manager provides a distribution channel for software package
 
 ## Automatically create a private repository
 
-A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private repository.
+A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private repository. The Automation script makes use of Azure cmdlets that are only available if the **Az** PowerShell module has been installed. The Automation script will check for the existance of required modules first, and if they are not present will fail and provide guidance on how to import using `Import-Module Az`.
 
 The `automation.ps1` script has the following parameter inputs:
 | Required | Parameter          | Description                                                                                                                |
@@ -42,8 +42,6 @@ The PowerShell script has been configured to work with `Get-Help` providing furt
 1. When the script completes, it'll display a command that can be used to include the Private repository to your Windows Package Manager client.
 
 ## Manually create a private repository
-
-The following instructions will provide a walkthrough on how to manually create a Windows Package Manager private repository in Azure. Each section will provide you with details pertaining to the specific object being created, and the functionality that it will provide.
 
 The following instructions assumes the following Azure objects are named as follows:
 | Azure Resource          | Value                      |
@@ -88,11 +86,9 @@ For more information on Azure Application Insights, visit their Docs article: [W
 1. In the **Instance Details** enter the following values:
     - Name: contoso-appinsights-demo
     - Region: West US
-    - Resource Mode: Workspace-based
+    - Resource Mode: Classic
 
-1. In the **Worspace Details** enter the following values:
-    - Subscription: "Contoso Azure Subscription"
-    - Log Analytics Workspace: <"Default value">
+1. 
 
 1. Select the **Review + create** button at the bottom of the blade.
 1. Assuming the Validation as passed, select the **Create** button.
@@ -140,10 +136,17 @@ For more information on Azure Storage Accounts, visit their Docs article: [Stora
 1. In the **Network routing** section, ensure that the following has been set:
     - Routing preference: Microsoft network routing
 
+1. Select the **Next : Data protection** button.
+
+1. In the **Recovery** section, ensure that the following has been set:
+	- Enable point-in-time restore for containers: Disable
+	- Enable soft delete for blobs: Disable
+	- Enable soft delete for containers: Disable
+- Enable soft delete for files: Disable
+
 1. Select the **Review and create** button
 1. Assuming the Validation has passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
-
 
 ### App Service plan
 
@@ -214,11 +217,11 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 1. Select the **Next: Networking** button.
 1. In the **Network connectivity** section, ensure that the following values have been set:
-    - Connectivity: Private endpoint
+    - Connectivity: Public endpoint (selected networks)
 
 1. In the **Configure Firewall** section, ensure that the following values have been set:
     - Allow access from Azure Portal: Allow
-    - Allow access from my IP: Deny
+    - Allow access from my IP: Allow
 
 1. Select the **Next: Backup Policy** button.
 1. In the **Backup Policy** section, ensure that the following values have been set:
@@ -235,7 +238,6 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 1. Assuming the Validation has passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
 
-
 #### Azure Cosmos database
 
 A single or multiple Azure Cosmos databases can be created under a specific Azure Cosmos account. The Azure Cosmos Database is analogous to a namespace. 
@@ -247,17 +249,17 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
 1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
 1. Select **contoso-cdba-demo** for the Cosmos DB Account in the list of resources.
-1. Select **Browse** from the left side navigation.
-1. Select **+ Add Collection** at the top of the page.
-1. In the **New Container section, enter the following information:
-    - Database id: 
-        - Create new: Enabled
-        - Name: WinGet
-        - Database throughput(autoscale): Autoscale
-        - Database Max RU/s: 4000
-        - Container id: Manifests
-        - Partition key: /id
+1. Select **Data Explorer** from the left side navigation.
+1. Select the drop-down arrow next to **New Container**
+1. Select **New Database** from the drop-down menu.
+
+1. In the **New Database** panel, enter the following information:
+	Database id:  WinGet
+	Provision throughput: Enable
+	Database Throughput (autoscale): AutoScale
+	Database Max RU/s: 4000
 1. Select the **Ok** button.
+
 
 #### Azure Cosmos container
 
@@ -266,8 +268,21 @@ An Azure Cosmos container is the unit of scalability both for provisioned throug
 For more information on Azure Cosmos containers, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
 
 **How to:**
+1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
+1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
+1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
+1. Select **contoso-cdba-demo** for the Cosmos DB Account in the list of resources.
+1. Select **Data Explorer** from the left side navigation.
+1. Hover over WinGet, and select the ellipses (…).
+1. Select **New Container** from the drop-down menu.
+1. In the **New Container** panel, enter the following information:
+	Database id: Use existing
+	Database id (Value): WinGet
+	Container id: Manifests
+	Partition key: /id
+1. Select the **Ok** button.
 
-N/A
+
 
 ### Azure Key Vault
 
@@ -276,25 +291,6 @@ An Azure Key Vault centralizes the storage of application secrets, allowing you 
 For more information on Azure Key Vault, visit their Docs article: [About Azure Key Vault secrets](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets)
 
 **How to:**
-
-1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
-1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
-1. Select *contoso-cdba-demo* from the list of resources.
-1. Select the **Create 'Items' container** button next to **Step 1**.
-
-#### Azure Key Vault Secrets
-
-Azure Key Vault Secrets provide secure storage of generic secrets, such as passwords and database connection strings. Using the Azure Key Vault previously created, we will create secrets for each of the following:
-
-| Key Vault secret name | Description                                 |
-|-----------------------|---------------------------------------------|
-| AzStorageAccountKey   | Connection string to Azure Storage Account. |
-| CosmosAccountEndpoint | Endpoint                                    |
-| CosmosAccountKey      | The Cosmos Database Account Key.            |
-
-**How to:**
-
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
 1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
@@ -314,12 +310,13 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 1. In the **Recovery options** section, ensure that the following values have been set:
     - Soft-delete: Enabled
     - Days to retain deleted vaults: 90
+    - Purge Protection: Enable purge protection
 
 1. Select the **Next : Access policy** button.
 1. In the  **Access policy** section, esure that the following values have been set:
     - Enable Access to - Azure Virtual Machines for deployment: Enabled
     - Enable Access to - Azure Resource Manager for template deployment: Enabled
-    - Enable Access to - Azure Disk Encryption for volume encryption
+    - Enable Access to - Azure Disk Encryption for volume encryption: Enabled
     - Permission model: Vault access policy
 
 1. Select the **Next : Networking** button.
@@ -329,6 +326,19 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 1. Select the **Review + create** button.
 1. Assuming the Validation has passed, select the **Create** button.
 1. Wait for the deployment to complete.
+
+
+#### Azure Key Vault Secrets
+
+Azure Key Vault Secrets provide secure storage of generic secrets, such as passwords and database connection strings. Using the Azure Key Vault previously created, we will create secrets for each of the following:
+
+| Key Vault secret name | Description                                 |
+|-----------------------|---------------------------------------------|
+| AzStorageAccountKey   | Connection string to Azure Storage Account. |
+| CosmosAccountEndpoint | Endpoint                                    |
+| CosmosAccountKey      | The Cosmos Database Account Key.            |
+
+**How to:**
 
 1. Create the **AzStorageAccountKey** Secret in your Azure Key Vault.
     1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
@@ -421,13 +431,30 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Assuming the Validation has passed, select the **Create** button.
 1. Wait for the deployment to complete before going to the next section.
 
-1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
 1. Select your Resource Group ("*WinGet_PrivateRepo*") from the list.
 1. Select **contoso_function_demo** for the Function from the list of resources.
 1. Select **Identity** from the left side navigation.
 1. In the **Identity** section, set the following:
     - Status: On
+1. Select the **Azure role assignments** button.
+1. Select the **+ Add role assignment** button.
+1. Select the drop-down menu below **Scope** and select **Key Vault** from the list of options.
+1. Select the drop-down menu below **Resource** and select **contoso-keyvault-demo** from the list of options.
+1. Select the drop-down menu below **Role** and select **Reader** from the list of options.
+1. Select the **Save** button.
+
+1. Select **Access policies** from the left side navigation.
+1. Select the **+ Add Access Policy** link.
+1. Select **Get** and **List** for Key permissions, Secret permissions, and Certificate permissions.
+1. Select the **None selected** link next to **Select principal**.
+1. In the search bar, type **contoso_function_demo**.
+1. Select **contoso_function_demo** from the results.
+1. Select the **Select** button.
+1. Select the **Add** button.
+1. Select the **Save** button.
+
+
 
 *The following instructions assumes that your Key Vault name is: ***contoso-keyvault-demo***. If this does not match to your Azure environment, please update the URI's replacing this with the name of your Azure Key Vault.*
 
@@ -442,7 +469,6 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 | WEBSITE_CONTENTSHARE                     | azfun-pkgman3pr-westus-test                                                                                 |
 | WEBSITE_LOAD_CERTIFICATES                | *                                                                                                           |
 | WEBSITE_RUN_FROM_PACKAGE                 | 1                                                                                                           |
-
 
 **Complete the following steps for each item listed in the table above.**
 
@@ -468,4 +494,5 @@ For more information on Azure Functions, visit their Docs article: [Introduction
     PS C:\> Connect-AzAccount -SubscriptionName "Contoso Azure Subscription"
     PS C:\> Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName "WinGet_PrivateRepository" -Name "contoso-function-demo" -Force
     ```
+
 
