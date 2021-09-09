@@ -277,6 +277,7 @@ Function New-ARMParameterObject
         $aspName            = $($ResourcePrefix + "asp" + $Index)                   # Name that will be assigned to the Azure ASP.
         $CDBAccountName     = $($ResourcePrefix + "cdba" + $Index)                  # Name that will be assigned to the Azure Cosmos Database Account.
         $CDBDatabaseName    = $("WinGet")                                           # Name of the Cosmos Database - Value must match the name found in the Compiled Windows Package Manager Functions (CompiledFunctions.zip).
+        $CDBContainerName   = $("Manifests")
         $FunctionName       = $($ResourcePrefix + "function" + $Index)              # Name that will be assigned to the Azure Function.
         $FrontDoorName      = $($ResourcePrefix + "frontdoor" + $Index)             # Name that will be assigned to the Azure Front Door (Currently not created by this script, and not required to use a single instance of the Windows Package Manager private repository).
 
@@ -461,7 +462,7 @@ Function New-ARMParameterObject
                     Parameters = @{
                         cosmosName     = @{ Value = $CDBAccountName }
                         sqlname        = @{ Value = $CDBDatabaseName }
-                        containerName  = @{ value = "Manifests"}
+                        containerName  = @{ value = $CDBContainerName}
                         indexingPolicy = @{ Value = @{
                             IndexingMode  = "consistent"
                             automatic     = $true
