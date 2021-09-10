@@ -236,7 +236,11 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 1. Select the **Review + create** button.
 1. Assuming the Validation has passed, select the **Create** button.
-1. After your deployment has completed, continue to the steps in the next section.
+1. Wait for the deployment to complete.
+1. Select the **Go to Resource** button.
+1. Select **Firewall and virtual networks** from the left side navigation.
+1. Enable the Exceptions rule **Accept connections from within public Azure datacenters** checkbox.
+1. Select the **Save** button.
 
 #### Azure Cosmos database
 
