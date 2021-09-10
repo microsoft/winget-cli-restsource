@@ -9,7 +9,7 @@
             "value": [
                 {
                     "tenantId": "[subscription().tenantId]",
-                    "objectId": "2cd7b9e6-3be0-4685-a2d8-188c6c8a284e",
+                    "objectId": "",
                     "permissions": {
                         "keys": [],
                         "secrets": [
@@ -24,7 +24,7 @@
                 },
                 {
                     "tenantId": "[subscription().tenantId]",
-                    "objectId": "ceb4ee28-252c-4a2d-a251-a095ffb6259f",
+                    "objectId": "",
                     "permissions": {
                         "keys": [],
                         "secrets": [
