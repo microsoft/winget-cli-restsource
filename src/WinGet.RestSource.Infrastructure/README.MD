@@ -7,6 +7,7 @@ These ARM templates are meant to be reusable in order to provide a number of dif
 ## Deploying your private repository
 To simply the creation of a Windows Package Manager private repository, the `automation.ps1` PowerShell script is offered. This script will create new Elements required to host a Windows Package Manager private repository in Azure.
 
+
 The `automation.ps1` script has the following parameter inputs:
 | Required | Parameter          | Description                                                                                                                |
 |----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -26,11 +27,11 @@ For more information on how to manually implement your Windows Package Manager i
 
 ### Elements
 
-#### API Management
+### API Management
 
 This can be placed in front of the function apps to provide AAD authentication or failover-routing.
 
-#### Application Insights
+### Application Insights
 
 This is used for logging and analytics.
 
@@ -44,7 +45,7 @@ This is the Function App that executes on the ASP.
 
 #### Front Door
 
-This can be used to add failover properties to either the Azure Function Runtimes and/or in front of multiple API Mangment instances (to save money over the premium instances).
+This can be used to add failover properties to either the Azure Function Runtimes and/or in front of multiple API Management instances (to save money over the premium instances).
 
 #### Key Vault
 

@@ -17,7 +17,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.WinGet.RestSource.Exceptions;
 
     /// <summary>
-    /// This class retrieves a database, and sets it up if it does not exist.
+    /// This class retrieves a database and sets it up if it does not exist.
     /// </summary>
     public class CosmosDatabase : ICosmosDatabase
     {
