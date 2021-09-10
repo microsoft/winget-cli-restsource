@@ -38,6 +38,7 @@ bld/
 
 # Scripted Generated Parameter files and folder
 src/WinGet.RestSource.Infrastructure/Parameters/
+src/WinGet.RestSource.Infrastructure/*.zip
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
