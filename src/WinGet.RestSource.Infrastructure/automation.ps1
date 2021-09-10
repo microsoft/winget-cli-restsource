@@ -59,7 +59,8 @@ param(
     [Parameter(Position=2, Mandatory=$true)]  [string]$AzResourceGroup,
     [Parameter(Position=3, Mandatory=$false)] [string]$AzSubscriptionName,
     [Parameter(Position=4, Mandatory=$false)] [string]$AzLocation         = "westus",
-    [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = $PSScriptRoot
+    [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = "$($(Get-Item $PSScriptRoot).fullname)\src\WinGet.RestSource.Infrastructure",
+    [Parameter(Position=6, Mandatory=$false)] [string]$ArchiveFunctionZip = "CompiledFunctions.zip"
 )
 
 Function Test-RequiredModules
@@ -91,13 +92,15 @@ Function New-WinGetRepo
         [Parameter(Position=3)] [string]$AzSubscriptionName,
         [Parameter(Position=4)] [string]$AzLocation,
         [Parameter(Position=5)] [string]$WorkingDirectory = $PSScriptRoot,
+        [Parameter(Position=5)] [string]$ArchiveFunctionZip,
         [Parameter(Position=6)] [switch]$ShowConnectionInstructions
     )
     Begin
     {
         $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
         $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
-        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
+        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
+        $ArchiveFunctionZip  = "$WorkingDirectory\$ArchiveFunctionZip"
     }
     Process
     {
@@ -665,14 +668,14 @@ Function New-ARMObjects
 {
     param(
         [Parameter(Position=0)] $ARMObjects,
-        [Parameter(Position=1)] [string] $WorkingDirectory
+        [Parameter(Position=1)] [string] $ArchiveFunctionZip
     )
     Begin
     {
         Write-Host "`n"
 
         ## Path to the compiled Functions compressed into a Zip file for upload to Azure Function
-        $ArchiveFunctionZip = "$WorkingDirectory\CompiledFunctions.zip"
+        #$ArchiveFunctionZip = "$WorkingDirectory\CompiledFunctions.zip"
         
         ## Imports the contents of the Parameter Files for reference and logging purposes:
         $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount"}).ParameterPath) | ConvertFrom-Json
@@ -784,4 +787,4 @@ Function New-ARMObjects
 $AzResourceGroup = $("$AzResourceGroup$Index").Replace("-","")
 
 ## Script Begins
-$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory -ShowConnectionInstructions
+$Result = New-WinGetRepo -ResourcePrefix $ResourcePrefix -Index $Index -AzResourceGroup $AzResourceGroup -AzSubscriptionName $AzSubscriptionName -AzLocation $AzLocation -WorkingDirectory $WorkingDirectory -ArchiveFunctionZip $ArchiveFunctionZip -ShowConnectionInstructions
