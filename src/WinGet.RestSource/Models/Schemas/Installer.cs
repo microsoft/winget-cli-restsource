@@ -6,6 +6,7 @@
 
 namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Constants;
@@ -166,6 +167,49 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         public RestrictedCapabilities RestrictedCapabilities { get; set; }
 
         /// <summary>
+        /// Gets or sets MSStoreProductIdentifier.
+        /// </summary>
+        [MSStoreProductIdentifierValidator]
+        public string MSStoreProductIdentifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether InstallerAbortsTerminal is set.
+        /// This indicates if the package aborts the terminal during installation.
+        /// </summary>
+        public bool InstallerAbortsTerminal { get; set; }
+
+        /// <summary>
+        /// Gets or sets ReleaseDate.
+        /// </summary>
+        [ReleaseDateValidator]
+        public DateTime ReleaseDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the installer requires an install location provided.
+        /// </summary>
+        public bool InstallLocationRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the installer requires explicit upgrade.
+        /// </summary>
+        public bool RequireExplicitUpgrade { get; set; }
+
+        /// <summary>
+        /// Gets or sets UnsupportedOSArchitectures.
+        /// </summary>
+        public UnsupportedOSArchitectures UnsupportedOSArchitectures { get; set; }
+
+        /// <summary>
+        /// Gets or sets AppsAndFeaturesEntries.
+        /// </summary>
+        public AppsAndFeaturesEntries AppsAndFeaturesEntries { get; set; }
+
+        /// <summary>
+        /// Gets or sets Markets.
+        /// </summary>
+        public Objects.Markets Markets { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -212,6 +256,14 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.ProductCode = obj.ProductCode;
             this.Capabilities = obj.Capabilities;
             this.RestrictedCapabilities = obj.RestrictedCapabilities;
+            this.MSStoreProductIdentifier = obj.MSStoreProductIdentifier;
+            this.InstallerAbortsTerminal = obj.InstallerAbortsTerminal;
+            this.ReleaseDate = obj.ReleaseDate;
+            this.InstallLocationRequired = obj.InstallLocationRequired;
+            this.RequireExplicitUpgrade = obj.RequireExplicitUpgrade;
+            this.UnsupportedOSArchitectures = obj.UnsupportedOSArchitectures;
+            this.AppsAndFeaturesEntries = obj.AppsAndFeaturesEntries;
+            this.Markets = obj.Markets;
         }
 
         /// <inheritdoc />
@@ -220,10 +272,17 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Create Validation Results
             var results = new List<ValidationResult>();
 
-            // URL Are generally nullable, but not in this instance.
-            if (string.IsNullOrEmpty(this.InstallerUrl))
+            // InstallerUrl and InstallerSHA256 should be specified if InstallerType is not msstore.
+            if (this.InstallerType != "msstore" && (string.IsNullOrEmpty(this.InstallerUrl) || string.IsNullOrEmpty(this.InstallerSha256)))
             {
-                results.Add(new ValidationResult($"{nameof(this.InstallerUrl)} in {validationContext.ObjectType} must not be null."));
+                results.Add(new ValidationResult(
+                    $"{nameof(this.InstallerUrl)} and {nameof(this.InstallerSha256)} in {validationContext.ObjectType} must not be null if Installer type is not msstore."));
+            }
+
+            // InstallerUrl and InstallerSHA256 should be specified if InstallerType is not msstore.
+            if (this.InstallerType == "msstore" && string.IsNullOrEmpty(this.MSStoreProductIdentifier))
+            {
+                results.Add(new ValidationResult($"{nameof(this.MSStoreProductIdentifier)} must not be null if Installer type is msstore."));
             }
 
             // Optional Objects
@@ -277,6 +336,21 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 ApiDataValidator.Validate(this.RestrictedCapabilities, results);
             }
 
+            if (this.UnsupportedOSArchitectures != null)
+            {
+                ApiDataValidator.Validate(this.UnsupportedOSArchitectures, results);
+            }
+
+            if (this.AppsAndFeaturesEntries != null)
+            {
+                ApiDataValidator.Validate(this.AppsAndFeaturesEntries, results);
+            }
+
+            if (this.Markets != null)
+            {
+                ApiDataValidator.Validate(this.Markets, results);
+            }
+
             // Return Results
             return results;
         }
@@ -315,7 +389,15 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                    && Equals(this.PackageFamilyName, other.PackageFamilyName)
                    && Equals(this.ProductCode, other.ProductCode)
                    && Equals(this.Capabilities, other.Capabilities)
-                   && Equals(this.RestrictedCapabilities, other.RestrictedCapabilities);
+                   && Equals(this.RestrictedCapabilities, other.RestrictedCapabilities)
+                   && Equals(this.MSStoreProductIdentifier, other.MSStoreProductIdentifier)
+                   && Equals(this.InstallerAbortsTerminal, other.InstallerAbortsTerminal)
+                   && Equals(this.ReleaseDate, other.ReleaseDate)
+                   && Equals(this.InstallLocationRequired, other.InstallLocationRequired)
+                   && Equals(this.RequireExplicitUpgrade, other.RequireExplicitUpgrade)
+                   && Equals(this.UnsupportedOSArchitectures, other.UnsupportedOSArchitectures)
+                   && Equals(this.AppsAndFeaturesEntries, other.AppsAndFeaturesEntries)
+                   && Equals(this.Markets, other.Markets);
         }
 
         /// <inheritdoc />
@@ -366,6 +448,14 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ProductCode != null ? this.ProductCode.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Capabilities != null ? this.Capabilities.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.RestrictedCapabilities != null ? this.RestrictedCapabilities.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.MSStoreProductIdentifier != null ? this.MSStoreProductIdentifier.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.InstallerAbortsTerminal.GetHashCode();
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseDate != null ? this.ReleaseDate.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.InstallLocationRequired.GetHashCode();
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.RequireExplicitUpgrade.GetHashCode();
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.UnsupportedOSArchitectures != null ? this.UnsupportedOSArchitectures.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.AppsAndFeaturesEntries != null ? this.AppsAndFeaturesEntries.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Markets != null ? this.Markets.GetHashCode() : 0);
                 return hashCode;
             }
         }

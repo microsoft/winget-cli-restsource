@@ -144,17 +144,17 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string LocaleIsNullErrorMessage = "The selected locale contains no locale information.";
 
         /// <summary>
-        /// This is the code for when an version does not contain the selected locale.
+        /// This is the code for when a version does not contain the selected locale.
         /// </summary>
         public const int LocaleDoesNotExistErrorCode = 14;
 
         /// <summary>
-        /// This is the message for when an installer does not contain the selected package.
+        /// This is the message for when a version does not contain the selected locale.
         /// </summary>
         public const string LocaleDoesNotExistErrorMessage = "The locale for the selected version does not exist.";
 
         /// <summary>
-        /// This is the code for when a locales already exists.
+        /// This is the code for when a locale already exists.
         /// </summary>
         public const int LocaleAlreadyExistsErrorCode = 15;
 
@@ -169,7 +169,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const int LocaleDoesNotMatchErrorCode = 16;
 
         /// <summary>
-        /// This is the message for when the locales does not match the document locales.
+        /// This is the message for when the locale does not match the document locales.
         /// </summary>
         public const string LocaleDoesNotMatchErrorMessage = "The document locale does not match resource locale.";
 
@@ -201,7 +201,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// This is the message for when to many continuation tokens are provided.
         /// </summary>
-        public const string ToManyContinuationTokensErrorMessage = "To many continuations were provided by the server.";
+        public const string ToManyContinuationTokensErrorMessage = "To many continuations were provided to the server.";
 
         /// <summary>
         /// This is the code for a resource Conflict.
@@ -232,7 +232,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// This is the message for a failed precondition.
         /// </summary>
         public const string PreconditionFailedErrorMessage =
-            "Operation cannot be performed because one of the specified precondition is not met. " +
+            "Operation cannot be performed because one of the specified preconditions is not met. " +
             "This may have been caused by a resource changing before your request could be processed.";
     }
 }

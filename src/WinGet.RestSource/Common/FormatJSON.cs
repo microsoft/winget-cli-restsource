@@ -11,7 +11,7 @@ namespace Microsoft.WinGet.RestSource.Common
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// cLASS that contains JSON helpers for printing and exporting data.
+    /// Class that contains JSON helpers for printing and exporting data.
     /// </summary>
     public class FormatJSON
     {

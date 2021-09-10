@@ -120,6 +120,23 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets ReleaseNotes.
+        /// </summary>
+        [ReleaseNotesValidator]
+        public string ReleaseNotes { get; set; }
+
+        /// <summary>
+        /// Gets or sets ReleaseNotesUrl.
+        /// </summary>
+        [UrlValidator]
+        public string ReleaseNotesUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets Agreements.
+        /// </summary>
+        public Agreements Agreements { get; set; }
+
+        /// <summary>
         /// Gets or sets Tags.
         /// </summary>
         public Tags Tags { get; set; }
@@ -164,6 +181,9 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.ShortDescription = obj.ShortDescription;
             this.Description = obj.Description;
             this.Tags = obj.Tags;
+            this.ReleaseNotes = obj.ReleaseNotes;
+            this.ReleaseNotesUrl = obj.ReleaseNotesUrl;
+            this.Agreements = obj.Agreements;
         }
 
         /// <inheritdoc />
@@ -175,6 +195,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             if (this.Tags != null)
             {
                 ApiDataValidator.Validate(this.Tags, results);
+            }
+
+            if (this.Agreements != null)
+            {
+                ApiDataValidator.Validate(this.Agreements, results);
             }
 
             // Return Results
@@ -208,7 +233,10 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                    && Equals(this.CopyrightUrl, other.CopyrightUrl)
                    && Equals(this.ShortDescription, other.ShortDescription)
                    && Equals(this.Description, other.Description)
-                   && Equals(this.Tags, other.Tags);
+                   && Equals(this.Tags, other.Tags)
+                   && Equals(this.ReleaseNotes, other.ReleaseNotes)
+                   && Equals(this.ReleaseNotesUrl, other.ReleaseNotesUrl)
+                   && Equals(this.Agreements, other.Agreements);
         }
 
         /// <inheritdoc />
@@ -252,6 +280,9 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ShortDescription != null ? this.ShortDescription.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Description != null ? this.Description.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Tags != null ? this.Tags.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseNotes != null ? this.ReleaseNotes.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseNotesUrl != null ? this.ReleaseNotesUrl.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Agreements != null ? this.Agreements.GetHashCode() : 0);
                 return hashCode;
             }
         }
