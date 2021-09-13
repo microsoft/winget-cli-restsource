@@ -1,7 +1,7 @@
 # Windows Package Manager Repository
 
 ## Create a new private repository in Azure
-To simply the creation of a Windows Package Manager private repository, the `automation.ps1` [PowerShell script](Tools/Automation.ps1) is offered. This script will create new Elements required to host a Windows Package Manager private repository in Azure.
+To simplify the creation of a Windows Package Manager private source, the `automation.ps1` [PowerShell script](Tools/Automation.ps1) is offered. This script will create new resources required to host a Windows Package Manager private source in Azure.
 
 The `automation.ps1` script has the following parameter inputs:
 | Required | Parameter          | Description                                                                                                                |
