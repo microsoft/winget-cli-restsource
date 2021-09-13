@@ -59,7 +59,7 @@ param(
     [Parameter(Position=2, Mandatory=$true)]  [string]$AzResourceGroup,
     [Parameter(Position=3, Mandatory=$false)] [string]$AzSubscriptionName,
     [Parameter(Position=4, Mandatory=$false)] [string]$AzLocation         = "westus",
-    [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = "$($(Get-Item $PSScriptRoot).fullname)\src\WinGet.RestSource.Infrastructure",
+    [Parameter(Position=5, Mandatory=$false)] [string]$WorkingDirectory   = "$($(Get-Item $PSScriptRoot).fullname)\..\src\WinGet.RestSource.Infrastructure",
     [Parameter(Position=6, Mandatory=$false)] [string]$ArchiveFunctionZip = "CompiledFunctions.zip"
 )
 
@@ -145,7 +145,7 @@ Function New-WinGetRepo
             { Throw "ARM Template and Parameter testing failed" }
 
         #### Creates Azure Objects with ARM Templates and Parameters ####
-        New-ARMObjects -ARMObjects $ARMObjects -WorkingDirectory $WorkingDirectory
+        New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "$WorkingDirectory\CompiledFunctions.zip" -AzResourceGroup $AzResourceGroup
 
         #Creates a spacing between the last step and the next
         Write-Host "`n"
@@ -668,7 +668,8 @@ Function New-ARMObjects
 {
     param(
         [Parameter(Position=0)] $ARMObjects,
-        [Parameter(Position=1)] [string] $ArchiveFunctionZip
+        [Parameter(Position=1)] [string] $ArchiveFunctionZip,
+        [Parameter(Position=2)] [string] $AzResourceGroup
     )
     Begin
     {
