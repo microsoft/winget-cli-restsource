@@ -221,7 +221,8 @@ foreach( $RequiredModule in $RequiredModules )
 If($Result)
 {
     ## Modules have been identified as missing
-    $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+    $ErrorMessage = "`n`nThere are missing PowerShell modules that must be installed.`n"
+    $ErrorMessage += "    Some of all PowerShell functions included in this library will not work until all required PowerShell modules have been installed`n"
     $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
     
     Write-Host $ErrorMessage -ForegroundColor Yellow
