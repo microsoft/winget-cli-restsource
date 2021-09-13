@@ -1,4 +1,73 @@
 
+class ARMObject
+{
+    [ValidateSet("AppInsight", "Keyvault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")]
+    [ValidateNotNullOrEmpty()][string] $ObjectType
+    [ValidateNotNullOrEmpty()][string] $ParameterPath
+    [ValidateNotNullOrEmpty()][string] $TemplatePath
+    $Parameters = @{
+        '$Schema' = "1.0.0.0"
+        contentVersion = "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
+        Parameters = @{}
+    }
+
+    ARMObject ([System.Collections.Hashtable]$Var)
+    {
+        $this.ObjectType    = $Var.ObjectType
+        $this.ParameterPath = $Var.ParameterPath
+        $this.TemplatePath  = $Var.TemplatePath
+        $this.Parameters.contentVersion = $Var.TemplatePath.contentVersion
+        $this.Parameters.Parameters     = $Var.TemplatePath.Parameters
+        IF($null -ne $Var.TemplatePath.'$Schema')
+            { $this.Parameters.'$Schema'      = $Var.TemplatePath.'$Schema' }
+        IF($null -ne $Var.TemplatePath.contentVersion)
+            { $this.Parameters.contentVersion = $Var.TemplatePath.contentVersion }
+        IF($null -ne $Var.TemplatePath.Parameters)
+            { $this.Parameters.Parameters     = $Var.TemplatePath.Parameters }
+    }
+    ARMObject ([string] $a, [string] $b, [string] $c)
+    {
+        $this.ObjectType    = $a
+        $this.ParameterPath = $b
+        $this.TemplatePath  = $c
+    }
+    ARMObject ([string] $a, [string] $b, [string] $c, $d)
+    {
+        $this.ObjectType    = $a
+        $this.ParameterPath = $b
+        $this.TemplatePath  = $c
+        $this.Parameters    = $d
+    }
+    [boolean]TestParameterPath()
+    {
+        Return Test-Path -Path $this.ParameterPath
+    }
+    [boolean]TestTemplatePath()
+    {
+        Return Test-Path -Path $this.TemplatePath
+    }
+}
+
+Function Test-RequiredModules
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
+    )
+    Begin
+    {}
+    Process
+    {
+        ## Determinds if the PowerShell Module is missing, If missing Returns the name of the missing module
+        IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
+            { $Result = $RequiredModule }
+    }
+    End
+    {
+        ## Returns a value only if the module is missing
+        Return $Result
+    }
+}
+
 
 Function New-WinGetManifest
 {
@@ -8,6 +77,12 @@ Function New-WinGetManifest
     
     .DESCRIPTION
     By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager Private Repository, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
+        
+    The following Azure Modules are used by this script:
+        Az.Resources --> Invoke-AzResourceAction
+        Az.Accounts  --> Connect-AzAccount, Get-AzContext
+        Az.Websites  --> Get-AzWebapp
+        Az.Functions --> Get-AzFunctionApp
     
     .PARAMETER PrivateRepoName
     Name of the Windows Package Manager Private repository. Can be identified by running: "winget source list" and using the Repository Name
@@ -46,6 +121,23 @@ Function New-WinGetManifest
     )
     Begin
     {
+        ## List of the required Azure modules.
+        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+        $Result = @()
+        foreach( $RequiredModule in $RequiredModules )
+            { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
+        
+        ## If a module is determined to be missing, throw an error
+        If($Result)
+        {
+            ## Modules have been identified as missing
+            $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+            $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
+            
+            Write-Host $ErrorMessage -ForegroundColor Yellow
+            Throw "Unable to run script, missing required PowerShell modules"
+        }
+
         ## Identifies if PowerShell session is currently connected to Azure.
         $Result = Get-AzContext
 
@@ -58,9 +150,15 @@ Function New-WinGetManifest
             If($AzureSubscriptionName)
                 { Connect-AzAccount }
             else 
-                { Connect-AzAccount -Subscription $AzureSubscriptionName }
+                { Connect-AzAccount -SubscriptionName $AzureSubscriptionName }
+
+            ## If the connection fails, or the user cancels the login request, then throw an error.
+            $Result = Get-AzContext
+            If($null -eq $Result)
+                { Throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." }
         }
 
+        ## Determines the PowerShell Parameter Set that was used in the call of this Function.
         switch ($PsCmdlet.ParameterSetName) {
             "WinGet" { 
                 ## Sets variables as if the Windows Package Manager was Private Repo Name was specified.
@@ -110,4 +208,21 @@ Function New-WinGetManifest
         Return $Response
     }
 
+}
+
+
+## Validates that the required Azure Modules are present when the script is imported.
+$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+$Result = @()
+foreach( $RequiredModule in $RequiredModules )
+    { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
+
+## If a module is determined to be missing, throw an error
+If($Result)
+{
+    ## Modules have been identified as missing
+    $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+    $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
+    
+    Write-Host $ErrorMessage -ForegroundColor Yellow
 }
