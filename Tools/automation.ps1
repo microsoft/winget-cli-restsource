@@ -113,7 +113,7 @@ Function New-WinGetRepo
         {
             ## Modules have been identified as missing
             $ErrorMessage = "`n`nMissing required PowerShell modules`n"
-            $ErrorMessage += "    Run the following command to install the missing modules: Import-Module Az`n"
+            $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
             
             Write-Host $ErrorMessage -ForegroundColor Yellow
             Throw "Unable to run script, missing required PowerShell modules..."
