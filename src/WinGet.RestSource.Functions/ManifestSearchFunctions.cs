@@ -20,6 +20,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Models;
+    using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Schemas;
     using Microsoft.WinGet.RestSource.Validators;
 
@@ -55,7 +56,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Dictionary<string, string> headers = null;
             ManifestSearchRequest manifestSearch = null;
             ApiDataPage<ManifestSearchResponse> manifestSearchResponse = new ApiDataPage<ManifestSearchResponse>();
-
+            PackageMatchFields unsupportedFields;
+            PackageMatchFields requiredFields;
             try
             {
                 // Parse Headers
@@ -66,6 +68,9 @@ namespace Microsoft.WinGet.RestSource.Functions
                 ApiDataValidator.Validate(manifestSearch);
 
                 manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);
+
+                unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnsupportedPackageMatchFields);
+                requiredFields = UnsupportedAndRequiredFieldsHelper.GetRequiredPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.RequiredPackageMatchFields);
             }
             catch (DefaultException e)
             {
@@ -78,11 +83,11 @@ namespace Microsoft.WinGet.RestSource.Functions
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return manifestSearchResponse.Items.Count() switch
+            return new ApiObjectResult(new SearchApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items?.ToList(), manifestSearchResponse.ContinuationToken)
             {
-                0 => new NoContentResult(),
-                _ => new ApiObjectResult(new ApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items.ToList(), manifestSearchResponse.ContinuationToken)),
-            };
+                UnsupportedPackageMatchFields = unsupportedFields,
+                RequiredPackageMatchFields = requiredFields,
+            });
         }
     }
 }

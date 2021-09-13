@@ -26,6 +26,7 @@ namespace Microsoft.WinGet.RestSource.Validators.EnumValidators
             "wix",
             "burn",
             "pwa",
+            "msstore",
         };
 
         /// <summary>

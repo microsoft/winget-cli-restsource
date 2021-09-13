@@ -11,6 +11,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     /// </summary>
     public class InstallerSha256Validator : ApiStringValidator
     {
+        private const bool Nullable = true;
         private const string Pattern = "^[A-Fa-f0-9]{64}$";
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         /// </summary>
         public InstallerSha256Validator()
         {
+            this.AllowNull = Nullable;
             this.MatchPattern = Pattern;
         }
     }
