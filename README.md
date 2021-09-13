@@ -11,7 +11,7 @@ The `automation.ps1` script has the following parameter inputs:
 | Yes      | AzResourceGroup    | The Resource Group that will be used to contain the Azure resources.                                                       |
 | No       | AzSubscriptionName | The name of the Azure Subscription that will be used to pay for the Azure resources.                                       |
 | No       | AzLocation         | The Azure location where the Azure resources will be created. (Default: westus)                                            |
-| No       | WorkingDirectory   | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created. |
+| No       | WorkingDirectory   | The folder location that contains the ARM template files, as well as where the Azure Parameter files will be created. |
 
 For more information on how to manually implement your Windows Package Manager in Azure, please visit our Docs.
 
