@@ -7,7 +7,7 @@ The `automation.ps1` script has the following parameter inputs:
 | Required | Parameter          | Description                                                                                                                |
 |----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|
 | Yes      | ResourcePrefix     | A string of letters which will be prefixed to your newly created Azure resources.                                          |
-| Yes      | Index              | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                |
+| Yes      | Index              | A string of letters or numbers which will be suffixed to your newly created Azure resources.                                |
 | Yes      | AzResourceGroup    | The Resource Group that will be used to contain the Azure resources.                                                       |
 | No       | AzSubscriptionName | The name of the Azure Subscription that will be used to pay for the Azure resources.                                       |
 | No       | AzLocation         | The Azure location where the Azure resources will be created. (Default: westus)                                            |
