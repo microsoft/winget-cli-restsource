@@ -4,7 +4,7 @@ Function New-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Submits Manifest files to the Azure Private REpository
+    Submits Manifest files to the Azure Private Repository
     
     .DESCRIPTION
     By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager Private Repository, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
