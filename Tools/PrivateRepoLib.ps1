@@ -57,7 +57,7 @@ Function Test-RequiredModules
     {}
     Process
     {
-        ## Determinds if the PowerShell Module is missing, If missing Returns the name of the missing module
+        ## Determines if the PowerShell Module is missing, If missing Returns the name of the missing module
         IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
             { $Result = $RequiredModule }
     }
@@ -117,7 +117,7 @@ Function New-WinGetManifest
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="WinGet")] [string]$PrivateRepoName,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")]  [string]$AzureFunctionName,
         [Parameter(Position=1, Mandatory=$true)]  [string]$ManifestFilePath,
-        [Parameter(Position=2, Mandatory=$false)] [string]$AzureSubscriptionName
+        [Parameter(Position=2, Mandatory=$false)] [string]$AzureSubscriptionName = ""
     )
     Begin
     {
@@ -131,8 +131,8 @@ Function New-WinGetManifest
         If($Result)
         {
             ## Modules have been identified as missing
-            $ErrorMessage = "`n`nMissing required PowerShell modules`n"
-            $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
+            $ErrorMessage = "`nMissing required PowerShell modules`n"
+            $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n`n"
             
             Write-Host $ErrorMessage -ForegroundColor Yellow
             Throw "Unable to run script, missing required PowerShell modules"
@@ -147,7 +147,7 @@ Function New-WinGetManifest
             Write-Host "Not connected to Azure, please connect to your Azure Subscription"
             
             ## Determines that a connection to Azure is neccessary, and if a Subscription Name was provided, connect to that Subscription
-            If($AzureSubscriptionName)
+            If($AzureSubscriptionName -eq "")
                 { Connect-AzAccount }
             else 
                 { Connect-AzAccount -SubscriptionName $AzureSubscriptionName }
@@ -221,9 +221,9 @@ foreach( $RequiredModule in $RequiredModules )
 If($Result)
 {
     ## Modules have been identified as missing
-    $ErrorMessage = "`n`nThere are missing PowerShell modules that must be installed.`n"
-    $ErrorMessage += "    Some of all PowerShell functions included in this library will not work until all required PowerShell modules have been installed`n"
-    $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n"
+    $ErrorMessage = "`nThere are missing PowerShell modules that must be installed.`n"
+    $ErrorMessage += "    Some or all PowerShell functions included in this library will fail.`n"
+    $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az -Force`n`n"
     
     Write-Host $ErrorMessage -ForegroundColor Yellow
 }
