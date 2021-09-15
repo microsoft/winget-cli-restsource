@@ -1,19 +1,19 @@
 ---
-Description: Details how to create a Windows Package Manager private repository.
-title: Windows Package Manager private repository
+Description: Details how to create a Windows Package Manager private source.
+title: Windows Package Manager private source
 ms.date: 08/30/2021
 ms.topic: article
-keywords: windows, package manager, windows package manager, private repo, private repository
+keywords: windows, package manager, windows package manager, private repo, private source
 ms.localizationpriority: medium
 ---
 
-# Windows Package Mananger private repository
+# Windows Package Mananger private source
 
 The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a private respository that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
 
-## Automatically create a private repository
+## Automatically create a private source
 
-A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private repository. The Automation script makes use of Azure cmdlets that are only available if the **Az** PowerShell module has been installed. The Automation script will check for the existance of required modules first, and if they are not present will fail and provide guidance on how to import using `Import-Module Az`.
+A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private source. The Automation script makes use of Azure cmdlets that are only available if the **Az** PowerShell module has been installed. The Automation script will check for the existance of required modules first, and if they are not present will fail and provide guidance on how to import using `Import-Module Az`.
 
 The `automation.ps1` script has the following parameter inputs:
 | Required | Parameter          | Description                                                                                                                |
@@ -39,9 +39,25 @@ The PowerShell script has been configured to work with `Get-Help` providing furt
     PS C:\> C:\Projects\winget-cli-restsource\src\WinGet.RestSource.Infrastructure\automation.ps1 -ResourcePrefix "contoso" -Index "demo" -AzResourceGroup "WinGet_PrivateRepository"
     ```
 
-1. When the script completes, it'll display a command that can be used to include the Private repository to your Windows Package Manager client.
+1. When the script completes, it'll display a command that can be used to include the private source to your Windows Package Manager client.
 
-## Manually create a private repository
+
+## Automatically add manifests to the private source
+
+After a Windows Package Manager private source has been setup, the next step is to add application manifests to it. 
+
+**How to:**
+
+1. Open an administrative PowerShell Window
+1. Run the following command: `Set-ExecutionPolicy Unrestricted`
+1. Load the Function library into memory by running the following `. C:\Projects\winget-cli-restsource\Tools\PrivateRepoLib.ps1`
+1. Run the following command to add the new manifest: `New-WinGetManifest -PrivateRepoName "PrivateRepo" -ManifestFilePath "C:\Temp\App.json"`
+
+> ![note]
+> For more information on how to use the `New-WinGetManifest` PowerShell function run `Get-Help New-WinGetManifest -Full` after loading the `PrivateRepoLib.ps1` script library into memory.
+
+
+## Manually create a private source
 
 The following instructions assumes the following Azure objects are named as follows:
 | Azure Resource          | Value                      |
@@ -55,7 +71,7 @@ The following instructions assumes the following Azure objects are named as foll
 
 ### Extract the Windows Package Manager Rest Source
 
-The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager private repository.
+The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager private source.
 
 **How to:**
 
@@ -66,7 +82,7 @@ The Windows Package Manager Rest Source contains the APIs required to provide a 
 
 ### Application Insights
 
-Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights is will be used to monitor the health of the Windows Package Manager private repository, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
+Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights is will be used to monitor the health of the Windows Package Manager private source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
 
 For more information on Azure Application Insights, visit their Docs article: [What is Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
 
@@ -150,7 +166,7 @@ For more information on Azure Storage Accounts, visit their Docs article: [Stora
 
 ### App Service plan
 
-An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager private repository will operate within this Azure App Service plan allowing it to scale to the demand.
+An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager private source will operate within this Azure App Service plan allowing it to scale to the demand.
 
 For more information on App Service plans, visit their Docs article: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
@@ -398,7 +414,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 ### Azure Function
 
-An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager private repository, responding to rest api requests.
+An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager private source, responding to rest api requests.
 
 For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 
@@ -498,5 +514,4 @@ For more information on Azure Functions, visit their Docs article: [Introduction
     PS C:\> Connect-AzAccount -SubscriptionName "Contoso Azure Subscription"
     PS C:\> Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName "WinGet_PrivateRepository" -Name "contoso-function-demo" -Force
     ```
-
 
