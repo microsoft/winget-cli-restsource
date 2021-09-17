@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="InstallerSuccessCodes.cs" company="Microsoft Corporation">
+// <copyright file="ExpectedReturnCodes.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -11,29 +11,22 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
     using Microsoft.WinGet.RestSource.Models.Core;
 
     /// <summary>
-    /// InstallerSuccessCodes.
+    /// List of ExpectedReturnCode.
     /// </summary>
-    public class InstallerSuccessCodes : ApiArray<int>
+    public class ExpectedReturnCodes : ApiArray<Objects.ExpectedReturnCode>
     {
-        /// <summary>
-        /// Maximum value of installer return code.
-        /// </summary>
-        public const int MaximumValue = 429496725;
-
         private const bool Nullable = true;
         private const bool Unique = true;
-        private const bool MemberValidation = false;
-        private const uint Max = 16;
+        private const uint Max = 128;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstallerSuccessCodes"/> class.
+        /// Initializes a new instance of the <see cref="ExpectedReturnCodes"/> class.
         /// </summary>
-        public InstallerSuccessCodes()
+        public ExpectedReturnCodes()
         {
-            this.APIArrayName = nameof(InstallerSuccessCodes);
+            this.APIArrayName = nameof(ExpectedReturnCodes);
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
-            this.ValidateMembers = MemberValidation;
             this.MaxItems = Max;
         }
 
@@ -45,18 +38,18 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             // Check Base
             results.AddRange(base.Validate(validationContext));
 
-            // Not Zero
-            if (this.Contains(0))
-            {
-                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer success code of 0."));
-            }
+            Dictionary<int, string> keyValuePairs = new Dictionary<int, string>();
 
-            // Check upper bound
+            // Check for duplicate installer return codes.
             foreach (var code in this)
             {
-                if (code > MaximumValue)
+                if (!keyValuePairs.ContainsKey(code.InstallerReturnCode))
                 {
-                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} contains {code} code greater than allowable limit of 429496725."));
+                    keyValuePairs.Add(code.InstallerReturnCode, code.ReturnResponse);
+                }
+                else
+                {
+                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} contains duplicate code {code.InstallerReturnCode}."));
                 }
             }
 

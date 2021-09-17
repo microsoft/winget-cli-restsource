@@ -14,6 +14,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Models.Objects;
     using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Validators.DateTimeValidators;
     using Microsoft.WinGet.RestSource.Validators.EnumValidators;
     using Microsoft.WinGet.RestSource.Validators.StringValidators;
     using Capabilities = Microsoft.WinGet.RestSource.Models.Arrays.Capabilities;
@@ -119,6 +120,11 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         public InstallerSuccessCodes InstallerSuccessCodes { get; set; }
 
         /// <summary>
+        /// Gets or sets ExpectedReturnCodes.
+        /// </summary>
+        public ExpectedReturnCodes ExpectedReturnCodes { get; set; }
+
+        /// <summary>
         /// Gets or sets UpgradeBehavior.
         /// </summary>
         [UpgradeBehaviorValidator]
@@ -195,6 +201,12 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         public bool RequireExplicitUpgrade { get; set; }
 
         /// <summary>
+        /// Gets or sets the installer's elevation requirement.
+        /// </summary>
+        [ElevationRequirementValidator]
+        public string ElevationRequirement { get; set; }
+
+        /// <summary>
         /// Gets or sets UnsupportedOSArchitectures.
         /// </summary>
         public UnsupportedOSArchitectures UnsupportedOSArchitectures { get; set; }
@@ -247,6 +259,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.InstallModes = obj.InstallModes;
             this.InstallerSwitches = obj.InstallerSwitches;
             this.InstallerSuccessCodes = obj.InstallerSuccessCodes;
+            this.ExpectedReturnCodes = obj.ExpectedReturnCodes;
             this.UpgradeBehavior = obj.UpgradeBehavior;
             this.Commands = obj.Commands;
             this.Protocols = obj.Protocols;
@@ -261,6 +274,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             this.ReleaseDate = obj.ReleaseDate;
             this.InstallLocationRequired = obj.InstallLocationRequired;
             this.RequireExplicitUpgrade = obj.RequireExplicitUpgrade;
+            this.ElevationRequirement = obj.ElevationRequirement;
             this.UnsupportedOSArchitectures = obj.UnsupportedOSArchitectures;
             this.AppsAndFeaturesEntries = obj.AppsAndFeaturesEntries;
             this.Markets = obj.Markets;
@@ -303,7 +317,12 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
             if (this.InstallerSuccessCodes != null)
             {
-                ApiDataValidator.Validate(this.InstallerSwitches, results);
+                ApiDataValidator.Validate(this.InstallerSuccessCodes, results);
+            }
+
+            if (this.ExpectedReturnCodes != null)
+            {
+                ApiDataValidator.Validate(this.ExpectedReturnCodes, results);
             }
 
             if (this.Commands != null)
@@ -381,6 +400,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                    && Equals(this.InstallModes, other.InstallModes)
                    && Equals(this.InstallerSwitches, other.InstallerSwitches)
                    && Equals(this.InstallerSuccessCodes, other.InstallerSuccessCodes)
+                   && Equals(this.ExpectedReturnCodes, other.ExpectedReturnCodes)
                    && Equals(this.UpgradeBehavior, other.UpgradeBehavior)
                    && Equals(this.Commands, other.Commands)
                    && Equals(this.Protocols, other.Protocols)
@@ -395,6 +415,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                    && Equals(this.ReleaseDate, other.ReleaseDate)
                    && Equals(this.InstallLocationRequired, other.InstallLocationRequired)
                    && Equals(this.RequireExplicitUpgrade, other.RequireExplicitUpgrade)
+                   && Equals(this.ElevationRequirement, other.ElevationRequirement)
                    && Equals(this.UnsupportedOSArchitectures, other.UnsupportedOSArchitectures)
                    && Equals(this.AppsAndFeaturesEntries, other.AppsAndFeaturesEntries)
                    && Equals(this.Markets, other.Markets);
@@ -439,6 +460,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallModes != null ? this.InstallModes.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerSwitches != null ? this.InstallerSwitches.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerSuccessCodes != null ? this.InstallerSuccessCodes.GetHashCode() : 0);
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ExpectedReturnCodes != null ? this.ExpectedReturnCodes.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.UpgradeBehavior != null ? this.UpgradeBehavior.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Commands != null ? this.Commands.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Protocols != null ? this.Protocols.GetHashCode() : 0);
@@ -453,6 +475,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseDate != null ? this.ReleaseDate.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.InstallLocationRequired.GetHashCode();
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.RequireExplicitUpgrade.GetHashCode();
+                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.ElevationRequirement.GetHashCode();
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.UnsupportedOSArchitectures != null ? this.UnsupportedOSArchitectures.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.AppsAndFeaturesEntries != null ? this.AppsAndFeaturesEntries.GetHashCode() : 0);
                 hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Markets != null ? this.Markets.GetHashCode() : 0);
