@@ -13,12 +13,17 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
     /// <summary>
     /// InstallerSuccessCodes.
     /// </summary>
-    public class InstallerSuccessCodes : ApiArray<int>
+    public class InstallerSuccessCodes : ApiArray<long>
     {
         /// <summary>
         /// Maximum value of installer return code.
         /// </summary>
-        public const int MaximumValue = 429496725;
+        public const long MaximumValue = 4294967295;
+
+        /// <summary>
+        /// Minimum value of installer return code.
+        /// </summary>
+        public const long MinimumValue = -2147483648;
 
         private const bool Nullable = true;
         private const bool Unique = true;
@@ -51,12 +56,13 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
                 results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer success code of 0."));
             }
 
-            // Check upper bound
+            // Check bounds
             foreach (var code in this)
             {
-                if (code > MaximumValue)
+                if (code > MaximumValue || code < MinimumValue)
                 {
-                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} contains {code} code greater than allowable limit of 429496725."));
+                    results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} contains {code} code " +
+                        $"is out of allowable bounds [{InstallerSuccessCodes.MinimumValue}, {InstallerSuccessCodes.MaximumValue}]."));
                 }
             }
 
