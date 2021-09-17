@@ -4,10 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Validators.StringValidators
+namespace Microsoft.WinGet.RestSource.Validators.DateTimeValidators
 {
-    using Microsoft.WinGet.RestSource.Validators.DateTimeValidators;
-
     /// <summary>
     /// ReleaseDateValidator.
     /// </summary>

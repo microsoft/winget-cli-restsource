@@ -867,6 +867,14 @@ components:
           minLength: 1
           maxLength: 2048
 
+    InstallerReturnCode:
+      description: An exit code that can be returned by the installer after execution
+      type: integer
+      not:
+        enum: [0]
+      minimum : -2147483648
+      maximum : 429496725
+
     InstallerSuccessCodes:
       description: List of supported installer modes
       type: array
@@ -874,9 +882,48 @@ components:
       uniqueItems: true
       maxItems: 16
       items:
-        type: integer
-        not:
-          enum: [ 0 ]
+        $ref: '#/components/schemas/InstallerReturnCode'
+          
+    ExpectedReturnCodes:
+      description: Installer exit codes for common errors. Should contain unique installer return codes.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 128
+      items:
+        $ref: '#/components/schemas/ExpectedReturnCode'
+    
+    ExpectedReturnCodeResponse:
+      description: Installer expected return code response.
+      type: string
+      enum:
+        - packageInUse
+        - installInProgress
+        - fileInUse
+        - missingDependency
+        - diskFull
+        - insufficientMemory
+        - noNetwork
+        - contactSupport
+        - rebootRequiredToFinish
+        - rebootRequiredForInstall
+        - rebootInitiated
+        - cancelledByUser
+        - alreadyInstalled
+        - downgrade
+        - blockedByPolicy
+        
+    ExpectedReturnCode:
+      description: Installer exit code for a common error.
+      type: object
+      properties:
+        InstallerReturnCode:
+          $ref: '#/components/schemas/InstallerReturnCode'
+        ReturnResponse:
+          $ref: '#/components/schemas/ExpectedReturnCodeResponse'
+      required:
+        - InstallerReturnCode
+        - ReturnResponse
 
     UpgradeBehavior:
       description: The upgrade method
@@ -1082,6 +1129,15 @@ components:
       description: Indicates whether the installer should be pinned by default from upgrade.
       type: boolean
 
+    ElevationRequirement:
+      description: The installer's elevation requirement.
+      type: string
+      nullable: true
+      enum:
+        - elevationRequired
+        - elevationProhibited
+        - elevatesSelf
+
     UnsupportedOSArchitectures:
       description: List of OS architectures the installer does not support.
       type: array
@@ -1203,6 +1259,8 @@ components:
           $ref: '#/components/schemas/InstallerSwitches'
         InstallerSuccessCodes:
           $ref: '#/components/schemas/InstallerSuccessCodes'
+        ExpectedReturnCodes:
+          $ref: '#/components/schemas/ExpectedReturnCodes'
         UpgradeBehavior:
           $ref: '#/components/schemas/UpgradeBehavior'
         Commands:
@@ -1231,6 +1289,8 @@ components:
           $ref: '#/components/schemas/InstallLocationRequired'
         RequireExplicitUpgrade:
           $ref: '#/components/schemas/RequireExplicitUpgrade'
+        ElevationRequirement:
+          $ref: '#/components/schemas/ElevationRequirement'
         UnsupportedOSArchitectures:
           $ref: '#/components/schemas/UnsupportedOSArchitectures'
         AppsAndFeaturesEntries:
