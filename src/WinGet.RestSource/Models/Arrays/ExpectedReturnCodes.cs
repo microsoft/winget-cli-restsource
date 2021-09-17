@@ -38,7 +38,7 @@ namespace Microsoft.WinGet.RestSource.Models.Arrays
             // Check Base
             results.AddRange(base.Validate(validationContext));
 
-            Dictionary<int, string> keyValuePairs = new Dictionary<int, string>();
+            Dictionary<long, string> keyValuePairs = new Dictionary<long, string>();
 
             // Check for duplicate installer return codes.
             foreach (var code in this)

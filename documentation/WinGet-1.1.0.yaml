@@ -873,7 +873,7 @@ components:
       not:
         enum: [0]
       minimum : -2147483648
-      maximum : 429496725
+      maximum : 4294967295
 
     InstallerSuccessCodes:
       description: List of supported installer modes

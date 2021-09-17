@@ -37,7 +37,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <summary>
         /// Gets or sets InstallerReturnCode.
         /// </summary>
-        public int InstallerReturnCode { get; set; }
+        public long InstallerReturnCode { get; set; }
 
         /// <summary>
         /// Gets or sets ReturnResponse.
@@ -88,10 +88,11 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
                 results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer return code of 0."));
             }
 
-            // Check upper bound
-            if (this.InstallerReturnCode > InstallerSuccessCodes.MaximumValue)
+            // Check bounds
+            if (this.InstallerReturnCode > InstallerSuccessCodes.MaximumValue || this.InstallerReturnCode < InstallerSuccessCodes.MinimumValue)
             {
-                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer return code of value greater than 429496725."));
+                results.Add(new ValidationResult($"{validationContext.DisplayName} in {validationContext.ObjectType} may not contain an installer return" +
+                    $" code that is out of allowable bounds [{InstallerSuccessCodes.MinimumValue}, {InstallerSuccessCodes.MaximumValue}]."));
             }
 
             return results;
