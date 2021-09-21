@@ -107,9 +107,6 @@ Function New-WinGetManifest
 
     .EXAMPLE
     New-WinGetManifest AzureFunctionName "contoso-function-prod" -ManifestFilePath "C:\Temp\App.json" -AzureSubscriptionName "Subscription"
-
-    .NOTES
-    General notes
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
