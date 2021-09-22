@@ -1,3 +1,20 @@
+<#
+Created On: 2021-09-22
+Created By: Roy MacLachlan
+
+Description:
+This library can be dot loaded into memory allowing for access to pre-created functions enabling an
+easier Windows Package Manager private source manifest experience. The functions in this file support
+Adding a new Manifest to your Windows Package Manager private source in Azure.
+
+After dot loading this file, it'll complete a validation check to ensure you have the required Azure
+manifests installed. If any manifest is missing, instructions on how to install will be displayed to
+the screen.
+
+Example:
+To dot load this file into memory:
+. .\PrivateRepoLib.ps1
+#>
 
 class ARMObject
 {
@@ -194,10 +211,6 @@ Function New-WinGetManifest
         $FunctionKey = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
         $AzFunctionURL = "https://" + $DefaultHostName + "/api/" + "packageManifests" + "?code=" + $FunctionKey
         
-        
-
-        #Write-Host "`n`nInvoke-RestMethod ""$AzFunctionURL"" `n`t-Headers $apiHeader `n`t-Method ""$apiMethod"" `n`t-Body ""$ApplicationManifest"" `n`t-ContentType ""$apiContentType"""
-
         $Response = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest -ContentType $apiContentType
     }
     End

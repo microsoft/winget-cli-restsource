@@ -30,6 +30,8 @@
     
     .PARAMETER AzSubscriptionName
     Azure Subscription that will have the Azure Resource Group and Azure resources created in (optional).
+        - If not specified, the default Subscription will be used. (https://docs.microsoft.com/en-us/azure/azure-portal/set-preferences)
+        - If specified, then the specified Azure Subscription will be used.
     
     .PARAMETER AzLocation
     Azure location that will be used for the created resources. (Default: westus)
@@ -63,6 +65,12 @@ param(
 
 Function Test-RequiredModules
 {
+    <#
+        Description:
+        This function will validate that the PowerShell session has the required PowerShell modules installed. Returning a boolean. 
+            - True if the PowerShell session has all required modules installed,
+            - False if the PowerShell session does not have all required modules installed.
+    #>
     Param(
         [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
     )
@@ -83,6 +91,15 @@ Function Test-RequiredModules
 
 Function New-WinGetRepo
 {
+    <#
+    Description:
+    This function will leverage all other functions in this script to:
+        - Initiate a connection to Azure
+        - Create the Azure Resource Group
+        - Create Parameter files for all required Azure Resources
+        - Validate the Names and parameter files meet Azure Requirements
+        - Create the Azure resources
+    #>
     param(
         [Parameter(Position=0)] [string]$ResourcePrefix,
         [Parameter(Position=1)] [string]$Index,
@@ -95,10 +112,13 @@ Function New-WinGetRepo
     )
     Begin
     {
-        $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
-        $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
-        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
+        ## Paths to the Parameter and Template folders and the location of the Function Zip
+        $ParameterFolderPath = "$WorkingDirectory\Parameters"
+        $TemplateFolderPath  = "$WorkingDirectory\Templates"
         $ArchiveFunctionZip  = "$WorkingDirectory\$ArchiveFunctionZip"
+
+        ## Outlines the Azure Modules that are required for this Function to work.
+        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
     Process
     {
@@ -176,6 +196,12 @@ Function New-WinGetRepo
 
 Function Connect-Azure
 {
+    <#
+    Description:
+    Initiates a connection to Azure, and returns a Boolean.
+        - True if the connection was successful
+        - False if the connection failed
+    #>
     Param(
         [Parameter(Position=0, Mandatory=$false)] [string]$AzSubscriptionName
     )
@@ -220,6 +246,13 @@ Function Connect-Azure
 
 Function New-AzureResourceGroup
 {
+    <#
+    Description:
+    Checks to see if the designated Resource Group name already exists, and if exists will not re-create. If
+    the Resource Group doesn't exist, it will create a new Resource Group in Azure. If successful, returns a boolean.
+        - True if the group was pre-existing or created successfully.
+        - False if the group failed to be created.
+    #>
     Param(
         [Parameter(Position=1, Mandatory=$true)] [string]$AzResourceGroupName
     )
@@ -265,6 +298,13 @@ Function New-AzureResourceGroup
 
 Function New-ARMParameterObject
 {
+    <#
+    Description:
+    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once
+    created it'll output the parameter files into a *.json file that can be used in combination with with 
+    template files to build Azure resources required for hosting a Windows Package Manager private source.
+    Returns the PowerShell object.
+    #>
     param(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
         [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
@@ -275,20 +315,24 @@ Function New-ARMParameterObject
     Begin
     {
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure AppInsights.
-        $KeyVaultName       = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure Keyvault.
-        $StorageAccountName = $($ResourcePrefix + $Index).Replace("-", "") # Name that will be assigned to the Azure Storage Account. Doesn't support special characters.
-        $aspName            = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure ASP.
-        $CDBAccountName     = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure Cosmos Database Account.
-        $CDBDatabaseName    = $("WinGet")                                  # Name of the Cosmos Database - Value must match the name found in the compiled Windows Package Manager Functions (CompiledFunctions.zip).
-        $CDBContainerName   = $("Manifests")                               # Name of the Cosmos Account Container - Value must match the name found in the compiled Windows Package Manager Functions (CompliedFunctions.xip)
-        $FunctionName       = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure Function.
-        $FrontDoorName      = $($ResourcePrefix + $Index)                  # Name that will be assigned to the Azure Front Door (Currently not created by this script, and not required to use a single instance of the Windows Package Manager private repository).
+        $AppInsightsName    = $($ResourcePrefix + $Index)
+        $KeyVaultName       = $($ResourcePrefix + $Index)
+        $StorageAccountName = $($ResourcePrefix + $Index).Replace("-", "")
+        $aspName            = $($ResourcePrefix + $Index)
+        $CDBAccountName     = $($ResourcePrefix + $Index)
+        $FunctionName       = $($ResourcePrefix + $Index)
+        $FrontDoorName      = $($ResourcePrefix + $Index)
 
+        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled Windows Package Manager Functions [CompiledFunctions.zip])
+        $CDBDatabaseName    = $("WinGet")
+        $CDBContainerName   = $("Manifests")
+        
+        ## The name of the Secret that will be created in the Azure Keyvault - Do not change
+        $AzKVStorageSecretName = "AzStorageAccountKey"
+        
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
-        $AzKVStorageSecretName = "AzStorageAccountKey"                     # The name that will be used to specify the Azure Keyvault Connection string. Do not change!
-        $AzTenantID            = $(Get-AzContext).Tenant.Id                # This is the Azure Tenant ID
-        $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID     # This is your User Account ID. Permissions are being set to your account to update the KeyVault.
+        $AzTenantID            = $(Get-AzContext).Tenant.Id
+        $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
@@ -639,6 +683,14 @@ Function New-ARMParameterObject
 
 Function Test-ARMTemplate
 {
+    <#
+    Description:
+    Validates that the parameter files have been build correctly, matches to the template files, and
+    can be used to build Azure resources. Will also validate that the naming used for the resources
+    is available, and meets requirements. Returns boolean.
+        - True, if the validation testing passes
+        - False, if the validation testing fails.
+    #>
     param(
         [Parameter(Position=0)] $ARMObjects
     )
@@ -694,6 +746,10 @@ Function Test-ARMTemplate
 
 Function Test-ARMResourceName
 {
+    <#
+    Description:
+    Validates that the name of the Azure Resource meets the Azure specified requirements
+    #>
     Param(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Targetted")]
         [ValidateSet("AppInsight", "KeyVault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")][String] $ResourceType,
@@ -889,6 +945,12 @@ Function Test-ARMResourceName
 
 Function New-ARMObjects
 {
+    <#
+    Description:
+    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create
+    Azure resources, and will create the the Key Vault secrets and publish the Windows Package
+    Manager private source rest apis to the Azure Function.
+    #>
     param(
         [Parameter(Position=0)] $ARMObjects,
         [Parameter(Position=1)] [string] $ArchiveFunctionZip,
@@ -907,14 +969,15 @@ Function New-ARMObjects
         $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
         $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
 
-        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value                         # Name of the Azure Keyvault
-        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value     # Name of the Azure Storage Account
-        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value                             # Name of the Azure Cosmos Database Account
+        ## Azure resource names retrieved from the Parameter files.
+        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value
+        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value
+        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value
 
-        ## Azure Keyvault Secret Names
-        $AzStorageAccountKeyName      = "AzStorageAccountKey"       # Do not change
-        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"     # Do not change
-        $CosmosAccountKeyKeyName      = "CosmosAccountKey"          # Do not change
+        ## Azure Keyvault Secret Names - Do not change values
+        $AzStorageAccountKeyName      = "AzStorageAccountKey"
+        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"
+        $CosmosAccountKeyKeyName      = "CosmosAccountKey"
 
         ## Azure Storage Account Connection String Endpoint Suffix
         $AzEndpointSuffix     = "core.windows.net"
@@ -1008,6 +1071,7 @@ Function New-ARMObjects
 }
 
 ## Removes unsupported characters from the Resource Group Name
+Write-Host "Removing hyphens (""-"") from the Azure Resource Group Name."
 $AzResourceGroup = $("$AzResourceGroup$Index").Replace("-","")
 
 ## Script Begins
