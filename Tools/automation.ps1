@@ -166,7 +166,7 @@ Function New-WinGetRepo
         }
 
         #### Creates Azure Objects with ARM Templates and Parameters ####
-        #New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "$WorkingDirectory\CompiledFunctions.zip" -AzResourceGroup $AzResourceGroup
+        New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "$WorkingDirectory\CompiledFunctions.zip" -AzResourceGroup $AzResourceGroup
 
         #Creates a spacing between the last step and the next
         Write-Host "`n"
