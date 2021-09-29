@@ -30,6 +30,8 @@
     
     .PARAMETER AzSubscriptionName
     Azure Subscription that will have the Azure Resource Group and Azure resources created in (optional).
+        - If not specified, the default Subscription will be used. (https://docs.microsoft.com/en-us/azure/azure-portal/set-preferences)
+        - If specified, then the specified Azure Subscription will be used.
     
     .PARAMETER AzLocation
     Azure location that will be used for the created resources. (Default: westus)
@@ -49,13 +51,11 @@
     .EXAMPLE
     .\automation.ps1 -ResourcePrefix "contoso-" -Index "Prod" -AzResourceGroup "WinGet_PrivateRepo_Prod" -AzSubscription "Contoso Global" -ShowConnectionInstructions
 
-    .NOTES
-    Something
     #>
 
 param(
     [Parameter(Position=0, Mandatory=$true)]  [string]$ResourcePrefix,
-    [Parameter(Position=1, Mandatory=$true)]  [string]$Index,
+    [Parameter(Position=1, Mandatory=$false)][AllowNull()][AllowEmptyString()]  [string]$Index,
     [Parameter(Position=2, Mandatory=$true)]  [string]$AzResourceGroup,
     [Parameter(Position=3, Mandatory=$false)] [string]$AzSubscriptionName,
     [Parameter(Position=4, Mandatory=$false)] [string]$AzLocation         = "westus",
@@ -65,6 +65,12 @@ param(
 
 Function Test-RequiredModules
 {
+    <#
+        Description:
+        This function will validate that the PowerShell session has the required PowerShell modules installed. Returning a boolean. 
+            - True if the PowerShell session has all required modules installed,
+            - False if the PowerShell session does not have all required modules installed.
+    #>
     Param(
         [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
     )
@@ -85,6 +91,15 @@ Function Test-RequiredModules
 
 Function New-WinGetRepo
 {
+    <#
+    Description:
+    This function will leverage all other functions in this script to:
+        - Initiate a connection to Azure
+        - Create the Azure Resource Group
+        - Create Parameter files for all required Azure Resources
+        - Validate the Names and parameter files meet Azure Requirements
+        - Create the Azure resources
+    #>
     param(
         [Parameter(Position=0)] [string]$ResourcePrefix,
         [Parameter(Position=1)] [string]$Index,
@@ -97,16 +112,19 @@ Function New-WinGetRepo
     )
     Begin
     {
-        $ParameterFolderPath = "$WorkingDirectory\Parameters"       # Path that will be used to target the Parameter files.
-        $TemplateFolderPath  = "$WorkingDirectory\Templates"        # Path that will be used to target the ARM Template files.
-        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
+        ## Paths to the Parameter and Template folders and the location of the Function Zip
+        $ParameterFolderPath = "$WorkingDirectory\Parameters"
+        $TemplateFolderPath  = "$WorkingDirectory\Templates"
         $ArchiveFunctionZip  = "$WorkingDirectory\$ArchiveFunctionZip"
+
+        ## Outlines the Azure Modules that are required for this Function to work.
+        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
     Process
     {
         ## Test that the Required Azure Modules are installed
         $Result = @()
-        foreach( $RequiredModule in $RequiredModules )
+        ForEach( $RequiredModule in $RequiredModules )
             { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
         
         IF( $Result )
@@ -121,14 +139,14 @@ Function New-WinGetRepo
 
         ## Create Folders for the Parameter and Template folder paths
         $Result = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
-        If($Result)
+        IF($Result)
             { Write-Host "Created Directory to contain the ARM Parameter files ($($Result.FullName))." }
 
         #### Connect to Azure ####
         $Result = Connect-Azure -AzSubscriptionName $AzSubscriptionName
 
         ## If the connection to azure attempt fails.. then exit.
-        If(!$($Result))
+        IF(!$($Result))
             { Throw "Failed to connect to Azure" }
 
         #### Create Resource Group ####
@@ -141,8 +159,11 @@ Function New-WinGetRepo
         $Result = Test-ARMTemplate -ARMObjects $ARMObjects
 
         ## If the attempt fails.. then exit.
-        If($($Result))
-            { Throw "ARM Template and Parameter testing failed" }
+        IF($($Result))
+        { 
+            Write-Host "  ERROR: ARM Template and Parameter testing failed`n" -ForegroundColor Red
+            Return $ARMObjects
+        }
 
         #### Creates Azure Objects with ARM Templates and Parameters ####
         New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "$WorkingDirectory\CompiledFunctions.zip" -AzResourceGroup $AzResourceGroup
@@ -175,12 +196,18 @@ Function New-WinGetRepo
 
 Function Connect-Azure
 {
+    <#
+    Description:
+    Initiates a connection to Azure, and returns a Boolean.
+        - True if the connection was successful
+        - False if the connection failed
+    #>
     Param(
         [Parameter(Position=0, Mandatory=$false)] [string]$AzSubscriptionName
     )
     Begin
     {
-        If($null -eq $AzSubscriptionName)
+        IF($null -eq $AzSubscriptionName)
             { $AzSubscriptionName = "" }
     }
     Process
@@ -192,7 +219,7 @@ Function Connect-Azure
             ## Connects to Azure without a pre-defined Subscription. Uses the default Subscription.
             $Result = Connect-AzAccount -ErrorVariable Azerror -WarningAction SilentlyContinue
         }
-        else 
+        Else 
         {
             ## Connects to Azure with a pre-defined Subscription.
             $Result = Connect-AzAccount -SubscriptionName $AzSubscriptionName -ErrorVariable Azerror -WarningAction SilentlyContinue
@@ -201,7 +228,7 @@ Function Connect-Azure
     End
     {
         ## Verifies connection to Azure was successful.
-        If($Azerror)
+        IF($Azerror)
         { 
             ## Connection to Azure failed.
             Write-Host "  Failed to connect to Azure Environment...`n  $Azerror" -ForegroundColor Red
@@ -219,6 +246,13 @@ Function Connect-Azure
 
 Function New-AzureResourceGroup
 {
+    <#
+    Description:
+    Checks to see if the designated Resource Group name already exists, and if exists will not re-create. If
+    the Resource Group doesn't exist, it will create a new Resource Group in Azure. If successful, returns a boolean.
+        - True if the group was pre-existing or created successfully.
+        - False if the group failed to be created.
+    #>
     Param(
         [Parameter(Position=1, Mandatory=$true)] [string]$AzResourceGroupName
     )
@@ -236,7 +270,7 @@ Function New-AzureResourceGroup
         { 
             ## Resource Group does not already exist, creating a new Resource Group
             Write-Host "Creating Resource Group ($AzResourceGroupName) in the $AzLocation region..."
-            $Result = New-AzResourceGroup -Name $AzResourceGroupName -Location $AzLocation 
+            $Result = New-AzResourceGroup -Name $AzResourceGroupName -Location $AzLocation
         }
     }
     End
@@ -253,7 +287,7 @@ Function New-AzureResourceGroup
             Write-Host "  Resource Group ($AzResourceGroupName) in the $AzLocation region was created successfully"
             Return $true
         }
-        else 
+        Else 
         {
             ## Resource Group failed to be created 
             Write-Host "  Resource Group ($AzResourceGroupName) in the $AzLocation region failed to be created" -ForegroundColor Red 
@@ -264,6 +298,13 @@ Function New-AzureResourceGroup
 
 Function New-ARMParameterObject
 {
+    <#
+    Description:
+    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once
+    created it'll output the parameter files into a *.json file that can be used in combination with with 
+    template files to build Azure resources required for hosting a Windows Package Manager private source.
+    Returns the PowerShell object.
+    #>
     param(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
         [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
@@ -274,20 +315,24 @@ Function New-ARMParameterObject
     Begin
     {
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $($ResourcePrefix + "appinsight" + $Index)            # Name that will be assigned to the Azure AppInsights.
-        $KeyVaultName       = $($ResourcePrefix + "keyvault" + $Index)              # Name that will be assigned to the Azure Keyvault.
-        $StorageAccountName = $($ResourcePrefix + "sa" + $Index).Replace("-", "")   # Name that will be assigned to the Azure Storage Account. Doesn't support special characters.
-        $aspName            = $($ResourcePrefix + "asp" + $Index)                   # Name that will be assigned to the Azure ASP.
-        $CDBAccountName     = $($ResourcePrefix + "cdba" + $Index)                  # Name that will be assigned to the Azure Cosmos Database Account.
-        $CDBDatabaseName    = $("WinGet")                                           # Name of the Cosmos Database - Value must match the name found in the Compiled Windows Package Manager Functions (CompiledFunctions.zip).
-        $CDBContainerName   = $("Manifests")
-        $FunctionName       = $($ResourcePrefix + "function" + $Index)              # Name that will be assigned to the Azure Function.
-        $FrontDoorName      = $($ResourcePrefix + "frontdoor" + $Index)             # Name that will be assigned to the Azure Front Door (Currently not created by this script, and not required to use a single instance of the Windows Package Manager private repository).
+        $AppInsightsName    = $($ResourcePrefix + $Index)
+        $KeyVaultName       = $($ResourcePrefix + $Index)
+        $StorageAccountName = $($ResourcePrefix + $Index).Replace("-", "")
+        $aspName            = $($ResourcePrefix + $Index)
+        $CDBAccountName     = $($ResourcePrefix + $Index)
+        $FunctionName       = $($ResourcePrefix + $Index)
+        $FrontDoorName      = $($ResourcePrefix + $Index)
 
+        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled Windows Package Manager Functions [CompiledFunctions.zip])
+        $CDBDatabaseName    = $("WinGet")
+        $CDBContainerName   = $("Manifests")
+        
+        ## The name of the Secret that will be created in the Azure Keyvault - Do not change
+        $AzKVStorageSecretName = "AzStorageAccountKey"
+        
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
-        $AzKVStorageSecretName = "AzStorageAccountKey"                              # The name that will be used to specify the Azure Keyvault Connection string. Do not change!
-        $AzTenantID            = $(Get-AzContext).Tenant.Id                         # This is the Azure Tenant ID
-        $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID     # This is your User Account ID. Permissions are being set to your account to update the KeyVault.
+        $AzTenantID            = $(Get-AzContext).Tenant.Id
+        $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
@@ -298,6 +343,7 @@ Function New-ARMParameterObject
         ## Creates a PowerShell object array to contain the details of the Parameter files.
         $ARMObjects = @(
             @{  ObjectType = "AppInsight"
+                ObjectName = $AppInsightsName
                 ParameterPath  = "$ParameterFolderPath\applicationinsights.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\ApplicationInsights\applicationinsights.json"
                 Error      = ""
@@ -310,6 +356,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "Keyvault"
+                ObjectName = $KeyVaultName
                 ParameterPath  = "$ParameterFolderPath\keyvault.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\KeyVault\keyvault.json"
                 Error      = ""
@@ -338,6 +385,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "StorageAccount"
+                ObjectName = $StorageAccountName
                 ParameterPath  = "$ParameterFolderPath\storageaccount.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\StorageAccount\storageaccount.json"
                 Error      = ""
@@ -351,6 +399,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "asp"
+                ObjectName = $aspName
                 ParameterPath  = "$ParameterFolderPath\asp.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\AppServicePlan\asp.json"
                 Error      = ""
@@ -366,6 +415,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "CosmosDBAccount"
+                ObjectName = $CDBAccountName
                 ParameterPath  = "$ParameterFolderPath\cosmosdb.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\CosmosDB\cosmosdb.json"
                 Error      = ""
@@ -436,6 +486,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "CosmosDBDatabase"
+                ObjectName = $CDBDatabaseName
                 ParameterPath  = "$ParameterFolderPath\cosmosdb-sql.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\CosmosDB\cosmosdb-sql.json"
                 Error      = ""
@@ -456,6 +507,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "CosmosDBContainer"
+                ObjectName = $CDBContainerName
                 ParameterPath  = "$ParameterFolderPath\cosmosdb-sql-container.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\CosmosDB\cosmosdb-sql-container.json"
                 Error      = ""
@@ -492,6 +544,7 @@ Function New-ARMParameterObject
                 }
             },
             @{  ObjectType = "Function"
+                ObjectName = $FunctionName
                 ParameterPath  = "$ParameterFolderPath\azurefunction.$Index.json"
                 TemplatePath   = "$TemplateFolderPath\AzureFunction\azurefunction.json"
                 Error      = ""
@@ -510,9 +563,10 @@ Function New-ARMParameterObject
                 }
             }#,
             # @{  ObjectType = "FrontDoor"      ## Requires a CName entry be created for the frontend endpoint.
+            #     ObjectName = $FrontDoorName
             #     ParameterPath  = "$ParameterFolderPath\frontdoor.$Index.json"
             #     TemplatePath   = "$TemplateFolderPath\FrontDoor\frontdoor.json"
-            #     Error      = ""
+            #     Error      = "" 
             #     Parameters = @{
             #         '$Schema' = $JSONSchema
             #         contentVersion = $JSONContentVersion
@@ -613,7 +667,7 @@ Function New-ARMParameterObject
         Write-Host "`n`nCreating JSON Parameter files for Azure Object Creation:"
 
         ## Creates each JSON Parameter file inside of a Parameter folder in the working directory
-        foreach ($object in $ARMObjects)
+        ForEach ($object in $ARMObjects)
         {
             ## Converts the structure of the variable to a JSON file.
             Write-Host "  Creating the Parameter file for $($Object.ObjectType) in the following location:`n    $($Object.ParameterPath)"
@@ -629,6 +683,14 @@ Function New-ARMParameterObject
 
 Function Test-ARMTemplate
 {
+    <#
+    Description:
+    Validates that the parameter files have been build correctly, matches to the template files, and
+    can be used to build Azure resources. Will also validate that the naming used for the resources
+    is available, and meets requirements. Returns boolean.
+        - True, if the validation testing passes
+        - False, if the validation testing fails.
+    #>
     param(
         [Parameter(Position=0)] $ARMObjects
     )
@@ -639,21 +701,39 @@ Function Test-ARMTemplate
     Process
     {
         Write-Host "Verifying the ARM Resource Templates and Parameters are valid:"
-        $TestResults = ""
+        $TestResults = @()
 
         ## Parses through all ARM Parameter objects to validate they are properly configured.
-        Foreach($Object in $ARMObjects)
+        ForEach($Object in $ARMObjects)
         {
             ## Validates that each ARM object will work.
             Write-Host "  Validation testing on ARM Resource ($($Object.ObjectType))..."
-            $Result = Test-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
+            $AzResourceResult = Test-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
+            $AzNameResult     = Test-ARMResourceName -ARMObject $Object
 
             ## If the ARM object fails validation, report error to screen.
-            IF($Result -ne "")
+            IF($AzResourceResult -ne "" -or !$AzNameResult)
             { 
                 ## Testing fails.
-                Write-Host "    ERROR:  $Result" -ForegroundColor Red
-                $TestResults += "$($Object.ObjectType):`n$Result`n`n"
+                IF($AzResourceResult -ne "")
+                {
+                    Write-Host "    ERROR:  $AzResourceResult" -ForegroundColor Red
+                    IF($AzNameResult)
+                        { Write-Host "    ERROR:  $($Object.ObjectType) Name is already in use, or there is an error with the Parameter file" -ForegroundColor Red }
+                    Else
+                        { Write-Host "    ERROR:  $($Object.ObjectType) Name does not meet the requirements" -ForegroundColor Red }
+                }
+                ElseIF(!$AzNameResult)
+                {
+                    Write-Host "    ERROR:  $($Object.ObjectType) Name does not meet the requirements." -ForegroundColor Red
+                }
+
+                $TestResult = @{
+                    ObjectType = $Object.ObjectType
+                    ObjectName = $Object.Parameters.Parameters.Name
+                    Result     = $Result
+                }
+                $TestResults += $TestResult
             }
         }
     }
@@ -664,8 +744,213 @@ Function Test-ARMTemplate
     }
 }
 
+Function Test-ARMResourceName
+{
+    <#
+    Description:
+    Validates that the name of the Azure Resource meets the Azure specified requirements
+    #>
+    Param(
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Targetted")]
+        [ValidateSet("AppInsight", "KeyVault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")][String] $ResourceType,
+        [Parameter(Position=1, Mandatory=$true, ParameterSetName="Targetted")][String] $ResourceName,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="SingleObject")] $ARMObject,
+        [Parameter(Position=2, Mandatory=$false)][Switch] $VerboseLogging)
+
+    Begin
+    {
+        ## Allows for a single instance of the ARM Object to be passed in
+        IF($PSCmdlet.ParameterSetName -eq "SingleObject")
+        {
+            ## Sets the required variables based on the ARM Object
+            $ResourceType = $ARMObject.ObjectType
+            $ResourceName = $ARMObject.ObjectName
+        }
+
+        ## Preset output experience
+        $TextColorIfTrue      = "Green"
+        $TextColorIfFalse     = "Red"
+        $TextPaddingRight     = 24
+        $TextPaddingRightChar = " "
+
+        ## Creates an array of values to be compared against
+        $LowerAlphabet  = @("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z")
+        $UpperAlphabet  = @("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
+        $Numbers        = @("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
+        $SpecialChar    = @("!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", "=", "{", "}", "[", "]", ":", ";", """", "'", "<", ",", ">", ".", "?", "/", "|", "\")
+
+        ## Pre-Sets Values to False until proven otherwise
+        $NameContainsHyphen                 = $false
+        $NameContainsUnderscore             = $false
+        $NameContainsConsecutiveHyphen      = $false
+        $NameContainsConsecutiveunderscore  = $false
+        $NameStartsWithLetter               = $false
+        $NameStartsWithNumber               = $false
+        $NameEndsWithLetter                 = $false
+        $NameEndsWithNumber                 = $false
+        $NameContainsLowerCase              = $false
+        $NameContainsUpperCase              = $false
+        $NameContainsNumber                 = $false
+        $NameContainsSpecialChar            = $false
+        $NameLengthInRange                  = $false
+        $NameContainsSpaces                 = $false
+
+        ## Sets the Values accordingly
+        $Result = $False
+        $NameLength = $ResourceName.Length
+        $NameContainsHyphen     = $ResourceName.Contains("-")
+        $NameContainsUnderscore = $ResourceName.Contains("_")
+        $NameContainsSpaces     = $ResourceName.Contains(" ")
+        $NameContainsConsecutiveHyphen     = $ResourceName.Contains("--")
+        $NameContainsConsecutiveunderscore = $ResourceName.Contains("__")
+
+        ## Validates if the name starts with, ends with or contains a number
+        ForEach($Number in $Numbers){IF($ResourceName.StartsWith($Number)){$NameStartsWithNumber = $True}}
+        ForEach($Number in $Numbers){IF($ResourceName.EndsWith($Number))  {$NameEndsWithNumber   = $True}}
+        ForEach($Number in $Numbers){IF($ResourceName.Contains($Number))  {$NameContainsNumber   = $True}}
+
+        ## Validates if the name starts with or ends with a letter
+        ForEach($Letter in $LowerAlphabet){IF($ResourceName.ToLower().StartsWith($Letter)){$NameStartsWithLetter = $True}}
+        ForEach($Letter in $LowerAlphabet){IF($ResourceName.ToLower().EndsWith($Letter))  {$NameEndsWithLetter   = $True}}
+
+        ## Validates that the name contains an upper, lower or special characters
+        ForEach($Letter in $LowerAlphabet){IF($ResourceName.Contains($Letter)){$NameContainsLowerCase   = $True}}
+        ForEach($Letter in $LowerAlphabet){IF($ResourceName.Contains($Letter)){$NameContainsLowerCase   = $True}}
+        ForEach($Char   in $SpecialChar)  {IF($ResourceName.Contains($Char))  {$NameContainsSpecialChar = $True}}
+
+    }
+    Process
+    {
+        IF($VerboseLogging)
+        {
+            ## Writes the value of each test to the screen if VerboseLogging is enabled.
+            ## If the value is true, it is displayed in the color Green
+            Write-Host "`n`n    The $ResourceType named ""$ResourceName"" meets the follow specifications:"
+            Write-Host "      Name Length:            $NameLength"
+            Write-Host "      Hypen:                  " -NoNewline; IF($NameContainsHyphen)               { Write-Host "$NameContainsHyphen" -ForegroundColor $TextColorIfTrue }                Else { Write-Host "$NameContainsHyphen" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Underscore:             " -NoNewline; IF($NameContainsUnderscore)           { Write-Host "$NameContainsUnderscore" -ForegroundColor $TextColorIfTrue }            Else { Write-Host "$NameContainsUnderscore" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      2-Hypens:               " -NoNewline; IF($NameContainsConsecutiveHyphen)    { Write-Host "$NameContainsConsecutiveHyphen" -ForegroundColor $TextColorIfTrue }     Else { Write-Host "$NameContainsConsecutiveHyphen" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      2-Underscore:           " -NoNewline; IF($NameContainsConsecutiveunderscore){ Write-Host "$NameContainsConsecutiveunderscore" -ForegroundColor $TextColorIfTrue } Else { Write-Host "$NameContainsConsecutiveunderscore" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Special Char:           " -NoNewline; IF($NameContainsSpecialChar)          { Write-Host "$NameContainsSpecialChar" -ForegroundColor $TextColorIfTrue }           Else { Write-Host "$NameContainsSpecialChar" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Starts with letter:     " -NoNewline; IF($NameStartsWithLetter)             { Write-Host "$NameStartsWithLetter" -ForegroundColor $TextColorIfTrue }              Else { Write-Host "$NameStartsWithLetter" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Starts with number:     " -NoNewline; IF($NameStartsWithNumber)             { Write-Host "$NameStartsWithNumber" -ForegroundColor $TextColorIfTrue }              Else { Write-Host "$NameStartsWithNumber" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Ends with letter:       " -NoNewline; IF($NameEndsWithLetter)               { Write-Host "$NameEndsWithLetter" -ForegroundColor $TextColorIfTrue }                Else { Write-Host "$NameEndsWithLetter" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Ends with number:       " -NoNewline; IF($NameEndsWithNumber)               { Write-Host "$NameEndsWithNumber" -ForegroundColor $TextColorIfTrue }                Else { Write-Host "$NameEndsWithNumber" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Contains lower case:    " -NoNewline; IF($NameContainsLowerCase)            { Write-Host "$NameContainsLowerCase" -ForegroundColor $TextColorIfTrue }             Else { Write-Host "$NameContainsLowerCase" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Contains upper case:    " -NoNewline; IF($NameContainsUpperCase)            { Write-Host "$NameContainsUpperCase" -ForegroundColor $TextColorIfTrue }             Else { Write-Host "$NameContainsUpperCase" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Contains numbers:       " -NoNewline; IF($NameContainsNumber)               { Write-Host "$NameContainsNumber" -ForegroundColor $TextColorIfTrue }                Else { Write-Host "$NameContainsNumber" -ForegroundColor $TextColorIfFalse }
+            Write-Host "      Contains spaces:        " -NoNewline; IF($NameContainsSpaces)               { Write-Host "$NameContainsSpaces" -ForegroundColor $TextColorIfTrue }                Else { Write-Host "$NameContainsSpaces" -ForegroundColor $TextColorIfFalse }
+            Write-Host "`n"
+        }
+
+        Switch ($ResourceType)
+        {
+            "KeyVault" 
+            { 
+                ## Alphanumerics, and Hyphens, starts with letter, ends with letter or number. Con't contain consecutive hyphens. Length: 3-24
+                IF($($NameLength -ge 3) -and $($NameLength -le 24))
+                    { $NameLengthInRange = $true}
+
+                IF($NameLengthInRange -and !$NameContainsSpecialChar -and !$NameStartsWithNumber -and !$NameContainsConsecutiveHyphen)
+                    { $Result = $true }
+
+                ## Outputs the tests to the screen and their status
+                Write-Host "    Testing the ""$ResourceName"" name meets the follow requirements:"
+                Write-Host "      $("Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar))"     -NoNewline; IF($NameLengthInRange)              { Write-Host "$NameLengthInRange"                 -ForegroundColor $TextColorIfTrue }Else { Write-Host "$NameLengthInRange" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No Special Chars:".PadRight($TextPaddingRight, $TextPaddingRightChar))"       -NoNewline; IF(!$NameContainsSpecialChar)       { Write-Host "$(!$NameContainsSpecialChar)"       -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("Doesn't start with Num:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF(!$NameStartsWithNumber)          { Write-Host "$(!$NameStartsWithNumber)"          -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameStartsWithNumber)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No consecutive hyphens:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF(!$NameContainsConsecutiveHyphen) { Write-Host "$(!$NameContainsConsecutiveHyphen)" -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsConsecutiveHyphen)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      ------------------------------"
+                Write-Host "      $("Validation Result:".PadRight($TextPaddingRight, $TextPaddingRightChar))"      -NoNewline; IF($Result)                         { Write-Host "$Result"                            -ForegroundColor $TextColorIfTrue }Else { Write-Host "$Result" -ForegroundColor $TextColorIfFalse }
+                Write-Host ""
+            }
+            "StorageAccount" 
+            { 
+                ## Alphanumerics, Hyphens, and underscores, Length: 3-60
+                IF($($NameLength -ge 3) -and $($NameLength -le 60))
+                    { $NameLengthInRange = $true}
+
+                IF($NameLengthInRange -and !$NameContainsSpecialChar -and !$NameContainsUpperCase)
+                    { $Result = $true }
+                
+                ## Outputs the tests to the screen and their status
+                Write-Host "    Testing the ""$ResourceName"" name meets the follow requirements:"
+                Write-Host "      $("Name within length:".PadRight($TextPaddingRight, $TextPaddingRightChar))"  -NoNewline; IF($NameLengthInRange)        { Write-Host "$NameLengthInRange"           -ForegroundColor $TextColorIfTrue }Else { Write-Host "$NameLengthInRange" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No special chars:".PadRight($TextPaddingRight, $TextPaddingRightChar))"    -NoNewline; IF(!$NameContainsSpecialChar) { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No upper case chars:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF(!$NameContainsUpperCase)   { Write-Host "$(!$NameContainsUpperCase)"   -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsUpperCase)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No spaces:".PadRight($TextPaddingRight, $TextPaddingRightChar))"           -NoNewline; IF(!$NameContainsSpaces)      { Write-Host "$(!$NameContainsSpaces)"      -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpaces)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("-".PadRight($TextPaddingRight+6, "-"))"
+                Write-Host "      $("Validation Result:".PadRight($TextPaddingRight, $TextPaddingRightChar))"   -NoNewline; IF($Result)                   { Write-Host "$Result"                      -ForegroundColor $TextColorIfTrue }Else { Write-Host "$Result" -ForegroundColor $TextColorIfFalse }
+                Write-Host ""
+            }
+            "asp"
+            {
+                $NameLengthInRange = $true
+
+                IF($NameLengthInRange -and !$NameContainsSpaces)
+                    { $Result = $true }
+
+                ## Outputs the tests to the screen and their status
+                Write-Host "    Testing the ""$ResourceName"" name meets the follow requirements:"
+                Write-Host "      $("No spaces:".PadRight($TextPaddingRight, $TextPaddingRightChar))"         -NoNewline; IF(!$NameContainsSpaces){ Write-Host "$(!$NameContainsSpaces)" -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpaces)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("-".PadRight($TextPaddingRight+6, "-"))"
+                Write-Host "      $("Validation Result:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF($Result)             { Write-Host "$Result"                 -ForegroundColor $TextColorIfTrue }Else { Write-Host "$Result" -ForegroundColor $TextColorIfFalse }
+                Write-Host ""
+            }
+            "Function"
+            { 
+                ## Alphanumerics, Hyphens, and underscores, Length: 3-60
+                IF($($NameLength -ge 3) -and $($NameLength -le 63))
+                    { $NameLengthInRange = $true}
+
+                IF($NameLengthInRange -and !$NameContainsSpecialChar)
+                    { $Result = $true }
+
+                ## Outputs the tests to the screen and their status
+                Write-Host "    Testing the ""$ResourceName"" name meets the follow requirements:"
+                Write-Host "      $("Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF($NameLengthInRange)        { Write-Host "$NameLengthInRange"           -ForegroundColor $TextColorIfTrue }Else { Write-Host "$NameLengthInRange" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No Special Chars:".PadRight($TextPaddingRight, $TextPaddingRightChar))"   -NoNewline; IF(!$NameContainsSpecialChar) { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("-".PadRight($TextPaddingRight+6, "-"))"
+                Write-Host "      $("Validation Result:".PadRight($TextPaddingRight, $TextPaddingRightChar))"  -NoNewline; IF($Result)                   { Write-Host "$Result"                      -ForegroundColor $TextColorIfTrue }Else { Write-Host "$Result" -ForegroundColor $TextColorIfFalse }
+                Write-Host ""
+            }
+            "FrontDoor"
+            { 
+                ## Alphanumerics and hyphens. Start and end with alphanumeric. Length: 5-64
+                IF($($NameLength -ge 5) -and $($NameLength -le 64))
+                    { $NameLengthInRange = $true}
+
+                IF($NameLengthInRange -and !$NameContainsSpecialChar)
+                    { $Result = $true }
+
+                ## Outputs the tests to the screen and their status
+                Write-Host "    Testing the ""$ResourceName"" name meets the follow requirements:"
+                Write-Host "      $("Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar))" -NoNewline; IF($NameLengthInRange)        { Write-Host "$NameLengthInRange"           -ForegroundColor $TextColorIfTrue }Else { Write-Host "$NameLengthInRange" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("No Special Chars:".PadRight($TextPaddingRight, $TextPaddingRightChar))"   -NoNewline; IF(!$NameContainsSpecialChar) { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfTrue }Else { Write-Host "$(!$NameContainsSpecialChar)" -ForegroundColor $TextColorIfFalse }
+                Write-Host "      $("-".PadRight($TextPaddingRight+6, "-"))"
+                Write-Host "      $("Validation Result:".PadRight($TextPaddingRight, $TextPaddingRightChar))"  -NoNewline; IF($Result)                   { Write-Host "$Result"                      -ForegroundColor $TextColorIfTrue }Else { Write-Host "$Result" -ForegroundColor $TextColorIfFalse }
+                Write-Host ""
+            }
+            Default 
+            { 
+                $Result = $true
+            }
+        }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
 Function New-ARMObjects
 {
+    <#
+    Description:
+    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create
+    Azure resources, and will create the the Key Vault secrets and publish the Windows Package
+    Manager private source rest apis to the Azure Function.
+    #>
     param(
         [Parameter(Position=0)] $ARMObjects,
         [Parameter(Position=1)] [string] $ArchiveFunctionZip,
@@ -679,19 +964,20 @@ Function New-ARMObjects
         #$ArchiveFunctionZip = "$WorkingDirectory\CompiledFunctions.zip"
         
         ## Imports the contents of the Parameter Files for reference and logging purposes:
-        $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount"}).ParameterPath) | ConvertFrom-Json
-        $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) | ConvertFrom-Json
-        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
-        $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) | ConvertFrom-Json
+        $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount" }).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
+        $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
+        $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
+        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
 
-        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value                         # Name of the Azure Keyvault
-        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value     # Name of the Azure Storage Account
-        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value                             # Name of the Azure Cosmos Database Account
+        ## Azure resource names retrieved from the Parameter files.
+        $AzKeyVaultName       = $jsonKeyVault.parameters.name.value
+        $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value
+        $CosmosAccountName    = $jsoncdba.Parameters.Name.Value
 
-        ## Azure Keyvault Secret Names
-        $AzStorageAccountKeyName      = "AzStorageAccountKey"       # Do not change
-        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"     # Do not change
-        $CosmosAccountKeyKeyName      = "CosmosAccountKey"          # Do not change
+        ## Azure Keyvault Secret Names - Do not change values
+        $AzStorageAccountKeyName      = "AzStorageAccountKey"
+        $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"
+        $CosmosAccountKeyKeyName      = "CosmosAccountKey"
 
         ## Azure Storage Account Connection String Endpoint Suffix
         $AzEndpointSuffix     = "core.windows.net"
@@ -701,12 +987,12 @@ Function New-ARMObjects
         ## Creates the Azure Resources following the ARM template / parameters
         Write-Host "Creating Azure Resources following ARM Templates..."
         
-        foreach ($Object in $ARMObjects)
+        ForEach ($Object in $ARMObjects)
         {
             Write-Host "  Creating the Azure Object - $($Object.ObjectType)"
     
             ## If the object to be created is an Azure Function, then complete these pre-required steps before creating the Azure Function.
-            If($Object.ObjectType -eq "Function")
+            IF($Object.ObjectType -eq "Function")
             {
                 Write-Host "    Creating KeyVault Secrets:"
 
@@ -743,20 +1029,20 @@ Function New-ARMObjects
             Start-Sleep -Seconds 10
     
             ## Verifies that no error occured when creating the Azure resource
-            If($objerror)
+            IF($objerror)
             {
                 ## Creating the object following the ARM template failed.
                 Write-Host "      Error: Object failed to create.`n      $objerror" -ForegroundColor Red
                 Return
             }
-            else 
+            Else 
             {
                 ## Creating the object was successful
                 Write-Host "      $($Object.ObjectType) was successfully created."
             }
     
-            ## Copy GitHub Functions to newly created Azure Function
-            If($Object.ObjectType -eq "Function")
+            ## Publish GitHub Functions to newly created Azure Function
+            IF($Object.ObjectType -eq "Function")
             {
                 ## Gets the Azure Function Name from the Parameter JSON file contents.
                 $AzFunctionName = $jsonFunction.parameters.functionName.value
@@ -772,7 +1058,7 @@ Function New-ARMObjects
                     Write-Host "    Copying function files to the Azure Function."
                     $Result = Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
                 }
-                else 
+                Else 
                 {
                     ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
                     Write-Host "      File Path not found: $ArchiveFunctionZip" -ForegroundColor Red
@@ -785,6 +1071,7 @@ Function New-ARMObjects
 }
 
 ## Removes unsupported characters from the Resource Group Name
+Write-Host "Removing hyphens (""-"") from the Azure Resource Group Name."
 $AzResourceGroup = $("$AzResourceGroup$Index").Replace("-","")
 
 ## Script Begins
