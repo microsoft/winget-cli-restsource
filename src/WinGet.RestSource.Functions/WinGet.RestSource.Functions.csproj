@@ -7,23 +7,21 @@
         <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1701;1702;NU1701</NoWarn>
+    <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
+  </PropertyGroup>
+  
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <NoWarn>1701;1702;NU1701</NoWarn>
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <NoWarn>1701;1702;NU1701;</NoWarn>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <WarningsAsErrors />
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -48,6 +46,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Update="certificate.pfx">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update="host.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

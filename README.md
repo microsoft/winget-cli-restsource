@@ -1,5 +1,17 @@
+# Welcome to the winget-cli-restsource repository
 
-# Contributing
+## Running locally
+
+The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS.
+
+1. Install the certificate at `src\WinGet.RestSource.Functions\certificate.pfx` to your `Trusted Root Certification Authorities` certificate store. The password is "123".
+2. Copy `src\WinGet.RestSource.Functions\local.settings.template.json` to `local.settings.json` and populate required fields.
+3. Run the `WinGet.RestSource.Functions` project locally in Visual Studio using F5.
+4. Add it as a source in winget with: `winget source add -n "winget-pkgs-restsource" -a https://localhost:7071/api/ -t "Microsoft.Rest"`
+
+Your commands to winget will now use your locally running REST instance as the primary source.
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us

@@ -9,31 +9,25 @@ namespace Microsoft.WinGet.RestSource.Constants
     /// <summary>
     /// This contains the constants for connecting to Cosmos.
     /// </summary>
-    internal class CosmosConnectionConstants
+    public class CosmosConnectionConstants
     {
-        /// <summary>
-        /// Cosmos Database Name.
-        /// </summary>
-        public const string DatabaseName = "WinGet";
-
         /// <summary>
         /// Cosmos Collection Name.
         /// </summary>
         public const string CollectionName = "Manifests";
 
         /// <summary>
-        /// This is the connection string setting for the Document DB.
-        /// This is the environment variable set in settings for the cosmos db connection string.
+        /// Cosmos Database Name setting.
         /// </summary>
-        public const string ConnectionStringSetting = "CosmosDBConnection";
+        public const string DatabaseNameSetting = "CosmosDatabase";
 
         /// <summary>
-        /// This is the Cosmos Account Endpoint.
+        /// This is the Cosmos Account Endpoint setting.
         /// </summary>
         public const string CosmosAccountEndpointSetting = "CosmosAccountEndpoint";
 
         /// <summary>
-        /// This is the Cosmos Account Key.
+        /// This is the Cosmos Account Key setting.
         /// </summary>
         public const string CosmosAccountKeySetting = "CosmosAccountKey";
 

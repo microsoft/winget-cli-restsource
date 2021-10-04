@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WinGet.RestSource.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --useHttps --cert certificate.pfx --password 123"
+    }
+  }
+}
