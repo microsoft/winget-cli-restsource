@@ -125,7 +125,15 @@ Class WinGetManifestFile
     {
         $this.Path     = $a
         $this.Type     = $b
-        $this.Manifest = $c
+
+        switch ($b) {
+            "json" 
+                { $this.Manifest = $($($($($($c -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}") -replace "`t|`n|`r|  ","") }
+            "yaml"
+                {  }
+            Default 
+                { $this.Manifest = $c }
+        }
     }
 
     WinGetManifestFile ([string[]]$a)
@@ -133,6 +141,16 @@ Class WinGetManifestFile
         $this.Path      = $a[0]
         $this.Type      = $a[1]
         $this.Manifest  = $a[2]
+
+        switch ($a[1])
+        {
+            "json" 
+                { $this.Manifest = $($($($($($a[2] -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}") -replace "`t|`n|`r|  ","") }
+            "yaml"
+                {  }
+            Default 
+                { $this.Manifest = $a[2] }
+        }
     }
     
     WinGetManifestFile([WinGetManifestFile]$a)
@@ -250,8 +268,15 @@ Function Run-WinGetCommand
         ## Builds the WinGetSource Object with contents
         foreach ($row in $WinGetSourceListRaw)
         {
+            $TestNotTitles    = $WinGetSourceListRaw[0] -ne $row
+            $TestNotHypenLine = $WinGetSourceListRaw[1] -ne $row -and !$Row.Contains("---")
+            $TestNotNoResults = !$($row -eq "No package found matching input criteria.")
+
+            If(!$TestNotNoResults)
+                { Write-LogEntry -LogEntry "No package found matching input criteria." -Severity 1}
+
             ## If this is the first pass containing titles or the table line, skip.
-            If($WinGetSourceListRaw[0] -ne $row -and $WinGetSourceListRaw[1] -ne $row -and !$Row.Contains("---"))
+            If($TestNotTitles -and $TestNotHypenLine -and $TestNotNoResults)
             {
                 $List = New-Object PSObject
                 [int]     $RowLength    = $Row.Length
@@ -297,14 +322,21 @@ Function Get-WinGetSource
     }
 }
 
-Function Search-WinGetManifests
+Function Search-WinGetManifest
 {
     Param(
-        [Parameter(Position=0, Mandatory=$true)] [string]$ManifestName
+        [Parameter(Position=0, Mandatory=$false)]  [string]$ManifestName,
+        [Parameter(Position=0, Mandatory=$false)] [string]$Source
+
     )
     Begin
     {
-        [string]        $InvokeExpression = "WinGet Search $ManifestName"
+        ## If a Source is provided, then append "-s Source" to the query
+        IF($Source)
+            { [string] $InvokeExpression = "WinGet Search $ManifestName -s $Source" }
+        Else 
+            { [string] $InvokeExpression = "WinGet Search $ManifestName" }
+        
         [WinGetManifest[]]$Result = @()
 
         ## Indexing of titles
@@ -748,7 +780,6 @@ Function Add-WinGetManifestFile
     {
         Return $Response
     }
-
 }
 
 Function Get-WinGetManifestFile
