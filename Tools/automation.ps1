@@ -130,7 +130,7 @@ Function New-WinGetRepo
         IF( $Result )
         {
             ## Modules have been identified as missing
-            $ErrorMessage = "`n`nMissing required PowerShell modules`n"
+            $ErrorMessage = "`n`nWARNING: Missing required PowerShell modules`n"
             $ErrorMessage += "    Run the following command to install the missing modules: Import-Module Az`n"
             
             Write-Host $ErrorMessage -ForegroundColor Yellow
@@ -278,7 +278,7 @@ Function New-AzureResourceGroup
         IF(!$RGerror)
         {
             ## Resource Group already exists, do nothing
-            Write-Host "Resource Group $AzResourceGroupName already exists, will not recreate..." -ForegroundColor Yellow
+            Write-Host "WARNING: Resource Group $AzResourceGroupName already exists, will not recreate..." -ForegroundColor Yellow
             Return $true
         }
         ElseIF(Get-AzResourceGroup -Name $AzResourceGroupName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue -InformationAction SilentlyContinue)
@@ -409,7 +409,7 @@ Function New-ARMParameterObject
                     Parameters = @{
                         aspName         = @{ value = $aspName }
                         location        = @{ value = $AzLocation }
-                        skuCode         = @{ value = "P1V2" }
+                        skuCode         = @{ value = "P1V2" }   ##S1 <-- Cheaper Version ($17/Month)
                         numberOfWorkers = @{ value = "1" }
                     }
                 }
@@ -816,6 +816,7 @@ Function Test-ARMResourceName
         ## Validates that the name contains an upper, lower or special characters
         ForEach($Letter in $LowerAlphabet){IF($ResourceName.Contains($Letter)){$NameContainsLowerCase   = $True}}
         ForEach($Letter in $LowerAlphabet){IF($ResourceName.Contains($Letter)){$NameContainsLowerCase   = $True}}
+        ForEach($Letter in $UpperAlphabet){IF($ResourceName.Contains($Letter)){$NameContainsUpperCase   = $True}}
         ForEach($Char   in $SpecialChar)  {IF($ResourceName.Contains($Char))  {$NameContainsSpecialChar = $True}}
 
     }
@@ -1061,7 +1062,7 @@ Function New-ARMObjects
                 Else 
                 {
                     ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
-                    Write-Host "      File Path not found: $ArchiveFunctionZip" -ForegroundColor Red
+                    Write-Host "      ERROR: File Path not found: $ArchiveFunctionZip" -ForegroundColor Red
                 }
             }
         }

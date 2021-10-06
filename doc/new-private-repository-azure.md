@@ -51,10 +51,10 @@ After a Windows Package Manager private source has been setup, the next step is 
 1. Open an administrative PowerShell Window
 1. Run the following command: `Set-ExecutionPolicy Unrestricted`
 1. Load the Function library into memory by running the following `. C:\Projects\winget-cli-restsource\Tools\PrivateRepoLib.ps1`
-1. Run the following command to add the new manifest: `New-WinGetManifest -PrivateRepoName "PrivateRepo" -ManifestFilePath "C:\Temp\App.json"`
+1. Run the following command to add the new manifest: `Add-WinGetManifest -PrivateRepoName "PrivateRepo" -ManifestFilePath "C:\Temp\App.json"`
 
 > ![note]
-> For more information on how to use the `New-WinGetManifest` PowerShell function run `Get-Help New-WinGetManifest -Full` after loading the `PrivateRepoLib.ps1` script library into memory.
+> For more information on how to use the `Add-WinGetManifest` PowerShell function run `Get-Help Add-WinGetManifest -Full` after loading the `PrivateRepoLib.ps1` script library into memory.
 
 
 ## Manually create a private source
