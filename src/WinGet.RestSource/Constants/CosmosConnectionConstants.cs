@@ -14,7 +14,7 @@ namespace Microsoft.WinGet.RestSource.Constants
         /// <summary>
         /// Cosmos Collection Name.
         /// </summary>
-        public const string CollectionName = "Manifests";
+        public const string CollectionNameSetting = "CosmosCollection";
 
         /// <summary>
         /// Cosmos Database Name setting.

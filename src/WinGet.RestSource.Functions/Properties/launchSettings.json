@@ -2,7 +2,7 @@
   "profiles": {
     "WinGet.RestSource.Functions": {
       "commandName": "Project",
-      "commandLineArgs": "host start --useHttps --cert certificate.pfx --password 123"
+      "commandLineArgs": "host start --useHttps --cert $(ProjectDir)WingetRest_TemporaryKey.pfx --password 12345"
     }
   }
 }

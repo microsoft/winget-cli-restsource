@@ -46,9 +46,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="certificate.pfx">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Update="host.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

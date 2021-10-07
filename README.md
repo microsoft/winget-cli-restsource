@@ -2,9 +2,11 @@
 
 ## Running locally
 
-The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS.
+The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS, this is pre-configured by the `launchSettings.json` file.
 
-1. Install the certificate at `src\WinGet.RestSource.Functions\certificate.pfx` to your `Trusted Root Certification Authorities` certificate store. The password is "123".
+1. In the `src\WinGet.RestSource.Functions` directory, run `generate_self_sign_cert.ps1` in PowerShell.
+   * This will generate a test pfx and install it into the Root store.
+   * It will automatically be used as the HTTPS cert during local execution, thanks to `launchSettings.json`
 2. Copy `src\WinGet.RestSource.Functions\local.settings.template.json` to `local.settings.json` and populate required fields.
 3. Run the `WinGet.RestSource.Functions` project locally in Visual Studio using F5.
 4. Add it as a source in winget with: `winget source add -n "winget-pkgs-restsource" -a https://localhost:7071/api/ -t "Microsoft.Rest"`

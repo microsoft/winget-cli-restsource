@@ -66,7 +66,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 endpoint,
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting),
-                CosmosConnectionConstants.CollectionName);
+                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CollectionNameSetting));
 
             this.cosmosDatabase = database;
             this.log = log;
