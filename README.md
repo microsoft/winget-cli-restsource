@@ -1,5 +1,22 @@
+# Welcome to the winget-cli-restsource repository
 
-# Contributing
+## Running locally
+
+The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS, this is pre-configured by the `launchSettings.json` file.
+
+1. In the `src\WinGet.RestSource.Functions` directory, run `generate_self_sign_cert.ps1` in PowerShell.
+   * This will generate a test pfx and install it into the Root store.
+   * It will automatically be used as the HTTPS cert during local execution, thanks to `launchSettings.json`
+2. Create a CosmosDB database instance in Azure, using either the above instructions, or [manually](https://docs.microsoft.com/en-us/azure/cosmos-db/sql/create-cosmosdb-resources-portal).
+   * Navigate to the Keys section of your CosmosDB instance in the Azure portal to find your connection information.
+   * If you've used the ARM templates as described above, your Database will be named `WinGet` and your Collection will be `Manifests`
+3. Copy `src\WinGet.RestSource.Functions\local.settings.template.json` to `local.settings.json` and populate required fields from the above Keys section.
+4. Run the `WinGet.RestSource.Functions` project locally in Visual Studio using F5.
+5. Add it as a source in winget with: `winget source add -n "winget-pkgs-restsource" -a https://localhost:7071/api/ -t "Microsoft.Rest"`
+
+Your commands to winget will now use your locally running REST instance as the primary source.
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us

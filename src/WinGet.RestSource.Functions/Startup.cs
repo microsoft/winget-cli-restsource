@@ -15,8 +15,8 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
 
     /// <summary>
     /// Azure function startup class.
@@ -42,8 +42,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             CosmosDatabase database = new CosmosDatabase(
                 endpoint,
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
-                Constants.CosmosConnectionConstants.DatabaseName,
-                Constants.CosmosConnectionConstants.CollectionName);
+                Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting),
+                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CollectionNameSetting));
 
             return database;
         }

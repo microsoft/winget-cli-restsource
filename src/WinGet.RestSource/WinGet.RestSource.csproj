@@ -1,50 +1,48 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <AssemblyName>Microsoft.WinGet.RestSource</AssemblyName>
-        <RootNamespace>Microsoft.WinGet.RestSource</RootNamespace>
-        <OutputType>Library</OutputType>
-        <LangVersion>8</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Microsoft.WinGet.RestSource</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.RestSource</RootNamespace>
+    <OutputType>Library</OutputType>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <NoWarn>1701;1702;NU1701</NoWarn>
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.RestSource.Documentation.xml</DocumentationFile>
-    </PropertyGroup>
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1701;1702;NU1701</NoWarn>
+    <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.RestSource.Documentation.xml</DocumentationFile>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <NoWarn>1701;1702;NU1701;</NoWarn>
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.RestSource.Documentation.xml</DocumentationFile>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="LinqKit" Version="1.1.24" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
-        <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LinqKit" Version="1.1.24" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-    </ItemGroup>
+  <ItemGroup>
+    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 
 </Project>
