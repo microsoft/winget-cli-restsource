@@ -103,50 +103,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(Markets other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.AllowedMarkets, other.AllowedMarkets)
-                && Equals(this.ExcludedMarkets, other.ExcludedMarkets);
+            return (this.AllowedMarkets, this.ExcludedMarkets) ==
+                   (other.AllowedMarkets, other.ExcludedMarkets);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((Markets)obj);
+            return obj is Markets markets && this.Equals(markets);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.AllowedMarkets != null ? this.AllowedMarkets.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ExcludedMarkets != null ? this.ExcludedMarkets.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.AllowedMarkets, this.ExcludedMarkets);
         }
     }
 }

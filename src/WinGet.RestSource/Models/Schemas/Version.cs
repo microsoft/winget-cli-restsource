@@ -104,7 +104,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public bool Equals(Version other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -122,34 +122,13 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((Version)obj);
+            return obj is Version version && this.Equals(version);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = this.PackageVersion != null ? this.PackageVersion.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Channel != null ? this.Channel.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.DefaultLocale != null ? this.DefaultLocale.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.PackageVersion, this.Channel, this.DefaultLocale);
         }
     }
 }

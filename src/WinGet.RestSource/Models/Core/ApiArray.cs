@@ -166,36 +166,31 @@ namespace Microsoft.WinGet.RestSource.Models.Core
             return results;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Invalid comparison, present only to satisfy IEquality interface.
+        /// </summary>
+        /// <param name="other">Object to be compared to.</param>
+        /// <returns>Will never return.</returns>
+        /// <exception cref="NotImplementedException">Will always throw.</exception>
         public bool Equals(T other)
         {
-            if (other == null)
-            {
-                return false;
-            }
+            throw new NotImplementedException();
+        }
 
-            return base.Equals(other);
+        /// <summary>
+        /// Compare this to another object which inherits List.
+        /// </summary>
+        /// <param name="other">List object to compare to.</param>
+        /// <returns>True if lists contain same items in same order, false otherwise.</returns>
+        public bool Equals(List<T> other)
+        {
+            return this.SequenceEqual(other);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((ApiArray<T>)obj);
+            return obj is List<T> apiArray && this.Equals(apiArray);
         }
 
         /// <inheritdoc />

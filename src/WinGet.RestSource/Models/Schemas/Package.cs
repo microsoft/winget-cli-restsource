@@ -75,7 +75,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public bool Equals(Package other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -91,28 +91,13 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((Package)obj);
+            return obj is Package package && this.Equals(package);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return this.PackageIdentifier != null ? this.PackageIdentifier.GetHashCode() : 0;
+            return this.PackageIdentifier?.GetHashCode() ?? 0;
         }
     }
 }

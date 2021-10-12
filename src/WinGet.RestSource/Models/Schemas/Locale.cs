@@ -8,7 +8,6 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Validators;
@@ -209,7 +208,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public bool Equals(Locale other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -242,49 +241,32 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((Locale)obj);
+            return obj is Locale locale && this.Equals(locale);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = this.PackageLocale != null ? this.PackageLocale.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Publisher != null ? this.Publisher.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PublisherUrl != null ? this.PublisherUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PublisherSupportUrl != null ? this.PublisherSupportUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PrivacyUrl != null ? this.PrivacyUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Author != null ? this.Author.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageName != null ? this.PackageName.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageUrl != null ? this.PackageUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.License != null ? this.License.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.LicenseUrl != null ? this.LicenseUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Copyright != null ? this.Copyright.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.CopyrightUrl != null ? this.CopyrightUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ShortDescription != null ? this.ShortDescription.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Description != null ? this.Description.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Tags != null ? this.Tags.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseNotes != null ? this.ReleaseNotes.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ReleaseNotesUrl != null ? this.ReleaseNotesUrl.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Agreements != null ? this.Agreements.GetHashCode() : 0);
-                return hashCode;
-            }
+            System.HashCode hash = default;
+            hash.Add(this.PackageLocale);
+            hash.Add(this.Publisher);
+            hash.Add(this.PublisherUrl);
+            hash.Add(this.PublisherSupportUrl);
+            hash.Add(this.PrivacyUrl);
+            hash.Add(this.Author);
+            hash.Add(this.PackageName);
+            hash.Add(this.PackageUrl);
+            hash.Add(this.License);
+            hash.Add(this.LicenseUrl);
+            hash.Add(this.Copyright);
+            hash.Add(this.CopyrightUrl);
+            hash.Add(this.ShortDescription);
+            hash.Add(this.Description);
+            hash.Add(this.Tags);
+            hash.Add(this.ReleaseNotes);
+            hash.Add(this.ReleaseNotesUrl);
+            hash.Add(this.Agreements);
+            return hash.ToHashCode();
         }
     }
 }

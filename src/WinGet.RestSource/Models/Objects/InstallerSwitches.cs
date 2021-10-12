@@ -118,7 +118,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(InstallerSwitches other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -140,38 +140,13 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((InstallerSwitches)obj);
+            return obj is InstallerSwitches installerSwitches && this.Equals(installerSwitches);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.Silent != null ? this.Silent.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.SilentWithProgress != null ? this.SilentWithProgress.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Interactive != null ? this.Interactive.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallLocation != null ? this.InstallLocation.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Log != null ? this.Log.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Upgrade != null ? this.Upgrade.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Custom != null ? this.Custom.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.Silent, this.SilentWithProgress, this.Interactive, this.InstallLocation, this.Log, this.Upgrade, this.Custom);
         }
     }
 }

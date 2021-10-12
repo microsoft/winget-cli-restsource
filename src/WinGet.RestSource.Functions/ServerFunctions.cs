@@ -24,15 +24,11 @@ namespace Microsoft.WinGet.RestSource.Functions
     /// </summary>
     public class ServerFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public ServerFunctions(ICosmosDatabase cosmosDatabase)
+        public ServerFunctions()
         {
-            this.cosmosDatabase = cosmosDatabase;
         }
 
         /// <summary>
@@ -48,7 +44,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Information information = null;
+            Information information;
             try
             {
                 information = new Information();

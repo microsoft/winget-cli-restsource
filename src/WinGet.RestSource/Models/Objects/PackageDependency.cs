@@ -86,47 +86,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(PackageDependency other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.PackageIdentifier, other.PackageIdentifier) && Equals(this.MinimumVersion, other.MinimumVersion);
+            return (this.PackageIdentifier, this.MinimumVersion) ==
+                   (other.PackageIdentifier, other.MinimumVersion);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((PackageDependency)obj);
+            return obj is PackageDependency packageDependency && this.Equals(packageDependency);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((this.PackageIdentifier != null ? this.PackageIdentifier.GetHashCode() : 0) * ApiConstants.HashCodeConstant) ^ (this.MinimumVersion != null ? this.MinimumVersion.GetHashCode() : 0);
-            }
+            return System.HashCode.Combine(this.PackageIdentifier, this.MinimumVersion);
         }
     }
 }

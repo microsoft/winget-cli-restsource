@@ -120,7 +120,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public bool Equals(ManifestSearchRequest other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -140,36 +140,13 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((ManifestSearchRequest)obj);
+            return obj is ManifestSearchRequest manifestSearchRequest && this.Equals(manifestSearchRequest);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = this.MaximumResults;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ this.FetchAllManifests.GetHashCode();
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Query != null ? this.Query.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Inclusions != null ? this.Inclusions.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Filters != null ? this.Filters.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.MaximumResults, this.FetchAllManifests, this.Query, this.Inclusions, this.Filters);
         }
     }
 }

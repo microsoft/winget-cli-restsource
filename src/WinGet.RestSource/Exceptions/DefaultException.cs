@@ -84,24 +84,12 @@ namespace Microsoft.WinGet.RestSource.Exceptions
         public DefaultException(Exception exception)
             : base(exception.Message, exception.InnerException)
         {
-            switch (exception)
+            this.InternalRestError = exception switch
             {
-                case DocumentClientException documentClientException:
-                    this.InternalRestError = ProcessDocumentClientException(documentClientException);
-                    break;
-                case HttpRequestException httpRequestException:
-                    this.InternalRestError = new InternalRestError(
-                        ErrorConstants.HttpRequestExceptionErrorCode,
-                        ErrorConstants.HttpRequestExceptionErrorMessage,
-                        exception);
-                    break;
-                default:
-                    this.InternalRestError = new InternalRestError(
-                        ErrorConstants.UnhandledErrorCode,
-                        ErrorConstants.UnhandledErrorMessage,
-                        exception);
-                    break;
-            }
+                DocumentClientException documentClientException => ProcessDocumentClientException(documentClientException),
+                HttpRequestException _ => new InternalRestError(ErrorConstants.HttpRequestExceptionErrorCode, ErrorConstants.HttpRequestExceptionErrorMessage, exception),
+                _ => new InternalRestError(ErrorConstants.UnhandledErrorCode, ErrorConstants.UnhandledErrorMessage, exception),
+            };
         }
 
         /// <summary>
@@ -127,25 +115,13 @@ namespace Microsoft.WinGet.RestSource.Exceptions
         /// <returns>Internal Rest Error.</returns>
         private static InternalRestError ProcessDocumentClientException(DocumentClientException documentClientException)
         {
-            switch (documentClientException.StatusCode)
+            return documentClientException.StatusCode switch
             {
-                case HttpStatusCode.Conflict:
-                    return new InternalRestError(
-                        ErrorConstants.ResourceConflictErrorCode,
-                        ErrorConstants.ResourceConflictErrorMessage);
-                case HttpStatusCode.NotFound:
-                    return new InternalRestError(
-                        ErrorConstants.ResourceNotFoundErrorCode,
-                        ErrorConstants.ResourceNotFoundErrorMessage);
-                case HttpStatusCode.PreconditionFailed:
-                    return new InternalRestError(
-                        ErrorConstants.PreconditionFailedErrorCode,
-                        ErrorConstants.PreconditionFailedErrorMessage);
-                default:
-                    return new InternalRestError(
-                        ErrorConstants.UnhandledErrorCode,
-                        ErrorConstants.UnhandledErrorMessage);
-            }
+                HttpStatusCode.Conflict => new InternalRestError(ErrorConstants.ResourceConflictErrorCode, ErrorConstants.ResourceConflictErrorMessage),
+                HttpStatusCode.NotFound => new InternalRestError(ErrorConstants.ResourceNotFoundErrorCode, ErrorConstants.ResourceNotFoundErrorMessage),
+                HttpStatusCode.PreconditionFailed => new InternalRestError(ErrorConstants.PreconditionFailedErrorCode, ErrorConstants.PreconditionFailedErrorMessage),
+                _ => new InternalRestError(ErrorConstants.UnhandledErrorCode, ErrorConstants.UnhandledErrorMessage),
+            };
         }
     }
 }

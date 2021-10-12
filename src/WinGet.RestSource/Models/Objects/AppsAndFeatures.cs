@@ -113,7 +113,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(AppsAndFeatures other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -134,37 +134,13 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((AppsAndFeatures)obj);
+            return obj is AppsAndFeatures appsAndFeatures && this.Equals(appsAndFeatures);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.DisplayName != null ? this.DisplayName.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Publisher != null ? this.Publisher.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.DisplayVersion != null ? this.DisplayVersion.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ProductCode != null ? this.ProductCode.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.UpgradeCode != null ? this.UpgradeCode.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.InstallerType != null ? this.InstallerType.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.DisplayName, this.Publisher, this.DisplayVersion, this.ProductCode, this.UpgradeCode, this.InstallerType);
         }
     }
 }

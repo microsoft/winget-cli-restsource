@@ -105,7 +105,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public bool Equals(DefaultLocale other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -121,33 +121,13 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((DefaultLocale)obj);
+            return obj is DefaultLocale defaultLocale && this.Equals(defaultLocale);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Moniker != null ? this.Moniker.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(base.GetHashCode(), this.Moniker);
         }
     }
 }
