@@ -12,7 +12,6 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     public class TagValidator : ApiStringValidator
     {
         private const bool Nullable = true;
-        private const string Pattern = "^\\S+$";
         private const uint Min = 1;
         private const uint Max = 40;
 
@@ -22,7 +21,6 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         public TagValidator()
         {
             this.AllowNull = Nullable;
-            this.MatchPattern = Pattern;
             this.MinLength = Min;
             this.MaxLength = Max;
         }

@@ -109,6 +109,38 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         }
 
         /// <summary>
+        /// Add Version.
+        /// </summary>
+        /// <param name="version">Version to add.</param>
+        public void AddVersion(VersionExtended version)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(version);
+
+            if (this.Versions == null)
+            {
+                this.Versions = new VersionsExtended();
+            }
+
+            this.Versions.Add(version);
+        }
+
+        /// <summary>
+        /// Update a Version.
+        /// </summary>
+        /// <param name="version">Version to Update.</param>
+        public void UpdateVersion(VersionExtended version)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(version);
+
+            // Assert Versions not null
+            this.AssertVersionsNotNull();
+
+            this.Versions.Update(version);
+        }
+
+        /// <summary>
         /// Remove a Version.
         /// </summary>
         /// <param name="packageVersion">Version to Remove.</param>

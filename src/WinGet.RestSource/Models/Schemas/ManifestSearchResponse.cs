@@ -260,9 +260,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             {
                 // Create Consolidation Predicate for search Response..
                 bool MSRConsolidationExpression(ManifestSearchResponse x) =>
-                    Equals(response.PackageIdentifier, x.PackageIdentifier)
-                    && Equals(response.PackageName, x.PackageName)
-                    && Equals(response.Publisher, x.Publisher);
+                    Equals(response.PackageIdentifier, x.PackageIdentifier);
 
                 // If exists in results update otherwise add
                 if (list.Exists(MSRConsolidationExpression))
