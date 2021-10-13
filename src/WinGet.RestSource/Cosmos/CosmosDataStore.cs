@@ -749,77 +749,113 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             return (packageMatchField, requestMatch.MatchType) switch
             {
-                (PackageMatchFields.PackageIdentifier, MatchType.Exact) => manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord),
+                (PackageMatchFields.PackageIdentifier, MatchType.Exact) =>
+                    manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord),
 
-                (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive) => manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower()),
+                (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive) =>
+                    manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower()),
 
-                (PackageMatchFields.PackageIdentifier, MatchType.StartsWith) => manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord),
+                (PackageMatchFields.PackageIdentifier, MatchType.StartsWith) =>
+                    manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord),
 
-                (PackageMatchFields.PackageIdentifier, MatchType.Substring) => manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord),
+                (PackageMatchFields.PackageIdentifier, MatchType.Substring) =>
+                    manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord),
 
-                (PackageMatchFields.PackageName, MatchType.Exact) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord)),
+                (PackageMatchFields.PackageName, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord)),
 
-                (PackageMatchFields.PackageName, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower())),
+                (PackageMatchFields.PackageName, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower())),
 
-                (PackageMatchFields.PackageName, MatchType.StartsWith) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord)),
+                (PackageMatchFields.PackageName, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord)),
 
-                (PackageMatchFields.PackageName, MatchType.Substring) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord)),
+                (PackageMatchFields.PackageName, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord)),
 
-                (PackageMatchFields.Moniker, MatchType.Exact) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord)),
+                (PackageMatchFields.Moniker, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord)),
 
-                (PackageMatchFields.Moniker, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower())),
+                (PackageMatchFields.Moniker, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower())),
 
-                (PackageMatchFields.Moniker, MatchType.StartsWith) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord)),
+                (PackageMatchFields.Moniker, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord)),
 
-                (PackageMatchFields.Moniker, MatchType.Substring) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord)),
+                (PackageMatchFields.Moniker, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord)),
 
-                (PackageMatchFields.Command, MatchType.Exact) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Equals(requestMatch.KeyWord)))),
+                (PackageMatchFields.Command, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Equals(requestMatch.KeyWord)))),
 
-                (PackageMatchFields.Command, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
+                (PackageMatchFields.Command, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
 
-                (PackageMatchFields.Command, MatchType.StartsWith) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord)))),
+                (PackageMatchFields.Command, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord)))),
 
-                (PackageMatchFields.Command, MatchType.Substring) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Contains(requestMatch.KeyWord)))),
+                (PackageMatchFields.Command, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Contains(requestMatch.KeyWord)))),
 
-                (PackageMatchFields.Tag, MatchType.Exact) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))))),
+                (PackageMatchFields.Tag, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))))),
 
-                (PackageMatchFields.Tag, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
+                (PackageMatchFields.Tag, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
 
-                (PackageMatchFields.Tag, MatchType.StartsWith) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))))),
+                (PackageMatchFields.Tag, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))))),
 
-                (PackageMatchFields.Tag, MatchType.Substring) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))))),
+                (PackageMatchFields.Tag, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))))),
 
-                (PackageMatchFields.PackageFamilyName, MatchType.Exact) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Equals(requestMatch.KeyWord))),
+                (PackageMatchFields.PackageFamilyName, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Equals(requestMatch.KeyWord))),
 
-                (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
+                (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
 
-                (PackageMatchFields.PackageFamilyName, MatchType.StartsWith) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.StartsWith(requestMatch.KeyWord))),
+                (PackageMatchFields.PackageFamilyName, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.StartsWith(requestMatch.KeyWord))),
 
-                (PackageMatchFields.PackageFamilyName, MatchType.Substring) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Contains(requestMatch.KeyWord))),
+                (PackageMatchFields.PackageFamilyName, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Contains(requestMatch.KeyWord))),
 
-                (PackageMatchFields.ProductCode, MatchType.Exact) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Equals(requestMatch.KeyWord))),
+                (PackageMatchFields.ProductCode, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Equals(requestMatch.KeyWord))),
 
-                (PackageMatchFields.ProductCode, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
+                (PackageMatchFields.ProductCode, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
 
-                (PackageMatchFields.ProductCode, MatchType.StartsWith) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.StartsWith(requestMatch.KeyWord))),
+                (PackageMatchFields.ProductCode, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.StartsWith(requestMatch.KeyWord))),
 
-                (PackageMatchFields.ProductCode, MatchType.Substring) => manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Contains(requestMatch.KeyWord))),
+                (PackageMatchFields.ProductCode, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Contains(requestMatch.KeyWord))),
 
-                (ShortDescription, MatchType.Exact) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Equals(requestMatch.KeyWord)))),
+                (ShortDescription, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Equals(requestMatch.KeyWord)))),
 
-                (ShortDescription, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
+                (ShortDescription, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
 
-                (ShortDescription, MatchType.StartsWith) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.StartsWith(requestMatch.KeyWord)))),
+                (ShortDescription, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.StartsWith(requestMatch.KeyWord)))),
 
-                (ShortDescription, MatchType.Substring) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Contains(requestMatch.KeyWord)))),
+                (ShortDescription, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Contains(requestMatch.KeyWord)))),
 
-                (PackageMatchFields.Market, MatchType.Exact) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Equals(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Equals(requestMatch.KeyWord))))),
+                (PackageMatchFields.Market, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Equals(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Equals(requestMatch.KeyWord))))),
 
-                (PackageMatchFields.Market, MatchType.CaseInsensitive) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.ToLower().Equals(requestMatch.KeyWord.ToLower())))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
+                (PackageMatchFields.Market, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.ToLower().Equals(requestMatch.KeyWord.ToLower())))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
 
-                (PackageMatchFields.Market, MatchType.StartsWith) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.StartsWith(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.StartsWith(requestMatch.KeyWord))))),
+                (PackageMatchFields.Market, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.StartsWith(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.StartsWith(requestMatch.KeyWord))))),
 
-                (PackageMatchFields.Market, MatchType.Substring) => manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Contains(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Contains(requestMatch.KeyWord))))),
+                (PackageMatchFields.Market, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Contains(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Contains(requestMatch.KeyWord))))),
 
                 _ => throw new InvalidArgumentException(new InternalRestError(ErrorConstants.ValidationFailureErrorCode, ErrorConstants.ValidationFailureErrorMessage)),
             };
