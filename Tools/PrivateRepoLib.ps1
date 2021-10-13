@@ -65,28 +65,603 @@ class ARMObject
     }
 }
 
-Function Test-RequiredModules
+class WinGetSource
+{
+    [string] $Name
+    [string] $Argument
+
+    WinGetSource ()
+    {  }
+
+    WinGetSource ([string]$a, [string]$b)
+    {
+        $this.Name     = $a.TrimEnd()
+        $this.Argument = $b.TrimEnd()
+    }
+
+    WinGetSource ([string[]]$a)
+    {
+        $this.name     = $a[0].TrimEnd()
+        $this.Argument = $a[1].TrimEnd()
+    }
+    
+    WinGetSource ([WinGetSource]$a)
+    {
+        $this.Name     = $a.Name.TrimEnd()
+        $this.Argument = $a.Argument.TrimEnd()
+    }
+    
+    [WinGetSource[]] Add ([WinGetSource]$a)
+    {
+        $FirstValue  = [WinGetSource]::New($this)
+        $SecondValue = [WinGetSource]::New($a)
+        
+        [WinGetSource[]] $Combined = @([WinGetSource]::New($FirstValue), [WinGetSource]::New($SecondValue))
+
+        Return $Combined
+    }
+
+    [WinGetSource[]] Add ([String[]]$a)
+    {
+        $FirstValue  = [WinGetSource]::New($this)
+        $SecondValue = [WinGetSource]::New($a)
+        
+        [WinGetSource[]] $Combined = @([WinGetSource]::New($FirstValue), [WinGetSource]::New($SecondValue))
+
+        Return $Combined
+    }
+}
+
+Class WinGetManifestFile
+{
+    [string]$Path
+    [string]$Type
+    [string]$Manifest
+
+    WinGetManifestFile()
+    {}
+    
+    WinGetManifestFile([string]$a, [string]$b, [string]$c)
+    {
+        $this.Path     = $a
+        $this.Type     = $b
+
+        switch ($b) {
+            "json" 
+                { $this.Manifest = $($($($($($c -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}") -replace "`t|`n|`r|  ","") }
+            "yaml"
+                {  }
+            Default 
+                { $this.Manifest = $c }
+        }
+    }
+
+    WinGetManifestFile ([string[]]$a)
+    {
+        $this.Path      = $a[0]
+        $this.Type      = $a[1]
+        $this.Manifest  = $a[2]
+
+        switch ($a[1])
+        {
+            "json" 
+                { $this.Manifest = $($($($($($a[2] -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}") -replace "`t|`n|`r|  ","") }
+            "yaml"
+                {  }
+            Default 
+                { $this.Manifest = $a[2] }
+        }
+    }
+    
+    WinGetManifestFile([WinGetManifestFile]$a)
+    {
+        $this.Path     = $a.Path
+        $this.Type     = $a.Type
+        $this.Manifest = $a.Manifest
+    }
+}
+
+class WinGetManifest
+{
+    [string]$Name
+    [string]$Id
+    [string]$Version
+    [string]$Source
+
+    WinGetManifest ([string] $a, [string]$b, [string]$c, [string]$d)
+    {
+        $this.Name    = $a.TrimEnd()
+        $this.Id      = $b.TrimEnd()
+        $this.Version = $c.TrimEnd()
+        $this.Source  = $d.TrimEnd()
+    }
+    
+    WinGetManifest ([WinGetManifest] $a)
+    {
+        $this.Name    = $a.Name
+        $this.Id      = $a.Id
+        $this.Version = $a.Version
+        $this.Source  = $a.Source
+    }
+    
+    WinGetSource ([string[]]$a)
+    {
+        $this.name     = $a[0].TrimEnd()
+        $this.Id       = $a[1].TrimEnd()
+        $this.Version  = $a[2].TrimEnd()
+        $this.Source   = $a[3].TrimEnd()
+    }
+
+    
+    [WinGetManifest[]] Add ([WinGetManifest] $a)
+    {
+        $FirstValue  = [WinGetManifest]::New($this)
+        $SecondValue = [WinGetManifest]::New($a)
+
+        [WinGetManifest[]]$Result = @([WinGetManifest]::New($FirstValue), [WinGetManifest]::New($SecondValue))
+
+        Return $Result
+    }
+
+    [WinGetManifest[]] Add ([String[]]$a)
+    {
+        $FirstValue  = [WinGetManifest]::New($this)
+        $SecondValue = [WinGetManifest]::New($a)
+        
+        [WinGetManifest[]] $Combined = @([WinGetManifest]::New($FirstValue), [WinGetManifest]::New($SecondValue))
+
+        Return $Combined
+    }
+}
+
+Function Run-WinGetCommand
 {
     Param(
-        [Parameter(Position=0, Mandatory=$true)] [string]$RequiredModule
+        [Parameter(Position=0, Mandatory=$true)] [string]  $InvokeExpression,
+        [Parameter(Position=0, Mandatory=$true)] [string[]]$IndexTitles
     )
     Begin
-    {}
+    {
+        $Index = @()
+        $i     = 0
+        $IndexTitlesCount = $IndexTitles.Count
+        $Result = @()
+
+        [string[]]$WinGetSourceListRaw    = Invoke-Expression -Command $InvokeExpression
+        
+    }
     Process
     {
-        ## Determines if the PowerShell Module is missing, If missing Returns the name of the missing module
-        IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
-            { $Result = $RequiredModule }
+        ## Gets the indexing of each title
+        foreach ($IndexTitle in $IndexTitles) 
+        {
+            ## Creates an array of titles and their string location
+            $Obj = New-Object PSObject
+            $IndexStart = $WinGetSourceListRaw[0].IndexOf($IndexTitle)
+
+            ## Some WinGet Results return an empty first line.
+            IF($IndexStart -eq "-1")
+                { $IndexStart = $WinGetSourceListRaw[1].IndexOf($IndexTitle) }
+
+            $IndexEnds  = ""
+            
+            Add-Member -InputObject $Obj -MemberType NoteProperty -Name Title -Value $IndexTitle
+            Add-Member -InputObject $Obj -MemberType NoteProperty -Name Start -Value $IndexStart
+            Add-Member -InputObject $Obj -MemberType NoteProperty -Name Ends  -Value $IndexEnds
+
+            $Index += $Obj
+        }
+
+        ## Orders the Object based on Index value
+        $Index = $($Index | Sort-Object Start)
+
+        ## Sets the end of string value
+        While ($i -lt $IndexTitlesCount)
+        {
+            $i += 1
+
+            ## Sets the End of string value (if not null)
+            IF($Index[$i].Start)
+                { $Index[$i-1].Ends = ($Index[$i].Start -1) - $Index[$i-1].Start }
+        }
+
+        ## Builds the WinGetSource Object with contents
+        foreach ($row in $WinGetSourceListRaw)
+        {
+            $TestNotTitles    = $WinGetSourceListRaw[0] -ne $row
+            $TestNotHypenLine = $WinGetSourceListRaw[1] -ne $row -and !$Row.Contains("---")
+            $TestNotNoResults = !$($row -eq "No package found matching input criteria.")
+
+            If(!$TestNotNoResults)
+                { Write-LogEntry -LogEntry "No package found matching input criteria." -Severity 1}
+
+            ## If this is the first pass containing titles or the table line, skip.
+            If($TestNotTitles -and $TestNotHypenLine -and $TestNotNoResults)
+            {
+                $List = New-Object PSObject
+                [int]     $RowLength    = $Row.Length
+
+                Foreach ($item in $Index)
+                {
+                    IF($Item.Ends)
+                        { Add-Member -InputObject $List -MemberType NoteProperty -Name $Item.Title -Value $row.Substring($item.Start, $Item.Ends) }
+                    Else
+                        { Add-Member -InputObject $List -MemberType NoteProperty -Name $Item.Title -Value $row.Substring($item.Start, $RowLength - $item.Start) }
+                }
+
+                $Result += $List
+            }
+        }
     }
     End
     {
-        ## Returns a value only if the module is missing
         Return $Result
     }
 }
 
+Function Get-WinGetSource
+{
+    Begin
+    {
+        [string]        $InvokeExpression = "WinGet Source List"
+        [WinGetSource[]]$Result = @()
 
-Function New-WinGetManifest
+        ## Indexing of titles
+        $IndexTitles      = @("Name", "Argument")
+    }
+    Process
+    {
+        $List = Run-WinGetCommand -InvokeExpression $InvokeExpression -IndexTitles $IndexTitles
+
+        Foreach ($Obj in $List)
+            { $Result += [WinGetSource]::New($Obj.Name, $Obj.Argument) }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Search-WinGetManifest
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$false)]  [string]$ManifestName,
+        [Parameter(Position=0, Mandatory=$false)] [string]$Source
+
+    )
+    Begin
+    {
+        ## If a Source is provided, then append "-s Source" to the query
+        IF($Source)
+            { [string] $InvokeExpression = "WinGet Search $ManifestName -s $Source" }
+        Else 
+            { [string] $InvokeExpression = "WinGet Search $ManifestName" }
+        
+        [WinGetManifest[]]$Result = @()
+
+        ## Indexing of titles
+        $IndexTitles      = @("Name", "Id", "Version", "Source")
+    }
+    Process
+    {
+        $List = Run-WinGetCommand -InvokeExpression $InvokeExpression -IndexTitles $IndexTitles
+
+        Foreach ($Obj in $List)
+            { $Result += [WinGetManifest]::New($Obj.Name, $Obj.Id, $Obj.Version, $Obj.Source) }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Write-LogEntry
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$true)]  [string] $LogEntry,
+        [Parameter(Position=1, Mandatory=$false)] [int]    $Severity=1,
+        [Parameter(Position=2, Mandatory=$false)] [string] $FontColor="",
+        [Parameter(Position=3, Mandatory=$false)] [int]    $Indent = 0,
+        [Parameter(Position=4, Mandatory=$false)] [switch] $NoNewLine
+    )
+    Begin
+    {
+        If($FontColor -eq "")
+        {
+            switch ($Severity) {
+                "1" 
+                {
+                    ## Informational Response
+                    $FontColor     = "White"
+                    $MessagePreFix = ""
+                }
+                "2" 
+                {
+                    ## Warning Response
+                    $FontColor = "Yellow"
+                    $MessagePreFix = "WARNING:  "
+                }
+                "3" 
+                {
+                    ## Error Response
+                    $FontColor = "Red"
+                    $MessagePreFix = "ERROR:    "
+                }
+            }
+        }
+        ## Combines the logging message and the message type as a prefix
+        $LogEntry = $MessagePreFix + $LogEntry
+
+        ## Indents the message when viewed on the screen.
+        $LogIndent = "  "
+        While ($Indent -gt 0)
+        {
+            $LogEntry = $LogIndent + $LogEntry
+            $Indent -= 1
+        }
+    }
+    Process
+    {
+        ## Writes logging to the screen
+        If($NoNewLine)
+            { Write-Host -Object $LogEntry -ForegroundColor $FontColor -NoNewline }
+        else 
+            { Write-Host -Object $LogEntry -ForegroundColor $FontColor }
+    }
+    End
+    {
+        Return
+    }
+}
+
+Function Test-RequiredModules
+{
+    [CmdletBinding(DefaultParameterSetName = 'Multiple')]
+    Param(
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Single")] [string]$RequiredModule,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Multiple")] [string[]]$RequiredModules
+    )
+    Begin
+    { 
+        ## Validation result to be returned is True until proven otherwise.
+        $ValidationStatus = $true
+    }
+    Process
+    {
+        switch ($PsCmdlet.ParameterSetName) {
+            "Multiple" 
+            {
+                ## If an array of required Modules is provided, cycle through each individually.
+                Foreach ($RequiredModule in $RequiredModules) 
+                {
+                    ## Tests if the module is installed
+                    $Result = Test-RequiredModules -RequiredModule $RequiredModule
+                    
+                    ## Specifies that a module is missing
+                    IF(!($Result))
+                        { $ValidationStatus = $false }
+                }
+
+                IF(!($ValidationStatus))
+                {
+                    ## Module Validation failed
+                    $ErrorMessage = "Missing required PowerShell modules`n"
+                    $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n`n"
+                    
+                    Write-LogEntry $ErrorMessage -Severity 3
+                }
+            }
+            "Single" 
+            { 
+                ## Determines if the PowerShell Module is missing, If missing false if missing
+                IF(!$(Get-Module -ListAvailable -Name $RequiredModule) )
+                    { $ValidationStatus = $false } 
+            }
+        }
+    }
+    End
+    {
+        ## Returns a value only if the module is missing
+        Return $ValidationStatus
+    }
+}
+
+Function Test-ConnectionToAzure
+{
+    Begin
+    {
+        $AzContext = Get-AzContext
+    }
+    Process
+    {
+        IF($null -eq $AzContext)
+            { 
+                Write-LogEntry -LogEntry "Not connected to Azure, please connect to your Azure Subscription" -Severity 1
+                $Result = $false 
+            }
+        Else
+            { 
+                Write-LogEntry -LogEntry "Connected to Azure" -Severity 1
+                $Result = $true 
+            }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Test-AzureResource
+{
+    Param(
+        [Parameter(Position=0, Mandatory = $false)] [string]$AzureResourceGroupName="",
+        [Parameter(Position=1, Mandatory = $false)] [string]$AzureFunctionName=""
+    )
+    Begin
+    {
+        $Result = $true
+        
+        $AzureFunctionNameNotNullOrEmpty = $true
+        $AzureFunctionNameExists         = $true
+
+        $AzureResourceGroupNameNotNullOrEmpty = $true
+        $AzureResourceGroupNameExists         = $true
+
+        ## Determines if the Azure Function App Name is not null or empty
+        If($AzureFunctionName.Length -le 0)
+        { 
+            $AzureFunctionName               = "<null>"
+            $AzureFunctionNameNotNullOrEmpty = $false 
+        }
+    
+        ## Determines if the Azure Function App Name is in Azure
+        If($(Get-AzFunctionApp).Where({$_.Name -eq $AzureFunctionName}).Count -le 0)
+            { $AzureFunctionNameExists = $false }
+        
+        ##Determines if the Azure Resource Group Name is not null or empty
+        If($AzureResourceGroupName.Length -le 0)
+        {   
+            $AzureResourceGroupName               = "<null>"
+            $AzureResourceGroupNameNotNullOrEmpty = $false 
+        }
+
+        If($(Get-AzResourceGroup).Where({$_.ResourceGroupName -eq $AzureResourceGroupName}).Count -lt 0)
+            { $AzureResourceGroupNameExists = $false }
+
+   }
+    Process
+    {
+        ## If there is an error with the value, it will be shown as "Red". If no issues then display the text as green.
+        Write-LogEntry -LogEntry "`nAzure Resources:" -Severity 1
+        Write-LogEntry -LogEntry "  Azure Function:       " -NoNewline; If($AzureFunctionNameExists)     { Write-LogEntry $AzureFunctionName      -FontColor Green }Else{ Write-LogEntry -LogEntry "$AzureFunctionName"      -FontColor Red }
+        Write-LogEntry -LogEntry "  Azure Resource Group: " -NoNewline; If($AzureResourceGroupNameExists){ Write-LogEntry $AzureResourceGroupName -FontColor Green }Else{ Write-LogEntry -LogEntry "$AzureResourceGroupName" -FontColor Red }
+
+        ## If either the Azure Function Name or the Azure Resource Group Name are null, error.
+        IF(!$AzureFunctionNameNotNullOrEmpty -or !$AzureResourceGroupNameNotNullOrEmpty -or !$AzureFunctionNameExists -or !$AzureResourceGroupNameExists)
+        {
+            Write-Host ""
+            Write-LogEntry -LogEntry "Both the Azure Function and Resource Group Names can not be null and must exist. Please verify that the Azure function and Resource Group exist.`n" -Severity 3
+            $Result = $false
+        }
+
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Connect-ToAzure
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$false)] [string]$AzureSubscriptionName
+    )
+    Begin
+    {
+        $Result = $true
+        $AzConnected = Test-ConnectionToAzure
+    }
+    Process
+    {
+        If(!($AzConnected))
+        {
+            ## No active connections to Azure
+            Write-LogEntry -LogEntry "Not connected to Azure, please connect to your Azure Subscription" -Severity 1
+            
+            ## Determines that a connection to Azure is neccessary, and if a Subscription Name was provided, connect to that Subscription
+            If($AzureSubscriptionName -eq "")
+                { Connect-AzAccount }
+            else 
+                { Connect-AzAccount -SubscriptionName $AzureSubscriptionName }
+
+            ## If the connection fails, or the user cancels the login request, then throw an error.
+            $AzConnected = Test-ConnectionToAzure
+            If($null -eq $Result)
+            { 
+                Write-LogEntry "Failed to connect to Azure" -Severity 3
+                $Result = $false
+            }
+        }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Get-WinGetManifestFile
+{
+    Param(
+        [Parameter(Position=0, Mandatory=$true)] [string]$ManifestFilePath
+    )
+    Begin
+    {
+        Write-LogEntry -LogEntry "Retrieving the Application Manifest" -Severity 1
+
+        $Result              = $true
+        $ManifestFile        = ""
+        $ManifestFileExists  = Test-Path -Path $ManifestFilePath -PathType Leaf
+
+        IF($ManifestFileExists)
+        { 
+            ## Gets the Manifest object and contents of the Manifest - identifying the manifest file extention.
+            $ApplicationManifest = Get-Content -Path $ManifestFilePath -Raw
+            $ManifestFile        = Get-Item -Path $ManifestFilePath
+            $ManifestFileType    = $ManifestFile.Extension
+        }
+        else 
+        {
+            ## The Manifest path did not resolve to a file.
+            $Result = $false
+            Write-LogEntry -LogEntry "Unable to locate the Manifest File, verify the file exists and try again." -Severity 3
+        }
+    }
+    Process
+    {
+        switch ($ManifestFileType) 
+        {
+            ## If the File type is JSON
+            ".json" 
+            {
+                ## Removes spacing from the JSON content
+                $ApplicationManifest = $($ApplicationManifest -replace "`t|`n|`r|  ","")
+                $ApplicationManifest = $($($($($ApplicationManifest -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}")
+
+                $Result = Test-WinGetManifest -Manifest $ApplicationManifest
+                IF($Result)
+                {
+                    ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
+                    $Result = $ApplicationManifest
+                }
+            }
+            ## If the File type is YAML
+            ".yaml"
+            {
+
+                $Result = Test-WinGetManifest -Manifest $ApplicationManifest
+                IF($Result)
+                {
+                    ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
+                    $Result = $ApplicationManifest
+                }
+            }
+            Default
+            {
+                If($ManifestFileExists)
+                {
+                    $Result = $false
+                    Write-LogEntry -LogEntry "Incorrect filetype. Verify the file if of type '*.yaml' or '*.json' and try again." -Severity 3
+                }
+            }
+        }
+    }
+    End
+    {
+        Return $Result
+    }
+}
+
+Function Add-WinGetManifestFile
 {
     <#
     .SYNOPSIS
@@ -135,55 +710,25 @@ Function New-WinGetManifest
     )
     Begin
     {
-        ##################################################
-        ############  Verifies PreRequisites  ############
-
-        ## List of the required Azure modules.
+        ###############################
+        ## Validates that the Azure Modules are installed
         $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-        $Result = @()
-        foreach( $RequiredModule in $RequiredModules )
-            { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
-        
-        ## If a module is determined to be missing, throw an error
+        $Result = Test-RequiredModules -RequiredModules $RequiredModules
+
         If($Result)
-        {
-            ## Modules have been identified as missing
-            $ErrorMessage = "`nMissing required PowerShell modules`n"
-            $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az`n`n"
-            
-            Write-Host $ErrorMessage -ForegroundColor Yellow
-            Throw "Unable to run script, missing required PowerShell modules"
-        }
+            { Throw "Unable to run script, missing required PowerShell modules" }
 
-        #############################################
-        ############  Connects to Azure  ############
+        ###############################
+        ## Connects to Azure, if not already connected.
+        $Result = Connect-ToAzure
+        IF(!($Result))
+            { Throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." }
 
-        ## Identifies if PowerShell session is currently connected to Azure.
-        $Result = Get-AzContext
-
-        If($null -eq $Result)
-        {
-            ## No active connections to Azure
-            Write-Host "Not connected to Azure, please connect to your Azure Subscription"
-            
-            ## Determines that a connection to Azure is neccessary, and if a Subscription Name was provided, connect to that Subscription
-            If($AzureSubscriptionName -eq "")
-                { Connect-AzAccount }
-            else 
-                { Connect-AzAccount -SubscriptionName $AzureSubscriptionName }
-
-            ## If the connection fails, or the user cancels the login request, then throw an error.
-            $Result = Get-AzContext
-            If($null -eq $Result)
-                { Throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." }
-        }
-
-        #############################################
-        ##############  Parameter Set  ##############
-        
+        ###############################
         ## Determines the PowerShell Parameter Set that was used in the call of this Function.
-        switch ($PsCmdlet.ParameterSetName) {
-            "WinGet" { 
+        switch ($PsCmdlet.ParameterSetName) 
+        {
+            "WinGet" {
                 ## Sets variables as if the Windows Package Manager was Private Repo Name was specified.
                 $AzureFunctionName      = $(Winget source list -n $PrivateRepoName)[4].split("/")[2].Split(".")[0]
                 $AzureResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $AzureFunctionName}).ResourceGroupName
@@ -194,34 +739,17 @@ Function New-WinGetManifest
              }
         }
 
-        #############################################
-        #############  Verify Resources  ############
+        ###############################
+        ##  Verify Azure Resources Exist
+        $Result = Test-AzureResource -AzureFunctionName $AzureFunctionName -AzureResourceGroupName $AzureResourceGroupName
+        IF(!$Result)
+            { Throw "Failed to confirm resources exist in Azure. Please verify and try again." }
 
-        $AzureFunctionExists = $(Get-AzFunctionApp).Where({$_.Name -eq $AzureFunctionName}).Count
-
-        ## If there is an error with the value, it will be shown as "Red". If no issues then display the text as green.
-        Write-Host "`nAzure Resources:"
-        Write-Host "  Azure Function:       " -NoNewline; If($AzureFunctionExists)   { Write-Host $AzureFunctionName      -ForegroundColor Green }Else{ IF($AzureFunctionName){ Write-Host "$AzureFunctionName" -ForegroundColor Red }Else{ Write-Host "<null>" -ForegroundColor Red }}
-        Write-Host "  Azure Resource Group: " -NoNewline; If($AzureResourceGroupName){ Write-Host $AzureResourceGroupName -ForegroundColor Green }Else{ Write-Host "<null>" -ForegroundColor Red }
-
-        ## If either the Azure Function Name or the Azure Resource Group Name are null, error.
-        IF(!$AzureFunctionName -or !$AzureResourceGroupName -or !$AzureFunctionExists)
-        {
-            Write-Host "`nERROR: Both the Azure Function and Resource Group names can not be null. Please verify that the Azure function exists.`n" -ForegroundColor Red
-            Return $false
-        }
-
+        ###############################
         ## Gets the JSON Content for posting to Private Repo
-        Write-Host "Retrieving the Application Manifest"
-        $ApplicationManifest = Get-Content -Path $ManifestFilePath -Raw
-        $ApplicationManifest = $($ApplicationManifest -replace "`t|`n|`r|  ","")
-        $ApplicationManifest = $($($($($ApplicationManifest -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}")
-
-        IF(!$ApplicationManifest)
-        {
-            Write-Host "  ERROR: Application Manifest is empty." -ForegroundColor Red
-            Return $false
-        }
+        $Result = Get-WinGetManifestFile -ManifestFilePath $ManifestFilePath
+        IF(!$Result)
+            { Throw "Failed to retrieve a proper manifest. Verify and try again." }
 
         #############################################
         ##############  Rest api call  ##############
@@ -252,23 +780,82 @@ Function New-WinGetManifest
     {
         Return $Response
     }
-
 }
 
+Function Get-WinGetManifestFile
+{}
+
+Function Remove-WingetManifestFile
+{}
+
+Function Test-WinGetManifest
+{
+    [CmdletBinding(DefaultParameterSetName = 'Path')]
+    Param(
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Path")]  [string]$ManifestFilePath,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Object")]$Manifest,
+        [Parameter(Position=1, Mandatory=$false)]  [switch]$ReturnManifest
+    )
+    Begin
+    {
+        Switch ($($PSCmdlet.ParameterSetName))
+        {
+            "Path"{
+                If((Test-Path -Path $ManifestFilePath))
+                {
+                    ## Retrieves the contents of the Manifest file
+                    $Manifest = Get-Content -Path $ManifestFilePath -Raw
+
+                    ## Removes any spacing from the Manifest file
+                    $Manifest = $($Manifest -replace "`t|`n|`r|  ","")
+                    $Manifest = $($($($($Manifest -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}")
+                }
+            }
+            "Object"
+            {
+                ## Removes any spacing from the Manifest file
+                $Manifest = $($Manifest -replace "`t|`n|`r|  ","")
+                $Manifest = $($($($($Manifest -replace ": ",":") -replace " { |{ ", "{") -replace ', ', ',') -replace " } | }", "}")
+            }
+        }
+
+        $ManifestFileTypeJSON = $false
+        $ReturnResult = $true
+    }
+    Process
+    {
+
+    }
+    End
+    {
+        ## Determines what will be returned from the Function
+        IF($ReturnResult)
+        {
+            ## Returns the Manifest only if the test passes. If the test fails return False
+            IF($ReturnResult)
+                { Return $Manifest }
+            Else
+                { Return $ReturnResult }
+        }
+        Else
+        {
+            ## Returns the result of the test. If all test pass, the result is True, otherwise will return False
+            Return $ReturnResult
+        }
+    }
+}
 
 ## Validates that the required Azure Modules are present when the script is imported.
-$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-$Result = @()
-foreach( $RequiredModule in $RequiredModules )
-    { $Result += Test-RequiredModules -RequiredModule $RequiredModule }
+[string[]]$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+[Boolean] $TestResult = Test-RequiredModules -RequiredModules $RequiredModules
 
-## If a module is determined to be missing, throw an error
-If($Result)
-{
-    ## Modules have been identified as missing
-    $ErrorMessage = "`nThere are missing PowerShell modules that must be installed.`n"
-    $ErrorMessage += "    Some or all PowerShell functions included in this library will fail.`n"
-    $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az -Force`n`n"
-    
-    Write-Host $ErrorMessage -ForegroundColor Yellow
+If($TestResult)
+{ 
+        ## Modules have been identified as missing
+        Write-Host ""
+        $ErrorMessage = "There are missing PowerShell modules that must be installed.`n"
+        $ErrorMessage += "    Some or all PowerShell functions included in this library will fail.`n"
+        $ErrorMessage += "    Run the following command to install the missing modules: Install-Module Az -Force`n`n"
+        
+        Write-LogEntry -LogEntry $ErrorMessage -Severity 2
 }
