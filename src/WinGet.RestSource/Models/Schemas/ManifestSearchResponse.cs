@@ -9,6 +9,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Arrays;
     using Microsoft.WinGet.RestSource.Models.Core;
@@ -258,25 +259,17 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 
             foreach (ManifestSearchResponse response in manifestSearchResponses)
             {
-                // Create Consolidation Predicate for search Response..
-                bool MSRConsolidationExpression(ManifestSearchResponse x) =>
-                    Equals(response.PackageIdentifier, x.PackageIdentifier)
-                    && Equals(response.PackageName, x.PackageName)
-                    && Equals(response.Publisher, x.Publisher);
-
                 // If exists in results update otherwise add
-                if (list.Exists(MSRConsolidationExpression))
+                ManifestSearchResponse match = list.FirstOrDefault(x => x.PackageIdentifier == response.PackageIdentifier);
+                if (match != null)
                 {
-                    // Get index
-                    int searchResponseIndex = list.FindIndex(MSRConsolidationExpression);
-
                     // Verify versions exists
-                    if (list[searchResponseIndex].Versions == null && response.Versions != null)
+                    if (match.Versions == null && response.Versions != null)
                     {
-                        list[searchResponseIndex].Versions = new SearchVersions();
+                        match.Versions = new SearchVersions();
                     }
 
-                    list[searchResponseIndex].Versions.Merge(response.Versions);
+                    match.Versions.Merge(response.Versions);
                 }
                 else
                 {

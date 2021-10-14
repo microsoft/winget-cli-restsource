@@ -85,10 +85,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Verify Parameters not null
             ApiDataValidator.NotNull(version);
 
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.Add(version);
         }
@@ -98,6 +95,35 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
         /// </summary>
         /// <param name="version">Version to Update.</param>
         public void UpdateVersion(Version version)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(version);
+
+            // Assert Versions not null
+            this.AssertVersionsNotNull();
+
+            this.Versions.Update(version);
+        }
+
+        /// <summary>
+        /// Add Version.
+        /// </summary>
+        /// <param name="version">Version to add.</param>
+        public void AddVersion(VersionExtended version)
+        {
+            // Verify Parameters not null
+            ApiDataValidator.NotNull(version);
+
+            this.Versions ??= new VersionsExtended();
+
+            this.Versions.Add(version);
+        }
+
+        /// <summary>
+        /// Update a Version.
+        /// </summary>
+        /// <param name="version">Version to Update.</param>
+        public void UpdateVersion(VersionExtended version)
         {
             // Verify Parameters not null
             ApiDataValidator.NotNull(version);
@@ -153,10 +179,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             ApiDataValidator.NotNull(packageVersion);
 
             // Instantiate if null
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.AddInstaller(installer, packageVersion);
         }
@@ -224,10 +247,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             ApiDataValidator.NotNull(packageVersion);
 
             // Instantiate if null
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.AddLocale(locale, packageVersion);
         }

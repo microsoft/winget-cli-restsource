@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         /// </summary>
         public ShortDescriptionValidator()
         {
+            this.AllowNull = true;
             this.MinLength = Min;
             this.MaxLength = Max;
         }

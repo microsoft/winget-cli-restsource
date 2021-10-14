@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         /// </summary>
         public PublisherValidator()
         {
+            this.AllowNull = true;
             this.MinLength = Min;
             this.MaxLength = Max;
         }
