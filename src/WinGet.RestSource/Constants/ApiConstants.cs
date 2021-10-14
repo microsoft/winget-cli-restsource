@@ -15,11 +15,6 @@ namespace Microsoft.WinGet.RestSource.Constants
     public class ApiConstants
     {
         /// <summary>
-        /// This is the multiplication constant used by the hash code.
-        /// </summary>
-        public const int HashCodeConstant = 397;
-
-        /// <summary>
         /// Source Identifier.
         /// </summary>
         public static readonly string SourceIdentifier = ApiConstants.ServerIdentifier;

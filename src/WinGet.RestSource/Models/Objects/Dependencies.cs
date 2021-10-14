@@ -118,51 +118,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(Dependencies other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.WindowsFeatures, other.WindowsFeatures) && Equals(this.WindowsLibraries, other.WindowsLibraries) && Equals(this.PackageDependencies, other.PackageDependencies) && Equals(this.ExternalDependencies, other.ExternalDependencies);
+            return (this.WindowsFeatures, this.WindowsLibraries, this.PackageDependencies, this.ExternalDependencies) ==
+                   (other.WindowsFeatures, other.WindowsLibraries, other.PackageDependencies, other.ExternalDependencies);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((Dependencies)obj);
+            return obj is Dependencies dependencies && this.Equals(dependencies);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.WindowsFeatures != null ? this.WindowsFeatures.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.WindowsLibraries != null ? this.WindowsLibraries.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageDependencies != null ? this.PackageDependencies.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ExternalDependencies != null ? this.ExternalDependencies.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.WindowsFeatures, this.WindowsLibraries, this.PackageDependencies, this.ExternalDependencies);
         }
     }
 }

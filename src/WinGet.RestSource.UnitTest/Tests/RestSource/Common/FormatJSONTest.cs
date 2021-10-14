@@ -16,7 +16,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Common
     /// </summary>
     public class FormatJSONTest
     {
-        private ITestOutputHelper log;
+        private readonly ITestOutputHelper log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatJSONTest"/> class.

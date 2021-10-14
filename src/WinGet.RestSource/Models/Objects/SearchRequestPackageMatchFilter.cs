@@ -100,47 +100,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(SearchRequestPackageMatchFilter other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.RequestMatch, other.RequestMatch) && Equals(this.PackageMatchField, other.PackageMatchField);
+            return (this.RequestMatch, this.PackageMatchField) ==
+                   (other.RequestMatch, other.PackageMatchField);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((SearchRequestPackageMatchFilter)obj);
+            return obj is SearchRequestPackageMatchFilter searchRequestPackageMatchFilter && this.Equals(searchRequestPackageMatchFilter);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((this.RequestMatch != null ? this.RequestMatch.GetHashCode() : 0) * ApiConstants.HashCodeConstant) ^ (this.PackageMatchField != null ? this.PackageMatchField.GetHashCode() : 0);
-            }
+            return System.HashCode.Combine(this.RequestMatch, this.PackageMatchField);
         }
     }
 }

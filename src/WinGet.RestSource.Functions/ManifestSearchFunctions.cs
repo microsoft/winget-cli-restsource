@@ -53,18 +53,16 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ManifestSearchRequest manifestSearch = null;
-            ApiDataPage<ManifestSearchResponse> manifestSearchResponse = new ApiDataPage<ManifestSearchResponse>();
+            ApiDataPage<ManifestSearchResponse> manifestSearchResponse;
             PackageMatchFields unsupportedFields;
             PackageMatchFields requiredFields;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Get Manifest Search Request and Validate.
-                manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
+                ManifestSearchRequest manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
                 ApiDataValidator.Validate(manifestSearch);
 
                 manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);

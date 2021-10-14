@@ -87,47 +87,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(SearchRequestMatch other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.MatchType, other.MatchType) && Equals(this.KeyWord, other.KeyWord);
+            return (this.MatchType, this.KeyWord) ==
+                   (other.MatchType, other.KeyWord);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((SearchRequestMatch)obj);
+            return obj is SearchRequestMatch searchRequestMatch && this.Equals(searchRequestMatch);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((this.MatchType != null ? this.MatchType.GetHashCode() : 0) * ApiConstants.HashCodeConstant) ^ (this.KeyWord != null ? this.KeyWord.GetHashCode() : 0);
-            }
+            return System.HashCode.Combine(this.MatchType, this.KeyWord);
         }
     }
 }

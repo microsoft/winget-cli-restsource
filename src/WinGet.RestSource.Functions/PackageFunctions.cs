@@ -54,13 +54,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Package package = null;
-
+            Package package;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -99,13 +97,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackage(packageIdentifier);
             }
             catch (DefaultException e)
@@ -137,13 +132,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Package package = null;
-
+            Package package;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -190,13 +183,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<Package> packages = new ApiDataPage<Package>();
+            ApiDataPage<Package> packages;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Fetch Results
                 packages = await this.dataStore.GetPackages(packageIdentifier, req.Query);

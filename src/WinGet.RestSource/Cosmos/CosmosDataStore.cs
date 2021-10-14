@@ -8,7 +8,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
@@ -61,7 +60,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             Uri endpoint = new Uri(
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ??
-                throw new InvalidDataException());
+                throw new System.IO.InvalidDataException());
             CosmosDatabase database = new CosmosDatabase(
                 endpoint,
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
@@ -748,171 +747,118 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
         private Expression<Func<PackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
         {
-            Expression<Func<PackageManifest, bool>> expression = null;
-
-            switch (packageMatchField, requestMatch.MatchType)
+            return (packageMatchField, requestMatch.MatchType) switch
             {
-                case (PackageMatchFields.PackageIdentifier, MatchType.Exact):
-                    expression = manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord);
-                    break;
+                (PackageMatchFields.PackageIdentifier, MatchType.Exact) =>
+                    manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord),
 
-                case (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower());
-                    break;
+                (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive) =>
+                    manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower()),
 
-                case (PackageMatchFields.PackageIdentifier, MatchType.StartsWith):
-                    expression = manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord);
-                    break;
+                (PackageMatchFields.PackageIdentifier, MatchType.StartsWith) =>
+                    manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord),
 
-                case (PackageMatchFields.PackageIdentifier, MatchType.Substring):
-                    expression = manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord);
-                    break;
+                (PackageMatchFields.PackageIdentifier, MatchType.Substring) =>
+                    manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord),
 
-                case (PackageMatchFields.PackageName, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.PackageName, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.PackageName, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower()));
-                    break;
+                (PackageMatchFields.PackageName, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower())),
 
-                case (PackageMatchFields.PackageName, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.PackageName, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.PackageName, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.PackageName, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.Moniker, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.Moniker, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.Moniker, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower()));
-                    break;
+                (PackageMatchFields.Moniker, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower())),
 
-                case (PackageMatchFields.Moniker, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.Moniker, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.Moniker, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord));
-                    break;
+                (PackageMatchFields.Moniker, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord)),
 
-                case (PackageMatchFields.Command, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Equals(requestMatch.KeyWord))));
-                    break;
+                (PackageMatchFields.Command, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Equals(requestMatch.KeyWord)))),
 
-                case (PackageMatchFields.Command, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower()))));
-                    break;
+                (PackageMatchFields.Command, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
 
-                case (PackageMatchFields.Command, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord))));
-                    break;
+                (PackageMatchFields.Command, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord)))),
 
-                case (PackageMatchFields.Command, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Contains(requestMatch.KeyWord))));
-                    break;
+                (PackageMatchFields.Command, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Contains(requestMatch.KeyWord)))),
 
-                case (PackageMatchFields.Tag, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord)))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Tag, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))))),
 
-                case (PackageMatchFields.Tag, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower())))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower())))));
-                    break;
+                (PackageMatchFields.Tag, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
 
-                case (PackageMatchFields.Tag, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord)))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Tag, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))))),
 
-                case (PackageMatchFields.Tag, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord)))
-                       || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Tag, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))))),
 
-                case (PackageMatchFields.PackageFamilyName, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Equals(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.PackageFamilyName, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Equals(requestMatch.KeyWord))),
 
-                case (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower())));
-                    break;
+                (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
 
-                case (PackageMatchFields.PackageFamilyName, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.StartsWith(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.PackageFamilyName, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.StartsWith(requestMatch.KeyWord))),
 
-                case (PackageMatchFields.PackageFamilyName, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Contains(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.PackageFamilyName, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Contains(requestMatch.KeyWord))),
 
-                case (PackageMatchFields.ProductCode, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Equals(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.ProductCode, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Equals(requestMatch.KeyWord))),
 
-                case (PackageMatchFields.ProductCode, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower())));
-                    break;
+                (PackageMatchFields.ProductCode, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
 
-                case (PackageMatchFields.ProductCode, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.StartsWith(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.ProductCode, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.StartsWith(requestMatch.KeyWord))),
 
-                case (PackageMatchFields.ProductCode, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Contains(requestMatch.KeyWord)));
-                    break;
+                (PackageMatchFields.ProductCode, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Contains(requestMatch.KeyWord))),
 
-                case (ShortDescription, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Equals(requestMatch.KeyWord))));
-                    break;
+                (ShortDescription, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Equals(requestMatch.KeyWord)))),
 
-                case (ShortDescription, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower()))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower()))));
-                    break;
+                (ShortDescription, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
 
-                case (ShortDescription, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.StartsWith(requestMatch.KeyWord))));
-                    break;
+                (ShortDescription, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.StartsWith(requestMatch.KeyWord)))),
 
-                case (ShortDescription, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord))
-                        || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Contains(requestMatch.KeyWord))));
-                    break;
+                (ShortDescription, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Contains(requestMatch.KeyWord)))),
 
-                case (PackageMatchFields.Market, MatchType.Exact):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Equals(requestMatch.KeyWord))))
-                        || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Equals(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Market, MatchType.Exact) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Equals(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Equals(requestMatch.KeyWord))))),
 
-                case (PackageMatchFields.Market, MatchType.CaseInsensitive):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.ToLower().Equals(requestMatch.KeyWord.ToLower()))))
-                    || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.ToLower().Equals(requestMatch.KeyWord.ToLower())))));
-                    break;
+                (PackageMatchFields.Market, MatchType.CaseInsensitive) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.ToLower().Equals(requestMatch.KeyWord.ToLower())))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
 
-                case (PackageMatchFields.Market, MatchType.StartsWith):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.StartsWith(requestMatch.KeyWord))))
-                        || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.StartsWith(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Market, MatchType.StartsWith) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.StartsWith(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.StartsWith(requestMatch.KeyWord))))),
 
-                case (PackageMatchFields.Market, MatchType.Substring):
-                    expression = manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Contains(requestMatch.KeyWord))))
-                        || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Contains(requestMatch.KeyWord)))));
-                    break;
+                (PackageMatchFields.Market, MatchType.Substring) =>
+                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Contains(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Contains(requestMatch.KeyWord))))),
 
-                default:
-                    throw new InvalidArgumentException(new InternalRestError(ErrorConstants.ValidationFailureErrorCode, ErrorConstants.ValidationFailureErrorMessage));
-            }
-
-            return expression;
+                _ => throw new InvalidArgumentException(new InternalRestError(ErrorConstants.ValidationFailureErrorCode, ErrorConstants.ValidationFailureErrorMessage)),
+            };
         }
     }
 }

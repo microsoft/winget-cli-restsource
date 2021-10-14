@@ -54,13 +54,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            PackageManifest packageManifest = null;
-
+            PackageManifest packageManifest;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -97,13 +95,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
             }
             catch (DefaultException e)
@@ -135,13 +130,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            PackageManifest packageManifest = null;
-
+            PackageManifest packageManifest;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -187,15 +180,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<PackageManifest> manifests = new ApiDataPage<PackageManifest>();
+            ApiDataPage<PackageManifest> manifests;
             QueryParameters unsupportedQueryParameters;
             QueryParameters requiredQueryParameters;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Schema supports query parameters only when PackageIdentifier is specified.
                 manifests = await this.dataStore.GetPackageManifests(packageIdentifier, string.IsNullOrWhiteSpace(packageIdentifier) ? null : req.Query);

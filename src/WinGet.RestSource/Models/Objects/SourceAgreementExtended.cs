@@ -71,7 +71,7 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(SourceAgreementExtended other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -87,33 +87,13 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((SourceAgreementExtended)obj);
+            return obj is SourceAgreementExtended sourceAgreementExtended && this.Equals(sourceAgreementExtended);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.Agreements != null ? this.Agreements.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.AgreementsIdentifier != null ? this.AgreementsIdentifier.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.Agreements, this.AgreementsIdentifier);
         }
 
         /// <inheritdoc/>

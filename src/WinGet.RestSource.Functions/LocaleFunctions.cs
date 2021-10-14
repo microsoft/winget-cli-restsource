@@ -57,13 +57,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Locale locale = null;
-
+            Locale locale;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as locale
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
@@ -107,13 +105,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
@@ -152,13 +147,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Locale locale = null;
-
+            Locale locale;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
@@ -210,13 +203,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<Locale> locales = new ApiDataPage<Locale>();
+            ApiDataPage<Locale> locales;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale, null);
             }

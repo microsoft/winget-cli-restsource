@@ -101,47 +101,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(ExpectedReturnCode other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.InstallerReturnCode, other.InstallerReturnCode) && Equals(this.ReturnResponse, other.ReturnResponse);
+            return (this.InstallerReturnCode, this.ReturnResponse) ==
+                   (other.InstallerReturnCode, other.ReturnResponse);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((ExpectedReturnCode)obj);
+            return obj is ExpectedReturnCode expectedReturnCode && this.Equals(expectedReturnCode);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (this.InstallerReturnCode.GetHashCode() * ApiConstants.HashCodeConstant) ^ (this.ReturnResponse != null ? this.ReturnResponse.GetHashCode() : 0);
-            }
+            return System.HashCode.Combine(this.InstallerReturnCode, this.ReturnResponse);
         }
     }
 }

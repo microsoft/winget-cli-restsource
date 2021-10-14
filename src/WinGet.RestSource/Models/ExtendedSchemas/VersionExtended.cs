@@ -257,7 +257,7 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// <inheritdoc />
         public bool Equals(VersionExtended other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
             {
                 return false;
             }
@@ -275,34 +275,13 @@ namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((VersionExtended)obj);
+            return obj is VersionExtended versionExtended && this.Equals(versionExtended);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Installers != null ? this.Installers.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Locales != null ? this.Locales.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(base.GetHashCode(), this.Installers, this.Locales);
         }
 
         private void AssertInstallersNotNull()

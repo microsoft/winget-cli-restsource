@@ -140,51 +140,20 @@ namespace Microsoft.WinGet.RestSource.Models.Objects
         /// <inheritdoc />
         public bool Equals(SearchVersion other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals(this.PackageVersion, other.PackageVersion) && Equals(this.Channel, other.Channel);
+            return (this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes) ==
+                   (other.PackageVersion, other.Channel, other.PackageFamilyNames, other.ProductCodes);
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return this.Equals((SearchVersion)obj);
+            return obj is SearchVersion searchVersion && this.Equals(searchVersion);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = this.PackageVersion != null ? this.PackageVersion.GetHashCode() : 0;
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.Channel != null ? this.Channel.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.PackageFamilyNames != null ? this.PackageFamilyNames.GetHashCode() : 0);
-                hashCode = (hashCode * ApiConstants.HashCodeConstant) ^ (this.ProductCodes != null ? this.ProductCodes.GetHashCode() : 0);
-                return hashCode;
-            }
+            return System.HashCode.Combine(this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes);
         }
     }
 }
