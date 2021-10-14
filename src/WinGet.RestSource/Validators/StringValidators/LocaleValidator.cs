@@ -12,6 +12,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
     public class LocaleValidator : ApiStringValidator
     {
         private const bool Nullable = true;
+        private const string Pattern = "^([a-zA-Z]{2,3}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*$";
         private const uint Max = 20;
 
         /// <summary>
@@ -20,6 +21,7 @@ namespace Microsoft.WinGet.RestSource.Validators.StringValidators
         public LocaleValidator()
         {
             this.AllowNull = Nullable;
+            this.MatchPattern = Pattern;
             this.MaxLength = Max;
         }
     }

@@ -85,10 +85,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Verify Parameters not null
             ApiDataValidator.NotNull(version);
 
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.Add(version);
         }
@@ -117,10 +114,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             // Verify Parameters not null
             ApiDataValidator.NotNull(version);
 
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.Add(version);
         }
@@ -185,10 +179,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             ApiDataValidator.NotNull(packageVersion);
 
             // Instantiate if null
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.AddInstaller(installer, packageVersion);
         }
@@ -256,10 +247,7 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
             ApiDataValidator.NotNull(packageVersion);
 
             // Instantiate if null
-            if (this.Versions == null)
-            {
-                this.Versions = new VersionsExtended();
-            }
+            this.Versions ??= new VersionsExtended();
 
             this.Versions.AddLocale(locale, packageVersion);
         }
