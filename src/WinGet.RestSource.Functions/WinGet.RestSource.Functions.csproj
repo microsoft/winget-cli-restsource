@@ -25,6 +25,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.0.0-preview2" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -34,15 +35,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
-        <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
     </ItemGroup>
 
     <ItemGroup>

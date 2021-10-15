@@ -9,9 +9,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Documents;
-    using Microsoft.Azure.Documents.Client;
-    using Microsoft.Azure.Documents.Linq;
+    using Microsoft.Azure.Cosmos;
+    using Microsoft.Azure.Cosmos.Fluent;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
@@ -21,22 +20,19 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     /// </summary>
     public class CosmosDatabase : ICosmosDatabase
     {
-        private readonly DocumentClient client;
-        private readonly string database;
-        private readonly string collection;
+        private readonly Container container;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDatabase"/> class.
         /// </summary>
         /// <param name="serviceEndpoint">Service Endpoint.</param>
         /// <param name="authKey">Authorization Key.</param>
-        /// <param name="database">Database.</param>
-        /// <param name="collection">Database collection.</param>
-        public CosmosDatabase(Uri serviceEndpoint, string authKey, string database, string collection)
+        /// <param name="databaseId">Database.</param>
+        /// <param name="containerId">Database container.</param>
+        public CosmosDatabase(Uri serviceEndpoint, string authKey, string databaseId, string containerId)
         {
-            this.database = database;
-            this.collection = collection;
-            this.client = new DocumentClient(serviceEndpoint, authKey);
+            var client = new CosmosClientBuilder(serviceEndpoint.ToString(), authKey).Build();
+            this.container = client.GetContainer(databaseId, containerId);
         }
 
         /// <inheritdoc />
@@ -45,13 +41,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                Uri documentCollectionUri = UriFactory.CreateDocumentCollectionUri(this.database, this.collection);
-                ResourceResponse<Document> resourceResponse =
-                    await this.client.CreateDocumentAsync(documentCollectionUri, cosmosDocument.Document);
+                var resourceResponse = await this.container.CreateItemAsync(cosmosDocument.Document);
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -65,17 +59,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                Uri documentUri = UriFactory.CreateDocumentUri(this.database, this.collection, cosmosDocument.Id);
-                await this.client.DeleteDocumentAsync(
-                    documentUri,
-                    new RequestOptions
-                    {
-                        PartitionKey = new PartitionKey(cosmosDocument.PartitionKey),
-                    });
+                await this.container.DeleteItemAsync<T>(cosmosDocument.Id, new PartitionKey(cosmosDocument.PartitionKey));
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -89,12 +77,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                Uri documentCollectionUri = UriFactory.CreateDocumentCollectionUri(this.database, this.collection);
-                await this.client.UpsertDocumentAsync(documentCollectionUri, cosmosDocument.Document);
+                await this.container.UpsertItemAsync(cosmosDocument.Document);
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -108,21 +95,12 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                var requestOptions = new RequestOptions
-                {
-                    AccessCondition = new AccessCondition
-                    {
-                        Condition = cosmosDocument.Etag,
-                        Type = AccessConditionType.IfMatch,
-                    },
-                };
-
-                Uri documentUri = UriFactory.CreateDocumentUri(this.database, this.collection, cosmosDocument.Id);
-                await this.client.ReplaceDocumentAsync(documentUri, cosmosDocument.Document, requestOptions);
+                var requestOptions = new ItemRequestOptions { IfMatchEtag = cosmosDocument.Etag };
+                await this.container.ReplaceItemAsync(cosmosDocument.Document, cosmosDocument.Id, requestOptions: requestOptions);
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -131,23 +109,22 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public IQueryable<T> GetIQueryable<T>(FeedOptions feedOptions = null)
+        public IQueryable<T> GetIQueryable<T>(QueryRequestOptions requestOptions = null, string continuationToken = null)
             where T : class
         {
             try
             {
-                if (feedOptions == null)
+                if (requestOptions == null)
                 {
-                    feedOptions = new FeedOptions { ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb };
+                    requestOptions = new QueryRequestOptions { ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb };
                 }
 
-                Uri collectionUri = UriFactory.CreateDocumentCollectionUri(this.database, this.collection);
-                IQueryable<T> iQueryable = this.client.CreateDocumentQuery<T>(collectionUri, feedOptions);
+                IQueryable<T> iQueryable = this.container.GetItemLinqQueryable<T>(continuationToken: continuationToken, requestOptions: requestOptions);
                 return iQueryable;
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -164,20 +141,17 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             try
             {
                 // Get the Resource Response
-                Uri documentUri = UriFactory.CreateDocumentUri(this.database, this.collection, id);
-                RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey) };
-                ResourceResponse<Document> resourceResponse =
-                    await this.client.ReadDocumentAsync(documentUri, requestOptions);
+                var resourceResponse = await this.container.ReadItemAsync<CosmosDocument<T>>(id, new PartitionKey(partitionKey));
 
                 // Process Response
-                Document document = resourceResponse.Resource;
-                cosmosDocument.Etag = document.ETag;
+                CosmosDocument<T> document = resourceResponse.Resource;
+                cosmosDocument.Etag = document.Etag;
                 cosmosDocument.Id = document.Id;
-                cosmosDocument.Document = (T)(dynamic)document;
+                cosmosDocument.Document = document.Document;
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {
@@ -189,20 +163,20 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
+        public async Task<ApiDataPage<T>> GetByDocumentQuery<T>(FeedIterator<T> documentQuery)
             where T : class
         {
             ApiDataPage<T> apiDataPage = new ApiDataPage<T>();
 
             try
             {
-                FeedResponse<T> response = await documentQuery.ExecuteNextAsync<T>();
-                apiDataPage.ContinuationToken = response.ResponseContinuation;
-                apiDataPage.Items = response.ToList<T>();
+                var response = await documentQuery.ReadNextAsync();
+                apiDataPage.ContinuationToken = response.ContinuationToken;
+                apiDataPage.Items = response.ToList();
             }
-            catch (DocumentClientException documentClientException)
+            catch (CosmosException cosmosException)
             {
-                throw new CosmosDatabaseException(documentClientException);
+                throw new CosmosDatabaseException(cosmosException);
             }
             catch (Exception exception)
             {

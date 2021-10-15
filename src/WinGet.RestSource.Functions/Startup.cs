@@ -43,7 +43,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 endpoint,
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting),
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CollectionNameSetting));
+                Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting));
 
             return database;
         }

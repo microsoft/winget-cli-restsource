@@ -12,9 +12,9 @@ namespace Microsoft.WinGet.RestSource.Constants
     public class CosmosConnectionConstants
     {
         /// <summary>
-        /// Cosmos Collection Name.
+        /// Cosmos Container Name.
         /// </summary>
-        public const string CollectionNameSetting = "CosmosCollection";
+        public const string ContainerNameSetting = "CosmosContainer";
 
         /// <summary>
         /// Cosmos Database Name setting.

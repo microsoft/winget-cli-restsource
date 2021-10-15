@@ -8,10 +8,8 @@ namespace Microsoft.WinGet.RestSource.Models.Schemas
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Models.Core;
     using Microsoft.WinGet.RestSource.Validators;
-    using Microsoft.WinGet.RestSource.Validators.StringValidators;
 
     /// <summary>
     /// ManifestSearchRequest.

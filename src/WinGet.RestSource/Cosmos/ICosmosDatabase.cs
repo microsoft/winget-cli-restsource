@@ -8,8 +8,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Documents.Client;
-    using Microsoft.Azure.Documents.Linq;
+    using Microsoft.Azure.Cosmos;
     using Microsoft.WinGet.RestSource.Common;
 
     /// <summary>
@@ -59,9 +58,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// This will return an IQueryable for building out document queries.
         /// </summary>
         /// <param name="feedOptions">Feed Options.</param>
+        /// <param name="continuationToken">(Optional) The continuation token in the Azure Cosmos DB service.</param>
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>IQueryable.</returns>
-        IQueryable<T> GetIQueryable<T>(FeedOptions feedOptions = null)
+        IQueryable<T> GetIQueryable<T>(QueryRequestOptions feedOptions = null, string continuationToken = null)
             where T : class;
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <param name="documentQuery">Document Query.</param>
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
-        Task<ApiDataPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
+        Task<ApiDataPage<T>> GetByDocumentQuery<T>(FeedIterator<T> documentQuery)
             where T : class;
     }
 }

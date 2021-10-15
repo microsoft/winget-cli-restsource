@@ -6,7 +6,7 @@
     "CosmosAccountEndpoint": "<your CosmosDB endpoint>",
     "CosmosAccountKey": "<your CosmosDB account key>",
     "CosmosDatabase": "<your CosmosDB database>",
-    "CosmosCollection": "<your CosmosDB collection>",
+    "CosmosContainer": "<your CosmosDB container>",
     "ServerIdentifier": "winget-pkgs-restsource-dev"
   }
 }
