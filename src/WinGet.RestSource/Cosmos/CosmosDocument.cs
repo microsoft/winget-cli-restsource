@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     /// </summary>
     /// <typeparam name="T">This is the document type for cosmos.</typeparam>
     public class CosmosDocument<T>
-        where T : class
+        where T : ICosmosIdDocument
     {
         /// <summary>
         /// Gets or sets the Cosmos Document.

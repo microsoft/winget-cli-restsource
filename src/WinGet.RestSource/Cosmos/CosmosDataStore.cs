@@ -13,8 +13,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Threading.Tasks;
     using LinqKit;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Azure.Documents.Client;
-    using Microsoft.Azure.Documents.Linq;
+    using Microsoft.Azure.Cosmos;
+    using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
@@ -65,7 +65,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 endpoint,
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
                 Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting),
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CollectionNameSetting));
+                Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting));
 
             this.cosmosDatabase = database;
             this.log = log;
@@ -128,17 +128,15 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
 
-            // Create feed options
-            FeedOptions feedOptions = new FeedOptions
+            // Create query options
+            QueryRequestOptions queryRequestOptions = new QueryRequestOptions
             {
                 ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
-                EnableCrossPartitionQuery = true,
                 MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
-                RequestContinuation = continuationToken,
             };
 
             // Get iQueryable
-            IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
+            IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(queryRequestOptions, continuationToken);
 
             if (!string.IsNullOrWhiteSpace(packageIdentifier))
             {
@@ -146,7 +144,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Finalize Query
-            IDocumentQuery<CosmosPackageManifest> documentQuery = query.AsDocumentQuery();
+            FeedIterator<CosmosPackageManifest> documentQuery = query.ToFeedIterator();
 
             // Fetch Current Package
             ApiDataPage<CosmosPackageManifest> apiDataDocument =
@@ -429,12 +427,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
 
             // Create feed options
-            FeedOptions feedOptions = new FeedOptions
+            QueryRequestOptions feedOptions = new QueryRequestOptions
             {
                 ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
-                EnableCrossPartitionQuery = true,
                 MaxItemCount = FunctionSettingsConstants.MaxResultsPerPage,
-                RequestContinuation = continuationToken,
             };
 
             // Get iQueryable
@@ -446,7 +442,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             // Finalize Query
-            IDocumentQuery<PackageManifest> documentQuery = query.AsDocumentQuery();
+            FeedIterator<PackageManifest> documentQuery = query.ToFeedIterator();
 
             // Fetch Current Package
             ApiDataPage<PackageManifest> apiDataDocument =
@@ -493,22 +489,20 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             // Create Working Set and return
             ApiDataPage<ManifestSearchResponse> apiDataPage = new ApiDataPage<ManifestSearchResponse>();
-            List<PackageManifest> manifests = new List<PackageManifest>();
+            List<CosmosPackageManifest> manifests = new List<CosmosPackageManifest>();
             List<ManifestSearchResponse> manifestSearchResponse = new List<ManifestSearchResponse>();
 
             // Create feed options for inclusion search: -1 so we can get all matches in inclusion, then filter down.
-            FeedOptions feedOptions = new FeedOptions
+            QueryRequestOptions feedOptions = new QueryRequestOptions
             {
                 ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb,
-                EnableCrossPartitionQuery = true,
                 MaxItemCount = AllElements,
-                RequestContinuation = null,
             };
 
             if (manifestSearchRequest.FetchAllManifests || (manifestSearchRequest.Inclusions == null && manifestSearchRequest.Query == null))
             {
                 IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
-                IDocumentQuery<CosmosPackageManifest> documentQuery = query.AsDocumentQuery();
+                FeedIterator<CosmosPackageManifest> documentQuery = query.ToFeedIterator();
                 ApiDataPage<CosmosPackageManifest> apiDataDocument = await this.cosmosDatabase.GetByDocumentQuery<CosmosPackageManifest>(documentQuery);
                 manifests.AddRange(apiDataDocument.Items);
             }
@@ -536,11 +530,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 // TODO: Create a more efficient search - but this will suffice for now for a light weight reference.
                 if (inclusions.Count > 0)
                 {
-                    List<Task<ApiDataPage<PackageManifest>>> taskSet = new List<Task<ApiDataPage<PackageManifest>>>();
+                    List<Task<ApiDataPage<CosmosPackageManifest>>> taskSet = new List<Task<ApiDataPage<CosmosPackageManifest>>>();
                     foreach (string packageMatchField in inclusions.Select(inc => inc.PackageMatchField).Distinct())
                     {
                         // Create Predicate for search
-                        ExpressionStarter<PackageManifest> inclusionPredicate = PredicateBuilder.New<PackageManifest>();
+                        ExpressionStarter<CosmosPackageManifest> inclusionPredicate = PredicateBuilder.New<CosmosPackageManifest>();
                         foreach (SearchRequestPackageMatchFilter matchFilter in inclusions.Where(inc => inc.PackageMatchField.Equals(packageMatchField)))
                         {
                             // Some package match fields or types might not be supported by current version of search.
@@ -553,9 +547,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                         }
 
                         // Create Document Query
-                        IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions);
+                        IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
                         query = query.Where(inclusionPredicate);
-                        IDocumentQuery<PackageManifest> documentQuery = query.AsDocumentQuery();
+                        FeedIterator<CosmosPackageManifest> documentQuery = query.ToFeedIterator();
 
                         // Submit Query to Cosmos
                         taskSet.Add(Task.Run(() => this.cosmosDatabase.GetByDocumentQuery(documentQuery)));
@@ -565,7 +559,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                     await Task.WhenAll(taskSet.ToArray());
 
                     // Process Manifests from Cosmos
-                    foreach (Task<ApiDataPage<PackageManifest>> task in taskSet)
+                    foreach (Task<ApiDataPage<CosmosPackageManifest>> task in taskSet)
                     {
                         manifests.AddRange(task.Result.Items);
                     }
@@ -574,10 +568,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 }
             }
 
-            // Process Filters
+            // Process Filters locally
             if (manifestSearchRequest.Filters != null)
             {
-                ExpressionStarter<PackageManifest> filterPredicate = PredicateBuilder.New<PackageManifest>();
+                ExpressionStarter<CosmosPackageManifest> filterPredicate = PredicateBuilder.New<CosmosPackageManifest>();
                 foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
                 {
                     if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
@@ -745,7 +739,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             return isMatchTypeSupported;
         }
 
-        private Expression<Func<PackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
+        private Expression<Func<CosmosPackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
         {
             return (packageMatchField, requestMatch.MatchType) switch
             {

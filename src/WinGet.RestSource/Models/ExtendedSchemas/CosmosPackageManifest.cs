@@ -6,13 +6,14 @@
 
 namespace Microsoft.WinGet.RestSource.Models.ExtendedSchemas
 {
+    using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Models.Schemas;
     using Newtonsoft.Json;
 
     /// <summary>
     /// This is a manifest, which is an extension of the package core model, and the extended version model.
     /// </summary>
-    public class CosmosPackageManifest : PackageManifest
+    public class CosmosPackageManifest : PackageManifest, ICosmosIdDocument
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosPackageManifest"/> class.

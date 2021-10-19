@@ -8,8 +8,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Documents.Client;
-    using Microsoft.Azure.Documents.Linq;
+    using Microsoft.Azure.Cosmos;
     using Microsoft.WinGet.RestSource.Common;
 
     /// <summary>
@@ -25,7 +24,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Add<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will delete a document by ID and Partition Key.
@@ -34,7 +33,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
         Task Delete<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will add a new document or update it if the document already exists.
@@ -43,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Upsert<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will add update a document.
@@ -53,15 +52,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Update<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will return an IQueryable for building out document queries.
         /// </summary>
         /// <param name="feedOptions">Feed Options.</param>
+        /// <param name="continuationToken">(Optional) The continuation token in the Azure Cosmos DB service.</param>
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>IQueryable.</returns>
-        IQueryable<T> GetIQueryable<T>(FeedOptions feedOptions = null)
+        IQueryable<T> GetIQueryable<T>(QueryRequestOptions feedOptions = null, string continuationToken = null)
             where T : class;
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
         Task<CosmosDocument<T>> GetByIdAndPartitionKey<T>(string id, string partitionKey)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will retrieve a document by document query.
@@ -80,7 +80,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <param name="documentQuery">Document Query.</param>
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
-        Task<ApiDataPage<T>> GetByDocumentQuery<T>(IDocumentQuery<T> documentQuery)
+        Task<ApiDataPage<T>> GetByDocumentQuery<T>(FeedIterator<T> documentQuery)
             where T : class;
     }
 }
