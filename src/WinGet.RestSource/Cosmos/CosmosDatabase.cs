@@ -31,17 +31,17 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <param name="containerId">Database container.</param>
         public CosmosDatabase(Uri serviceEndpoint, string authKey, string databaseId, string containerId)
         {
-            var client = new CosmosClientBuilder(serviceEndpoint.ToString(), authKey).Build();
+            CosmosClient client = new CosmosClientBuilder(serviceEndpoint.ToString(), authKey).Build();
             this.container = client.GetContainer(databaseId, containerId);
         }
 
         /// <inheritdoc />
         public async Task Add<T>(CosmosDocument<T> cosmosDocument)
-            where T : class
+            where T : class, ICosmosIdDocument
         {
             try
             {
-                var resourceResponse = await this.container.CreateItemAsync(cosmosDocument.Document);
+                ItemResponse<T> resourceResponse = await this.container.CreateItemAsync(cosmosDocument.Document);
             }
             catch (CosmosException cosmosException)
             {
@@ -55,7 +55,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
         /// <inheritdoc />
         public async Task Delete<T>(CosmosDocument<T> cosmosDocument)
-            where T : class
+            where T : class, ICosmosIdDocument
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
         /// <inheritdoc />
         public async Task Upsert<T>(CosmosDocument<T> cosmosDocument)
-            where T : class
+            where T : class, ICosmosIdDocument
         {
             try
             {
@@ -91,7 +91,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
         /// <inheritdoc />
         public async Task Update<T>(CosmosDocument<T> cosmosDocument)
-            where T : class
+            where T : class, ICosmosIdDocument
         {
             try
             {
@@ -134,20 +134,19 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
         /// <inheritdoc />
         public async Task<CosmosDocument<T>> GetByIdAndPartitionKey<T>(string id, string partitionKey)
-            where T : class
+            where T : class, ICosmosIdDocument
         {
             CosmosDocument<T> cosmosDocument = new CosmosDocument<T>();
 
             try
             {
                 // Get the Resource Response
-                var resourceResponse = await this.container.ReadItemAsync<CosmosDocument<T>>(id, new PartitionKey(partitionKey));
+                ItemResponse<T> resourceResponse = await this.container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));
 
                 // Process Response
-                CosmosDocument<T> document = resourceResponse.Resource;
-                cosmosDocument.Etag = document.Etag;
-                cosmosDocument.Id = document.Id;
-                cosmosDocument.Document = document.Document;
+                cosmosDocument.Etag = resourceResponse.ETag;
+                cosmosDocument.Id = resourceResponse.Resource.Id;
+                cosmosDocument.Document = resourceResponse.Resource;
             }
             catch (CosmosException cosmosException)
             {
@@ -170,7 +169,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             try
             {
-                var response = await documentQuery.ReadNextAsync();
+                FeedResponse<T> response = await documentQuery.ReadNextAsync();
                 apiDataPage.ContinuationToken = response.ContinuationToken;
                 apiDataPage.Items = response.ToList();
             }

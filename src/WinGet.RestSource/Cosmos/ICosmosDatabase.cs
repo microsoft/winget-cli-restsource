@@ -24,7 +24,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Add<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will delete a document by ID and Partition Key.
@@ -33,7 +33,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
         Task Delete<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will add a new document or update it if the document already exists.
@@ -42,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Upsert<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will add update a document.
@@ -52,7 +52,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Finalized Document.</returns>
         Task Update<T>(CosmosDocument<T> cosmosDocument)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will return an IQueryable for building out document queries.
@@ -72,7 +72,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <typeparam name="T">Document Type.</typeparam>
         /// <returns>Document.</returns>
         Task<CosmosDocument<T>> GetByIdAndPartitionKey<T>(string id, string partitionKey)
-            where T : class;
+            where T : class, ICosmosIdDocument;
 
         /// <summary>
         /// This will retrieve a document by document query.
