@@ -56,18 +56,14 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// Initializes a new instance of the <see cref="CosmosDataStore"/> class.
         /// </summary>
         /// <param name="log">Log.</param>
-        public CosmosDataStore(ILogger<CosmosDataStore> log)
+        /// <param name="serviceEndpoint">Service Endpoint.</param>
+        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
+        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
+        /// <param name="databaseId">Database.</param>
+        /// <param name="containerId">Database container.</param>
+        public CosmosDataStore(ILogger<CosmosDataStore> log, string serviceEndpoint, string readWriteKey, string readOnlyKey, string databaseId, string containerId)
         {
-            Uri endpoint = new Uri(
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ??
-                throw new System.IO.InvalidDataException());
-            CosmosDatabase database = new CosmosDatabase(
-                endpoint,
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting),
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting));
-
-            this.cosmosDatabase = database;
+            this.cosmosDatabase = new CosmosDatabase(serviceEndpoint, readWriteKey, readOnlyKey, databaseId, containerId);
             this.log = log;
         }
 

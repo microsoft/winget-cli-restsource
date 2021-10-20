@@ -27,9 +27,14 @@ namespace Microsoft.WinGet.RestSource.Constants
         public const string CosmosAccountEndpointSetting = "CosmosAccountEndpoint";
 
         /// <summary>
-        /// This is the Cosmos Account Key setting.
+        /// This is the Cosmos read-write key setting.
         /// </summary>
-        public const string CosmosAccountKeySetting = "CosmosAccountKey";
+        public const string CosmosReadWriteKeySetting = "CosmosReadWriteKey";
+
+        /// <summary>
+        /// This is the Cosmos read-only key setting.
+        /// </summary>
+        public const string CosmosReadOnlyKeySetting = "CosmosReadOnlyKey";
 
         /// <summary>
         /// This is the maximum continuation token from cosmos db in kb.
