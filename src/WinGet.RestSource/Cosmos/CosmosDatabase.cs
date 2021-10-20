@@ -10,7 +10,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Azure.Cosmos;
-    using Microsoft.Azure.Cosmos.Fluent;
+    using Microsoft.Azure.Cosmos.Linq;
+    using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Common;
     using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Exceptions;
@@ -20,19 +21,34 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     /// </summary>
     public class CosmosDatabase : ICosmosDatabase
     {
-        private readonly Container container;
+        private readonly string databaseId;
+        private readonly string containerId;
+
+        // Client and container used for database modification operations.
+        private readonly CosmosClient readWriteClient;
+        private readonly Container readWriteContainer;
+
+        // Container use for read-only database operations.
+        private readonly Container readOnlyContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDatabase"/> class.
         /// </summary>
         /// <param name="serviceEndpoint">Service Endpoint.</param>
-        /// <param name="authKey">Authorization Key.</param>
+        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
+        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
         /// <param name="databaseId">Database.</param>
         /// <param name="containerId">Database container.</param>
-        public CosmosDatabase(Uri serviceEndpoint, string authKey, string databaseId, string containerId)
+        public CosmosDatabase(string serviceEndpoint, string readWriteKey, string readOnlyKey, string databaseId, string containerId)
         {
-            CosmosClient client = new CosmosClientBuilder(serviceEndpoint.ToString(), authKey).Build();
-            this.container = client.GetContainer(databaseId, containerId);
+            this.databaseId = databaseId;
+            this.containerId = containerId;
+
+            var readOnlyClient = new CosmosClient(serviceEndpoint, readOnlyKey);
+            this.readOnlyContainer = readOnlyClient.GetContainer(databaseId, containerId);
+
+            this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
+            this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
         }
 
         /// <inheritdoc />
@@ -41,7 +57,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                ItemResponse<T> resourceResponse = await this.container.CreateItemAsync(cosmosDocument.Document);
+                ItemResponse<T> resourceResponse = await this.readWriteContainer.CreateItemAsync(cosmosDocument.Document);
             }
             catch (CosmosException cosmosException)
             {
@@ -59,7 +75,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                await this.container.DeleteItemAsync<T>(cosmosDocument.Id, new PartitionKey(cosmosDocument.PartitionKey));
+                await this.readWriteContainer.DeleteItemAsync<T>(cosmosDocument.Id, new PartitionKey(cosmosDocument.PartitionKey));
             }
             catch (CosmosException cosmosException)
             {
@@ -77,7 +93,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             try
             {
-                await this.container.UpsertItemAsync(cosmosDocument.Document);
+                await this.readWriteContainer.UpsertItemAsync(cosmosDocument.Document);
             }
             catch (CosmosException cosmosException)
             {
@@ -96,7 +112,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             try
             {
                 var requestOptions = new ItemRequestOptions { IfMatchEtag = cosmosDocument.Etag };
-                await this.container.ReplaceItemAsync(cosmosDocument.Document, cosmosDocument.Id, requestOptions: requestOptions);
+                await this.readWriteContainer.ReplaceItemAsync(cosmosDocument.Document, cosmosDocument.Id, requestOptions: requestOptions);
             }
             catch (CosmosException cosmosException)
             {
@@ -119,7 +135,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                     requestOptions = new QueryRequestOptions { ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb };
                 }
 
-                IQueryable<T> iQueryable = this.container.GetItemLinqQueryable<T>(continuationToken: continuationToken, requestOptions: requestOptions);
+                IQueryable<T> iQueryable = this.readOnlyContainer.GetItemLinqQueryable<T>(continuationToken: continuationToken, requestOptions: requestOptions);
                 return iQueryable;
             }
             catch (CosmosException cosmosException)
@@ -141,7 +157,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             try
             {
                 // Get the Resource Response
-                ItemResponse<T> resourceResponse = await this.container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));
+                ItemResponse<T> resourceResponse = await this.readOnlyContainer.ReadItemAsync<T>(id, new PartitionKey(partitionKey));
 
                 // Process Response
                 cosmosDocument.Etag = resourceResponse.ETag;

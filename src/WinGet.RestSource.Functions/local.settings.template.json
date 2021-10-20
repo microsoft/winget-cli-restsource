@@ -4,7 +4,8 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "CosmosAccountEndpoint": "<your CosmosDB endpoint>",
-    "CosmosAccountKey": "<your CosmosDB account key>",
+    "CosmosReadOnlyKey": "<your CosmosDB read-only account key>",
+    "CosmosReadWriteKey": "<your CosmosDB read-write account key>",
     "CosmosDatabase": "<your CosmosDB database>",
     "CosmosContainer": "<your CosmosDB container>",
     "ServerIdentifier": "winget-pkgs-restsource-dev"
