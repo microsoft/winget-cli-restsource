@@ -50,6 +50,7 @@ Function Add-WinGetManifest
         ## Validates that the Azure Modules are installed
         $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
         $Result = Test-PowerShellModuleExist -Modules $RequiredModules
+        $Response = @()
         
         $AzureFunctionName = $FunctionName
 
@@ -117,48 +118,50 @@ Function Add-WinGetManifest
     PROCESS
     {
         ## Add foreach loop
-        Write-Verbose -Message "Confirming that the Manifest ID doesn't already exist in Azure for $($ApplicationManifest.PackageIdentifier)."
-        $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $ApplicationManifest.PackageIdentifier
+        foreach ($Manifest in $ApplicationManifest) {
+            Write-Verbose -Message "Confirming that the Manifest ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
+            $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $Manifest.PackageIdentifier
 
-        #$ApplicationManifestObject = $ApplicationManifest | ConvertFrom-Json
-        $ApplicationManifestObject = $ApplicationManifest
-        
-        ## If the package already exists, return Error
-        $GetResult | foreach-object {
-            IF($_.PackageIdentifier -eq $ApplicationManifestObject.PackageIdentifier) {
-                $ErrReturnObject = @{
-                    SubmittedManifest = $ApplicationManifest
-                    FoundManifest     = $_
-                }
-
-                Write-Error -Message "Manifest is already existing for the specified ID, removal of the Manifest is required to continue..." -Category ResourceExists -RecommendedAction "Remove existing problematic manifest, then re-run. Or Update current matching manifest." -TargetObject $ErrReturnObject
-                $apiMethod = "Put"; Break
-            }
-        }
-
-        ## Do not update (Put) and only add (Post)
-        if($apiMethod -eq "Post"){
-            Write-Verbose -Message "Adding the Manifest to the WinGet Source $FunctionName.`n$($ApplicationManifest.GetJson())"
+            #$ManifestObject = $Manifest | ConvertFrom-Json
+            $ManifestObject = $Manifest
             
-            $Response = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest.GetJson() -ContentType $apiContentType  -ErrorVariable errInvoke
+            ## If the package already exists, return Error
+            $GetResult | foreach-object {
+                IF($_.PackageIdentifier -eq $ManifestObject.PackageIdentifier) {
+                    $ErrReturnObject = @{
+                        SubmittedManifest = $Manifest
+                        FoundManifest     = $_
+                    }
 
-            if($errInvoke -ne @{}) {
-                $ErrReturnObject = @{
-                    AzFunctionURL       = $AzFunctionURL
-                    apiHeader           = $apiHeader
-                    apiMethod           = $apiMethod
-                    apiContentType      = $apiContentType
-                    ApplicationManifest = $ApplicationManifest.GetJson()
-                    Response            = $Response
-                    InvokeError         = $errInvoke
+                    Write-Error -Message "Manifest is already existing for the specified ID, removal of the Manifest is required to continue..." -Category ResourceExists -RecommendedAction "Remove existing problematic manifest, then re-run. Or Update current matching manifest." -TargetObject $ErrReturnObject
+                    $apiMethod = "Put"; Break
                 }
+            }
 
-                ## If the Post failed, then return User specific error messages:
-                if($errInvoke -eq "Failure (409)"){
-                    Write-Warning -Message "Manifest file already exists."
-                }
-                else {
-                    Write-Error -Message "Unhandled Error" -TargetObject $ErrReturnObject
+            ## Do not update (Put) and only add (Post)
+            if($apiMethod -eq "Post"){
+                Write-Verbose -Message "Adding the Manifest to the WinGet Source $FunctionName.`n$($Manifest.GetJson())"
+                
+                $Response += Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $Manifest.GetJson() -ContentType $apiContentType  -ErrorVariable errInvoke
+
+                if($errInvoke -ne @{}) {
+                    $ErrReturnObject = @{
+                        AzFunctionURL       = $AzFunctionURL
+                        apiHeader           = $apiHeader
+                        apiMethod           = $apiMethod
+                        apiContentType      = $apiContentType
+                        ApplicationManifest = $Manifest.GetJson()
+                        Response            = $Response
+                        InvokeError         = $errInvoke
+                    }
+
+                    ## If the Post failed, then return User specific error messages:
+                    if($errInvoke -eq "Failure (409)"){
+                        Write-Warning -Message "Manifest file already exists."
+                    }
+                    else {
+                        Write-Error -Message "Unhandled Error" -TargetObject $ErrReturnObject
+                    }
                 }
             }
         }
