@@ -1,0 +1,948 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.WinGet.PowershellSupport</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.PackageManifestUtils">
+            <summary>
+            Wrapper class around PackageManifest object.
+            Supports converting yaml manifest to json object.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.PackageManifestUtils.AddManifestToPackageManifest(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest,System.String)">
+            <summary>
+            Merges a merged manifest object into an existing json representation of the app.
+            </summary>
+            <param name="manifest">Merged manifest object.</param>
+            <param name="priorManifest">Prior json data to merge with.</param>
+            <returns>A <see cref="T:Microsoft.WinGet.RestSource.Models.Schemas.PackageManifest"/> representing the rest source json representation of the package.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest">
+            <summary>
+            Wrapper class around WinGetUtil manifest native implementation.
+            For dll entry points are defined here:
+                https://github.com/microsoft/winget-cli/blob/master/src/WinGetUtil/WinGetUtil.h.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifestOption">
+            <summary>
+            The error from the installer.
+            Must be in sync with WinGetValidateManifestOption at:
+                https://github.com/microsoft/winget-cli/blob/master/src/WinGetUtil/WinGetUtil.h.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifestOption.Default">
+            <summary>
+            Default validation behavior.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifestOption.SchemaValidationOnly">
+            <summary>
+            Schema validation only.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifest(System.String,System.String,Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifestOption)">
+            <summary>
+            Validates the manifest is compliant.
+            </summary>
+            <param name="manifestPath">Manifest path.</param>
+            <param name="mergedManifestPath">Merged manifest output path.</param>
+            <param name="option">Desired validate manifest option.</param>
+            <returns>Message from manifest validation.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.WinGetValidateManifestV2(System.String,System.Boolean@,System.String@,System.String,Microsoft.WinGet.RestSource.PowershellSupport.Helpers.WinGetUtilWrapperManifest.ValidateManifestOption)">
+            <summary>
+            Validates a given manifest. Returns a bool for validation result and
+            a string representing validation errors if validation failed.
+            </summary>
+            <param name="manifestPath">Path to manifest file.</param>
+            <param name="succeeded">Out bool is validation succeeded.</param>
+            <param name="failureMessage">Out string failure message, if any.</param>
+            <param name="mergedManifestPath">Path to merged manifest file. Empty means no merged manifest needed.</param>
+            <param name="option">Validate manifest option.</param>
+            <returns>HRESULT.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry">
+            <summary>
+            Class that contains installer arp entry.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.DisplayName">
+            <summary>
+            Gets or sets the display name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.Publisher">
+            <summary>
+            Gets or sets the publisher.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.DisplayVersion">
+            <summary>
+            Gets or sets the display version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.ProductCode">
+            <summary>
+            Gets or sets the ProductCode.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.UpgradeCode">
+            <summary>
+            Gets or sets the UpgradeCode.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerArpEntry.InstallerType">
+            <summary>
+            Gets or sets the installer type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerDependency">
+            <summary>
+            Class that contains different dependencies of installer.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerDependency.WindowsFeatures">
+            <summary>
+            Gets or sets the windows features installer depends on.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerDependency.WindowsLibraries">
+            <summary>
+            Gets or sets the windows libraries installer depends on.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerDependency.PackageDependencies">
+            <summary>
+            Gets or sets the package dependencies under same source.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerDependency.ExternalDependencies">
+            <summary>
+            Gets or sets the external dependencies installer depends on.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerExpectedReturnCode">
+            <summary>
+            Class that contains installer expected return code.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerExpectedReturnCode.InstallerReturnCode">
+            <summary>
+            Gets or sets the installer return code.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerExpectedReturnCode.ReturnResponse">
+            <summary>
+            Gets or sets the corresponding response category.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerMarkets">
+            <summary>
+            Class that contains installer markets.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerMarkets.AllowedMarkets">
+            <summary>
+            Gets or sets the list of allowed markets.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerMarkets.ExcludedMarkets">
+            <summary>
+            Gets or sets the list of excluded markets.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerPackageDependency">
+            <summary>
+            Class that contains package dependency from same source.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerPackageDependency.PackageIdentifier">
+            <summary>
+            Gets or sets the dependency package identifier.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerPackageDependency.MinimumVersion">
+            <summary>
+            Gets or sets the minimum version of the dependency package.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches">
+            <summary>
+            Class that contains different types of installer switches like Custom, Silent and Interactive.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Custom">
+            <summary>
+            Gets or sets the Custom installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Silent">
+            <summary>
+            Gets or sets the Silent installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.SilentWithProgress">
+            <summary>
+            Gets or sets the SilentWithProgress installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Interactive">
+            <summary>
+            Gets or sets the Interactive installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Upgrade">
+            <summary>
+            Gets or sets the Upgrade installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Log">
+            <summary>
+            Gets or sets the Log installer switch.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.InstallLocation">
+            <summary>
+            Gets or sets the install location switch.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.op_Equality(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches,Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches)">
+            <summary>
+            Override op_Equality.
+            </summary>
+            <param name="lhs">left hand side.</param>
+            <param name="rhs">right hand side.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.op_Inequality(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches,Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches)">
+            <summary>
+            Override op_Inequality.
+            </summary>
+            <param name="lhs">left hand side.</param>
+            <param name="rhs">right hand side.</param>
+            <returns>boolean indicating if the objects are not equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Equals(System.Object)">
+            <summary>
+            Override object.Equals.
+            </summary>
+            <param name="other">other object.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.Equals(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches)">
+            <summary>
+            Implemented IEquitable.
+            </summary>
+            <param name="other">other object.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.InstallerSwitches.GetHashCode">
+            <summary>
+            Override object.GetHashCode. Implement if needed.
+            to create the hash.
+            </summary>
+            <returns>resulting hash.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest">
+            <summary>
+            Class that defines the structure of the manifest. Uses YamlDotNet
+            to deserialize a string or a stream and produce a manifest object.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Id">
+            <summary>
+            Gets or sets the Id of the package.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Version">
+            <summary>
+            Gets or sets the version of the package.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ManifestType">
+            <summary>
+            Gets or sets the manifest type.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ManifestVersion">
+            <summary>
+            Gets or sets the manifest version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Channel">
+            <summary>
+            Gets or sets the Channel.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Moniker">
+            <summary>
+            Gets or sets the AppMoniker.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PackageLocale">
+            <summary>
+            Gets or sets the default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Publisher">
+            <summary>
+            Gets or sets the publisher in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PublisherUrl">
+            <summary>
+            Gets or sets the publisher url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PublisherSupportUrl">
+            <summary>
+            Gets or sets the publisher support url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PrivacyUrl">
+            <summary>
+            Gets or sets the default privacy url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Author">
+            <summary>
+            Gets or sets the author in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PackageName">
+            <summary>
+            Gets or sets the package name in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PackageUrl">
+            <summary>
+            Gets or sets the package homepage url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.License">
+            <summary>
+            Gets or sets the license in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.LicenseUrl">
+            <summary>
+            Gets or sets the license url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Copyright">
+            <summary>
+            Gets or sets the copyright in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CopyrightUrl">
+            <summary>
+            Gets or sets the copyright url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ShortDescription">
+            <summary>
+            Gets or sets the the package short description in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Description">
+            <summary>
+            Gets or sets the package description in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Tags">
+            <summary>
+            Gets or sets the Tags in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Agreements">
+            <summary>
+            Gets or sets the package agreements in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ReleaseNotes">
+            <summary>
+            Gets or sets the release notes in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ReleaseNotesUrl">
+            <summary>
+            Gets or sets the release notes url in default locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallerLocale">
+            <summary>
+            Gets or sets the default installer locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Platform">
+            <summary>
+            Gets or sets the default list of supported platforms.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.MinimumOSVersion">
+            <summary>
+            Gets or sets the default minimum OS version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallerType">
+            <summary>
+            Gets or sets the default installer type.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Scope">
+            <summary>
+            Gets or sets the default installer scope.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallModes">
+            <summary>
+            Gets or sets the default list of install modes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallerSuccessCodes">
+            <summary>
+            Gets or sets the default list of addtional installer success codes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.UpgradeBehavior">
+            <summary>
+            Gets or sets the default upgrade behavior.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Commands">
+            <summary>
+            Gets or sets the default list of commands.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Protocols">
+            <summary>
+            Gets or sets the default list of supported protocols.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.FileExtensions">
+            <summary>
+            Gets or sets the default list of supported file extensions.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.PackageFamilyName">
+            <summary>
+            Gets or sets the default package family name for msix packaged installers.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ProductCode">
+            <summary>
+            Gets or sets default product code for ARP (Add/Remove Programs) installers.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Capabilities">
+            <summary>
+            Gets or sets the default list of capabilities. For msix only.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.RestrictedCapabilities">
+            <summary>
+            Gets or sets the default list of restricted capabilities. For msix only.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Dependencies">
+            <summary>
+            Gets or sets the default installer dependency.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Switches">
+            <summary>
+            Gets or sets the default installer switches.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Markets">
+            <summary>
+            Gets or sets the default installer markets info.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallerAbortsTerminal">
+            <summary>
+            Gets or sets a value indicating whether the default installer behavior aborts terminal.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.InstallLocationRequired">
+            <summary>
+            Gets or sets a value indicating whether the default installer behavior requires explicit install location.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.RequireExplicitUpgrade">
+            <summary>
+            Gets or sets a value indicating whether the default installer behavior requires explicit upgrade.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ReleaseDate">
+            <summary>
+            Gets or sets the default installer release date.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.UnsupportedOSArchitectures">
+            <summary>
+            Gets or sets the default list of unsupported OS architectures.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.AppsAndFeaturesEntries">
+            <summary>
+            Gets or sets the default list of apps and features entries.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ElevationRequirement">
+            <summary>
+            Gets or sets the default installer elevation requirement.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.ExpectedReturnCodes">
+            <summary>
+            Gets or sets the default list of installer expected return codes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Installers">
+            <summary>
+            Gets or sets collection of ManifestInstaller. At least one is required.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.Localization">
+            <summary>
+            Gets or sets collection of additional ManifestLocalization.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CreateManifestFromPath(System.String)">
+            <summary>
+            Deserialize a stream reader into a Manifest object.
+            </summary>
+            <param name="filePath">file path.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CreateManifestFromStream(System.IO.Stream)">
+            <summary>
+            Deserialize a stream into a Manifest object.
+            </summary>
+            <param name="stream">Manifest stream.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CreateManifestFromStreamReader(System.IO.StreamReader)">
+            <summary>
+            Deserialize a stream reader into a Manifest object.
+            </summary>
+            <param name="streamReader">stream reader.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CreateManifestFromString(System.String)">
+            <summary>
+            Deserialize a string into a Manifest object.
+            </summary>
+            <param name="value">Manifest in string value.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.GetURIs">
+            <summary>
+            Returns a List of strings containing the URIs contained within this manifest.
+            </summary>
+            <returns>List of strings.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.IsManifestEquivalent(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest)">
+            <summary>
+            Checks if two manifests are equivalent.
+            </summary>
+            <param name="other">other object.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.Manifest.CreateDeserializer">
+            <summary>
+            Helper to deserialize the manifest.
+            </summary>
+            <returns>IDeserializer object.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller">
+            <summary>
+            Class that contains the elements that represent what an installer element can contain in the manifest file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Arch">
+            <summary>
+            Gets or sets the architecture of the installer. Values: x86, x64, arm, arm64, neutral.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Url">
+            <summary>
+            Gets or sets the URL of the installer.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Sha256">
+            <summary>
+            Gets or sets the SHA256 hash of the installer. Required element.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.SignatureSha256">
+            <summary>
+            Gets or sets the signature SHA256 for an appx/msix. Only used by appx/msix type.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallerLocale">
+            <summary>
+            Gets or sets the installer locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Platform">
+            <summary>
+            Gets or sets the list of supported platforms.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.MinimumOSVersion">
+            <summary>
+            Gets or sets the minimum OS version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallerType">
+            <summary>
+            Gets or sets the installer type. If present, has more precedence than root.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Scope">
+            <summary>
+            Gets or sets the installer scope.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallModes">
+            <summary>
+            Gets or sets the list of install modes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallerSuccessCodes">
+            <summary>
+            Gets or sets the list of addtional installer success codes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.UpgradeBehavior">
+            <summary>
+            Gets or sets the upgrade behavior.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Commands">
+            <summary>
+            Gets or sets the list of commands.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Protocols">
+            <summary>
+            Gets or sets the list of supported protocols.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.FileExtensions">
+            <summary>
+            Gets or sets the list of supported file extensions.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.PackageFamilyName">
+            <summary>
+            Gets or sets the package family name for msix packaged installers.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.ProductCode">
+            <summary>
+            Gets or sets product code for ARP (Add/Remove Programs) installers.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Capabilities">
+            <summary>
+            Gets or sets the list of capabilities. For msix only.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.RestrictedCapabilities">
+            <summary>
+            Gets or sets the list of restricted capabilities. For msix only.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Dependencies">
+            <summary>
+            Gets or sets the installer dependency.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Switches">
+            <summary>
+            Gets or sets the installer switches. If present, has more precedence than root.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Markets">
+            <summary>
+            Gets or sets the installer markets info.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallerAbortsTerminal">
+            <summary>
+            Gets or sets a value indicating whether the installer behavior aborts terminal.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.InstallLocationRequired">
+            <summary>
+            Gets or sets a value indicating whether the installer behavior requires explicit install location.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.RequireExplicitUpgrade">
+            <summary>
+            Gets or sets a value indicating whether the installer behavior requires explicit upgrade.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.ReleaseDate">
+            <summary>
+            Gets or sets the installer release date.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.UnsupportedOSArchitectures">
+            <summary>
+            Gets or sets the list of unsupported OS architectures.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.AppsAndFeaturesEntries">
+            <summary>
+            Gets or sets the list of apps and features entries.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.ElevationRequirement">
+            <summary>
+            Gets or sets the installer elevation requirement.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.ExpectedReturnCodes">
+            <summary>
+            Gets or sets the list of installer expected return codes.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.GetURIs">
+            <summary>
+            Returns a List of strings containing the URIs contained within this installer.
+            </summary>
+            <returns>List of strings.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Equals(System.Object)">
+            <summary>
+            Override object.Equals.
+            </summary>
+            <param name="other">other object.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.Equals(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller)">
+            <summary>
+            Implemented IEquitable.
+            </summary>
+            <param name="other">other object.</param>
+            <returns>boolean indicating if the objects are equals.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestInstaller.GetHashCode">
+            <summary>
+            Override object.GetHashCode.
+            </summary>
+            <returns>resulting hash.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization">
+            <summary>
+            Class that contains the elements that represent what a manifest localization element can contain in the manifest file.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PackageLocale">
+            <summary>
+            Gets or sets the locale.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Publisher">
+            <summary>
+            Gets or sets the publisher.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PublisherUrl">
+            <summary>
+            Gets or sets the publisher url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PublisherSupportUrl">
+            <summary>
+            Gets or sets the publisher support url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PrivacyUrl">
+            <summary>
+            Gets or sets the default privacy url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Author">
+            <summary>
+            Gets or sets the author.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PackageName">
+            <summary>
+            Gets or sets the package name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.PackageUrl">
+            <summary>
+            Gets or sets the package homepage url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.License">
+            <summary>
+            Gets or sets the license.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.LicenseUrl">
+            <summary>
+            Gets or sets the license url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Copyright">
+            <summary>
+            Gets or sets the copyright.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.CopyrightUrl">
+            <summary>
+            Gets or sets the copyright url.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.ShortDescription">
+            <summary>
+            Gets or sets the the package short description.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Description">
+            <summary>
+            Gets or sets the package description.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Tags">
+            <summary>
+            Gets or sets the Tags.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.Agreements">
+            <summary>
+            Gets or sets the package agreements.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.ReleaseNotes">
+            <summary>
+            Gets or sets the release notes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.ReleaseNotesUrl">
+            <summary>
+            Gets or sets the release notes url.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.ManifestLocalization.GetURIs">
+            <summary>
+            Returns a List of strings containing the URIs contained within this localization.
+            </summary>
+            <returns>List of strings.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo">
+            <summary>
+            Class that contains minimum manifest info for each single manifest in a multi file manifest.
+            Used in validation pipeline to check multi file manifest consistency.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.Id">
+            <summary>
+            Gets or sets the Id of the package.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.Version">
+            <summary>
+            Gets or sets the version of the package.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.ManifestType">
+            <summary>
+            Gets or sets the manifest type.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.ManifestVersion">
+            <summary>
+            Gets or sets the manifest version.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.PackageLocale">
+            <summary>
+            Gets or sets the package locale. Used in locale manifest in a multi file manifest.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.CreateManifestInfoFromPath(System.String)">
+            <summary>
+            Deserialize a stream reader into a Manifest object.
+            </summary>
+            <param name="filePath">file path.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.CreateManifestInfoFromStream(System.IO.Stream)">
+            <summary>
+            Deserialize a stream into a Manifest object.
+            </summary>
+            <param name="stream">Manifest stream.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.CreateManifestInfoFromStreamReader(System.IO.StreamReader)">
+            <summary>
+            Deserialize a stream reader into a Manifest object.
+            </summary>
+            <param name="streamReader">stream reader.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.CreateManifestInfoFromString(System.String)">
+            <summary>
+            Deserialize a string into a Manifest object.
+            </summary>
+            <param name="value">Manifest in string value.</param>
+            <returns>Manifest object populated and validated.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.CreateDeserializer">
+            <summary>
+            Helper to deserialize the manifest.
+            </summary>
+            <returns>IDeserializer object.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo.ValidateManifestInfo(Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.MinManifestInfo)">
+            <summary>
+            Validate manifest info integrity.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.PackageAgreement">
+            <summary>
+            Class that contains package agreement.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.PackageAgreement.AgreementLabel">
+            <summary>
+            Gets or sets the agreement label.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.PackageAgreement.Agreement">
+            <summary>
+            Gets or sets the agreement text.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.PowershellSupport.ManifestModelV1.PackageAgreement.AgreementUrl">
+            <summary>
+            Gets or sets the agreement url.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter">
+            <summary>
+            Supports converting yaml manifest to json string.
+            Primarily supports powershell modules.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter.AddManifestToPackageManifest(System.String,System.String)">
+            <summary>
+            Processes a directory for yaml manifests and converts it into the rest json format.
+            </summary>
+            <param name="directory">direcoty to process. Should contain the manifests for a single app.</param>
+            <param name="priorRestManifest">Prior json data to merge with.</param>
+            <returns>A string of the rest source json.</returns>
+        </member>
+    </members>
+</doc>

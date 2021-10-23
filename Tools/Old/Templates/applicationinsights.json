@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "defaultValue": "[concat('appin', uniquestring(resourceGroup().id))]",
+            "metadata": {
+                "description": "Name for Application Insights."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for Application Insights."
+            }
+        },
+        "type": {
+            "type": "string",
+            "defaultValue": "web",
+            "metadata": {
+                "description": "Type of Application"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('name')]",
+            "type": "microsoft.insights/components",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-05-01",
+            "properties": {
+                "ApplicationId": "[parameters('name')]",
+                "Application_Type": "[parameters('type')]"
+            }
+        }
+    ],
+    "outputs": {
+        "applicationInsightsName": {
+            "type": "string",
+            "value": "[parameters('name')]"
+        },
+        "applicationInsightsResourceId": {
+            "type": "string",
+            "value": "[resourceId('microsoft.insights/components/', parameters('name'))]"
+        }
+    }
+}
