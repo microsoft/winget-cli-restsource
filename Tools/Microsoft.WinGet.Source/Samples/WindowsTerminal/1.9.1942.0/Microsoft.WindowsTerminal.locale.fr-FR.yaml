@@ -5,6 +5,9 @@ PackageIdentifier: Microsoft.WindowsTerminal
 PackageVersion: 1.9.1942.0
 PackageLocale: fr-FR
 Publisher: Microsoft
+PackageName: Windows Terminal
+License: MIT
+LicenseUrl: https://github.com/microsoft/terminal/blob/master/LICENSE
 ShortDescription: Le nouveau terminal Windows, une expérience de ligne de commande à onglets pour Windows.
 ManifestType: locale
 ManifestVersion: 1.0.0

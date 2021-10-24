@@ -7,14 +7,14 @@ Author: Microsoft
 License: MIT
 MinimumOSVersion: 10.0.18362.0
 Tags:
-- Console
-- Command-Line
-- Shell
-- Command Prompt
-- PowerShell
-- WSL
-- Developer Tools
-- Utilities
+- console
+- command-line
+- shell
+- command-prompt
+- powershell
+- wsl
+- developer-tools
+- utilities
 - cli
 - cmd
 - ps

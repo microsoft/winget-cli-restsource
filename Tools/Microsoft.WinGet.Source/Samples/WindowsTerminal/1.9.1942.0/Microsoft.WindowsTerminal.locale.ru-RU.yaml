@@ -5,6 +5,9 @@ PackageIdentifier: Microsoft.WindowsTerminal
 PackageVersion: 1.9.1942.0
 PackageLocale: ru-RU
 Publisher: Microsoft
+PackageName: Windows Terminal
+License: MIT
+LicenseUrl: https://github.com/microsoft/terminal/blob/master/LICENSE
 ShortDescription: Новый терминал Windows, вкладка командной строки опыт для Windows.
 ManifestType: locale
 ManifestVersion: 1.0.0

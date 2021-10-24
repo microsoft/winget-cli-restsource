@@ -5,6 +5,9 @@ PackageIdentifier: Microsoft.WindowsTerminal
 PackageVersion: 1.9.1942.0
 PackageLocale: ja-JP
 Publisher: Microsoft
+PackageName: Windows Terminal
+License: MIT
+LicenseUrl: https://github.com/microsoft/terminal/blob/master/LICENSE
 ShortDescription: 新しい Windows ターミナル、Windows のタブ付きコマンド ライン エクスペリエンス。
 ManifestType: locale
 ManifestVersion: 1.0.0
