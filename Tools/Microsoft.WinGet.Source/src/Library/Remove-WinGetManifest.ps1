@@ -5,9 +5,10 @@ Function Remove-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Custom")][string]$URL,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")]  [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$false)] [string]$ManifestIdentifier = "",
-        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = ""
+        [Parameter(Position=1, Mandatory=$true, ParameterSetName="Custom")][string]$Key,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
+        [Parameter(Position=2, Mandatory=$false)] [string]$ManifestIdentifier = "",
+        [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName   = ""
     )
     BEGIN
     {
@@ -68,7 +69,29 @@ Function Remove-WinGetManifest
                 $apiHeader.Add("x-functions-key", $FunctionKey)
 
                 $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $ManifestIdentifier
-             }
+            }
+            "Custom"{
+                ###############################
+                ##  Rest api call  
+                
+                ## Specifies the Rest api call that will be performed
+                $TriggerName    = "ManifestDelete"
+                $apiContentType = "application/json"
+                $apiMethod      = "Delete"
+
+                ## can function key be part of the header
+                $DefaultHostName = $URL
+
+                ## Creates the API Post Header
+                $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+                $apiHeader.Add("Accept", 'application/json')
+                
+                if($Key) {
+                    $apiHeader.Add("x-functions-key", $Key)
+                }
+
+                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $ManifestIdentifier
+            }
         }
     }
     PROCESS
