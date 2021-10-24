@@ -1,0 +1,43 @@
+{
+    "PackageIdentifier": "Contoso.HeadTrax",
+    "Versions": [
+        {
+            "PackageVersion": "1.0.2.0",
+            "DefaultLocale": {
+                "PackageLocale": "en-US",
+                "Publisher": "Contoso",
+                "PackageName": "HeadTrax",
+                "License": "MIT",
+                "ShortDescription": "Contoso HeadTrax provides an improved employee tracking solution."
+            },
+            "Installers": [
+                {
+                    "InstallerIdentifier": "WindowsApp",
+                    "InstallerSha256": "6B53A914B0FB4EE5BB71FB057020CE48A7C6DF3C22881E7676CAAA85A7FDC81A",
+                    "InstallerUrl": "https://msixwinapps.blob.core.windows.net/msixapps/HeadTraxPkg_1.0.2.0_x64.msix",
+                    "Architecture": "x64",
+                    "InstallerType": "msix"
+                }
+            ]
+        },
+        {
+            "PackageVersion": "1.0.1.0",
+            "DefaultLocale": {
+                "PackageLocale": "en-US",
+                "Publisher": "Contoso",
+                "PackageName": "HeadTrax",
+                "License": "MIT",
+                "ShortDescription": "Contoso HeadTrax provides an improved employee tracking solution."
+            },
+            "Installers": [
+                {
+                    "InstallerIdentifier": "WindowsApp",
+                    "InstallerSha256": "D14866101538C081D85448B92AABE2F27F59587013122F705C98DF54494783CD",
+                    "InstallerUrl": "https://msixwinapps.blob.core.windows.net/msixapps/HeadTraxPkg_1.0.1.0_x64.msix",
+                    "Architecture": "x64",
+                    "InstallerType": "msix"
+                }
+            ]
+        }
+    ]
+}

@@ -1,7 +1,7 @@
 ---
 Description: Details how to create a Windows Package Manager private source.
 title: Windows Package Manager private source
-ms.date: 08/30/2021
+ms.date: 10/23/2021
 ms.topic: article
 keywords: windows, package manager, windows package manager, private repo, private source
 ms.localizationpriority: medium
@@ -11,51 +11,115 @@ ms.localizationpriority: medium
 
 The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a private respository that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
 
+#### Available Guidance
+    - Managing the Windows Package Manager private source with PowerShell.
+    - Managing the Windows Package Manager private source manually.
+
+## Windows Package Manager private source automation
+To simplify the management and interaction with the Windows Package Manager private source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provids cmdlets that enable you to Add, Remove and Get Application Manifests from your Windows Package Manager private source, as well as stand up a new Windows Package Manager private source in Azure.
+
+#### Available Guidance
+    - Download and Installation of the `Microsoft.WinGet.Source` PowerShell Module.
+    - Automate the creation of a Windows Package Manager private source.
+    - Publishing Application Manifests to the Windows Package Manager private source.
+    - Retrieving published Application Manifests from the Windows Package Manager private source.
+    - Removing published Applications Manifests from the Windows Package Manager private source.
+
+### Download and install the PowerShell module
+The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager private source.
+
+**How to:**
+1. Open an Edge Browser.
+1. Navigate to [https://github.com/microsoft/winget-cli-restsource/releases](https://github.com/microsoft/winget-cli-restsource/releases).
+1. Download the latest release of the Microsoft.WinGet.Source PowerShell module.
+1. Open a File Explorer window, and navigate to where you downloaded the Microsoft.WinGet.Source PowerShell module.
+1. Right-click on the Microsoft.WinGet.Source PowerShell module, and select **Extract all** from the drop-down menu.
+1. In the new Window, select the **Extract** button.
+1. After the extraction has completed, navigate to `.\Microsoft.WinGet.Source\src`.
+1. In combination press [Ctrl]+[Shift]+Right-click on the Microsoft.WinGet.Source.psd1 file. Select **Copy Path** from the drop-down menu.
+1. Open an **Administrative PowerShell** window.
+1. Run the following command from the Administrative PowerShell window:
+```Powershell
+PS C:\> Set-ExecutionPolicy Unrestricted
+PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
+```
+
 ## Automatically create a private source
 
-A PowerShell script is provided inside of the *.\src\WinGet.RestSource.Infrastructure* folder that will simplify the creation of Azure resources to host your own Windows Package Manager private source. The Automation script makes use of Azure cmdlets that are only available if the **Az** PowerShell module has been installed. The Automation script will check for the existance of required modules first, and if they are not present will fail and provide guidance on how to import using `Import-Module Az`.
+The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager private source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
-The `automation.ps1` script has the following parameter inputs:
-| Required | Parameter          | Description                                                                                                                |
-|----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|
-| Yes      | ResourcePrefix     | A string of letters which will be prefixed to your newly created Azure resources.                                          |
-| Yes      | Index              | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                |
-| Yes      | AzResourceGroup    | The Resource Group that will be used to contain the Azure resources.                                                       |
-| No       | AzSubscriptionName | The name of the Azure Subscription that will be used to pay for the Azure resources.                                       |
-| No       | AzLocation         | The Azure location where the Azure resources will be created. (Default: westus)                                            |
-| No       | WorkingDirectory   | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created. |
+The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
 
-The PowerShell script has been configured to work with `Get-Help` providing further details about the script, as well as examples of how to use it.
+| Required | Parameter                  | Description                                                                                                                                |
+|----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
+| Yes      | Index                      | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                                |
+| Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
+| No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
+| No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
+| No       | WorkingDirectory           | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created.                 |
+| No       | ARMFunctionPath            | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
+| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager private repository. ["Demo", "Basic", "Enhanced"] |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager private source. (Default: False)                              |
 
-**How to:**
-
-1. Download a local copy of the Windows Package Manager Rest Source from GitHub (github: [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource))
-    1. Select *Code* from within GitHub.
-    1. Select *Download ZIP* from the drop-down menu.
-    1. Extract the newly downloaded ZIP file to *C:\Projects\\*
-
-1. Open PowerShell, and run the following command:
-    ```powershell
-    PS C:\> C:\Projects\winget-cli-restsource\src\WinGet.RestSource.Infrastructure\automation.ps1 -ResourcePrefix "contoso" -Index "demo" -AzResourceGroup "WinGet_PrivateRepository"
-    ```
-
-1. When the script completes, it'll display a command that can be used to include the private source to your Windows Package Manager client.
-
-
-## Automatically add manifests to the private source
-
-After a Windows Package Manager private source has been setup, the next step is to add application manifests to it. 
+> [!Note]
+> The PowerShell Module must be re-imported each time the PowerShell window is closed.
 
 **How to:**
 
-1. Open an administrative PowerShell Window
-1. Run the following command: `Set-ExecutionPolicy Unrestricted`
-1. Load the Function library into memory by running the following `. C:\Projects\winget-cli-restsource\Tools\PrivateRepoLib.ps1`
-1. Run the following command to add the new manifest: `Add-WinGetManifest -PrivateRepoName "PrivateRepo" -ManifestFilePath "C:\Temp\App.json"`
+1. From the Administrative PowerShell window run the following:
+```PowerShell
+PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetPrivateSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
+```
+1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager private source to add it to your WinGet client.
 
-> ![note]
-> For more information on how to use the `Add-WinGetManifest` PowerShell function run `Get-Help Add-WinGetManifest -Full` after loading the `PrivateRepoLib.ps1` script library into memory.
+## Add manifests to the private source
 
+The Windows Package Manager private source provides a private location for hosting your Application Manifests. After the creation of your Windows Package Manager private source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager private source.
+
+The `Add-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files, or a folder containing *.yaml files. For more information on how to use this cmdlet, use the `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest PowerShell Article](.\PowerShell\New-WinGetManifest.md) in Docs.
+
+> [!Note]
+> The PowerShell Module must be re-imported each time the PowerShell window is closed.
+
+**How to:**
+
+1. From the Administrative PowerShell Window run the following:
+```PowerShell
+PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys.json"
+```
+
+## Get manifests from the private source
+
+The Windows Package Manager private source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager private source.
+
+The `Get-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files or *.yaml files as well as targetting an existing Windows Package Manager private source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest PowerShell Article](.\PowerShell\Get-WinGetManifest.md) in Docs.
+
+> [!Note]
+> The PowerShell Module must be re-imported each time the PowerShell window is closed.
+
+**How to:**
+
+1. From the Administrative PowerShell Window run the following:
+```PowerShell
+PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
+```
+
+## Remove manifests from a private source
+
+The Windows Package Manager private source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager private source.
+
+The `Remove-WinGetManifest` PowerShell cmdlet supports targetting an existing Windows Package Manager private source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest PowerShell Article](.\PowerShell\Remove-WinGetManifest.md) in Docs.
+
+> [!Note]
+> The PowerShell Module must be re-imported each time the PowerShell window is closed.
+
+**How to:**
+
+1. From the Administrative PowerShell Window run the following:
+```PowerShell
+PS C:\> Remove-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
+```
 
 ## Manually create a private source
 
@@ -301,8 +365,6 @@ For more information on Azure Cosmos containers, visit their Docs article: [Azur
 	Container id: Manifests
 	Partition key: /id
 1. Select the **Ok** button.
-
-
 
 ### Azure Key Vault
 
