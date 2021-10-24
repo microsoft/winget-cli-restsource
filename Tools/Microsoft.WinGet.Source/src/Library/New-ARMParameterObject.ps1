@@ -1,32 +1,56 @@
 Function New-ARMParameterObject
 {
     <#
-    Description:
-    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once
-    created it'll output the parameter files into a *.json file that can be used in combination with with 
-    template files to build Azure resources required for hosting a Windows Package Manager private source.
-    Returns the PowerShell object.
+    .SYNOPSIS
+    Creates the parameter files, and an object which points to both the created parameter and template files.
+
+    .DESCRIPTION
+    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once created it'll output the parameter files into a *.json file that can be used in combination with with template files to build Azure resources required for hosting a Windows Package Manager private source. Returns the PowerShell object.
+
+    .PARAMETER ParameterFolderPath
+    Path to the directory where the Parameter files will be created.
+
+    .PARAMETER TemplateFolderPath
+    Path to the directory containing the Template files.
+
+    .PARAMETER Index
+    [Optional] The suffix that will be added to each name and file names.
+
+    .PARAMETER Name
+    The name of the objects to be created.
+
+    .PARAMETER Region
+    The Azure location where objects will be created in.
+
+    .PARAMETER ImplementationPerformance
+    ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager private repository.
+
+    .EXAMPLE
+    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -ResourcePrefix "contoso0002" -AzLocation "westus" -ImplementationPerformance "Demo"
+
+    Creates the Parameter files required for the creation of the ARM objects.
+
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
         [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
         [Parameter(Position=2, Mandatory=$false)][string]$Index,
-        [Parameter(Position=3, Mandatory=$true)] [string]$ResourcePrefix,
-        [Parameter(Position=4, Mandatory=$true)] [string]$AzLocation,
-        $ImplementationPerformance
+        [Parameter(Position=3, Mandatory=$true)] [string]$Name,
+        [Parameter(Position=4, Mandatory=$true)] [string]$Region,
+        [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
     )
     BEGIN
     {
         ## This can be used to create a random and unique string name for a resource: "defaultValue": "[concat('kv', uniquestring(resourceGroup().id))]",
 
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $($ResourcePrefix + $Index)
-        $KeyVaultName       = $($ResourcePrefix + $Index)
-        $StorageAccountName = $($ResourcePrefix + $Index).Replace("-", "")
-        $aspName            = $($ResourcePrefix + $Index)
-        $CDBAccountName     = $($ResourcePrefix + $Index)
-        $FunctionName       = $($ResourcePrefix + $Index)
-        $FrontDoorName      = $($ResourcePrefix + $Index)
+        $AppInsightsName    = $($Name + $Index)
+        $KeyVaultName       = $($Name + $Index)
+        $StorageAccountName = $($Name + $Index).Replace("-", "")
+        $aspName            = $($Name + $Index)
+        $CDBAccountName     = $($Name + $Index)
+        $FunctionName       = $($Name + $Index)
+        $FrontDoorName      = $($Name + $Index)
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled Windows Package Manager Functions [CompiledFunctions.zip])
         $CDBDatabaseName    = $("WinGet")
@@ -61,15 +85,7 @@ Function New-ARMParameterObject
         $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction$NameEntryIndex.json"
         $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor$NameEntryIndex.json"
 
-        $aspSKU             = "P1V2"
-        $aspNumberOfWorkers = "1"
-
-        $cosmosDBAAccountType   = "Production"
-        $CosmosDBACapacityMode  = ""  ## Serverless or Provisioned Throughput??
-        $CosmosDBAFreeTier      = ""
-        $CosmosDBAGeoRedundancy = ""
-        $CosmosDBABackupRedundancy = ""  ## Geo-Redundant backup storage, or Locally-Redundant backup storage
-
+        Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
         switch ($ImplementationPerformance) {
             "Demo" {
@@ -165,7 +181,7 @@ Function New-ARMParameterObject
                     '$Schema' = $JSONSchema
                     contentVersion = $JSONContentVersion
                     Parameters = @{
-                        location           = @{ value = $AzLocation }
+                        location           = @{ value = $Region }
                         storageAccountName = @{ value = $StorageAccountName }
                         accountType        = @{ value = $StorageAccountPerformance }
                     }
@@ -181,7 +197,7 @@ Function New-ARMParameterObject
                     contentVersion = $JSONContentVersion
                     Parameters = @{
                         aspName         = @{ value = $aspName }
-                        location        = @{ value = $AzLocation }
+                        location        = @{ value = $Region }
                         skuCode         = @{ value = $ASPSKU }
                         numberOfWorkers = @{ value = "1" }
                     }
@@ -327,7 +343,7 @@ Function New-ARMParameterObject
                     contentVersion = $JSONContentVersion
                     Parameters = @{
                         storageSecretName = @{ value = $AzKVStorageSecretName }     # Name used to contain the Storage Account connection string in the Key Value
-                        location          = @{ value = $AzLocation      }           # Azure hosting location
+                        location          = @{ value = $Region      }           # Azure hosting location
                         serverIdentifier  = @{ value = $aspName         }           # 
                         functionName      = @{ value = $FunctionName    }           # Azure Function Name
                         appServiceName    = @{ value = $aspName         }           # Azure App Service Name
@@ -349,9 +365,9 @@ Function New-ARMParameterObject
             #             frontendEndpoints = @{
             #                 value = @(
             #                     @{
-            #                         name = "$($ResourcePrefix + "azurefd" + $Index)"
+            #                         name = "$($Name + "azurefd" + $Index)"
             #                         properties = @{
-            #                             hostName = "$($ResourcePrefix + "azurefd" + $Index).azurefd.net"
+            #                             hostName = "$($Name + "azurefd" + $Index).azurefd.net"
             #                             sessionAffinityEnabledState = "Disabled"
             #                             sessionAffinityTtlSeconds   = 0
             #                             resourceState               = "Enabled"
@@ -411,7 +427,7 @@ Function New-ARMParameterObject
             #                 value = @(
             #                     @{
             #                         name                = "api-rule"
-            #                         frontendEndpoint    = "$($ResourcePrefix + "azurefd" + $Index)"
+            #                         frontendEndpoint    = "$($Name + "azurefd" + $Index)"
             #                         acceptedProtocols   = @( "Https" )
             #                         patternsToMatch     = @( "/api/*" )
             #                         enabledState        = "Enabled"

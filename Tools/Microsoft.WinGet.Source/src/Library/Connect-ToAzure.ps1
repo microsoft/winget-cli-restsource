@@ -5,19 +5,32 @@ Function Connect-ToAzure
     Connects to an Azure environment and connects to a specific Azure Subscription if a name of the subscription has been provided.
     
     .DESCRIPTION
-    By running this function the user will be prompted to 
-        
+    By running this function the user will be prompted to conect to their Azure environment. If a connection is not already established to the (if specified) Subscription Name and / or Subscription Id.
+
     The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
         Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
         
-    .PARAMETER AzureSubscriptionName
-    [Optional] The Subscription name contains the Windows Package Manager private source
-    
+    .PARAMETER SubscriptionName
+    [Optional] The Subscription name that contains the Windows Package Manager private source Rest APIs
+
+    .PARAMETER SubscriptionId
+    [Optional] The Subscription Id that contains the Windows Package Manager private source Rest APIs
+
     .EXAMPLE
-    Connect-ToAzure -AzureSubscriptionName "Subscription"
+    Connect-ToAzure -SubscriptionName "Visual Studio Subscription"
+
+    Tests that the PowerShell session has a connection to Azure, and is connected to the "Visual Studio Subscription" subscription. If not connected, will initiate a connection to the Azure Subscription Name.
+
+    .EXAMPLE
+    Connect-ToAzure -SubscriptionId "5j7ty5xj-6q67-1a77-111d-1d6937b9cbe8"
+
+    Tests that the PowerShell session has a connection to Azure, and is connected to the "5j7ty5xj-6q67-1a77-111d-1d6937b9cbe8" subscription Id. If not connected, will initiate a connection to the Azure Subscription Id.
+
+    .EXAMPLE
+    Connect-ToAzure -SubscriptionName "Visual Studio Subscription" -SubscriptionId "5j7ty5xj-6q67-1a77-111d-1d6937b9cbe8"
+
+    Tests that the PowerShell session has a connection to Azure, and is connected to the "5j7ty5xj-6q67-1a77-111d-1d6937b9cbe8" subscription Id and Subscription Name "Visual Studio Subscription". If not connected, will initiate a connection to the specified Azure Subscription Name and Id.     
+
     #>
     
     PARAM(
@@ -31,16 +44,19 @@ Function Connect-ToAzure
         $TestAzureSubscription = $true
         
         if($SubscriptionName -and $SubscriptionId -and $TestAzureConnection){
+            ## If connected to Azure, and the Subscription Name and Id are provided then verify that the connected Azure session matches to the provided Subscription Name and Id.
             Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Name $SubscriptionName and Subscription Id $SubscriptionId"
             $TestAzureSubscription = Test-ConnectionToAzure -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
             Write-Verbose -Message "Connection Result: $TestAzureSubscription"
         }
         elseif($SubscriptionName -and $TestAzureConnection){
+            ## If connected to Azure, and the Subscription Name are provided then verify that the connected Azure session matches to the provided Subscription Name.
             Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Name $SubscriptionName"
             $TestAzureSubscription = Test-ConnectionToAzure -SubscriptionName $SubscriptionName
             Write-Verbose -Message "Connection Result: $TestAzureSubscription"
         }
         elseif($SubscriptionId -and $TestAzureConnection){
+            ## If connected to Azure, and the Subscription Id are provided then verify that the connected Azure session matches to the provided Subscription Id.
             Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Id $SubscriptionId"
             $TestAzureSubscription = Test-ConnectionToAzure -SubscriptionId $SubscriptionId
             Write-Verbose -Message "Connection Result: $TestAzureSubscription"
@@ -84,8 +100,8 @@ Function Connect-ToAzure
                 $TestAzureConnection = Test-ConnectionToAzure
             }
 
-            ## If the connection fails, or the user cancels the login request, then throw an error.
             if(!$TestAzureConnection) {
+                ## If the connection fails, or the user cancels the login request, then throw an error.
                 $ErrReturnObject = @{
                     SubscriptionName = $SubscriptionName
                     SubscriptionId   = $SubscriptionId

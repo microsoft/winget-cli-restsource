@@ -3,7 +3,7 @@ Function Add-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Submits Manifest files to the Azure private source
+    Submits a Manifest file(s) to the Azure private source
 
     .DESCRIPTION
     By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager private source, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
@@ -14,29 +14,29 @@ Function Add-WinGetManifest
         Az.Websites  --> Get-AzWebapp
         Az.Functions --> Get-AzFunctionApp
 
-    .PARAMETER PrivateRepoName
-    Name of the Windows Package Manager private source. Can be identified by running: "winget source list" and using the Repository Name
-
     .PARAMETER FunctionName
-    Name of the Azure Function that hosts the private source
+    Name of the Azure Function that hosts the private source.
 
     .PARAMETER Path
-    Path to the JSON manifest file that will be uploaded to the private source
+    The Path to the JSON manifest file or folder hosting the JSON / YAML files that will be uploaded to the private source.
 
     .PARAMETER SubscriptionName
     [Optional] The Subscription name contains the Windows Package Manager private source
 
     .EXAMPLE
-    Add-WinGetManifest -Source "Private" -Path "C:\Temp\App.json"
+    Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
+
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager private source
 
     .EXAMPLE
-    Add-WinGetManifest -Source "Private" -Path "C:\Temp\App.json" -SubscriptionName "Subscription"
+    Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\"
 
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to adds the Manifest file(s) (*.json / *.yaml) found in the specified folder to the Windows Package Manager private source
+    
     .EXAMPLE
-    Add-WinGetManifest -FunctionName "contoso-function-prod" -Path "C:\Temp\App.json"
+    Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
 
-    .EXAMPLE
-    Add-WinGetManifest -FunctionName "contoso-function-prod" -Path "C:\Temp\App.json" -SubscriptionName "Subscription"
+    Connects to Azure and the specified Subscription, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager private source
     #>
 
     PARAM(

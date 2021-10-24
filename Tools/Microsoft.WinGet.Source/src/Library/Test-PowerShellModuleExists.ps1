@@ -1,6 +1,30 @@
 
 Function Test-PowerShellModuleExist
 {
+    <#
+    .SYNOPSIS
+    Verifies that the provided Modules are installed.
+
+    .DESCRIPTION
+    Verifies that the provided Modules are installed.
+
+    .PARAMETER Name
+    String of the PowerShell Module Name.
+
+    .PARAMETER Modules
+    String array that contains the names of all PowerShell modules.
+
+    .EXAMPLE
+    Test-PowerShellModuleExist -Name "Az.Accounts"
+
+    Verifies that the PowerShell Module "Az.Accounts" is instaled. Returns $true if installed.
+
+    .EXAMPLE
+    Test-PowerShellModuleExist -Modules $("Az.Accounts", "Az.Resources")
+
+    Parses through all values in the variable array to validate that they are installed. Returns a Boolean $true if installed.
+
+    #>
     [CmdletBinding(DefaultParameterSetName = 'Multiple')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Single")] [string]$Name,

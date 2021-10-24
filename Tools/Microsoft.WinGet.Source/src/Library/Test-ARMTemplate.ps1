@@ -1,16 +1,29 @@
 Function Test-ARMTemplate
 {
     <#
-    Description:
-    Validates that the parameter files have been build correctly, matches to the template files, and
-    can be used to build Azure resources. Will also validate that the naming used for the resources
-    is available, and meets requirements. Returns boolean.
+    .SYNOPSIS
+    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
+
+    .DESCRIPTION
+    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
         - True, if the validation testing passes
         - False, if the validation testing fails.
+
+    .PARAMETER ARMObjects
+    Object Returned from the Get-ARMParameterObject.
+
+    .PARAMETER ResourceGroup
+    The Resource Group that the objects will be tested in reference to.
+
+    .EXAMPLE
+    Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup "WinGetResourceGroup"
+
+    Tests that the Azure Resource can be created in the specified Azure Resource Group with the parameter and template files.
+
     #>
     PARAM(
-        [Parameter(Position=0)] $ARMObjects,
-        [Parameter(Position=1)] $ResourceGroup
+        [Parameter(Position=0, Mandatory=$true)] $ARMObjects,
+        [Parameter(Position=1, Mandatory=$true)] $ResourceGroup
     )
     BEGIN
     {
