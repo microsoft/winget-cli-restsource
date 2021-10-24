@@ -1,6 +1,60 @@
 
 Function Get-WinGetManifest
 {
+    <#
+    .SYNOPSIS
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for filtering results based on the name when targetting the Rest APIs.
+
+    .DESCRIPTION
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for filtering results based on the name.
+        
+    The following Azure Modules are used by this script:
+        Az.Resources --> Invoke-AzResourceAction
+        Az.Accounts  --> Connect-AzAccount, Get-AzContext
+        Az.Websites  --> Get-AzWebapp
+        Az.Functions --> Get-AzFunctionApp
+
+    .PARAMETER Path
+    Path to a file (*.json) or folder containing *.yaml or *.json files.
+
+    .PARAMETER URL
+    Web URL to the host site containing the Rest APIs with access key (if reuqired).
+
+    .PARAMETER FunctionName
+    Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
+
+    .PARAMETER ManifestIdentifier
+    [Optional] The Windows Package Manager Package Identifier to filter results
+
+    .PARAMETER SubscriptionName
+    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
+
+    .EXAMPLE
+    Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
+
+    Returns an array of all Manifest objects based on the files found within the specified Path.
+
+    .EXAMPLE
+    Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys\Microsoft.PowerToys.json"
+
+    Returns a Manifest object (*.json) of the specified JSON file.
+    
+    .EXAMPLE
+    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+
+    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
+
+    .EXAMPLE
+    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+
+    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
+
+    .EXAMPLE
+    Get-WinGetManifest -FunctionName "PrivateSource"
+
+    Returns an array of Manifest objects that are found in the specified Azure Function.
+
+    #>
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,

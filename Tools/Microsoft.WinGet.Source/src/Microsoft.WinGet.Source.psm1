@@ -1,3 +1,7 @@
+<#
+        Importing the Module requires that the Script be signed... or that Running scripts be approved for the computer.
+#>
+
 ## Loads Librarys
 
 Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $_.FullName }
@@ -31,8 +35,12 @@ else {
 
 ## Validates that the required Azure Modules are present when the script is imported.
 [string[]]$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-[Boolean] $TestResult = Test-PowerShellModuleExist -Modules $RequiredModules
 
+## Installs the required Azure Modules.
+$RequiredModules | foreach { Install-Module $_ -Force }
+
+## Verifies that the Azure Modules were successfully installed.
+[Boolean] $TestResult = Test-PowerShellModuleExist -Modules $RequiredModules
 If(!$TestResult)
 { 
         ## Modules have been identified as missing

@@ -1,7 +1,41 @@
 
 Function Remove-WinGetManifest
 {
+    <#
+    .SYNOPSIS
+    Removes a Manifest file from the Azure private source
 
+    .DESCRIPTION
+    By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager private source, then removes the application Manifest.
+        
+    The following Azure Modules are used by this script:
+        Az.Resources
+        Az.Accounts
+        Az.Websites
+        Az.Functions
+
+    .PARAMETER URL
+    Name of the URL that hosts the private source.
+
+    .PARAMETER FunctionName
+    Name of the Azure Function that hosts the private source.
+
+    .PARAMETER ManifestIdentifier
+    THe Manifest Id that represents the App Manifest to be removed.
+
+    .PARAMETER SubscriptionName
+    [Optional] The Subscription name contains the Windows Package Manager private source
+
+    .EXAMPLE
+    Remove-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager private source
+
+    .EXAMPLE
+    Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
+
+    Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager private source
+    #>
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Custom")][string]$URL,

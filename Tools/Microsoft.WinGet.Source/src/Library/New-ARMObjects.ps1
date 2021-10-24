@@ -1,15 +1,36 @@
 Function New-ARMObjects
 {
     <#
-    Description:
-    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create
-    Azure resources, and will create the the Key Vault secrets and publish the Windows Package
-    Manager private source rest apis to the Azure Function.
+    .SYNOPSIS
+    Creates the Azure Resources to stand-up a Windows Package Manager Rest Source.
+
+    .DESCRIPTION
+    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will create the the Key Vault secrets and publish the Windows Package Manager private source rest apis to the Azure Function.
+        
+    The following Azure Modules are used by this script:
+        Az.Resources --> Invoke-AzResourceAction
+        Az.Accounts  --> Connect-AzAccount, Get-AzContext
+        Az.Websites  --> Get-AzWebapp
+        Az.Functions --> Get-AzFunctionApp
+
+    .PARAMETER ARMObjects
+    Object returned from the "New-ARMParamterObject" providing the paths to the ARM Parameters and Template files.
+
+    .PARAMETER ArchiveFunctionZip
+    Path to the compiled Function ZIP containing the Rest APIs
+
+    .PARAMETER AzResourceGroup
+    Resource Group that will be used to create the ARM Objects in.
+
+    .EXAMPLE
+    New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGetResourceGroup"
+
+    Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
     PARAM(
-        [Parameter(Position=0)] $ARMObjects,
-        [Parameter(Position=1)] [string] $ArchiveFunctionZip,
-        [Parameter(Position=2)] [string] $AzResourceGroup
+        [Parameter(Position=0, Mandatory=$true)] $ARMObjects,
+        [Parameter(Position=1, Mandatory=$true)] [string] $ArchiveFunctionZip,
+        [Parameter(Position=2, Mandatory=$true)] [string] $AzResourceGroup
     )
     BEGIN
     {

@@ -1,5 +1,53 @@
 Function New-WinGetSource
 {
+    <#
+    .SYNOPSIS
+    Creates a Windows Package Manager private repository in Azure for private storage of Windows Package Manager application Manifests.
+
+    .DESCRIPTION
+    Creates a Windows Package Manager private repository in Azure for private storage of Windows Package Manager application Manifests.
+
+    The following Azure Modules are used by this script:
+        Az.Resources
+        Az.Accounts
+        Az.Websites
+        Az.Functions
+
+    .PARAMETER Name
+    The name of the objects that will be created
+
+    .PARAMETER Index
+    [Optional] The suffix that will be added to each name and file names.
+
+    .PARAMETER ResourceGroup
+    [Optional] The Name of the Resource Group that the Windows Package Manager private source ARM Resources will be created in. (Default: WinGetPrivateSource)
+
+    .PARAMETER Region
+    [Optional] The Azure location where objects will be created in. (Default: westus)
+
+    .PARAMETER WorkingDirectory
+    [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
+
+    .PARAMETER ARMFunctionPath
+    [Optional] Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)
+
+    .PARAMETER ImplementationPerformance
+    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager private repository. (Default: Basic)
+
+    .PARAMETER ShowConnectionInstructions
+    [Optional] If specified, the instructions for connecting to the Windows Package Manager private source. (Default: False)
+
+    .EXAMPLE
+    New-WinGetSource -Name "contoso0002"
+
+    Creates the Windows Package Manager private source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
+
+    .EXAMPLE
+    New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -WorkingDirectory "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
+
+    Creates the Windows Package Manager private source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command to connect the WinGet client to the new private repository after the repository has been created.
+
+    #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$Name,
         [Parameter(Position=1, Mandatory=$false)] [string]$Index,
@@ -51,8 +99,8 @@ Function New-WinGetSource
         
         ###############################
         ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Index $Index -ResourcePrefix $Name -AzLocation $Region -ImplementationPerformance $ImplementationPerformance
-        New-ARMTemplateObject -Path $TemplateFolderPath
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Index $Index -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
+        #New-ARMTemplateObject -Path $TemplateFolderPath
 
         ###############################
         ## Connects to Azure, if not already connected.

@@ -1,16 +1,43 @@
 Function Test-ARMResourceName
 {
     <#
-    Description:
-    Validates that the name of the Azure Resource meets the Azure specified requirements
+    .SYNOPSIS
+    Validates that the name that will be assigned to the Azure Resource will meet the resource types requirement.
+    
+    .DESCRIPTION
+    Validates that the name that will be assigned to the Azure Resource will meet the resource types requirement.
+        
+    The following Azure Modules are used by this script:
+        Az.Resources
+        Az.Accounts
+        Az.Websites
+        Az.Functions
+
+    .PARAMETER ResourceType
+    The type of Azure Resource to validate requirements against.
+
+    .PARAMETER ResourceName
+    The name that the resource type will be validated against.
+
+    .PARAMETER ARMObject
+    The ARMObject provided by New-ARMParameterObjects. 
+
+    .EXAMPLE
+    Test-ARMResourceName -ARMObject $ARMObject
+
+    Parses through the $ARMObject array, recalling this function for each object in the array validating that the name meets the Azure resource requirements.
+
+    .EXAMPLE
+    Test-ARMResourceName -ResourceType "AppInsight" -ResourceName "contoso0002"
+
+    Verifies that the name "contoso0002" meets the requirements for Azure App Insights.
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Targetted")]
         [ValidateSet("AppInsight", "KeyVault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")][String] $ResourceType,
         [Parameter(Position=1, Mandatory=$true, ParameterSetName="Targetted")][String] $ResourceName,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="SingleObject")] $ARMObject,
-        [Parameter(Position=2, Mandatory=$false)][Switch] $VerboseLogging)
-
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="SingleObject")] $ARMObject
+    )
     BEGIN
     {
         ## Allows for a single instance of the ARM Object to be passed in

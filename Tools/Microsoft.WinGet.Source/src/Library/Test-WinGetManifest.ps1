@@ -1,6 +1,28 @@
 
 Function Test-WinGetManifest
 {
+    <#
+    .SYNOPSIS
+    Incomplete
+
+    .DESCRIPTION
+
+
+    .PARAMETER SubscriptionName
+
+
+    .PARAMETER SubscriptionId
+
+
+    .EXAMPLE
+    Test-WinGetManifest -Path ""
+
+
+    .EXAMPLE
+    Test-WinGetManifest -Manifest ""
+
+
+    #>
     [CmdletBinding(DefaultParameterSetName = 'File')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,

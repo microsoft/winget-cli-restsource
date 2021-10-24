@@ -1,10 +1,28 @@
 
 Function Test-AzureResource
 {
+    <#
+    .SYNOPSIS
+    
+
+    .DESCRIPTION
+
+
+    .PARAMETER ResourceGroup
+    The Resource Group that the objects will be tested in reference to.
+
+    .PARAMETER FunctionName
+    
+
+    .EXAMPLE
+    Test-AzureResource -ResourceGroup "WinGetResourceGroup" -FunctionName "Contoso0002"
+
+
+
+    #>
     PARAM(
         [Parameter(Position=0, Mandatory = $false)] [string]$ResourceGroup,
-        [Parameter(Position=1, Mandatory = $false)] [string]$FunctionName,
-        [Parameter(Position=2, Mandatory = $false)] [switch]$VerboseLogging
+        [Parameter(Position=1, Mandatory = $false)] [string]$FunctionName
     )
     BEGIN
     {
