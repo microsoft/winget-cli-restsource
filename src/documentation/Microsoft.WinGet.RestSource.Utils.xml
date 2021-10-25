@@ -375,6 +375,52 @@
             <param name="requiredQueryParameters">List of required query parameters by server.</param>
             <returns>List of required query parameters.</returns>
         </member>
+        <member name="T:Microsoft.WinGet.RestSource.Utils.Common.GetPackageManifestApiResponse`1">
+            <summary>
+            This will wrap API responses that need additional data.
+            </summary>
+            <typeparam name="T">Response Type.</typeparam>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.GetPackageManifestApiResponse`1.#ctor(`0,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Common.GetPackageManifestApiResponse`1"/> class.
+            </summary>
+            <param name="data">Data.</param>
+            <param name="continuationToken">Continuation Token.</param>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.Utils.Common.GetPackageManifestApiResponse`1.UnsupportedQueryParameters">
+            <summary>
+            Gets or sets UnsupportedQueryParameters.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.Utils.Common.GetPackageManifestApiResponse`1.RequiredQueryParameters">
+            <summary>
+            Gets or sets RequiredQueryParameters.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.Utils.Common.SearchApiResponse`1">
+            <summary>
+            This will wrap API responses that need additional data.
+            </summary>
+            <typeparam name="T">Response Type.</typeparam>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.SearchApiResponse`1.#ctor(`0,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Common.SearchApiResponse`1"/> class.
+            </summary>
+            <param name="data">Data.</param>
+            <param name="continuationToken">Continuation Token.</param>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.Utils.Common.SearchApiResponse`1.UnsupportedPackageMatchFields">
+            <summary>
+            Gets or sets UnsupportedPackageMatchFields.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WinGet.RestSource.Utils.Common.SearchApiResponse`1.RequiredPackageMatchFields">
+            <summary>
+            Gets or sets RequiredPackageMatchFields.
+            </summary>
+        </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Constants.ApiConstants">
             <summary>
             API Constants.
@@ -422,9 +468,9 @@
             This contains the constants for connecting to Cosmos.
             </summary>
         </member>
-        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.CollectionNameSetting">
+        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.ContainerNameSetting">
             <summary>
-            Cosmos Collection Name.
+            Cosmos Container Name.
             </summary>
         </member>
         <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.DatabaseNameSetting">
@@ -437,9 +483,14 @@
             This is the Cosmos Account Endpoint setting.
             </summary>
         </member>
-        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.CosmosAccountKeySetting">
+        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.CosmosReadWriteKeySetting">
             <summary>
-            This is the Cosmos Account Key setting.
+            This is the Cosmos read-write key setting.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.CosmosReadOnlyKeySetting">
+            <summary>
+            This is the Cosmos read-only key setting.
             </summary>
         </member>
         <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.CosmosConnectionConstants.ResponseContinuationTokenLimitInKb">
@@ -1066,11 +1117,11 @@
             Gets or sets internal error.
             </summary>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Exceptions.DefaultException.ProcessDocumentClientException(Microsoft.Azure.Documents.DocumentClientException)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Exceptions.DefaultException.ProcessCosmosException(Microsoft.Azure.Cosmos.CosmosException)">
             <summary>
-            Process Document Client Exceptions.
+            Process Cosmos Exceptions.
             </summary>
-            <param name="documentClientException">Document Client Exceptions.</param>
+            <param name="cosmosException">Cosmos Exception.</param>
             <returns>Internal Rest Error.</returns>
         </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Exceptions.InvalidArgumentException">
@@ -1546,81 +1597,6 @@
         <member name="P:Microsoft.WinGet.RestSource.Utils.Models.Errors.InternalRestError.ErrorMessage">
             <summary>
             Gets or sets the error message for an error.
-            </summary>
-        </member>
-        <member name="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest">
-            <summary>
-            This is a manifest, which is an extension of the package core model, and the extended version model.
-            </summary>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest"/> class.
-            </summary>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest.#ctor(Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest"/> class.
-            </summary>
-            <param name="cosmosPackageManifest">manifest.</param>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest.#ctor(Microsoft.WinGet.RestSource.Utils.Models.Schemas.PackageManifest)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest"/> class.
-            </summary>
-            <param name="packageManifest">manifest.</param>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest.Id">
-            <summary>
-            Gets ID.
-            </summary>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosPackageManifest.ToManifest">
-            <summary>
-            Converts to a Package Core.
-            </summary>
-            <returns>Package Core.</returns>
-        </member>
-        <member name="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch">
-            <summary>
-            CosmosSearchResponse.
-            </summary>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch"/> class.
-            CosmosSearch.
-            </summary>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.#ctor(Microsoft.WinGet.RestSource.Utils.Models.Schemas.PackageManifest)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch"/> class.
-            </summary>
-            <param name="packageManifest">Package manifest.</param>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.PackageIdentifier">
-            <summary>
-            Gets or sets PackageIdentifier.
-            </summary>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.Versions">
-            <summary>
-            Gets or sets PackageIdentifier.
-            </summary>
-        </member>
-        <member name="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.SearchVersion">
-            <summary>
-            Versions.
-            </summary>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.SearchVersion.PackageVersion">
-            <summary>
-            Gets or sets package Version.
-            </summary>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.CosmosSearch.SearchVersion.Channel">
-            <summary>
-            Gets or sets channel.
             </summary>
         </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas.VersionExtended">
@@ -4249,52 +4225,6 @@
         <member name="M:Microsoft.WinGet.RestSource.Utils.Validators.StringValidators.UrlValidator.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Utils.Validators.StringValidators.UrlValidator"/> class.
-            </summary>
-        </member>
-        <member name="T:Microsoft.WinGet.RestSource.Common.GetPackageManifestApiResponse`1">
-            <summary>
-            This will wrap API responses that need additional data.
-            </summary>
-            <typeparam name="T">Response Type.</typeparam>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Common.GetPackageManifestApiResponse`1.#ctor(`0,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Common.GetPackageManifestApiResponse`1"/> class.
-            </summary>
-            <param name="data">Data.</param>
-            <param name="continuationToken">Continuation Token.</param>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Common.GetPackageManifestApiResponse`1.UnsupportedQueryParameters">
-            <summary>
-            Gets or sets UnsupportedQueryParameters.
-            </summary>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Common.GetPackageManifestApiResponse`1.RequiredQueryParameters">
-            <summary>
-            Gets or sets RequiredQueryParameters.
-            </summary>
-        </member>
-        <member name="T:Microsoft.WinGet.RestSource.Common.SearchApiResponse`1">
-            <summary>
-            This will wrap API responses that need additional data.
-            </summary>
-            <typeparam name="T">Response Type.</typeparam>
-        </member>
-        <member name="M:Microsoft.WinGet.RestSource.Common.SearchApiResponse`1.#ctor(`0,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.WinGet.RestSource.Common.SearchApiResponse`1"/> class.
-            </summary>
-            <param name="data">Data.</param>
-            <param name="continuationToken">Continuation Token.</param>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Common.SearchApiResponse`1.UnsupportedPackageMatchFields">
-            <summary>
-            Gets or sets UnsupportedPackageMatchFields.
-            </summary>
-        </member>
-        <member name="P:Microsoft.WinGet.RestSource.Common.SearchApiResponse`1.RequiredPackageMatchFields">
-            <summary>
-            Gets or sets RequiredPackageMatchFields.
             </summary>
         </member>
     </members>
