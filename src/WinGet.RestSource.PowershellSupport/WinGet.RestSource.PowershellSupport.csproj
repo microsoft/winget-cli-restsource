@@ -31,7 +31,6 @@
     <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
     <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
-    <!-- TODO: local testing -->
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" GeneratePathProperty="true" />
   </ItemGroup>
 

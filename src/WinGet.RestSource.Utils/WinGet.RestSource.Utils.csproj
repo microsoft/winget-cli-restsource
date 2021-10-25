@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
-    <RootNamespace>Microsoft.WinGet.RestSource.Util</RootNamespace>
-    <AssemblyName>Microsoft.WinGet.RestSource.Util</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.RestSource.Utils</RootNamespace>
+    <AssemblyName>Microsoft.WinGet.RestSource.Utils</AssemblyName>
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>$(SolutionDir)documentation\Microsoft.WinGet.RestSource.Util.xml</DocumentationFile>
+    <DocumentationFile>$(SolutionDir)documentation\Microsoft.WinGet.RestSource.Utils.xml</DocumentationFile>
 
     <!-- Warning 1701;1702: These two compiler warnings are raised when a reference is bound to a different version
          than specified in the assembly reference version number. -->
@@ -38,7 +38,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <!-- todo -->
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
