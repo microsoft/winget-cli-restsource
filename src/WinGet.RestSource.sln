@@ -77,9 +77,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.9.1942.0", "1.9.1942.0", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.0.1.0", "1.0.1.0", "{2AE7B432-7A40-4E79-8378-2FD913AC28C7}"
 	ProjectSection(SolutionItems) = preProject
-		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.installer.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.installer.yaml
-		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.locale.en-US.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.locale.en-US.yaml
-		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.yaml
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.installer.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.installer.yaml
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.locale.en-US.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.locale.en-US.yaml
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftwareSample.MyEmployeesFinance.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.0.0.0", "1.0.0.0", "{DA80B48B-C7DC-4FED-AE27-B6CFD74B60CE}"
