@@ -13,7 +13,100 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "WinGet.RestSource.Infrastructure", "WinGet.RestSource.Infrastructure\WinGet.RestSource.Infrastructure.deployproj", "{0F98E939-EC64-40DA-9630-336A40807BBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinGet.RestSource.UnitTest", "WinGet.RestSource.UnitTest\WinGet.RestSource.UnitTest.csproj", "{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.UnitTest", "WinGet.RestSource.UnitTest\WinGet.RestSource.UnitTest.csproj", "{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{80913221-D48E-4406-A9F1-A5C53F079029}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowershellModule", "PowershellModule", "{42633074-1FA8-4D9A-BA47-3C4E4AE5234B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{17CF3E13-565E-41F0-AA22-B6FEC40A561C}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\samples\HeadTrax.json = ..\Tools\PowershellModule\samples\HeadTrax.json
+		..\Tools\PowershellModule\samples\MyEmployees.json = ..\Tools\PowershellModule\samples\MyEmployees.json
+		..\Tools\PowershellModule\samples\MyEmployeesFinance.json = ..\Tools\PowershellModule\samples\MyEmployeesFinance.json
+		..\Tools\PowershellModule\samples\PowerToys.json = ..\Tools\PowershellModule\samples\PowerToys.json
+		..\Tools\PowershellModule\samples\PowerToys2.json = ..\Tools\PowershellModule\samples\PowerToys2.json
+		..\Tools\PowershellModule\samples\PowerToys3.json = ..\Tools\PowershellModule\samples\PowerToys3.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\doc\new-private-repository-azure.md = ..\Tools\PowershellModule\doc\new-private-repository-azure.md
+		..\Tools\PowershellModule\doc\README.md = ..\Tools\PowershellModule\doc\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C510F11-3A5B-4E30-8189-05E87B7DE1F0}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Powershell", "Powershell", "{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md
+		..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MyEmployees", "MyEmployees", "{CE3268C3-CF78-4BBD-BE65-4C254CD3012A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MyEmployeesFinance", "MyEmployeesFinance", "{F4CF0595-3CD8-4A59-9C2A-D540DF7A4FD5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WindowsTerminal", "WindowsTerminal", "{96CCECAA-55C7-47F2-964C-029FB7A164C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.5.10271.0", "1.5.10271.0", "{43633AE9-BC69-48AD-BDBD-D263EA933802}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.5.10271.0\Microsoft.WindowsTerminal.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.5.10271.0\Microsoft.WindowsTerminal.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.9.1942.0", "1.9.1942.0", "{65056B57-8865-466F-B8AC-B25E3F8036A7}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.installer.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.installer.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.en-US.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.en-US.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.fr-FR.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.fr-FR.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.it-IT.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.it-IT.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WIndowsTerminal.locale.ja-JP.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WIndowsTerminal.locale.ja-JP.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.ko-Kr.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.ko-Kr.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.pt-BR.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.pt-BR.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.ru-RU.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.ru-RU.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.zh-CN.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.zh-CN.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.zh-TW.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.locale.zh-TW.yaml
+		..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.yaml = ..\Tools\PowershellModule\samples\WindowsTerminal\1.9.1942.0\Microsoft.WindowsTerminal.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.0.1.0", "1.0.1.0", "{2AE7B432-7A40-4E79-8378-2FD913AC28C7}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.installer.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.installer.yaml
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.locale.en-US.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.locale.en-US.yaml
+		..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.yaml = ..\Tools\PowershellModule\samples\MyEmployeesFinance\1.0.1.0\ContosoSoftware(FORLABUSEONLY).MyEmployeesFinance.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.0.0.0", "1.0.0.0", "{DA80B48B-C7DC-4FED-AE27-B6CFD74B60CE}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.installer.yaml = ..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.installer.yaml
+		..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.locale.en-US.yaml = ..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.locale.en-US.yaml
+		..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.yaml = ..\Tools\PowershellModule\samples\MyEmployees\1.0.0.0\Contoso.MyEmployees.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7BF3F-415D-4A9D-B859-ED1168438F1F}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1 = ..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1
+		..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\Classes.ps1 = ..\Tools\PowershellModule\src\Library\Classes.ps1
+		..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1
+		..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1
+		..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1 = ..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1
+		..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\Test-ARMResourceName.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMResourceName.ps1
+		..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1
+		..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1 = ..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1
+		..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1 = ..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1
+		..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +133,22 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{80913221-D48E-4406-A9F1-A5C53F079029} = {145CC9B9-A93E-46C1-90F7-DFB81233B39F}
+		{42633074-1FA8-4D9A-BA47-3C4E4AE5234B} = {80913221-D48E-4406-A9F1-A5C53F079029}
+		{17CF3E13-565E-41F0-AA22-B6FEC40A561C} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
+		{954044E2-C2B4-4F62-BE4B-D9FAF66B05C2} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
+		{3C510F11-3A5B-4E30-8189-05E87B7DE1F0} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
+		{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5} = {954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}
+		{CE3268C3-CF78-4BBD-BE65-4C254CD3012A} = {17CF3E13-565E-41F0-AA22-B6FEC40A561C}
+		{F4CF0595-3CD8-4A59-9C2A-D540DF7A4FD5} = {17CF3E13-565E-41F0-AA22-B6FEC40A561C}
+		{96CCECAA-55C7-47F2-964C-029FB7A164C7} = {17CF3E13-565E-41F0-AA22-B6FEC40A561C}
+		{43633AE9-BC69-48AD-BDBD-D263EA933802} = {96CCECAA-55C7-47F2-964C-029FB7A164C7}
+		{65056B57-8865-466F-B8AC-B25E3F8036A7} = {96CCECAA-55C7-47F2-964C-029FB7A164C7}
+		{2AE7B432-7A40-4E79-8378-2FD913AC28C7} = {F4CF0595-3CD8-4A59-9C2A-D540DF7A4FD5}
+		{DA80B48B-C7DC-4FED-AE27-B6CFD74B60CE} = {CE3268C3-CF78-4BBD-BE65-4C254CD3012A}
+		{5DF7BF3F-415D-4A9D-B859-ED1168438F1F} = {3C510F11-3A5B-4E30-8189-05E87B7DE1F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24BCF9E2-C2E3-48E9-90BD-E619553ABE3D}
