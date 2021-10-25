@@ -1,0 +1,27 @@
+# Template helper to copy powershell dependency files and publish them as an artifact
+parameters:
+  name: ''
+  source: '' 
+  TargetPlatform: ''
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: ${{ parameters.name }}'
+  inputs:
+    Contents: |
+     ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
+     ${{ parameters.source }}\Microsoft.WinGet.PowershellSupport.dll
+     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Util.dll
+     ${{ parameters.source }}\Newtonsoft.Json.dll
+     ${{ parameters.source }}\System.ComponentModel.Annotations.dll
+     ${{ parameters.source }}\YamlDotNet.dll
+     ${{ parameters.source }}\runtimes\win-${{TargetPlatform}}\native\WinGetUtil.dll
+    TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.name }}'
+    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'

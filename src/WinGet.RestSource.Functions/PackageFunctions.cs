@@ -16,14 +16,14 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Primitives;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.

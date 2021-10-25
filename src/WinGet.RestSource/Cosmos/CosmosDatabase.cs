@@ -12,9 +12,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
 
     /// <summary>
     /// This class retrieves a database and sets it up if it does not exist.

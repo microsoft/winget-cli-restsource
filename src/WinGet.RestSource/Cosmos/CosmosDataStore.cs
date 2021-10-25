@@ -16,16 +16,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Constants.Enumerations;
-    using Microsoft.WinGet.RestSource.Exceptions;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.ExtendedSchemas;
-    using Microsoft.WinGet.RestSource.Models.Objects;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
-    using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
+    using Microsoft.WinGet.RestSource.Utils.Models.Objects;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
+    using Version = Microsoft.WinGet.RestSource.Utils.Models.Schemas.Version;
 
     /// <summary>
     /// Cosmos Data Store.
@@ -515,7 +515,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             else
             {
                 // Process Inclusions
-                Models.Arrays.SearchRequestPackageMatchFilter inclusions = new Models.Arrays.SearchRequestPackageMatchFilter();
+                Utils.Models.Arrays.SearchRequestPackageMatchFilter inclusions = new Utils.Models.Arrays.SearchRequestPackageMatchFilter();
                 if (manifestSearchRequest.Inclusions != null)
                 {
                     inclusions.AddRange(manifestSearchRequest.Inclusions);
@@ -524,7 +524,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 // Convert Query to inclusions to submit to cosmos
                 if (manifestSearchRequest.Query != null)
                 {
-                    inclusions.AddRange(this.queryList.Select(q => new Models.Objects.SearchRequestPackageMatchFilter()
+                    inclusions.AddRange(this.queryList.Select(q => new Utils.Models.Objects.SearchRequestPackageMatchFilter()
                     {
                         PackageMatchField = q,
                         RequestMatch = manifestSearchRequest.Query,

@@ -14,9 +14,9 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.IO;
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
 
     /// <summary>
     /// Azure function startup class.

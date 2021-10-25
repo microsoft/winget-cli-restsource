@@ -10,7 +10,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Threading.Tasks;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
 
     /// <summary>
     /// This provides an interface for CosmosDatabase.

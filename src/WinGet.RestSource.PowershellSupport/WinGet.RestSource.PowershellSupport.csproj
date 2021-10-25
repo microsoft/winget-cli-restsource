@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyName>Microsoft.WinGet.PowershellSupport</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.PowershellSupport</RootNamespace>
+    <OutputType>Library</OutputType>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1701;1702;NU1701</NoWarn>
+    <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.PowershellSupport.Documentation.xml</DocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
+    <PackageReference Include="YamlDotNet" Version="8.1.2" />
+    <!-- TODO: local testing -->
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
+  </ItemGroup>
+
+  <!-- Copy WinGetUtil dll to out folder for use in composing powershell artifact folders. -->  
+  <Target Name="CopyWinGet" AfterTargets="Build">
+    <ItemGroup>
+      <WinGetDll Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\runtimes\**\**\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(WinGetDll)" DestinationFiles="@(WinGetDll->'$(OutDir)\runtimes\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+</Project>
