@@ -1,0 +1,24 @@
+{
+    "PackageIdentifier": "Contoso.MyEmployees",
+    "Versions": [
+        {
+            "PackageVersion": "1.0.0.0",
+            "DefaultLocale": {
+                "PackageLocale": "en-US",
+                "Publisher": "Contoso",
+                "PackageName": "MyEmployees",
+                "License": "MIT",
+                "ShortDescription": "Contoso HeadTrax provides an improved employee tracking solution."
+            },
+            "Installers": [
+                {
+                    "InstallerIdentifier": "WindowsApp",
+                    "InstallerSha256": "84A67F43FDBBB09ED6855EA97F29B296A0E0E0CA25A81AAFDF2CA1B6BFB727BA",
+                    "InstallerUrl": "https://msixwinapps.blob.core.windows.net/msixapps/MyEmployees_1.0.0.0_x64__8h66172c634n0.msix",
+                    "Architecture": "x64",
+                    "InstallerType": "msix"
+                }
+            ]
+        }
+    ]
+}
