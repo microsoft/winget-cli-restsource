@@ -9,7 +9,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Azure.Cosmos;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
 
     /// <summary>
     /// This provides an interface for CosmosDatabase.

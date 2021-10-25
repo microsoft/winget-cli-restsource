@@ -7,7 +7,7 @@
 namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Common
 {
     using System.Collections.Generic;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
     using Xunit;
     using Xunit.Abstractions;
 
