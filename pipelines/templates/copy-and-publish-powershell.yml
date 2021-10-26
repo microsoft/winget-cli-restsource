@@ -15,7 +15,7 @@ steps:
      ${{ parameters.source }}\Newtonsoft.Json.dll
      ${{ parameters.source }}\System.ComponentModel.Annotations.dll
      ${{ parameters.source }}\YamlDotNet.dll
-     ${{ parameters.source }}\runtimes\win-${{TargetPlatform}}\native\WinGetUtil.dll
+     ${{ parameters.source }}\runtimes\win-${{ parameters.TargetPlatform }}\native\WinGetUtil.dll
     TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
     CleanTargetFolder: true
     OverWrite: true
