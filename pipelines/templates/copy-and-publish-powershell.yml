@@ -11,7 +11,7 @@ steps:
     Contents: |
      ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
      ${{ parameters.source }}\Microsoft.WinGet.PowershellSupport.dll
-     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Util.dll
+     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Utils.dll
      ${{ parameters.source }}\Newtonsoft.Json.dll
      ${{ parameters.source }}\System.ComponentModel.Annotations.dll
      ${{ parameters.source }}\YamlDotNet.dll
@@ -19,6 +19,7 @@ steps:
     TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
     CleanTargetFolder: true
     OverWrite: true
+    flattenFolders: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'

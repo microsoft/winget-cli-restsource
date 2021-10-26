@@ -41,6 +41,7 @@ steps:
     source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
     TargetPlatform: 'x86'
 
+# Publish x64 powershell binaries
 - template: copy-and-publish-powershell.yml
   parameters:
     name: WinGet.Restsource.x64PowershellSupport
