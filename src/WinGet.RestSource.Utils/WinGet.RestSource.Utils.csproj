@@ -41,7 +41,6 @@
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.0.0-preview2" />
   </ItemGroup>
 
 </Project>
