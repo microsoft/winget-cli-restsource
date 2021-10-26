@@ -1,12 +1,3 @@
----
-Description: Details how to create a Windows Package Manager private source.
-title: Windows Package Manager private source
-ms.date: 10/23/2021
-ms.topic: article
-keywords: windows, package manager, windows package manager, private repo, private source
-ms.localizationpriority: medium
----
-
 # Windows Package Mananger private source
 
 The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a private respository that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
