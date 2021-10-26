@@ -7,6 +7,10 @@ parameters:
   source: ''
 
 steps:
+- powershell: |
+    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
+  displayName: "Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config"
+
 - task: CopyFiles@2
   displayName: 'Copy Files: ${{ parameters.name }}'
   inputs:
@@ -25,15 +29,6 @@ steps:
     codeCoverageEnabled: true
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
-    
-    # Configure test to use Cosmos DB emulator, the key is a fixed value in the emulator,
-    # and the endpoint is an automatic variable set in the environment.
-    overrideTestrunParameters: '-CosmosAccountEndpoint "$(CosmosDbEmulator.Endpoint)"
-      -CosmosReadOnlyKey "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-      -CosmosReadWriteKey "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-      -CosmosDatabase "cosmossql-pkgsrest-test"
-      -CosmosContainer "ManifestsTest"
-      -ServerIdentifier "winget-cli-restsource-test"'
   condition: succeeded()
 
 - task: PublishBuildArtifacts@1

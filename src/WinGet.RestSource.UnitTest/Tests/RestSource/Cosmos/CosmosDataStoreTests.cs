@@ -23,6 +23,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Xunit.Abstractions;
     using Arrays = Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Objects = Microsoft.WinGet.RestSource.Utils.Models.Objects;
+    using System;
 
     /// <summary>
     /// CosmosDataStore Tests.
@@ -56,11 +57,11 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
                 .AddEnvironmentVariables()
                 .Build();
 
-            string endpoint = this.configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new System.IO.InvalidDataException();
-            string readOnlyKey = this.configuration[CosmosConnectionConstants.CosmosReadOnlyKeySetting] ?? throw new System.IO.InvalidDataException();
-            string readWriteKey = this.configuration[CosmosConnectionConstants.CosmosReadWriteKeySetting] ?? throw new System.IO.InvalidDataException();
-            string databaseId = this.configuration[CosmosConnectionConstants.DatabaseNameSetting] ?? throw new System.IO.InvalidDataException();
-            string containerId = this.configuration[CosmosConnectionConstants.ContainerNameSetting] ?? throw new System.IO.InvalidDataException();
+            string endpoint = this.configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new ArgumentNullException();
+            string readOnlyKey = this.configuration[CosmosConnectionConstants.CosmosReadOnlyKeySetting] ?? throw new ArgumentNullException();
+            string readWriteKey = this.configuration[CosmosConnectionConstants.CosmosReadWriteKeySetting] ?? throw new ArgumentNullException();
+            string databaseId = this.configuration[CosmosConnectionConstants.DatabaseNameSetting] ?? throw new ArgumentNullException();
+            string containerId = this.configuration[CosmosConnectionConstants.ContainerNameSetting] ?? throw new ArgumentNullException();
 
             var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<CosmosDataStore>();
             this.cosmosDataStore = new CosmosDataStore(logger, endpoint, readWriteKey, readOnlyKey, databaseId, containerId);
