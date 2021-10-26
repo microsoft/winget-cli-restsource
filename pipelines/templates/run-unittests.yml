@@ -25,6 +25,7 @@ steps:
     codeCoverageEnabled: true
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+    overrideTestrunParameters: '-CosmosAccountEndpoint "$(CosmosDbEmulator.Endpoint)"'
   condition: succeeded()
 
 - task: PublishBuildArtifacts@1

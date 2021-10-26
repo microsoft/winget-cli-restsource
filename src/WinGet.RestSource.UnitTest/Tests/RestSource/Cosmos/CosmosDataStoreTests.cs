@@ -48,7 +48,12 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             this.log = log;
 
             this.configuration = new ConfigurationBuilder()
-                .AddJsonFile("test.runsettings.json")
+
+                // Defaults specified in the Test.runsettings.json
+                .AddJsonFile("Test.runsettings.json", true)
+
+                // But they can be overridden using environment variables
+                .AddEnvironmentVariables()
                 .Build();
 
             string endpoint = this.configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new System.IO.InvalidDataException();
