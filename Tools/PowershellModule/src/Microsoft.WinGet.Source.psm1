@@ -2,10 +2,10 @@
         Importing the Module requires that the Script be signed... or that Running scripts be approved for the computer.
 
         Compiled RestAPIs Compressed folder must exist in the ".\Library\RestAPI\" container.
-        Desktop AppInstaller Libs must exist in the ".\Library\AppInstallerLib" container.
+        Desktop AppInstaller Library must exist in the ".\Library\AppInstallerLib" container.
 #>
 
-## Loads Librarys
+## Loads Libraries
 Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $_.FullName }
 
 [version] $WinGetModulePsVersion    = $(Get-Host).Version

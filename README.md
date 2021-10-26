@@ -1,23 +1,33 @@
 # Windows Package Manager Repository
 
-## Create a new private repository in Azure
-To simplify the creation of a Windows Package Manager private source, the `automation.ps1` [PowerShell script](Tools/Automation.ps1) is offered. This script will create new resources required to host a Windows Package Manager private source in Azure.
+## Automatically create a private source
 
-The `automation.ps1` script has the following parameter inputs:
-| Required | Parameter          | Description                                                                                                                |
-|----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|
-| Yes      | ResourcePrefix     | A string of letters which will be prefixed to your newly created Azure resources.                                          |
-| Yes      | Index              | A string of letters or numbers which will be suffixed to your newly created Azure resources.                                |
-| Yes      | AzResourceGroup    | The Resource Group that will be used to contain the Azure resources.                                                       |
-| No       | AzSubscriptionName | The name of the Azure Subscription that will be used to pay for the Azure resources.                                       |
-| No       | AzLocation         | The Azure location where the Azure resources will be created. (Default: westus)                                            |
-| No       | WorkingDirectory   | The folder location that contains the ARM template files, as well as where the Azure Parameter files will be created. |
+The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager private source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
-For more information on how to manually implement your Windows Package Manager in Azure, please visit our Docs.
+The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
 
-**Example:**
+| Required | Parameter                  | Description                                                                                                                                |
+|----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
+| Yes      | Index                      | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                                |
+| Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
+| No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
+| No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
+| No       | WorkingDirectory           | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created.                 |
+| No       | ARMFunctionPath            | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
+| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager private repository. ["Demo", "Basic", "Enhanced"] |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager private source. (Default: False)                              |
 
-.\Tools\automation.ps1 -ResourcePrefix "contoso-" -Index "Demo" -AzResourceGroup "WinGet_PrivateRepo_Demo"
+> [!Note]
+> The PowerShell Module must be re-imported each time the PowerShell window is closed.
+
+**How to:**
+
+1. From the Administrative PowerShell window run the following:
+```PowerShell
+PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetPrivateSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
+```
+1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager private source to add it to your WinGet client.
 
 
 ## Contributing
