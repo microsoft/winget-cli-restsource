@@ -60,9 +60,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <summary>
-        /// Check if a container exists, and if it doesn't, create it. This will make a read operation, and if the container is not found it will do a create operation.
+        /// Check if a container exists, and if it doesn't, create it. This will make a read operation, and if the
+        /// container is not found it will do a create operation.
         /// </summary>
-        /// <param name="throughput">(Optional) The throughput provisioned for a container in measurement of Request Units per second in the Azure Cosmos DB service.</param>
+        /// <param name="throughput">(Optional) The throughput provisioned for a container in measurement of
+        /// Request Units per second in the Azure Cosmos DB service.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CreateContainer(int? throughput = null)
         {
@@ -70,7 +72,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <summary>
-        /// Deletes the Cosos DB container.
+        /// Deletes the Cosmos DB container.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task DeleteContainer()
@@ -490,7 +492,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
             else
             {
-                query = query.Where(Common.PredicateBuilder.True<CosmosPackageManifest>());
+                query = query.Where(Utils.Common.PredicateBuilder.True<CosmosPackageManifest>());
             }
 
             // Submit Query to Cosmos

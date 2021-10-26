@@ -65,8 +65,13 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         public async Task InitializeAsync()
         {
             var sw = Stopwatch.StartNew();
+
             string json = System.IO.File.ReadAllText(ManifestsPath);
             this.allTestManifests = JsonConvert.DeserializeObject<List<CosmosPackageManifest>>(json);
+
+            // Ensure container exists prior to getting count
+            await this.cosmosDataStore.CreateContainer(TestDatabaseRUs);
+
             int itemCount = await this.cosmosDataStore.Count();
             if (itemCount == ManifestCount)
             {

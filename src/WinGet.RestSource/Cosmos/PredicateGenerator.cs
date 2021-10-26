@@ -9,7 +9,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Objects;

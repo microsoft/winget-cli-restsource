@@ -315,6 +315,71 @@
             <typeparam name="T">Object to return.</typeparam>
             <returns>Object.</returns>
         </member>
+        <member name="T:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder">
+            <summary>
+            Enables the efficient, dynamic composition of query predicates.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.True``1">
+            <summary>
+            Creates a predicate that evaluates to true.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <returns>A constant predicate which always returns true.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.False``1">
+            <summary>
+            Creates a predicate that evaluates to false.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <returns>A constant predicate which always returns true.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.And``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Combines the first predicate with the second using the logical "and".
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="first">The base expression.</param>
+            <param name="second">The expression to combine onto the base.</param>
+            <returns>A new AND-combined predicate.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Or``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Combines the first predicate with the second using the logical "or".
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="first">The base expression.</param>
+            <param name="second">The expression to combine onto the base.</param>
+            <returns>A new OR-combined predicate.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Not``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Negates the predicate.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="expression">The base expression.</param>
+            <returns>A new negated expression.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.IsStarted``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Determines if the predicate is started.
+            </summary>
+            <typeparam name="T">Type of expression.</typeparam>
+            <param name="expression">Expression to check.</param>
+            <returns>Returns true if predicate has been started (not simply constant true or false), false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.New``1">
+            <summary>
+            Create a new predicate with default expression (false).
+            </summary>
+            <typeparam name="T">Type of expression.</typeparam>
+            <returns>A new default expression.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Compose``1(System.Linq.Expressions.Expression{``0},System.Linq.Expressions.Expression{``0},System.Func{System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.Expression})">
+            <summary>
+            Combines the first expression with the second using the specified merge function.
+            </summary>
+        </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Common.StringEncoder">
             <summary>
             String Encoder.

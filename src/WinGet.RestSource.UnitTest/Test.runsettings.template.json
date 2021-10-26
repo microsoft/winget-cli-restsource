@@ -4,5 +4,5 @@
   "CosmosReadWriteKey": "<your CosmosDB read-write account key>",
   "CosmosDatabase": "cosmossql-pkgsrest-test",
   "CosmosContainer": "ManifestsTest",
-  "ServerIdentifier": "winget-pkgs-restsource-test"
+  "ServerIdentifier": "winget-cli-restsource-test"
 }

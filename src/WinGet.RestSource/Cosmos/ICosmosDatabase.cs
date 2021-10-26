@@ -30,7 +30,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         Task DeleteContainer();
 
         /// <summary>
-        /// Returns the number of itmes in the Cosmos DB.
+        /// Returns the number of items in the Cosmos DB.
         /// </summary>
         /// <typeparam name="T">Type of the items to count.</typeparam>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
