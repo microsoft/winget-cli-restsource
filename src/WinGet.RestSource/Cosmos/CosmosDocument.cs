@@ -25,9 +25,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets partition Key.
+        /// Gets partition Key.
         /// </summary>
-        public string PartitionKey { get; set; }
+        public string PartitionKey => this.Id;
 
         /// <summary>
         /// Gets or sets the etag for a document.

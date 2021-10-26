@@ -34,5 +34,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// Gets or sets continuation Token.
         /// </summary>
         public string ContinuationToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the request charge for this request from the Azure Cosmos DB service.
+        /// </summary>
+        public double RequestCharge { get; set; }
     }
 }

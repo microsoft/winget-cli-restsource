@@ -6,34 +6,26 @@
 
 namespace Microsoft.WinGet.RestSource.Cosmos
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using LinqKit;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
-    using Microsoft.WinGet.RestSource.Utils.Exceptions;
-    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Objects;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGet.RestSource.Utils.Validators;
-    using Version = Microsoft.WinGet.RestSource.Utils.Models.Schemas.Version;
 
     /// <summary>
     /// Cosmos Data Store.
     /// </summary>
     public class CosmosDataStore : IApiDataStore
     {
-        private const string ShortDescription = "ShortDescription";
-
         private const int AllElements = -1;
 
         private readonly ICosmosDatabase cosmosDatabase;
@@ -49,7 +41,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
             PackageMatchFields.NormalizedPackageNameAndPublisher,
-            ShortDescription,
+            PackageMatchFields.ShortDescription,
         };
 
         /// <summary>
@@ -67,6 +59,31 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             this.log = log;
         }
 
+        /// <summary>
+        /// Check if a container exists, and if it doesn't, create it. This will make a read operation, and if the container is not found it will do a create operation.
+        /// </summary>
+        /// <param name="throughput">(Optional) The throughput provisioned for a container in measurement of Request Units per second in the Azure Cosmos DB service.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task CreateContainer(int? throughput = null)
+        {
+            await this.cosmosDatabase.CreateContainer(throughput);
+        }
+
+        /// <summary>
+        /// Deletes the Cosos DB container.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task DeleteContainer()
+        {
+            await this.cosmosDatabase.DeleteContainer();
+        }
+
+        /// <inheritdoc />
+        public async Task<int> Count()
+        {
+            return await this.cosmosDatabase.Count<CosmosPackageManifest>();
+        }
+
         /// <inheritdoc />
         public async Task AddPackage(Package package)
         {
@@ -81,7 +98,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             };
 
             ApiDataValidator.Validate(cosmosDocument.Document);
-            await this.cosmosDatabase.Add<CosmosPackageManifest>(cosmosDocument);
+            await this.cosmosDatabase.Add(cosmosDocument);
         }
 
         /// <inheritdoc/>
@@ -90,7 +107,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
             {
                 Id = packageIdentifier,
-                PartitionKey = packageIdentifier,
             };
 
             // Delete Document
@@ -113,15 +129,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<Package>> GetPackages(string packageIdentifier, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<Package>> GetPackages(string packageIdentifier, string continuationToken = null)
         {
-            // Process Continuation token
-            string continuationToken = null;
-            if (queryParameters != null)
-            {
-                continuationToken = queryParameters[QueryConstants.ContinuationToken];
-            }
-
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
 
             // Create query options
@@ -203,17 +212,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc/>
-        public async Task<ApiDataPage<Version>> GetVersions(string packageIdentifier, string packageVersion, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<Version>> GetVersions(string packageIdentifier, string packageVersion)
         {
-            // Process Continuation token
-            string continuationToken = null;
-            if (queryParameters != null)
-            {
-                continuationToken = queryParameters[QueryConstants.ContinuationToken];
-            }
-
-            continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
-
             // Fetch Current Package
             CosmosDocument<CosmosPackageManifest> cosmosDocument =
                 await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
@@ -271,17 +271,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<Installer>> GetInstallers(string packageIdentifier, string packageVersion, string installerIdentifier, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<Installer>> GetInstallers(string packageIdentifier, string packageVersion, string installerIdentifier)
         {
-            // Process Continuation token
-            string continuationToken = null;
-            if (queryParameters != null)
-            {
-                continuationToken = queryParameters[QueryConstants.ContinuationToken];
-            }
-
-            continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
-
             // Fetch Current Package
             CosmosDocument<CosmosPackageManifest> cosmosDocument =
                 await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
@@ -339,17 +330,8 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<Locale>> GetLocales(string packageIdentifier, string packageVersion, string packageLocale, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<Locale>> GetLocales(string packageIdentifier, string packageVersion, string packageLocale)
         {
-            // Process Continuation token
-            string continuationToken = null;
-            if (queryParameters != null)
-            {
-                continuationToken = queryParameters[QueryConstants.ContinuationToken];
-            }
-
-            continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
-
             // Fetch Current Package
             CosmosDocument<CosmosPackageManifest> cosmosDocument =
                 await this.cosmosDatabase.GetByIdAndPartitionKey<CosmosPackageManifest>(packageIdentifier, packageIdentifier);
@@ -376,15 +358,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// <inheritdoc />
         public async Task DeletePackageManifest(string packageIdentifier)
         {
-            // Parse Variables
-            CosmosDocument<CosmosPackageManifest> cosmosDocument = new CosmosDocument<CosmosPackageManifest>
-            {
-                Id = packageIdentifier,
-                PartitionKey = packageIdentifier,
-            };
-
-            // Delete Document
-            await this.cosmosDatabase.Delete<CosmosPackageManifest>(cosmosDocument);
+            await this.DeletePackage(packageIdentifier);
         }
 
         /// <inheritdoc />
@@ -395,31 +369,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             {
                 Document = cosmosPackageManifest,
                 Id = packageIdentifier,
-                PartitionKey = packageIdentifier,
             };
-            await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+            await this.cosmosDatabase.Update(cosmosDocument);
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<PackageManifest>> GetPackageManifests(string packageIdentifier, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<PackageManifest>> GetPackageManifests(string packageIdentifier, string continuationToken = null, string versionFilter = null, string channelFilter = null, string marketFilter = null)
         {
             // Note: GetPackageManifests should use query parameters as predicates when querying all package manifests. Currently, query parameters
             // are only exposed for GetPackageManifests with a PackageIdentifier input. Whenever query parameters are exposed to querying all
             // package manifests, this method should utilize search predicates to filter on query parameters.
-
-            // Process Continuation token
-            string continuationToken = null;
-            string versionFilter = null;
-            string channelFilter = null;
-            string marketFilter = null;
-            if (queryParameters != null)
-            {
-                continuationToken = queryParameters[QueryConstants.ContinuationToken];
-                versionFilter = queryParameters[QueryConstants.Version];
-                channelFilter = queryParameters[QueryConstants.Channel];
-                marketFilter = queryParameters[QueryConstants.Market];
-            }
-
             continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
 
             // Create feed options
@@ -430,7 +389,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             };
 
             // Get iQueryable
-            IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions);
+            IQueryable<PackageManifest> query = this.cosmosDatabase.GetIQueryable<PackageManifest>(feedOptions, continuationToken);
 
             if (!string.IsNullOrWhiteSpace(packageIdentifier))
             {
@@ -474,19 +433,16 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // If Markets object is null or markets do not match filter, exclude them from results.
             if (!string.IsNullOrEmpty(marketFilter))
             {
-                this.ApplyMarketFilter(apiDataDocument.Items, marketFilter);
+                ApplyMarketFilter(apiDataDocument.Items, marketFilter);
             }
 
             return apiDataDocument;
         }
 
         /// <inheritdoc />
-        public async Task<ApiDataPage<ManifestSearchResponse>> SearchPackageManifests(ManifestSearchRequest manifestSearchRequest, Dictionary<string, string> headers, IQueryCollection queryParameters)
+        public async Task<ApiDataPage<ManifestSearchResponse>> SearchPackageManifests(ManifestSearchRequest manifestSearchRequest, string continuationToken = null)
         {
-            // Create Working Set and return
-            ApiDataPage<ManifestSearchResponse> apiDataPage = new ApiDataPage<ManifestSearchResponse>();
-            List<CosmosPackageManifest> manifests = new List<CosmosPackageManifest>();
-            List<ManifestSearchResponse> manifestSearchResponse = new List<ManifestSearchResponse>();
+            continuationToken = continuationToken != null ? StringEncoder.DecodeContinuationToken(continuationToken) : null;
 
             // Create feed options for inclusion search: -1 so we can get all matches in inclusion, then filter down.
             QueryRequestOptions feedOptions = new QueryRequestOptions
@@ -495,155 +451,74 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 MaxItemCount = AllElements,
             };
 
-            if (manifestSearchRequest.FetchAllManifests || (manifestSearchRequest.Inclusions == null && manifestSearchRequest.Query == null))
+            manifestSearchRequest.Inclusions ??= new Utils.Models.Arrays.SearchRequestPackageMatchFilter();
+            manifestSearchRequest.Filters ??= new Utils.Models.Arrays.SearchRequestPackageMatchFilter();
+
+            // Convert Query to inclusions to submit to cosmos
+            if (manifestSearchRequest.Query != null)
             {
-                IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
-                FeedIterator<CosmosPackageManifest> documentQuery = query.ToFeedIterator();
-                ApiDataPage<CosmosPackageManifest> apiDataDocument = await this.cosmosDatabase.GetByDocumentQuery<CosmosPackageManifest>(documentQuery);
-                manifests.AddRange(apiDataDocument.Items);
+                manifestSearchRequest.Inclusions.AddRange(this.queryList.Select(q => new SearchRequestPackageMatchFilter()
+                {
+                    PackageMatchField = q,
+                    RequestMatch = manifestSearchRequest.Query,
+                }));
+            }
+
+            // Process inclusions
+            var inclusionsPredicate = new PredicateGenerator();
+            manifestSearchRequest.Inclusions.ForEach(inclusion => AddConditionIfValid(inclusionsPredicate, inclusion, PredicateOperator.Or));
+
+            // Process filters
+            var filtersPredicate = new PredicateGenerator();
+            manifestSearchRequest.Filters.ForEach(filter => AddConditionIfValid(filtersPredicate, filter, PredicateOperator.And));
+
+            IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>();
+
+            if (inclusionsPredicate.IsStarted() || filtersPredicate.IsStarted())
+            {
+                query = query.AsExpandable();
+
+                if (inclusionsPredicate.IsStarted())
+                {
+                    query = query.Where(inclusionsPredicate.Generate(PredicateOperator.Or));
+                }
+
+                if (filtersPredicate.IsStarted())
+                {
+                    query = query.Where(filtersPredicate.Generate(PredicateOperator.And));
+                }
             }
             else
             {
-                // Process Inclusions
-                Utils.Models.Arrays.SearchRequestPackageMatchFilter inclusions = new Utils.Models.Arrays.SearchRequestPackageMatchFilter();
-                if (manifestSearchRequest.Inclusions != null)
-                {
-                    inclusions.AddRange(manifestSearchRequest.Inclusions);
-                }
-
-                // Convert Query to inclusions to submit to cosmos
-                if (manifestSearchRequest.Query != null)
-                {
-                    inclusions.AddRange(this.queryList.Select(q => new Utils.Models.Objects.SearchRequestPackageMatchFilter()
-                    {
-                        PackageMatchField = q,
-                        RequestMatch = manifestSearchRequest.Query,
-                    }));
-                }
-
-                // Submit Inclusions to Cosmos
-                // Due to join limitation on Cosmos - we are submitting each predicate separately.
-                // TODO: Create a more efficient search - but this will suffice for now for a light weight reference.
-                if (inclusions.Count > 0)
-                {
-                    List<Task<ApiDataPage<CosmosPackageManifest>>> taskSet = new List<Task<ApiDataPage<CosmosPackageManifest>>>();
-                    foreach (string packageMatchField in inclusions.Select(inc => inc.PackageMatchField).Distinct())
-                    {
-                        // Create Predicate for search
-                        ExpressionStarter<CosmosPackageManifest> inclusionPredicate = PredicateBuilder.New<CosmosPackageManifest>();
-                        foreach (SearchRequestPackageMatchFilter matchFilter in inclusions.Where(inc => inc.PackageMatchField.Equals(packageMatchField)))
-                        {
-                            // Some package match fields or types might not be supported by current version of search.
-                            // So we will check the supported list before adding any predicates.
-                            if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
-                                this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
-                            {
-                                inclusionPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
-                            }
-                        }
-
-                        // Create Document Query
-                        IQueryable<CosmosPackageManifest> query = this.cosmosDatabase.GetIQueryable<CosmosPackageManifest>(feedOptions);
-                        query = query.Where(inclusionPredicate);
-                        FeedIterator<CosmosPackageManifest> documentQuery = query.ToFeedIterator();
-
-                        // Submit Query to Cosmos
-                        taskSet.Add(Task.Run(() => this.cosmosDatabase.GetByDocumentQuery(documentQuery)));
-                    }
-
-                    // Wait for Cosmos Queries to complete
-                    await Task.WhenAll(taskSet.ToArray());
-
-                    // Process Manifests from Cosmos
-                    foreach (Task<ApiDataPage<CosmosPackageManifest>> task in taskSet)
-                    {
-                        manifests.AddRange(task.Result.Items);
-                    }
-
-                    manifests = manifests.Distinct().ToList();
-                }
+                query = query.Where(Common.PredicateBuilder.True<CosmosPackageManifest>());
             }
 
-            // Process Filters locally
-            if (manifestSearchRequest.Filters != null)
-            {
-                ExpressionStarter<CosmosPackageManifest> filterPredicate = PredicateBuilder.New<CosmosPackageManifest>();
-                foreach (SearchRequestPackageMatchFilter matchFilter in manifestSearchRequest.Filters)
-                {
-                    if (this.IsPackageMatchFieldSupported(matchFilter.PackageMatchField) &&
-                        this.IsMatchTypeSupported(matchFilter.RequestMatch.MatchType))
-                    {
-                        filterPredicate.Or(this.QueryPredicate(matchFilter.PackageMatchField, matchFilter.RequestMatch));
-                    }
-                }
+            // Submit Query to Cosmos
+            var results = await this.cosmosDatabase.GetByDocumentQuery(query, feedOptions, continuationToken);
+            this.log.LogTrace($"Query used {results.RequestCharge} RUs query: {query}");
 
-                manifests = manifests.Where(filterPredicate).ToList();
-            }
-
-            foreach (PackageManifest manifest in manifests)
-            {
-                foreach (ManifestSearchResponse response in ManifestSearchResponse.GetSearchVersions(manifest))
-                {
-                    manifestSearchResponse.Add(response);
-                }
-            }
+            List<ManifestSearchResponse> manifestSearchResponse = results.Items.Distinct().SelectMany(m => ManifestSearchResponse.GetSearchVersions(m)).ToList();
 
             // Consolidate Results
             manifestSearchResponse = ManifestSearchResponse.Consolidate(manifestSearchResponse).OrderBy(manifest => manifest.PackageIdentifier).ToList();
 
-            // Process results
-            if (manifestSearchResponse.Count > manifestSearchRequest.MaximumResults && manifestSearchRequest.MaximumResults > 0)
-            {
-                manifestSearchResponse = manifestSearchResponse.GetRange(0, manifestSearchRequest.MaximumResults);
-            }
-
-            int maxPageCount = manifestSearchRequest.MaximumResults < FunctionSettingsConstants.MaxResultsPerPage && manifestSearchRequest.MaximumResults > 0
-                ? manifestSearchRequest.MaximumResults
-                : FunctionSettingsConstants.MaxResultsPerPage;
-
-            int totalResults = manifestSearchResponse.Count;
-            if (totalResults > maxPageCount)
-            {
-                // Process Continuation Token
-                ApiContinuationToken token = null;
-                if (headers.ContainsKey(HeaderConstants.ContinuationToken))
-                {
-                    token = Parser.StringParser<ApiContinuationToken>(StringEncoder.DecodeContinuationToken(headers[HeaderConstants.ContinuationToken]));
-                }
-                else
-                {
-                    token = new ApiContinuationToken()
-                    {
-                        Index = 0,
-                        MaxPageSize = maxPageCount,
-                    };
-                }
-
-                // If index miss-match dump results and return no content.
-                if (token.Index > manifestSearchResponse.Count - 1)
-                {
-                    manifestSearchResponse = new List<ManifestSearchResponse>();
-                    token = null;
-                }
-                else
-                {
-                    int elementsRemaining = totalResults - token.Index;
-                    int elements = elementsRemaining < token.MaxPageSize ? elementsRemaining : token.MaxPageSize;
-                    manifestSearchResponse = manifestSearchResponse.GetRange(token.Index, elements);
-
-                    token.Index += elements;
-                    if (token.Index == totalResults)
-                    {
-                        token = null;
-                    }
-                }
-
-                apiDataPage.ContinuationToken = token != null ? StringEncoder.EncodeContinuationToken(FormatJSON.None(token)) : null;
-            }
-
-            apiDataPage.Items = ManifestSearchResponse.Consolidate(manifestSearchResponse.ToList());
+            // Create Working Set and return
+            ApiDataPage<ManifestSearchResponse> apiDataPage = new ApiDataPage<ManifestSearchResponse>();
+            apiDataPage.ContinuationToken = results.ContinuationToken != null ? StringEncoder.EncodeContinuationToken(results.ContinuationToken) : null;
+            apiDataPage.Items = manifestSearchResponse;
 
             return apiDataPage;
+        }
+
+        private static void AddConditionIfValid(PredicateGenerator predicate, SearchRequestPackageMatchFilter condition, PredicateOperator predicateOperator)
+        {
+            // Some package match fields or types might not be supported by current version of search.
+            // So we will check the supported list before adding any predicates.
+            if (IsPackageMatchFieldSupported(condition.PackageMatchField) &&
+                IsMatchTypeSupported(condition.RequestMatch.MatchType))
+            {
+                predicate.AddCondition(condition, predicateOperator);
+            }
         }
 
         /// <summary>
@@ -651,7 +526,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         /// </summary>
         /// <param name="packageManifests">Package manifests on which filter must be applied.</param>
         /// <param name="marketFilter">Market filter value.</param>
-        internal void ApplyMarketFilter(IList<PackageManifest> packageManifests, string marketFilter)
+        private static void ApplyMarketFilter(IList<PackageManifest> packageManifests, string marketFilter)
         {
             if (!string.IsNullOrEmpty(marketFilter))
             {
@@ -697,7 +572,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
         }
 
-        private bool IsPackageMatchFieldSupported(string packageMatchField)
+        private static bool IsPackageMatchFieldSupported(string packageMatchField)
         {
             bool isPackageMatchFieldSupported = false;
 
@@ -718,7 +593,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             return isPackageMatchFieldSupported;
         }
 
-        private bool IsMatchTypeSupported(string matchType)
+        private static bool IsMatchTypeSupported(string matchType)
         {
             bool isMatchTypeSupported = false;
 
@@ -733,122 +608,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             }
 
             return isMatchTypeSupported;
-        }
-
-        private Expression<Func<CosmosPackageManifest, bool>> QueryPredicate(string packageMatchField, SearchRequestMatch requestMatch)
-        {
-            return (packageMatchField, requestMatch.MatchType) switch
-            {
-                (PackageMatchFields.PackageIdentifier, MatchType.Exact) =>
-                    manifest => manifest.PackageIdentifier.Equals(requestMatch.KeyWord),
-
-                (PackageMatchFields.PackageIdentifier, MatchType.CaseInsensitive) =>
-                    manifest => manifest.PackageIdentifier.ToLower().Equals(requestMatch.KeyWord.ToLower()),
-
-                (PackageMatchFields.PackageIdentifier, MatchType.StartsWith) =>
-                    manifest => manifest.PackageIdentifier.StartsWith(requestMatch.KeyWord),
-
-                (PackageMatchFields.PackageIdentifier, MatchType.Substring) =>
-                    manifest => manifest.PackageIdentifier.Contains(requestMatch.KeyWord),
-
-                (PackageMatchFields.PackageName, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Equals(requestMatch.KeyWord)),
-
-                (PackageMatchFields.PackageName, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.ToLower().Equals(requestMatch.KeyWord.ToLower())),
-
-                (PackageMatchFields.PackageName, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.StartsWith(requestMatch.KeyWord)),
-
-                (PackageMatchFields.PackageName, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.PackageName.Contains(requestMatch.KeyWord)),
-
-                (PackageMatchFields.Moniker, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Equals(requestMatch.KeyWord)),
-
-                (PackageMatchFields.Moniker, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.ToLower().Equals(requestMatch.KeyWord.ToLower())),
-
-                (PackageMatchFields.Moniker, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.StartsWith(requestMatch.KeyWord)),
-
-                (PackageMatchFields.Moniker, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.DefaultLocale.Moniker != null && extended.DefaultLocale.Moniker.Contains(requestMatch.KeyWord)),
-
-                (PackageMatchFields.Command, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Equals(requestMatch.KeyWord)))),
-
-                (PackageMatchFields.Command, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
-
-                (PackageMatchFields.Command, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.StartsWith(requestMatch.KeyWord)))),
-
-                (PackageMatchFields.Command, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Commands != null && installer.Commands.Any(command => command.Contains(requestMatch.KeyWord)))),
-
-                (PackageMatchFields.Tag, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Equals(requestMatch.KeyWord))))),
-
-                (PackageMatchFields.Tag, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
-
-                (PackageMatchFields.Tag, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.StartsWith(requestMatch.KeyWord))))),
-
-                (PackageMatchFields.Tag, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.Tags != null && extended.DefaultLocale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.Tags != null && locale.Tags.Any(tag => tag.Contains(requestMatch.KeyWord))))),
-
-                (PackageMatchFields.PackageFamilyName, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Equals(requestMatch.KeyWord))),
-
-                (PackageMatchFields.PackageFamilyName, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
-
-                (PackageMatchFields.PackageFamilyName, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.StartsWith(requestMatch.KeyWord))),
-
-                (PackageMatchFields.PackageFamilyName, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.PackageFamilyName != null && installer.PackageFamilyName.Contains(requestMatch.KeyWord))),
-
-                (PackageMatchFields.ProductCode, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Equals(requestMatch.KeyWord))),
-
-                (PackageMatchFields.ProductCode, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.ToLower().Equals(requestMatch.KeyWord.ToLower()))),
-
-                (PackageMatchFields.ProductCode, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.StartsWith(requestMatch.KeyWord))),
-
-                (PackageMatchFields.ProductCode, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.ProductCode != null && installer.ProductCode.Contains(requestMatch.KeyWord))),
-
-                (ShortDescription, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Equals(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Equals(requestMatch.KeyWord)))),
-
-                (ShortDescription, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.ToLower().Equals(requestMatch.KeyWord.ToLower())))),
-
-                (ShortDescription, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.StartsWith(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.StartsWith(requestMatch.KeyWord)))),
-
-                (ShortDescription, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.DefaultLocale.ShortDescription.Contains(requestMatch.KeyWord)) || manifest.Versions.Any(extended => extended.Locales != null && extended.Locales.Any(locale => locale.ShortDescription != null && locale.ShortDescription.Contains(requestMatch.KeyWord)))),
-
-                (PackageMatchFields.Market, MatchType.Exact) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Equals(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Equals(requestMatch.KeyWord))))),
-
-                (PackageMatchFields.Market, MatchType.CaseInsensitive) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.ToLower().Equals(requestMatch.KeyWord.ToLower())))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.ToLower().Equals(requestMatch.KeyWord.ToLower()))))),
-
-                (PackageMatchFields.Market, MatchType.StartsWith) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.StartsWith(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.StartsWith(requestMatch.KeyWord))))),
-
-                (PackageMatchFields.Market, MatchType.Substring) =>
-                    manifest => manifest.Versions != null && (manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.AllowedMarkets != null && installer.Markets.AllowedMarkets.Any(market => market.Contains(requestMatch.KeyWord)))) || manifest.Versions.Any(extended => extended.Installers != null && extended.Installers.Any(installer => installer.Markets != null && installer.Markets.ExcludedMarkets != null && installer.Markets.ExcludedMarkets.Any(market => !market.Contains(requestMatch.KeyWord))))),
-
-                _ => throw new InvalidArgumentException(new InternalRestError(ErrorConstants.ValidationFailureErrorCode, ErrorConstants.ValidationFailureErrorMessage)),
-            };
         }
     }
 }

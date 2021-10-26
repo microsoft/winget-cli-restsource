@@ -1,0 +1,8 @@
+﻿{
+  "CosmosAccountEndpoint": "https://localhost:8081/",
+  "CosmosReadOnlyKey": "<your CosmosDB read-only account key>",
+  "CosmosReadWriteKey": "<your CosmosDB read-write account key>",
+  "CosmosDatabase": "cosmossql-pkgsrest-test",
+  "CosmosContainer": "ManifestsTest",
+  "ServerIdentifier": "winget-pkgs-restsource-test"
+}

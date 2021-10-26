@@ -11,10 +11,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Threading.Tasks;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Linq;
-    using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// This class retrieves a database and sets it up if it does not exist.
@@ -49,6 +49,27 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
             this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
+        }
+
+        /// <inheritdoc />
+        public async Task CreateContainer(int? throughput = null)
+        {
+            var database = await this.readWriteClient.CreateDatabaseIfNotExistsAsync(this.databaseId);
+            await database.Database.CreateContainerIfNotExistsAsync(this.containerId, "/id", throughput);
+        }
+
+        /// <inheritdoc />
+        public async Task DeleteContainer()
+        {
+            await this.readWriteContainer.DeleteContainerAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task<int> Count<T>()
+            where T : class
+        {
+            int count = await this.readOnlyContainer.GetItemLinqQueryable<T>().CountAsync();
+            return count;
         }
 
         /// <inheritdoc />
@@ -112,7 +133,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             try
             {
                 var requestOptions = new ItemRequestOptions { IfMatchEtag = cosmosDocument.Etag };
-                await this.readWriteContainer.ReplaceItemAsync(cosmosDocument.Document, cosmosDocument.Id, requestOptions: requestOptions);
+                await this.readWriteContainer.ReplaceItemAsync(cosmosDocument.Document, cosmosDocument.Id, new PartitionKey(cosmosDocument.Id), requestOptions: requestOptions);
             }
             catch (CosmosException cosmosException)
             {
@@ -125,7 +146,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         }
 
         /// <inheritdoc />
-        public IQueryable<T> GetIQueryable<T>(QueryRequestOptions requestOptions = null, string continuationToken = null)
+        public IOrderedQueryable<T> GetIQueryable<T>(QueryRequestOptions requestOptions = null, string continuationToken = null)
             where T : class
         {
             try
@@ -135,7 +156,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                     requestOptions = new QueryRequestOptions { ResponseContinuationTokenLimitInKb = CosmosConnectionConstants.ResponseContinuationTokenLimitInKb };
                 }
 
-                IQueryable<T> iQueryable = this.readOnlyContainer.GetItemLinqQueryable<T>(continuationToken: continuationToken, requestOptions: requestOptions);
+                IOrderedQueryable<T> iQueryable = this.readOnlyContainer.GetItemLinqQueryable<T>(true, continuationToken: continuationToken, requestOptions: requestOptions);
                 return iQueryable;
             }
             catch (CosmosException cosmosException)
@@ -186,6 +207,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             try
             {
                 FeedResponse<T> response = await documentQuery.ReadNextAsync();
+                apiDataPage.RequestCharge = response.RequestCharge;
                 apiDataPage.ContinuationToken = response.ContinuationToken;
                 apiDataPage.Items = response.ToList();
             }
@@ -200,6 +222,40 @@ namespace Microsoft.WinGet.RestSource.Cosmos
 
             // Return the model
             return apiDataPage;
+        }
+
+        /// <inheritdoc />
+        public async Task<ApiDataPage<T>> GetByDocumentQuery<T>(IQueryable<T> documentQuery, QueryRequestOptions feedOptions, string continuationToken)
+            where T : class
+        {
+            ApiDataPage<T> apiDataPage = new ApiDataPage<T>();
+
+            try
+            {
+                string sql = JsonConvert.DeserializeObject<IQueryableSql>(documentQuery.ToString()).Sql;
+                FeedIterator<T> query = this.readOnlyContainer.GetItemQueryIterator<T>(sql, continuationToken, feedOptions);
+                FeedResponse<T> response = await query.ReadNextAsync();
+                apiDataPage.RequestCharge = response.RequestCharge;
+                apiDataPage.ContinuationToken = response.ContinuationToken;
+                apiDataPage.Items = response.ToList();
+            }
+            catch (CosmosException cosmosException)
+            {
+                throw new CosmosDatabaseException(cosmosException);
+            }
+            catch (Exception exception)
+            {
+                throw new DefaultException(exception);
+            }
+
+            // Return the model
+            return apiDataPage;
+        }
+
+        private class IQueryableSql
+        {
+            [JsonProperty(PropertyName = "query")]
+            public string Sql { get; set; }
         }
     }
 }

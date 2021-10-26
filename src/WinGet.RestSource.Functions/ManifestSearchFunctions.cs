@@ -60,12 +60,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);
 
                 // Get Manifest Search Request and Validate.
                 ManifestSearchRequest manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
                 ApiDataValidator.Validate(manifestSearch);
 
-                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);
+                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, continuationToken);
 
                 unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnsupportedPackageMatchFields);
                 requiredFields = UnsupportedAndRequiredFieldsHelper.GetRequiredPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.RequiredPackageMatchFields);

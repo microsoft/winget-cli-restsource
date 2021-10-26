@@ -26,11 +26,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LinqKit" Version="1.1.24" />
-    <!-- TODO: Using a preview version of this CosmosDB helper library as there's no stable version yet that supports the v3 CosmosDB SDK.
-         We'll remove the preview dependency as part of the work to update the LINQ-querying logic.
-    -->
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.0.0-preview2" />
+    <PackageReference Include="LinqKit" Version="1.1.26" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
