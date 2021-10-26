@@ -6,6 +6,7 @@
 
 namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -23,7 +24,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Xunit.Abstractions;
     using Arrays = Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Objects = Microsoft.WinGet.RestSource.Utils.Models.Objects;
-    using System;
 
     /// <summary>
     /// CosmosDataStore Tests.
