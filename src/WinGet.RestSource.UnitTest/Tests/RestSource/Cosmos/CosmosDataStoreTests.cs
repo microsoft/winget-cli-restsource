@@ -63,6 +63,12 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             string databaseId = this.configuration[CosmosConnectionConstants.DatabaseNameSetting] ?? throw new ArgumentNullException();
             string containerId = this.configuration[CosmosConnectionConstants.ContainerNameSetting] ?? throw new ArgumentNullException();
 
+            this.log.WriteLine($"{CosmosConnectionConstants.CosmosAccountEndpointSetting}: {endpoint}");
+            this.log.WriteLine($"{CosmosConnectionConstants.CosmosReadOnlyKeySetting}: {readOnlyKey}");
+            this.log.WriteLine($"{CosmosConnectionConstants.CosmosReadWriteKeySetting}: {readWriteKey}");
+            this.log.WriteLine($"{CosmosConnectionConstants.DatabaseNameSetting}: {databaseId}");
+            this.log.WriteLine($"{CosmosConnectionConstants.ContainerNameSetting}: {containerId}");
+
             var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<CosmosDataStore>();
             this.cosmosDataStore = new CosmosDataStore(logger, endpoint, readWriteKey, readOnlyKey, databaseId, containerId);
         }

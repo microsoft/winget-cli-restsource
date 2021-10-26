@@ -10,6 +10,11 @@ steps:
 - powershell: |
     copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
     echo "$(CosmosDbEmulator.Endpoint)"
+
+    Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
+    Start-CosmosDbEmulator
+
+    echo "$(CosmosDbEmulator.Endpoint)"
   displayName: "Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config"
 
 - task: CopyFiles@2
