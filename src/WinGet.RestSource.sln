@@ -8,6 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Functions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{145CC9B9-A93E-46C1-90F7-DFB81233B39F}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
@@ -58,6 +59,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 		..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{5CA26277-F8CA-4136-81CD-1A3CDA3542A1}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\new-private-repository-azure.md = ..\doc\new-private-repository-azure.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +97,7 @@ Global
 		{3C510F11-3A5B-4E30-8189-05E87B7DE1F0} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
 		{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5} = {954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}
 		{5DF7BF3F-415D-4A9D-B859-ED1168438F1F} = {3C510F11-3A5B-4E30-8189-05E87B7DE1F0}
+		{5CA26277-F8CA-4136-81CD-1A3CDA3542A1} = {145CC9B9-A93E-46C1-90F7-DFB81233B39F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24BCF9E2-C2E3-48E9-90BD-E619553ABE3D}
