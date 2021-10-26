@@ -1,6 +1,11 @@
 # Template helper to restore, build, and publish
 
 steps:
+
+# Checkout repo with lfs enabled
+- checkout: self
+  lfs: "true"
+
 ## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
