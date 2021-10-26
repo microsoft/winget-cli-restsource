@@ -3,13 +3,13 @@
 
 # Branches that trigger a build on commit
 trigger:
-- master
+- main
 
 # PR triggers
 pr:
   branches:
     include:
-    - master
+    - main
   paths:
     include:
     - pipelines/*

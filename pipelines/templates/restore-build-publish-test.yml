@@ -39,13 +39,13 @@ steps:
   parameters:
     name: WinGet.Restsource.x86PowershellSupport
     source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
-    BuildPlatform: 'x86'
+    TargetPlatform: 'x86'
 
 - template: copy-and-publish-powershell.yml
   parameters:
     name: WinGet.Restsource.x64PowershellSupport
     source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
-    BuildPlatform: 'x64'
+    TargetPlatform: 'x64'
 
 ## Run Unit Tests
 - template: run-unittests.yml
