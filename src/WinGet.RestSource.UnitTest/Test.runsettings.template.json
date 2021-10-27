@@ -1,7 +1,10 @@
 ﻿{
   "CosmosAccountEndpoint": "https://localhost:8081/",
+  
+  // These are well-known hardcoded keys used by the emulator, not secrets https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#authenticate-requests
   "CosmosReadOnlyKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
   "CosmosReadWriteKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+
   "CosmosDatabase": "cosmossql-pkgsrest-test",
   "CosmosContainer": "ManifestsTest",
   "ServerIdentifier": "winget-cli-restsource-test"
