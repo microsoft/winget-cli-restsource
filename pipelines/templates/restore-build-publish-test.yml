@@ -30,11 +30,11 @@ steps:
     ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
     FolderPath: src
     Pattern: |
-     $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0\Microsoft.WinGet.RestSource.Utils.dll
-     $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0\Microsoft.WinGet.PowershellSupport.dll
-     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.ps1
-     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.psd1
-     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.psm1
+     **/Microsoft.WinGet.RestSource.Utils.dll
+     **/Microsoft.WinGet.PowershellSupport.dll
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.ps1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psd1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psm1
     UseMinimatch: true
     signConfigType: inlineSignParams
     inlineOperation: |
