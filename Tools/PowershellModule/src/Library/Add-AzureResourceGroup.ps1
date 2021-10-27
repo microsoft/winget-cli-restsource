@@ -33,7 +33,12 @@ Function Add-AzureResourceGroup
     {
         $Return = $false
         $ErrorMessageRGDoesNotExist = "*Provided resource group does not exist*"
-        $SupportedRegions = @("eastasia", "southeastasia", "centralus", "eastus", "eastus2", "westus", "northcentralus", "southcentralus", "northeurope", "southeurope", "westeurope", "japanwest", "japaneast", "brazilsouth", "australiaeast", "australiasoutheast", "southindia", "centralindia", "westindia", "canadacentral", "canadaeast", "uksouth", "ukwest", "westcentralus", "westus2", "koreacentral", "koreasouth", "francecentral", "francesouth", "australiacentral", "australiacentral2", "uaecentral", "uaenorth", "southafricanorth", "southafricawest")
+        $SupportedRegions = @("eastasia", "southeastasia", "centralus", "eastus", "eastus2", "westus", "northcentralus", 
+                              "southcentralus", "northeurope", "southeurope", "westeurope", "japanwest", "japaneast", 
+                              "brazilsouth", "australiaeast", "australiasoutheast", "southindia", "centralindia", "westindia", 
+                              "canadacentral", "canadaeast", "uksouth", "ukwest", "westcentralus", "westus2", "koreacentral", 
+                              "koreasouth", "francecentral", "francesouth", "australiacentral", "australiacentral2", "uaecentral", 
+                              "uaenorth", "southafricanorth", "southafricawest")
 
         if($Name.Contains("-")) {
             $Name = $("$Name").Replace("-","")
@@ -41,7 +46,7 @@ Function Add-AzureResourceGroup
         }
 
         if($Region -and !$SupportedRegions.Contains($Region.ToLower())) {
-            ## Provided Azure Region does not match supported regions in $SupportedREgions variable.
+            ## Provided Azure Region does not match supported regions in $SupportedRegions variable.
             Write-Warning -Message "Provided Azure region $Region is not in the list of supported Azure Regions. Will attempt to create Resource Group in the provided Region."
         }
     }

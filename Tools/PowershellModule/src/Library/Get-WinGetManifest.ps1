@@ -3,10 +3,10 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for filtering results based on the name when targetting the Rest APIs.
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for retrieving results based on the name when targetting the Rest APIs.
 
     .DESCRIPTION
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for filtering results based on the name.
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for retrieving results based on the name.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -170,8 +170,6 @@ Function Get-WinGetManifest
                 ## Retrieves the Azure Function URL used to add new manifests to the rest source
                 $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
                         
-                ## sanity checks if already exists
-        
                 ## can function key be part of the header
                 Write-Verbose -Message "Constructing the REST API call."
                 

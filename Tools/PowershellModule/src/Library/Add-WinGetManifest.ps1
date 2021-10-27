@@ -1,4 +1,3 @@
-
 Function Add-WinGetManifest
 {
     <#
@@ -117,12 +116,10 @@ Function Add-WinGetManifest
     }
     PROCESS
     {
-        ## Add foreach loop
         foreach ($Manifest in $ApplicationManifest) {
             Write-Verbose -Message "Confirming that the Manifest ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
             $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $Manifest.PackageIdentifier
 
-            #$ManifestObject = $Manifest | ConvertFrom-Json
             $ManifestObject = $Manifest
             
             ## If the package already exists, return Error

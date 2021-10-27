@@ -34,9 +34,6 @@ Function New-ARMObjects
     )
     BEGIN
     {
-        ## Path to the compiled Functions compressed into a Zip file for upload to Azure Function
-        #$ArchiveFunctionZip = "$WorkingDirectory\CompiledFunctions.zip"
-        
         ## Imports the contents of the Parameter Files for reference and logging purposes:
         $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount" }).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
         $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json

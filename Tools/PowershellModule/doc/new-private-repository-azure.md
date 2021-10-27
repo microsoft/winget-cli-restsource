@@ -44,14 +44,14 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | Required | Parameter                  | Description                                                                                                                                |
 |----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
-| Yes      | Index                      | A string of letters or numbers which will be suffix to your newly created Azure resources.                                                |
+| Yes      | Index                      | A string of letters or numbers which will be suffix to your newly created Azure resources.                                                 |
 | Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
-| No       | WorkingDirectory           | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created.                 |
+| No       | WorkingDirectory           | The folder location that contains new items will be created in.                                                                            |
 | No       | ARMFunctionPath            | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
-| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager rest source. ["Demo", "Basic", "Enhanced"] |
-| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)                              |
+| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager rest source. ["Demo", "Basic", "Enhanced"]        |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)                                 |
 
 > [!Note]
 > The PowerShell Module must be re-imported each time the PowerShell window is closed.
@@ -62,11 +62,11 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 ```PowerShell
 PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetPrivateSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
 ```
-1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager rest source to add it to your WinGet client.
+1. After the above has completed, copy and run the connection information provided for your newly created Windows Package Manager rest source to add it to your WinGet client.
 
 ## Add manifests to the rest source
 
-The Windows Package Manager rest source provides a private location for hosting your Application Manifests. After the creation of your Windows Package Manager rest source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager rest source.
+The Windows Package Manager rest source provides a hosting solution allowing you to add your Application Manifests to. After the creation of your Windows Package Manager rest source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager rest source.
 
 The `Add-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files, or a folder containing *.yaml files. For more information on how to use this cmdlet, use the `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest PowerShell Article](.\PowerShell\New-WinGetManifest.md) in Docs.
 
@@ -82,7 +82,7 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the rest source
 
-The Windows Package Manager rest source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager rest source.
+The Windows Package Manager rest source provides a hosting solution allowing you to add your Application Manifests to. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager rest source.
 
 The `Get-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files or *.yaml files as well as targetting an existing Windows Package Manager rest source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest PowerShell Article](.\PowerShell\Get-WinGetManifest.md) in Docs.
 
@@ -98,7 +98,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a rest source
 
-The Windows Package Manager rest source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
+The Windows Package Manager rest source provides a hosting solution allowing you to add your Application Manifests to. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
 
 The `Remove-WinGetManifest` PowerShell cmdlet supports targetting an existing Windows Package Manager rest source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest PowerShell Article](.\PowerShell\Remove-WinGetManifest.md) in Docs.
 
@@ -130,9 +130,8 @@ The Windows Package Manager Rest Source contains the APIs required to provide a 
 
 **How to:**
 
-1. Download a local copy of the Windows Package Manager Rest Source from GitHub (github: [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource))
-    1. Select *Code* from within GitHub.
-    1. Select *Download ZIP* from the drop-down menu.
+1. Download a local copy of the Windows Package Manager Rest Source from GitHub (github: [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource/releases))
+    1. Download *.Zip file from the latest release.
     1. Extract the newly downloaded ZIP file to *C:\Projects\\*
 
 ### Application Insights
@@ -159,15 +158,13 @@ For more information on Azure Application Insights, visit their Docs article: [W
     - Region: West US
     - Resource Mode: Classic
 
-1. 
-
 1. Select the **Review + create** button at the bottom of the blade.
 1. Assuming the Validation as passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
 
 ### Storage Account
 
-An Azure storage account contains all of your Azure Storage data objects: blobs, file shares, queues, tables, and disks. The Storage account created below will be used to store the Azure Function binaries, 
+An Azure storage account contains all of your Azure Storage data objects: blobs, file shares, queues, tables, and disks. The Storage account created below will be used to store the Azure Function binaries.
 
 For more information on Azure Storage Accounts, visit their Docs article: [Storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
@@ -410,6 +407,8 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 | AzStorageAccountKey   | Connection string to Azure Storage Account. |
 | CosmosAccountEndpoint | Endpoint                                    |
 | CosmosAccountKey      | The Cosmos Database Account Key.            |
+
+With the use of Azure Key Vault, the secrets could be enabled to automatically rotate improving the environments security.
 
 **How to:**
 
