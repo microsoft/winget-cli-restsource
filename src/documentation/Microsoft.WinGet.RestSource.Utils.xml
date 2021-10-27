@@ -51,6 +51,11 @@
             Gets or sets continuation Token.
             </summary>
         </member>
+        <member name="P:Microsoft.WinGet.RestSource.Utils.Common.ApiDataPage`1.RequestCharge">
+            <summary>
+            Gets or sets the request charge for this request from the Azure Cosmos DB service.
+            </summary>
+        </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Common.FormatJSON">
             <summary>
             Class that contains JSON helpers for printing and exporting data.
@@ -103,6 +108,12 @@
             This provides an interface for IApiDataStore.
             </summary>
         </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.Count">
+            <summary>
+            Returns the count of items in the data store.
+            </summary>
+            <returns>The number if items in the data store.</returns>
+        </member>
         <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.AddPackage(Microsoft.WinGet.RestSource.Utils.Models.Schemas.Package)">
             <summary>
             This will add a package to the data store.
@@ -125,12 +136,12 @@
             <param name="package">Package.</param>
             <returns>Task.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetPackages(System.String,Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetPackages(System.String,System.String)">
             <summary>
             This will retrieve a set of packages based on a package identifier and a continuation token.
             </summary>
             <param name="packageIdentifier">Package Identifier.</param>
-            <param name="queryParameters">Query Parameters.</param>
+            <param name="continuationToken">(Optional) Continuation token.</param>
             <returns>CosmosPage of Package Manifests.</returns>
         </member>
         <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.AddVersion(System.String,Microsoft.WinGet.RestSource.Utils.Models.Schemas.Version)">
@@ -158,13 +169,12 @@
             <param name="version">Version.</param>
             <returns>Task.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetVersions(System.String,System.String,Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetVersions(System.String,System.String)">
             <summary>
             This will get a set of versions based on the package identifier, package version, and any continuation token.
             </summary>
             <param name="packageIdentifier">Package Identifier.</param>
             <param name="packageVersion">Package Version.</param>
-            <param name="queryParameters">Query Parameters.</param>
             <returns>CosmosPage of Version.</returns>
         </member>
         <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.AddInstaller(System.String,System.String,Microsoft.WinGet.RestSource.Utils.Models.Schemas.Installer)">
@@ -195,14 +205,13 @@
             <param name="installer">Installer.</param>
             <returns>Task.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetInstallers(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetInstallers(System.String,System.String,System.String)">
             <summary>
             This will get a set of Installers based on the package identifier, package version, installer identifier, and any continuation token.
             </summary>
             <param name="packageIdentifier">Package Identifier.</param>
             <param name="packageVersion">Package Version.</param>
             <param name="installerIdentifier">Installer Identifier.</param>
-            <param name="queryParameters">Query Parameters.</param>
             <returns>CosmosPage of Installer.</returns>
         </member>
         <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.AddLocale(System.String,System.String,Microsoft.WinGet.RestSource.Utils.Models.Schemas.Locale)">
@@ -233,14 +242,13 @@
             <param name="locale">Locale.</param>
             <returns>Task.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetLocales(System.String,System.String,System.String,Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetLocales(System.String,System.String,System.String)">
             <summary>
             This will get a set of Installers based on the package identifier, package version, installer identifier, and any continuation token.
             </summary>
             <param name="packageIdentifier">Package Identifier.</param>
             <param name="packageVersion">Package Version.</param>
             <param name="packageLocale">Package Locale.</param>
-            <param name="queryParameters">Query Parameters.</param>
             <returns>CosmosPage of Locale.</returns>
         </member>
         <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.AddPackageManifest(Microsoft.WinGet.RestSource.Utils.Models.Schemas.PackageManifest)">
@@ -265,21 +273,23 @@
             <param name="packageManifest">Package Manifest.</param>
             <returns>Task.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetPackageManifests(System.String,Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.GetPackageManifests(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             Get a Package Manifest based on package identifier and query parameters.
             </summary>
             <param name="packageIdentifier">Package Identifier.</param>
-            <param name="queryParameters">Query Parameters.</param>
+            <param name="continuationToken">(Optional) Continuation token.</param>
+            <param name="versionFilter">(Optional) Version filter.</param>
+            <param name="channelFilter">(Optional) Channel filter.</param>
+            <param name="marketFilter">(Optional) Market filter.</param>
             <returns>CosmosPage of Package Manifests.</returns>
         </member>
-        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.SearchPackageManifests(Microsoft.WinGet.RestSource.Utils.Models.Schemas.ManifestSearchRequest,System.Collections.Generic.Dictionary{System.String,System.String},Microsoft.AspNetCore.Http.IQueryCollection)">
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.IApiDataStore.SearchPackageManifests(Microsoft.WinGet.RestSource.Utils.Models.Schemas.ManifestSearchRequest,System.String)">
             <summary>
             This will search for manifests based on a manifest search request and a set of query parameters.
             </summary>
             <param name="manifestSearchRequest">Manifest Search Request.</param>
-            <param name="headerParameters">Header Parameters.</param>
-            <param name="queryParameters">Query Parameters.</param>
+            <param name="continuationToken">(Optional) Continuation token.</param>
             <returns>CosmosPage of ManifestSearchResponse.</returns>
         </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Common.Parser">
@@ -304,6 +314,71 @@
             <param name="log">Log Interface.</param>
             <typeparam name="T">Object to return.</typeparam>
             <returns>Object.</returns>
+        </member>
+        <member name="T:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder">
+            <summary>
+            Enables the efficient, dynamic composition of query predicates.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.True``1">
+            <summary>
+            Creates a predicate that evaluates to true.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <returns>A constant predicate which always returns true.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.False``1">
+            <summary>
+            Creates a predicate that evaluates to false.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <returns>A constant predicate which always returns true.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.And``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Combines the first predicate with the second using the logical "and".
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="first">The base expression.</param>
+            <param name="second">The expression to combine onto the base.</param>
+            <returns>A new AND-combined predicate.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Or``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Combines the first predicate with the second using the logical "or".
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="first">The base expression.</param>
+            <param name="second">The expression to combine onto the base.</param>
+            <returns>A new OR-combined predicate.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Not``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Negates the predicate.
+            </summary>
+            <typeparam name="T">The expression type.</typeparam>
+            <param name="expression">The base expression.</param>
+            <returns>A new negated expression.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.IsStarted``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Determines if the predicate is started.
+            </summary>
+            <typeparam name="T">Type of expression.</typeparam>
+            <param name="expression">Expression to check.</param>
+            <returns>Returns true if predicate has been started (not simply constant true or false), false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.New``1">
+            <summary>
+            Create a new predicate with default expression (false).
+            </summary>
+            <typeparam name="T">Type of expression.</typeparam>
+            <returns>A new default expression.</returns>
+        </member>
+        <member name="M:Microsoft.WinGet.RestSource.Utils.Common.PredicateBuilder.Compose``1(System.Linq.Expressions.Expression{``0},System.Linq.Expressions.Expression{``0},System.Func{System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.Expression})">
+            <summary>
+            Combines the first expression with the second using the specified merge function.
+            </summary>
         </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Common.StringEncoder">
             <summary>
@@ -523,21 +598,6 @@
             Substring.
             </summary>
         </member>
-        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.MatchType.Wildcard">
-            <summary>
-            Wildcard.
-            </summary>
-        </member>
-        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.MatchType.Fuzzy">
-            <summary>
-            Fuzzy.
-            </summary>
-        </member>
-        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.MatchType.FuzzySubstring">
-            <summary>
-            FuzzySubstring.
-            </summary>
-        </member>
         <member name="T:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.PackageMatchFields">
             <summary>
             Package Match Field Constants.
@@ -576,6 +636,11 @@
         <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.PackageMatchFields.ProductCode">
             <summary>
             ProductCode.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.PackageMatchFields.ShortDescription">
+            <summary>
+            ShortDescription.
             </summary>
         </member>
         <member name="F:Microsoft.WinGet.RestSource.Utils.Constants.Enumerations.PackageMatchFields.NormalizedPackageNameAndPublisher">

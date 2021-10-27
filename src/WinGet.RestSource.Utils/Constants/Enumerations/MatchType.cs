@@ -31,6 +31,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         /// </summary>
         public const string Substring = "Substring";
 
+        /*********************************
+         * These are currently unsupported
+         *********************************
         /// <summary>
         /// Wildcard.
         /// </summary>
@@ -45,5 +48,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         /// FuzzySubstring.
         /// </summary>
         public const string FuzzySubstring = "FuzzySubstring";
+        */
     }
 }

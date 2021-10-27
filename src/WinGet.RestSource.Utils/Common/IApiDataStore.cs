@@ -6,9 +6,7 @@
 
 namespace Microsoft.WinGet.RestSource.Utils.Common
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
 
     /// <summary>
@@ -16,6 +14,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
     /// </summary>
     public interface IApiDataStore
     {
+        /// <summary>
+        /// Returns the count of items in the data store.
+        /// </summary>
+        /// <returns>The number if items in the data store.</returns>
+        Task<int> Count();
+
         /// <summary>
         /// This will add a package to the data store.
         /// </summary>
@@ -42,9 +46,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// This will retrieve a set of packages based on a package identifier and a continuation token.
         /// </summary>
         /// <param name="packageIdentifier">Package Identifier.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
+        /// <param name="continuationToken">(Optional) Continuation token.</param>
         /// <returns>CosmosPage of Package Manifests.</returns>
-        Task<ApiDataPage<Package>> GetPackages(string packageIdentifier, IQueryCollection queryParameters);
+        Task<ApiDataPage<Package>> GetPackages(string packageIdentifier, string continuationToken = null);
 
         /// <summary>
         /// This will add a version to a package based on the package identifier.
@@ -76,9 +80,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// </summary>
         /// <param name="packageIdentifier">Package Identifier.</param>
         /// <param name="packageVersion">Package Version.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
         /// <returns>CosmosPage of Version.</returns>
-        Task<ApiDataPage<Version>> GetVersions(string packageIdentifier, string packageVersion, IQueryCollection queryParameters);
+        Task<ApiDataPage<Version>> GetVersions(string packageIdentifier, string packageVersion);
 
         /// <summary>
         /// This will add an installer referencing a package identifier and a package version.
@@ -114,9 +117,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// <param name="packageIdentifier">Package Identifier.</param>
         /// <param name="packageVersion">Package Version.</param>
         /// <param name="installerIdentifier">Installer Identifier.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
         /// <returns>CosmosPage of Installer.</returns>
-        Task<ApiDataPage<Installer>> GetInstallers(string packageIdentifier, string packageVersion, string installerIdentifier, IQueryCollection queryParameters);
+        Task<ApiDataPage<Installer>> GetInstallers(string packageIdentifier, string packageVersion, string installerIdentifier);
 
         /// <summary>
         /// This will add a locale referencing a package identifier and a package version.
@@ -152,9 +154,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// <param name="packageIdentifier">Package Identifier.</param>
         /// <param name="packageVersion">Package Version.</param>
         /// <param name="packageLocale">Package Locale.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
         /// <returns>CosmosPage of Locale.</returns>
-        Task<ApiDataPage<Locale>> GetLocales(string packageIdentifier, string packageVersion, string packageLocale, IQueryCollection queryParameters);
+        Task<ApiDataPage<Locale>> GetLocales(string packageIdentifier, string packageVersion, string packageLocale);
 
         /// <summary>
         /// Add a Package Manifest.
@@ -182,17 +183,19 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
         /// Get a Package Manifest based on package identifier and query parameters.
         /// </summary>
         /// <param name="packageIdentifier">Package Identifier.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
+        /// <param name="continuationToken">(Optional) Continuation token.</param>
+        /// <param name="versionFilter">(Optional) Version filter.</param>
+        /// <param name="channelFilter">(Optional) Channel filter.</param>
+        /// <param name="marketFilter">(Optional) Market filter.</param>
         /// <returns>CosmosPage of Package Manifests.</returns>
-        Task<ApiDataPage<PackageManifest>> GetPackageManifests(string packageIdentifier, IQueryCollection queryParameters);
+        Task<ApiDataPage<PackageManifest>> GetPackageManifests(string packageIdentifier, string continuationToken = null, string versionFilter = null, string channelFilter = null, string marketFilter = null);
 
         /// <summary>
         /// This will search for manifests based on a manifest search request and a set of query parameters.
         /// </summary>
         /// <param name="manifestSearchRequest">Manifest Search Request.</param>
-        /// <param name="headerParameters">Header Parameters.</param>
-        /// <param name="queryParameters">Query Parameters.</param>
+        /// <param name="continuationToken">(Optional) Continuation token.</param>
         /// <returns>CosmosPage of ManifestSearchResponse.</returns>
-        Task<ApiDataPage<ManifestSearchResponse>> SearchPackageManifests(ManifestSearchRequest manifestSearchRequest, Dictionary<string, string> headerParameters, IQueryCollection queryParameters);
+        Task<ApiDataPage<ManifestSearchResponse>> SearchPackageManifests(ManifestSearchRequest manifestSearchRequest, string continuationToken = null);
     }
 }

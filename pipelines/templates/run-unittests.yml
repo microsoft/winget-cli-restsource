@@ -7,6 +7,15 @@ parameters:
   source: ''
 
 steps:
+- powershell: |
+    # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
+    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
+
+    # Launch Cosmos DB emulator
+    Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
+    Start-CosmosDbEmulator
+  displayName: "Setup test pre-requisites"
+
 - task: CopyFiles@2
   displayName: 'Copy Files: ${{ parameters.name }}'
   inputs:
@@ -25,6 +34,7 @@ steps:
     codeCoverageEnabled: true
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+    overrideTestrunParameters: '-CosmosAccountEndpoint "$(CosmosDbEmulator.Endpoint)"'
   condition: succeeded()
 
 - task: PublishBuildArtifacts@1

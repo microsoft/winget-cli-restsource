@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <AzureFunctionsVersion>V3</AzureFunctionsVersion>
-        <Platforms>AnyCPU</Platforms>
-        <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
-        <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AzureFunctionsVersion>V3</AzureFunctionsVersion>
+    <Platforms>AnyCPU</Platforms>
+    <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
+  </PropertyGroup>
 
   <PropertyGroup>
     <DebugType>full</DebugType>
@@ -13,48 +13,49 @@
     <NoWarn>1701;1702;NU1701</NoWarn>
     <DocumentationFile>$(SolutionDir)WinGet.RestSource.Functions\Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
   </PropertyGroup>
-  
-    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.0.0-preview2" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
-        <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
-    </ItemGroup>
+  <ItemGroup>
+    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version, most likely when updating to dotnet 5.0 -->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Update="host.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="local.settings.template.json">
-          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-          <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-        </None>
-        <None Update="local.settings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
+    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.template.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
+  </ItemGroup>
 </Project>

@@ -352,8 +352,11 @@ MigrationBackup/
 # Ignore JetBrains Files
 src/.idea/
 
-# Exlude Function Settings
+# Exclude Function Settings
 src/WinGet.RestSource.Functions/local.settings.json
+
+# Exclude local test settings
+test.runsettings.json
 
 # Exclude Documentation XML
 src/*/Microsoft.WinGet.RestSource*.Documentation.xml

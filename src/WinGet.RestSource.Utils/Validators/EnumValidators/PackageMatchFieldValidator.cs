@@ -14,7 +14,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
     /// </summary>
     public class PackageMatchFieldValidator : ApiEnumValidator
     {
-        private List<string> enumList = new List<string>
+        private readonly List<string> enumList = new List<string>
         {
             PackageMatchFields.PackageIdentifier,
             PackageMatchFields.PackageName,

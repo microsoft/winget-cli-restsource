@@ -213,7 +213,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                installers = await this.dataStore.GetInstallers(packageIdentifier, packageVersion, installerIdentifier, null);
+                installers = await this.dataStore.GetInstallers(packageIdentifier, packageVersion, installerIdentifier);
             }
             catch (DefaultException e)
             {

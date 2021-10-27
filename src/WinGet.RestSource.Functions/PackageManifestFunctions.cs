@@ -189,8 +189,21 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
+                string continuationToken = null;
+                string versionFilter = null;
+                string channelFilter = null;
+                string marketFilter = null;
+
                 // Schema supports query parameters only when PackageIdentifier is specified.
-                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, string.IsNullOrWhiteSpace(packageIdentifier) ? null : req.Query);
+                if (!string.IsNullOrWhiteSpace(packageIdentifier))
+                {
+                    continuationToken = req.Query[QueryConstants.ContinuationToken];
+                    versionFilter = req.Query[QueryConstants.Version];
+                    channelFilter = req.Query[QueryConstants.Channel];
+                    marketFilter = req.Query[QueryConstants.Market];
+                }
+
+                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, continuationToken, versionFilter, channelFilter, marketFilter);
                 unsupportedQueryParameters = UnsupportedAndRequiredFieldsHelper.GetUnsupportedQueryParametersFromRequest(req.Query, ApiConstants.UnsupportedQueryParameters);
                 requiredQueryParameters = UnsupportedAndRequiredFieldsHelper.GetRequiredQueryParametersFromRequest(req.Query, ApiConstants.RequiredQueryParameters);
             }

@@ -6,9 +6,9 @@
 
 namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Validators;
     using Microsoft.WinGet.RestSource.Utils.Validators.StringValidators;
@@ -128,7 +128,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.PackageVersion, this.Channel, this.DefaultLocale).GetHashCode();
+            return HashCode.Combine(this.PackageVersion, this.Channel, this.DefaultLocale);
         }
     }
 }

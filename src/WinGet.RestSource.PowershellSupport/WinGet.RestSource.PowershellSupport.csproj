@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version-->
+    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version, most likely when updating to dotnet 5.0 -->
     <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" GeneratePathProperty="true" />

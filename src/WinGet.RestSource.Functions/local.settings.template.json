@@ -8,6 +8,6 @@
     "CosmosReadWriteKey": "<your CosmosDB read-write account key>",
     "CosmosDatabase": "<your CosmosDB database>",
     "CosmosContainer": "<your CosmosDB container>",
-    "ServerIdentifier": "winget-pkgs-restsource-dev"
+    "ServerIdentifier": "winget-cli-restsource-dev"
   }
 }

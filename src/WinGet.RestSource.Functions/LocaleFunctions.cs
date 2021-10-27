@@ -210,7 +210,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale, null);
+                locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
             {

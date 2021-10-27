@@ -196,7 +196,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion, null);
+                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
             {
