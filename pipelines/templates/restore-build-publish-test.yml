@@ -24,6 +24,43 @@ steps:
     configuration: '$(BuildConfiguration)'
     clean: true
 
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: "ESRP CodeSigning - Powershell Module"
+  inputs:
+    ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
+    FolderPath: src
+    Pattern: |
+     $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0\Microsoft.WinGet.RestSource.Utils.dll
+     $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0\Microsoft.WinGet.PowershellSupport.dll
+     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.ps1
+     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.psd1
+     $(Build.SourcesDirectory)\Tools\PowershellModule\src\**\*.psm1
+    UseMinimatch: true
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolSign",
+            "Parameters" : {
+                "OpusName" : "Microsoft",
+                "OpusInfo" : "http://www.microsoft.com",
+                "FileDigest" : "/fd \"SHA256\"",
+                "PageHash" : "/NPH",
+                "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            },
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        },
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolVerify",
+            "Parameters" : {},
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        }
+     ]
+
 ## Publish
 # Publish ARM Templates
 - template: copy-and-publish.yml
