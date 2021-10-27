@@ -1,23 +1,23 @@
-# Windows Package Mananger private source
+# Windows Package Mananger rest source
 
-The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a private respository that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
+The Windows Package Manager provides a distribution channel for software packages containing their tools and applications. The instructions contained within this document provide guidance on how to setup a rest source that can be connected to using the Windows Package Manager. Providing a comprehensive package manager solution that consists of a command line tool and a set of services for installing applications on Windows 10.
 
 #### Available Guidance
-    - Managing the Windows Package Manager private source with PowerShell.
-    - Managing the Windows Package Manager private source manually.
+    - Managing the Windows Package Manager rest source with PowerShell.
+    - Managing the Windows Package Manager rest source manually.
 
-## Windows Package Manager private source automation
-To simplify the management and interaction with the Windows Package Manager private source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provids cmdlets that enable you to Add, Remove and Get Application Manifests from your Windows Package Manager private source, as well as stand up a new Windows Package Manager private source in Azure.
+## Windows Package Manager rest source automation
+To simplify the management and interaction with the Windows Package Manager rest source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get Application Manifests from your Windows Package Manager rest source, as well as stand up a new Windows Package Manager rest source in Azure.
 
 #### Available Guidance
     - Download and Installation of the `Microsoft.WinGet.Source` PowerShell Module.
-    - Automate the creation of a Windows Package Manager private source.
-    - Publishing Application Manifests to the Windows Package Manager private source.
-    - Retrieving published Application Manifests from the Windows Package Manager private source.
-    - Removing published Applications Manifests from the Windows Package Manager private source.
+    - Automate the creation of a Windows Package Manager rest source.
+    - Publishing Application Manifests to the Windows Package Manager rest source.
+    - Retrieving published Application Manifests from the Windows Package Manager rest source.
+    - Removing published Applications Manifests from the Windows Package Manager rest source.
 
 ### Download and install the PowerShell module
-The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager private source.
+The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager rest source.
 
 **How to:**
 1. Open an Edge Browser.
@@ -35,23 +35,23 @@ PS C:\> Set-ExecutionPolicy Unrestricted
 PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
 ```
 
-## Automatically create a private source
+## Automatically create a rest source
 
-The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager private source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
+The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager rest source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
 The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
 
 | Required | Parameter                  | Description                                                                                                                                |
 |----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
-| Yes      | Index                      | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                                |
+| Yes      | Index                      | A string of letters or numbers which will be suffix to your newly created Azure resources.                                                |
 | Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
 | No       | WorkingDirectory           | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created.                 |
 | No       | ARMFunctionPath            | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
-| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager private repository. ["Demo", "Basic", "Enhanced"] |
-| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager private source. (Default: False)                              |
+| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager rest source. ["Demo", "Basic", "Enhanced"] |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)                              |
 
 > [!Note]
 > The PowerShell Module must be re-imported each time the PowerShell window is closed.
@@ -62,11 +62,11 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 ```PowerShell
 PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetPrivateSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
 ```
-1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager private source to add it to your WinGet client.
+1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager rest source to add it to your WinGet client.
 
-## Add manifests to the private source
+## Add manifests to the rest source
 
-The Windows Package Manager private source provides a private location for hosting your Application Manifests. After the creation of your Windows Package Manager private source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager private source.
+The Windows Package Manager rest source provides a private location for hosting your Application Manifests. After the creation of your Windows Package Manager rest source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager rest source.
 
 The `Add-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files, or a folder containing *.yaml files. For more information on how to use this cmdlet, use the `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest PowerShell Article](.\PowerShell\New-WinGetManifest.md) in Docs.
 
@@ -80,11 +80,11 @@ The `Add-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json
 PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys.json"
 ```
 
-## Get manifests from the private source
+## Get manifests from the rest source
 
-The Windows Package Manager private source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager private source.
+The Windows Package Manager rest source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager rest source.
 
-The `Get-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files or *.yaml files as well as targetting an existing Windows Package Manager private source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest PowerShell Article](.\PowerShell\Get-WinGetManifest.md) in Docs.
+The `Get-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json file, a folder containing multiple *.json files or *.yaml files as well as targetting an existing Windows Package Manager rest source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest PowerShell Article](.\PowerShell\Get-WinGetManifest.md) in Docs.
 
 > [!Note]
 > The PowerShell Module must be re-imported each time the PowerShell window is closed.
@@ -96,11 +96,11 @@ The `Get-WinGetManifest` PowerShell cmdlet supports targetting a specific *.json
 PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-## Remove manifests from a private source
+## Remove manifests from a rest source
 
-The Windows Package Manager private source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager private source.
+The Windows Package Manager rest source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
 
-The `Remove-WinGetManifest` PowerShell cmdlet supports targetting an existing Windows Package Manager private source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest PowerShell Article](.\PowerShell\Remove-WinGetManifest.md) in Docs.
+The `Remove-WinGetManifest` PowerShell cmdlet supports targetting an existing Windows Package Manager rest source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest PowerShell Article](.\PowerShell\Remove-WinGetManifest.md) in Docs.
 
 > [!Note]
 > The PowerShell Module must be re-imported each time the PowerShell window is closed.
@@ -112,7 +112,7 @@ The `Remove-WinGetManifest` PowerShell cmdlet supports targetting an existing Wi
 PS C:\> Remove-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-## Manually create a private source
+## Manually create a rest source
 
 The following instructions assumes the following Azure objects are named as follows:
 | Azure Resource          | Value                      |
@@ -126,7 +126,7 @@ The following instructions assumes the following Azure objects are named as foll
 
 ### Extract the Windows Package Manager Rest Source
 
-The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager private source.
+The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager rest source.
 
 **How to:**
 
@@ -137,7 +137,7 @@ The Windows Package Manager Rest Source contains the APIs required to provide a 
 
 ### Application Insights
 
-Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights is will be used to monitor the health of the Windows Package Manager private source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
+Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights is will be used to monitor the health of the Windows Package Manager rest source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
 
 For more information on Azure Application Insights, visit their Docs article: [What is Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
 
@@ -221,7 +221,7 @@ For more information on Azure Storage Accounts, visit their Docs article: [Stora
 
 ### App Service plan
 
-An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager private source will operate within this Azure App Service plan allowing it to scale to the demand.
+An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager rest source will operate within this Azure App Service plan allowing it to scale to the demand.
 
 For more information on App Service plans, visit their Docs article: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
@@ -246,7 +246,7 @@ For more information on App Service plans, visit their Docs article: [Azure App 
 1. In the **Pricing Tier** section, ensure that the following values have been set:
     - Sku and size: Premium V2 P1v2
 
-1. Select the **Review + crerate** button.
+1. Select the **Review + create** button.
 1. Assuming the Validation has passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
 
@@ -467,7 +467,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 ### Azure Function
 
-An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager private source, responding to rest api requests.
+An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager rest source, responding to rest api requests.
 
 For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview)
 

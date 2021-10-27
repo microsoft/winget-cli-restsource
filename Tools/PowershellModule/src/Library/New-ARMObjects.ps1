@@ -5,7 +5,7 @@ Function New-ARMObjects
     Creates the Azure Resources to stand-up a Windows Package Manager Rest Source.
 
     .DESCRIPTION
-    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will create the the Key Vault secrets and publish the Windows Package Manager private source rest apis to the Azure Function.
+    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will create the the Key Vault secrets and publish the Windows Package Manager rest source rest apis to the Azure Function.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction

@@ -3,10 +3,10 @@ Function Remove-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Removes a Manifest file from the Azure private source
+    Removes a Manifest file from the Azure rest source
 
     .DESCRIPTION
-    By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager private source, then removes the application Manifest.
+    By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager rest source, then removes the application Manifest.
         
     The following Azure Modules are used by this script:
         Az.Resources
@@ -15,33 +15,33 @@ Function Remove-WinGetManifest
         Az.Functions
 
     .PARAMETER URL
-    Name of the URL that hosts the private source.
+    Name of the URL that hosts the rest source.
 
     .PARAMETER FunctionName
-    Name of the Azure Function that hosts the private source.
+    Name of the Azure Function that hosts the rest source.
 
     .PARAMETER ManifestIdentifier
     THe Manifest Id that represents the App Manifest to be removed.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name contains the Windows Package Manager private source
+    [Optional] The Subscription name contains the Windows Package Manager rest source
 
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager private source
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager rest source
 
     .EXAMPLE
     Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager private source
+    Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager rest source
     #>
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Custom")][string]$URL,
         [Parameter(Position=1, Mandatory=$true, ParameterSetName="Custom")][string]$Key,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=2, Mandatory=$false)] [string]$ManifestIdentifier = "",
+        [Parameter(Position=2, Mandatory=$true)]  [string]$ManifestIdentifier = "",
         [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName   = ""
     )
     BEGIN

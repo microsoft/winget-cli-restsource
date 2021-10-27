@@ -18,13 +18,13 @@ Function Get-WinGetManifest
     Path to a file (*.json) or folder containing *.yaml or *.json files.
 
     .PARAMETER URL
-    Web URL to the host site containing the Rest APIs with access key (if reuqired).
+    Web URL to the host site containing the Rest APIs with access key (if required).
 
     .PARAMETER FunctionName
     Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
 
     .PARAMETER ManifestIdentifier
-    [Optional] The Windows Package Manager Package Identifier to filter results
+    [Optional] The Windows Package Manager Package Identifier of a specific Manifest result
 
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
@@ -167,7 +167,7 @@ Function Get-WinGetManifest
             "Azure" {
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
 
-                ## Retrieves the Azure Function URL used to add new manifests to the private source
+                ## Retrieves the Azure Function URL used to add new manifests to the rest source
                 $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
                         
                 ## sanity checks if already exists
@@ -181,7 +181,7 @@ Function Get-WinGetManifest
                 $apiHeader.Add("x-functions-key", $FunctionKey)
                 $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $ManifestIdentifier
                 
-                ## Publishes the Manifest to the Windows Package Manager private source
+                ## Publishes the Manifest to the Windows Package Manager rest source
                 Write-Verbose -Message "Invoking the REST API call."
 
                 $Results = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType

@@ -5,7 +5,7 @@ Function New-ARMParameterObject
     Creates the parameter files, and an object which points to both the created parameter and template files.
 
     .DESCRIPTION
-    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once created it'll output the parameter files into a *.json file that can be used in combination with with template files to build Azure resources required for hosting a Windows Package Manager private source. Returns the PowerShell object.
+    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once created it'll output the parameter files into a *.json file that can be used in combination with with template files to build Azure resources required for hosting a Windows Package Manager rest source. Returns the PowerShell object.
 
     .PARAMETER ParameterFolderPath
     Path to the directory where the Parameter files will be created.
@@ -23,7 +23,7 @@ Function New-ARMParameterObject
     The Azure location where objects will be created in.
 
     .PARAMETER ImplementationPerformance
-    ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager private repository.
+    ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager rest source.
 
     .EXAMPLE
     New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -ResourcePrefix "contoso0002" -AzLocation "westus" -ImplementationPerformance "Demo"

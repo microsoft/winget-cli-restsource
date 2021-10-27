@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-WinGetManifest
 
 ## SYNOPSIS
-Removes a Manifest file from the Azure private source
+Removes a Manifest file from the Azure rest source
 
 ## SYNTAX
 
@@ -30,7 +30,7 @@ Remove-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] 
 ```
 
 ## DESCRIPTION
-By running this function with the required inputs, it will connect to the Azure Tennant that hosts the Windows Package Manager private source, then removes the application Manifest.
+By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager rest source, then removes the application Manifest.
     
 The following Azure Modules are used by this script:
     Az.Resources
@@ -45,19 +45,19 @@ The following Azure Modules are used by this script:
 Remove-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager private source
+Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager rest source
 
 ### EXAMPLE 2
 ```
 Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager private source
+Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager rest source
 
 ## PARAMETERS
 
 ### -URL
-Name of the URL that hosts the private source.
+Name of the URL that hosts the rest source.
 
 ```yaml
 Type: String
@@ -87,7 +87,7 @@ Accept wildcard characters: False
 ```
 
 ### -FunctionName
-Name of the Azure Function that hosts the private source.
+Name of the Azure Function that hosts the rest source.
 
 ```yaml
 Type: String
@@ -109,7 +109,7 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: False
+Required: True
 Position: 3
 Default value: None
 Accept pipeline input: False
@@ -117,7 +117,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] The Subscription name contains the Windows Package Manager private source
+\[Optional\] The Subscription name contains the Windows Package Manager rest source
 
 ```yaml
 Type: String

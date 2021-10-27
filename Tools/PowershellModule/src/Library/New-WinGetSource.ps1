@@ -2,10 +2,10 @@ Function New-WinGetSource
 {
     <#
     .SYNOPSIS
-    Creates a Windows Package Manager private repository in Azure for private storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager rest source in Azure for private storage of Windows Package Manager application Manifests.
 
     .DESCRIPTION
-    Creates a Windows Package Manager private repository in Azure for private storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager rest source in Azure for private storage of Windows Package Manager application Manifests.
 
     The following Azure Modules are used by this script:
         Az.Resources
@@ -20,7 +20,7 @@ Function New-WinGetSource
     [Optional] The suffix that will be added to each name and file names.
 
     .PARAMETER ResourceGroup
-    [Optional] The Name of the Resource Group that the Windows Package Manager private source ARM Resources will be created in. (Default: WinGetPrivateSource)
+    [Optional] The Name of the Resource Group that the Windows Package Manager rest source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetPrivateSource)
 
     .PARAMETER Region
     [Optional] The Azure location where objects will be created in. (Default: westus)
@@ -32,20 +32,27 @@ Function New-WinGetSource
     [Optional] Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)
 
     .PARAMETER ImplementationPerformance
-    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager private repository. (Default: Basic)
+    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager rest source.
+    | Preference | Description                                                                                                             |
+    |------------|-------------------------------------------------------------------------------------------------------------------------|
+    | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager rest source. Uses free-tier options when available. |
+    | Basic      | Specifies a basic functioning Windows Package Manager rest source. Low cost.                                            |
+    | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers. High cost.                    |
+    
+    (Default: Basic)
 
     .PARAMETER ShowConnectionInstructions
-    [Optional] If specified, the instructions for connecting to the Windows Package Manager private source. (Default: False)
+    [Optional] If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)
 
     .EXAMPLE
     New-WinGetSource -Name "contoso0002"
 
-    Creates the Windows Package Manager private source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
+    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
 
     .EXAMPLE
     New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -WorkingDirectory "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager private source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command to connect the WinGet client to the new private repository after the repository has been created.
+    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command to connect the WinGet client to the new rest source after the repository has been created.
 
     #>
     PARAM(
@@ -114,7 +121,7 @@ Function New-WinGetSource
 
         ###############################
         ## Create Resource Group 
-        Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager private source."
+        Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager rest source."
         Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
         
         #### Verifies ARM Parameters are correct ####
@@ -146,7 +153,7 @@ Function New-WinGetSource
         New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip $ARMFunctionPath -AzResourceGroup $ResourceGroup
 
         ###############################
-        ## Shows how to connect local Windows Package Manager Client to newly created private repository
+        ## Shows how to connect local Windows Package Manager Client to newly created rest source
         if($ShowConnectionInstructions) {
             #$AzSubscriptionName = $(Get-AzContext).Subscription.Name
             $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
@@ -155,7 +162,7 @@ Function New-WinGetSource
 
             ## Post script Run Informational:
             #### Instructions on how to add the repository to your Windows Package Manager Client
-            Write-Information -MessageData "Use the following command to register the new private repository with your Windows Package Manager Client:"
+            Write-Information -MessageData "Use the following command to register the new rest source with your Windows Package Manager Client:"
             Write-Information -MessageData "  winget source add -n ""PrivateRepo"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
 
             #### For more information about how to use the solution, visit the aka.ms link.

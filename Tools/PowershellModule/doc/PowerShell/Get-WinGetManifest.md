@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -URL
-Web URL to the host site containing the Rest APIs with access key (if reuqired).
+Web URL to the host site containing the Rest APIs with access key (if required).
 
 ```yaml
 Type: String
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -ManifestIdentifier
-\[Optional\] The Windows Package Manager Package Identifier to filter results
+\[Optional\] The Windows Package Manager Package Identifier of a specific Manifest result
 
 ```yaml
 Type: String
