@@ -537,6 +537,8 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 | CosmosAccountKey                         | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/CosmosAccountKey/)       |
 | FunctionName                             | contoso-function-demo                                                                                       |
 | ServerIdentifier                         | contoso-asp-demo                                                                                            |
+| CosmosDatabase                           | WinGet                                                                                                      |
+| CosmosContainer                          | Manifests                                                                                                   |
 | WEBSITE_CONTENTAZUREFILECONNECTIONSTRING | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/AzStorageAccountKey/)    |
 | WEBSITE_CONTENTSHARE                     | azfun-pkgman3pr-westus-test                                                                                 |
 | WEBSITE_LOAD_CERTIFICATES                | *                                                                                                           |

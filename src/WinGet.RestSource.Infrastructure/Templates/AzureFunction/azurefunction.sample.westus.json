@@ -8,6 +8,12 @@
         "serverIdentifier": {
             "value": ""
         },
+        "cosmosDatabase": {
+            "value": ""
+        },
+        "cosmosContainer": {
+            "value": ""
+        },
         "functionName": {
             "value": ""
         },

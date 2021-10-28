@@ -14,6 +14,18 @@
                 "description": "Azure Function Name"
             }
         },
+        "cosmosDatabase": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Database"
+            }
+        },
+        "cosmosContainer": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Container"
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -155,6 +167,8 @@
                     "properties": {
                         "FunctionName": "[parameters('functionName')]",
                         "ServerIdentifier": "[parameters('serverIdentifier')]",
+                        "CosmosDatabase": "[parameters('cosmosDatabase')]",
+                        "CosmosContainer": "[parameters('cosmosContainer')]",
                         "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
                         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",

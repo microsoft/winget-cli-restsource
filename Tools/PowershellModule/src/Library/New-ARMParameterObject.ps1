@@ -346,12 +346,14 @@ Function New-ARMParameterObject
                     contentVersion = $JSONContentVersion
                     Parameters = @{
                         storageSecretName = @{ value = $AzKVStorageSecretName }     # Name used to contain the Storage Account connection string in the Key Value
-                        location          = @{ value = $Region          }           # Azure hosting location
-                        serverIdentifier  = @{ value = $aspName         }           # 
-                        functionName      = @{ value = $FunctionName    }           # Azure Function Name
-                        appServiceName    = @{ value = $aspName         }           # Azure App Service Name
-                        keyVaultName      = @{ value = $KeyVaultName    }           # Azure Keyvault Name
-                        appInsightName    = @{ value = $AppInsightsName }           # Azure App Insights Name
+                        location          = @{ value = $Region                }     # Azure hosting location
+                        cosmosDatabase    = @{ value = $CDBDatabaseName       }     # Cosmos Database Name
+                        cosmosContainer   = @{ value = $CDBContainerName      }     # Cosmos Container Name
+                        serverIdentifier  = @{ value = $aspName               }     # Azure Function Name
+                        functionName      = @{ value = $FunctionName          }     # Azure Function Name
+                        appServiceName    = @{ value = $aspName               }     # Azure App Service Name
+                        keyVaultName      = @{ value = $KeyVaultName          }     # Azure Keyvault Name
+                        appInsightName    = @{ value = $AppInsightsName       }     # Azure App Insights Name
                     }
                 }
             }#,
