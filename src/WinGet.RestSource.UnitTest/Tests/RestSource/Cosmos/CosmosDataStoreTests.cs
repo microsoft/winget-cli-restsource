@@ -15,6 +15,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.Winget.RestSource.UnitTest.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
@@ -24,7 +25,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Xunit.Abstractions;
     using Arrays = Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Objects = Microsoft.WinGet.RestSource.Utils.Models.Objects;
-    using Microsoft.WinGet.RestSource.Utils.Common;
 
     /// <summary>
     /// CosmosDataStore Tests.
