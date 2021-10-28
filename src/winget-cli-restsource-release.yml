@@ -21,4 +21,6 @@ jobs:
   steps:
   # Restore and Build
   - template: templates/restore-build-publish-test.yml
+
+  # Run Compliance checks
   - template: templates/compliance.yml
