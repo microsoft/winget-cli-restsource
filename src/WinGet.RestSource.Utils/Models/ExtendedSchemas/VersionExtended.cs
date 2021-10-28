@@ -281,7 +281,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (base.GetHashCode(), this.Installers, this.Locales).GetHashCode();
+            return System.HashCode.Combine(base.GetHashCode(), this.Installers, this.Locales);
         }
 
         private void AssertInstallersNotNull()

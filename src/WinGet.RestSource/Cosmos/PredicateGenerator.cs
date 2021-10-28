@@ -96,7 +96,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 MatchType.Exact => (field, keyword) => field.Equals(keyword),
                 MatchType.CaseInsensitive => (field, keyword) => field.Equals(keyword, StringComparison.OrdinalIgnoreCase),
                 MatchType.StartsWith => (field, keyword) => field.StartsWith(keyword),
-                MatchType.Substring => (field, keyword) => field.Contains(keyword),
+                MatchType.Substring => (field, keyword) => field.Contains(keyword, StringComparison.OrdinalIgnoreCase),
                 _ => null,
             };
         }

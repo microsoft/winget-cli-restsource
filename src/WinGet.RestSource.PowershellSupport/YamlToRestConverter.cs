@@ -42,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
                 // Multi File manifest case
                 // The winget client ValidateManifest function
                 // merges the manifests into the merged manifest format.
-                (bool succeeded, string response) = WinGetUtilWrapperManifest.ValidateManifest(
+                (bool succeeded, _) = WinGetUtilWrapperManifest.ValidateManifest(
                     directory,
                     mergedManifestFilePath);
 

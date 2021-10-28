@@ -8,24 +8,20 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
 {
     using System;
     using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Microsoft.WinGet.RestSource.PowershellSupport.Helpers;
+    using System.Linq;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Models.V1;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Wrapper class around PackageManifest object.
     /// Supports converting yaml manifest to json object.
     /// </summary>
-    public sealed class PackageManifestUtils
+    public static class PackageManifestUtils
     {
         /// <summary>
         /// Merges a merged manifest object into an existing json representation of the app.
@@ -160,7 +156,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             versionExtended.DefaultLocale.ShortDescription = manifest.ShortDescription;
             versionExtended.DefaultLocale.Description = manifest.Description;
 
-            versionExtended.DefaultLocale.Tags = PackageManifestUtils.AddToList<Tags>(manifest.Tags);
+            versionExtended.DefaultLocale.Tags = manifest.Tags.ToApiArray<Tags>();
 
             if (manifest.Localization != null)
             {
@@ -182,7 +178,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
                     newLocale.ShortDescription = localization.ShortDescription;
                     newLocale.Description = localization.Description;
 
-                    newLocale.Tags = PackageManifestUtils.AddToList<Tags>(localization.Tags);
+                    newLocale.Tags = localization.Tags.ToApiArray<Tags>();
 
                     versionExtended.AddLocale(newLocale);
                 }
@@ -193,77 +189,33 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
                 foreach (var installer in manifest.Installers)
                 {
                     Installer newInstaller = new Installer();
-                    newInstaller.InstallerIdentifier = string.Join("_", installer.Arch, installer.InstallerLocale, installer.Scope, Guid.NewGuid());
-                    newInstaller.InstallerSha256 = installer.Sha256;
+
+                    // Properties only present on installer node
                     newInstaller.InstallerUrl = installer.Url;
-                    newInstaller.InstallerLocale = installer.InstallerLocale;
                     newInstaller.Architecture = installer.Arch;
-
-                    newInstaller.Platform = PackageManifestUtils.AddToList<Platform>(installer.Platform);
-
-                    newInstaller.MinimumOsVersion = installer.MinimumOSVersion;
-                    newInstaller.InstallerType = installer.InstallerType;
-                    newInstaller.Scope = installer.Scope;
+                    newInstaller.InstallerSha256 = installer.Sha256;
                     newInstaller.SignatureSha256 = installer.SignatureSha256;
 
-                    newInstaller.InstallModes = PackageManifestUtils.AddToList<InstallModes>(installer.InstallModes);
+                    // Properties present on root node which can be overridden by installer node
+                    newInstaller.InstallerLocale = installer.InstallerLocale ?? manifest.InstallerLocale;
+                    newInstaller.Platform = installer.Platform.ToApiArray<Platform>() ?? manifest.Platform.ToApiArray<Platform>();
+                    newInstaller.MinimumOsVersion = installer.MinimumOSVersion ?? manifest.MinimumOSVersion;
+                    newInstaller.InstallerType = installer.InstallerType ?? manifest.InstallerType;
+                    newInstaller.Scope = installer.Scope ?? manifest.Scope;
+                    newInstaller.InstallModes = installer.InstallModes.ToApiArray<InstallModes>() ?? manifest.InstallModes.ToApiArray<InstallModes>();
+                    newInstaller.InstallerSwitches = AddInstallerSwitches(installer.Switches) ?? AddInstallerSwitches(manifest.Switches);
+                    newInstaller.InstallerSuccessCodes = installer.InstallerSuccessCodes.ToApiArray<InstallerSuccessCodes>() ?? manifest.InstallerSuccessCodes.ToApiArray<InstallerSuccessCodes>();
+                    newInstaller.UpgradeBehavior = installer.UpgradeBehavior ?? manifest.UpgradeBehavior;
+                    newInstaller.Commands = installer.Commands.ToApiArray<Commands>() ?? manifest.Commands.ToApiArray<Commands>();
+                    newInstaller.Protocols = installer.Protocols.ToApiArray<Protocols>() ?? manifest.Protocols.ToApiArray<Protocols>();
+                    newInstaller.FileExtensions = installer.FileExtensions.ToApiArray<FileExtensions>() ?? manifest.FileExtensions.ToApiArray<FileExtensions>();
+                    newInstaller.Dependencies = AddDependencies(installer.Dependencies) ?? AddDependencies(manifest.Dependencies);
+                    newInstaller.PackageFamilyName = installer.PackageFamilyName ?? manifest.PackageFamilyName;
+                    newInstaller.ProductCode = installer.ProductCode ?? manifest.ProductCode;
+                    newInstaller.Capabilities = installer.Capabilities.ToApiArray<Capabilities>() ?? manifest.Capabilities.ToApiArray<Capabilities>();
+                    newInstaller.RestrictedCapabilities = installer.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>() ?? manifest.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>();
 
-                    // Process Installer Switches subnode.
-                    if (installer.Switches != null)
-                    {
-                        newInstaller.InstallerSwitches = new Utils.Models.Objects.InstallerSwitches
-                        {
-                            Silent = string.IsNullOrWhiteSpace(installer.Switches.Silent) ? null : installer.Switches.Silent,
-                            SilentWithProgress = string.IsNullOrWhiteSpace(installer.Switches.SilentWithProgress) ? null : installer.Switches.SilentWithProgress,
-                            Interactive = string.IsNullOrWhiteSpace(installer.Switches.Interactive) ? null : installer.Switches.Interactive,
-                            InstallLocation = string.IsNullOrWhiteSpace(installer.Switches.InstallLocation) ? null : installer.Switches.InstallLocation,
-                            Log = string.IsNullOrWhiteSpace(installer.Switches.Log) ? null : installer.Switches.Log,
-                            Upgrade = string.IsNullOrWhiteSpace(installer.Switches.Upgrade) ? null : installer.Switches.Upgrade,
-                            Custom = string.IsNullOrWhiteSpace(installer.Switches.Custom) ? null : installer.Switches.Custom,
-                        };
-                    }
-
-                    if (installer.InstallerSuccessCodes != null)
-                    {
-                        newInstaller.InstallerSuccessCodes = PackageManifestUtils.AddToList<InstallerSuccessCodes>(installer.InstallerSuccessCodes.ConvertAll<long>(i => (long)i));
-                    }
-
-                    newInstaller.UpgradeBehavior = installer.UpgradeBehavior;
-
-                    newInstaller.Commands = PackageManifestUtils.AddToList<Commands>(installer.Commands);
-                    newInstaller.Protocols = PackageManifestUtils.AddToList<Protocols>(installer.Protocols);
-                    newInstaller.FileExtensions = PackageManifestUtils.AddToList<FileExtensions>(installer.FileExtensions);
-
-                    // Process dependencies subnode.
-                    if (installer.Dependencies != null)
-                    {
-                        newInstaller.Dependencies = new Utils.Models.Objects.Dependencies();
-
-                        newInstaller.Dependencies.WindowsFeatures = PackageManifestUtils.AddToList<Dependencies>(installer.Dependencies.WindowsFeatures);
-                        newInstaller.Dependencies.WindowsLibraries = PackageManifestUtils.AddToList<Dependencies>(installer.Dependencies.WindowsLibraries);
-
-                        if (installer.Dependencies.PackageDependencies != null)
-                        {
-                            newInstaller.Dependencies.PackageDependencies = new PackageDependency();
-                            foreach (var installerPackageDependency in installer.Dependencies.PackageDependencies)
-                            {
-                                Utils.Models.Objects.PackageDependency packageDependency = new Utils.Models.Objects.PackageDependency
-                                {
-                                    PackageIdentifier = installerPackageDependency.PackageIdentifier,
-                                    MinimumVersion = installerPackageDependency.MinimumVersion,
-                                };
-                                newInstaller.Dependencies.PackageDependencies.Add(packageDependency);
-                            }
-                        }
-
-                        newInstaller.Dependencies.ExternalDependencies = PackageManifestUtils.AddToList<Dependencies>(installer.Dependencies.ExternalDependencies);
-                    }
-
-                    newInstaller.PackageFamilyName = installer.PackageFamilyName;
-                    newInstaller.ProductCode = installer.ProductCode;
-                    newInstaller.Capabilities = PackageManifestUtils.AddToList<Capabilities>(installer.Capabilities);
-                    newInstaller.RestrictedCapabilities = PackageManifestUtils.AddToList<RestrictedCapabilities>(installer.RestrictedCapabilities);
-
+                    newInstaller.InstallerIdentifier = string.Join("_", newInstaller.Architecture, newInstaller.InstallerLocale, newInstaller.Scope, Guid.NewGuid());
                     versionExtended.AddInstaller(newInstaller);
                 }
             }
@@ -283,8 +235,64 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             return packageManifest;
         }
 
-        private static T AddToList<T>(IEnumerable<string> from)
-                    where T : ApiArray<string>, new()
+        /// <summary>
+        /// Process Installer Switches subnode.
+        /// </summary>
+        private static Utils.Models.Objects.InstallerSwitches AddInstallerSwitches(InstallerSwitches sourceSwitches)
+        {
+            if (sourceSwitches != null)
+            {
+                return new Utils.Models.Objects.InstallerSwitches
+                {
+                    Silent = string.IsNullOrWhiteSpace(sourceSwitches.Silent) ? null : sourceSwitches.Silent,
+                    SilentWithProgress = string.IsNullOrWhiteSpace(sourceSwitches.SilentWithProgress) ? null : sourceSwitches.SilentWithProgress,
+                    Interactive = string.IsNullOrWhiteSpace(sourceSwitches.Interactive) ? null : sourceSwitches.Interactive,
+                    InstallLocation = string.IsNullOrWhiteSpace(sourceSwitches.InstallLocation) ? null : sourceSwitches.InstallLocation,
+                    Log = string.IsNullOrWhiteSpace(sourceSwitches.Log) ? null : sourceSwitches.Log,
+                    Upgrade = string.IsNullOrWhiteSpace(sourceSwitches.Upgrade) ? null : sourceSwitches.Upgrade,
+                    Custom = string.IsNullOrWhiteSpace(sourceSwitches.Custom) ? null : sourceSwitches.Custom,
+                };
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Process dependencies subnode.
+        /// </summary>
+        private static Utils.Models.Objects.Dependencies AddDependencies(InstallerDependency sourceDependencies)
+        {
+            if (sourceDependencies != null)
+            {
+                var newDependencies = new Utils.Models.Objects.Dependencies();
+
+                newDependencies.WindowsFeatures = sourceDependencies.WindowsFeatures.ToApiArray<Dependencies>();
+                newDependencies.WindowsLibraries = sourceDependencies.WindowsLibraries.ToApiArray<Dependencies>();
+
+                if (sourceDependencies.PackageDependencies != null)
+                {
+                    newDependencies.PackageDependencies = new PackageDependency();
+                    foreach (var installerPackageDependency in sourceDependencies.PackageDependencies)
+                    {
+                        Utils.Models.Objects.PackageDependency packageDependency = new Utils.Models.Objects.PackageDependency
+                        {
+                            PackageIdentifier = installerPackageDependency.PackageIdentifier,
+                            MinimumVersion = installerPackageDependency.MinimumVersion,
+                        };
+                        newDependencies.PackageDependencies.Add(packageDependency);
+                    }
+                }
+
+                newDependencies.ExternalDependencies = sourceDependencies.ExternalDependencies.ToApiArray<Dependencies>();
+
+                return newDependencies;
+            }
+
+            return null;
+        }
+
+        private static T ToApiArray<T>(this IEnumerable<string> from)
+            where T : ApiArray<string>, new()
         {
             T to = null;
             if (from != null)
@@ -296,8 +304,8 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             return to;
         }
 
-        private static T AddToList<T>(IEnumerable<long> from)
-                    where T : ApiArray<long>, new()
+        private static T ToApiArray<T>(this IEnumerable<long> from)
+            where T : ApiArray<long>, new()
         {
             T to = null;
             if (from != null)
