@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj" />
+    <ProjectReference Include="..\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj" />
     <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
   </ItemGroup>
 
@@ -56,6 +57,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Tests\RestSource\Cosmos\manifests.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.installer.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.locale.en-US.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

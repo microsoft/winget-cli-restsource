@@ -9,7 +9,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Models.Objects;
@@ -430,38 +429,40 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.InstallerIdentifier,
-                this.InstallerSha256,
-                this.InstallerUrl,
-                this.Architecture,
-                this.InstallerLocale,
-                this.Platform,
-                this.MinimumOsVersion,
-                this.InstallerType,
-                this.Scope,
-                this.SignatureSha256,
-                this.InstallModes,
-                this.InstallerSwitches,
-                this.InstallerSuccessCodes,
-                this.ExpectedReturnCodes,
-                this.UpgradeBehavior,
-                this.Commands,
-                this.Protocols,
-                this.FileExtensions,
-                this.Dependencies,
-                this.PackageFamilyName,
-                this.ProductCode,
-                this.Capabilities,
-                this.RestrictedCapabilities,
-                this.MSStoreProductIdentifier,
-                this.InstallerAbortsTerminal,
-                this.ReleaseDate,
-                this.InstallLocationRequired,
-                this.RequireExplicitUpgrade,
-                this.ElevationRequirement,
-                this.UnsupportedOSArchitectures,
-                this.AppsAndFeaturesEntries,
-                this.Markets).GetHashCode();
+            HashCode hashCode = default;
+            hashCode.Add(this.InstallerIdentifier);
+            hashCode.Add(this.InstallerSha256);
+            hashCode.Add(this.InstallerUrl);
+            hashCode.Add(this.Architecture);
+            hashCode.Add(this.InstallerLocale);
+            hashCode.Add(this.Platform);
+            hashCode.Add(this.MinimumOsVersion);
+            hashCode.Add(this.InstallerType);
+            hashCode.Add(this.Scope);
+            hashCode.Add(this.SignatureSha256);
+            hashCode.Add(this.InstallModes);
+            hashCode.Add(this.InstallerSwitches);
+            hashCode.Add(this.InstallerSuccessCodes);
+            hashCode.Add(this.ExpectedReturnCodes);
+            hashCode.Add(this.UpgradeBehavior);
+            hashCode.Add(this.Commands);
+            hashCode.Add(this.Protocols);
+            hashCode.Add(this.FileExtensions);
+            hashCode.Add(this.Dependencies);
+            hashCode.Add(this.PackageFamilyName);
+            hashCode.Add(this.ProductCode);
+            hashCode.Add(this.Capabilities);
+            hashCode.Add(this.RestrictedCapabilities);
+            hashCode.Add(this.MSStoreProductIdentifier);
+            hashCode.Add(this.InstallerAbortsTerminal);
+            hashCode.Add(this.ReleaseDate);
+            hashCode.Add(this.InstallLocationRequired);
+            hashCode.Add(this.RequireExplicitUpgrade);
+            hashCode.Add(this.ElevationRequirement);
+            hashCode.Add(this.UnsupportedOSArchitectures);
+            hashCode.Add(this.AppsAndFeaturesEntries);
+            hashCode.Add(this.Markets);
+            return hashCode.ToHashCode();
         }
     }
 }

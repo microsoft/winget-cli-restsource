@@ -15,7 +15,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.Functions.Common
     /// </summary>
     public class ApiObjectResultTest
     {
-        private ITestOutputHelper log;
+        private readonly ITestOutputHelper log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiObjectResultTest"/> class.

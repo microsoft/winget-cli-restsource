@@ -6,6 +6,7 @@
 
 namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
@@ -247,24 +248,26 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.PackageLocale,
-                this.Publisher,
-                this.PublisherUrl,
-                this.PublisherSupportUrl,
-                this.PrivacyUrl,
-                this.Author,
-                this.PackageName,
-                this.PackageUrl,
-                this.License,
-                this.LicenseUrl,
-                this.Copyright,
-                this.CopyrightUrl,
-                this.ShortDescription,
-                this.Description,
-                this.Tags,
-                this.ReleaseNotes,
-                this.ReleaseNotesUrl,
-                this.Agreements).GetHashCode();
+            HashCode hashCode = default;
+            hashCode.Add(this.PackageLocale);
+            hashCode.Add(this.Publisher);
+            hashCode.Add(this.PublisherUrl);
+            hashCode.Add(this.PublisherSupportUrl);
+            hashCode.Add(this.PrivacyUrl);
+            hashCode.Add(this.Author);
+            hashCode.Add(this.PackageName);
+            hashCode.Add(this.PackageUrl);
+            hashCode.Add(this.License);
+            hashCode.Add(this.LicenseUrl);
+            hashCode.Add(this.Copyright);
+            hashCode.Add(this.CopyrightUrl);
+            hashCode.Add(this.ShortDescription);
+            hashCode.Add(this.Description);
+            hashCode.Add(this.Tags);
+            hashCode.Add(this.ReleaseNotes);
+            hashCode.Add(this.ReleaseNotesUrl);
+            hashCode.Add(this.Agreements);
+            return hashCode.ToHashCode();
         }
     }
 }
