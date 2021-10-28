@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 #
 # Module manifest for module 'Microsoft.WinGet.Source'
 #

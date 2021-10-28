@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 Function New-WinGetSource
 {
     <#
@@ -73,7 +75,6 @@ Function New-WinGetSource
     BEGIN
     {
         if($ImplementationPerformance -eq "Demo") {
-            #Write-Warning -Message "`n The ""Demo"" build creates a free-tier Azure Cosmos DB Account. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
             Write-Warning -Message "`n The ""Demo"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
         }
         
@@ -98,7 +99,7 @@ Function New-WinGetSource
         }
 
         ###############################
-        ## Create Folders for the Parameter and Template folder paths
+        ## Create Folders for the Parameter folder paths
         $ResultParameter = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
 
         if($ResultParameter) { 

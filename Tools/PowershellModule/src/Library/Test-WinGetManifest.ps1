@@ -1,9 +1,10 @@
-
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 Function Test-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Incomplete
+    [Stub for a backlog issue, essentially does nothing today.]
 
     .DESCRIPTION
 
