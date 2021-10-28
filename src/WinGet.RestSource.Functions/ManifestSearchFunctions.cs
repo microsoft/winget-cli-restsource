@@ -15,14 +15,14 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Arrays;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for searching manifests.
@@ -53,21 +53,20 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ManifestSearchRequest manifestSearch = null;
-            ApiDataPage<ManifestSearchResponse> manifestSearchResponse = new ApiDataPage<ManifestSearchResponse>();
+            ApiDataPage<ManifestSearchResponse> manifestSearchResponse;
             PackageMatchFields unsupportedFields;
             PackageMatchFields requiredFields;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);
 
                 // Get Manifest Search Request and Validate.
-                manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
+                ManifestSearchRequest manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
                 ApiDataValidator.Validate(manifestSearch);
 
-                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);
+                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, continuationToken);
 
                 unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnsupportedPackageMatchFields);
                 requiredFields = UnsupportedAndRequiredFieldsHelper.GetRequiredPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.RequiredPackageMatchFields);

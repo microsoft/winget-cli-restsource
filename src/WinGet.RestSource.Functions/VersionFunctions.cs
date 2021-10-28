@@ -15,14 +15,14 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Validators;
-    using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
+    using Version = Microsoft.WinGet.RestSource.Utils.Models.Schemas.Version;
 
     /// <summary>
     /// This class contains the functions for interacting with versions.
@@ -56,13 +56,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Version version = null;
-
+            Version version;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as Version
                 version = await Parser.StreamParser<Version>(req.Body, log);
@@ -102,13 +100,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteVersion(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
@@ -142,13 +137,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Version version = null;
-
+            Version version;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as Version
                 version = await Parser.StreamParser<Version>(req.Body, log);
@@ -196,15 +189,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<Version> versions = new ApiDataPage<Version>();
+            ApiDataPage<Version> versions;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion, null);
+                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
             {

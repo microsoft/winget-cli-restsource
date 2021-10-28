@@ -15,14 +15,14 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with installers.
@@ -60,13 +60,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Installer installer = null;
-
+            Installer installer;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as installer
                 installer = await Parser.StreamParser<Installer>(req.Body, log);
@@ -110,13 +108,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteInstaller(packageIdentifier, packageVersion, installerIdentifier);
             }
             catch (DefaultException e)
@@ -155,13 +150,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Installer installer = null;
-
+            Installer installer;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 installer = await Parser.StreamParser<Installer>(req.Body, log);
@@ -213,15 +206,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             string installerIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<Installer> installers = new ApiDataPage<Installer>();
+            ApiDataPage<Installer> installers;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                installers = await this.dataStore.GetInstallers(packageIdentifier, packageVersion, installerIdentifier, null);
+                installers = await this.dataStore.GetInstallers(packageIdentifier, packageVersion, installerIdentifier);
             }
             catch (DefaultException e)
             {

@@ -14,9 +14,10 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.IO;
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Cosmos;
-    using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
 
     /// <summary>
     /// Azure function startup class.
@@ -26,26 +27,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <inheritdoc />
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddSingleton<ICosmosDatabase>((s) => this.CreateCosmosDatabase());
-            builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>();
-        }
+            string endpoint = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ?? throw new InvalidDataException();
+            string readOnlyKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
+            string readWriteKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
+            string databaseId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting) ?? throw new InvalidDataException();
+            string containerId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting) ?? throw new InvalidDataException();
 
-        /// <summary>
-        /// This instantiates a Cosmos DB from the Endpoint and Account Key.
-        /// </summary>
-        /// <returns>Cosmos Database.</returns>
-        private CosmosDatabase CreateCosmosDatabase()
-        {
-            Uri endpoint = new Uri(
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ??
-                throw new InvalidDataException());
-            CosmosDatabase database = new CosmosDatabase(
-                endpoint,
-                Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountKeySetting),
-                Constants.CosmosConnectionConstants.DatabaseName,
-                Constants.CosmosConnectionConstants.CollectionName);
-
-            return database;
+            builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(sp => new CosmosDataStore(sp.GetRequiredService<ILogger<CosmosDataStore>>(), endpoint, readWriteKey, readOnlyKey, databaseId, containerId));
         }
     }
 }

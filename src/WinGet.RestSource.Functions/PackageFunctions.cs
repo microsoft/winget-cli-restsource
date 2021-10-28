@@ -16,14 +16,14 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Primitives;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.
@@ -54,13 +54,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Package package = null;
-
+            Package package;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -99,13 +97,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackage(packageIdentifier);
             }
             catch (DefaultException e)
@@ -137,13 +132,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            Package package = null;
-
+            Package package;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -190,16 +183,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<Package> packages = new ApiDataPage<Package>();
+            ApiDataPage<Package> packages;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Fetch Results
-                packages = await this.dataStore.GetPackages(packageIdentifier, req.Query);
+                packages = await this.dataStore.GetPackages(packageIdentifier, req.Query[QueryConstants.ContinuationToken]);
             }
             catch (DefaultException e)
             {

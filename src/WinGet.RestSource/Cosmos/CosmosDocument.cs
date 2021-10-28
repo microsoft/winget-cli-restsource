@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     /// </summary>
     /// <typeparam name="T">This is the document type for cosmos.</typeparam>
     public class CosmosDocument<T>
-        where T : class
+        where T : ICosmosIdDocument
     {
         /// <summary>
         /// Gets or sets the Cosmos Document.
@@ -25,9 +25,9 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets partition Key.
+        /// Gets partition Key.
         /// </summary>
-        public string PartitionKey { get; set; }
+        public string PartitionKey => this.Id;
 
         /// <summary>
         /// Gets or sets the etag for a document.

@@ -182,6 +182,9 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+# Azure functions publish settings
+profile.arm.json
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
@@ -352,11 +355,14 @@ MigrationBackup/
 # Ignore JetBrains Files
 src/.idea/
 
-# Exlude Function Settings
+# Exclude Function Settings
 src/WinGet.RestSource.Functions/local.settings.json
 
+# Exclude local test settings
+test.runsettings.json
+
 # Exclude Documentation XML
-src/*/Microsoft.WinGet.RestSource*.Documentation.xml
+src/*/Microsoft.WinGet.*.Documentation.xml
 
 # Developer ARM template
 src/WinGet.RestSource.Infrastructure/**/*.dev.*json

@@ -1,6 +1,11 @@
 # Template helper to restore, build, and publish
 
 steps:
+
+# Checkout repo with lfs enabled
+- checkout: self
+  lfs: "true"
+
 ## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
@@ -33,6 +38,20 @@ steps:
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
     buildconfig: '$(BuildConfiguration)'
     zipAfterPublish: True
+
+# Publish x86 powershell binaries
+- template: copy-and-publish-powershell.yml
+  parameters:
+    name: WinGet.Restsource.x86PowershellSupport
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+    TargetPlatform: 'x86'
+
+# Publish x64 powershell binaries
+- template: copy-and-publish-powershell.yml
+  parameters:
+    name: WinGet.Restsource.x64PowershellSupport
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+    TargetPlatform: 'x64'
 
 ## Run Unit Tests
 - template: run-unittests.yml

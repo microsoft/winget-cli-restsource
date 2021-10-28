@@ -7,7 +7,7 @@
 namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Common
 {
     using System.Collections.Generic;
-    using Microsoft.WinGet.RestSource.Common;
+    using Microsoft.WinGet.RestSource.Utils.Common;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -16,7 +16,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Common
     /// </summary>
     public class FormatJSONTest
     {
-        private ITestOutputHelper log;
+        private readonly ITestOutputHelper log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatJSONTest"/> class.

@@ -15,15 +15,15 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Arrays;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with manifests.
@@ -54,13 +54,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            PackageManifest packageManifest = null;
-
+            PackageManifest packageManifest;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -97,13 +95,10 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
-
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
             }
             catch (DefaultException e)
@@ -135,13 +130,11 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            PackageManifest packageManifest = null;
-
+            PackageManifest packageManifest;
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -187,18 +180,30 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
-            ApiDataPage<PackageManifest> manifests = new ApiDataPage<PackageManifest>();
+            ApiDataPage<PackageManifest> manifests;
             QueryParameters unsupportedQueryParameters;
             QueryParameters requiredQueryParameters;
 
             try
             {
                 // Parse Headers
-                headers = HeaderProcessor.ToDictionary(req.Headers);
+                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+
+                string continuationToken = null;
+                string versionFilter = null;
+                string channelFilter = null;
+                string marketFilter = null;
 
                 // Schema supports query parameters only when PackageIdentifier is specified.
-                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, string.IsNullOrWhiteSpace(packageIdentifier) ? null : req.Query);
+                if (!string.IsNullOrWhiteSpace(packageIdentifier))
+                {
+                    continuationToken = req.Query[QueryConstants.ContinuationToken];
+                    versionFilter = req.Query[QueryConstants.Version];
+                    channelFilter = req.Query[QueryConstants.Channel];
+                    marketFilter = req.Query[QueryConstants.Market];
+                }
+
+                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, continuationToken, versionFilter, channelFilter, marketFilter);
                 unsupportedQueryParameters = UnsupportedAndRequiredFieldsHelper.GetUnsupportedQueryParametersFromRequest(req.Query, ApiConstants.UnsupportedQueryParameters);
                 requiredQueryParameters = UnsupportedAndRequiredFieldsHelper.GetRequiredQueryParametersFromRequest(req.Query, ApiConstants.RequiredQueryParameters);
             }

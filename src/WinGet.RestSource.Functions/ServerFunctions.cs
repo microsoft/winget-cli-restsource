@@ -12,27 +12,23 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Constants;
     using Microsoft.WinGet.RestSource.Cosmos;
-    using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
 
     /// <summary>
     /// This class contains the functions for interacting with packages.
     /// </summary>
     public class ServerFunctions
     {
-        private readonly ICosmosDatabase cosmosDatabase;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerFunctions"/> class.
         /// </summary>
-        /// <param name="cosmosDatabase">Cosmos Database.</param>
-        public ServerFunctions(ICosmosDatabase cosmosDatabase)
+        public ServerFunctions()
         {
-            this.cosmosDatabase = cosmosDatabase;
         }
 
         /// <summary>
@@ -48,7 +44,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Information information = null;
+            Information information;
             try
             {
                 information = new Information();

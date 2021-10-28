@@ -8,8 +8,8 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
 {
     using System;
     using System.Net;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
 
     /// <summary>
     /// This Creates Action Results.
