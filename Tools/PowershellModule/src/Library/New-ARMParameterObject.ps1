@@ -36,27 +36,26 @@ Function New-ARMParameterObject
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
         [Parameter(Position=1, Mandatory=$false)][string]$TemplateFolderPath = "$PSScriptRoot\ARMTemplate",
-        [Parameter(Position=2, Mandatory=$false)][string]$Index,
-        [Parameter(Position=3, Mandatory=$true)] [string]$Name,
-        [Parameter(Position=4, Mandatory=$true)] [string]$Region,
-        [Parameter(Position=5, Mandatory=$true)] [string]$ImplementationPerformance
+        [Parameter(Position=2, Mandatory=$true)] [string]$Name,
+        [Parameter(Position=3, Mandatory=$true)] [string]$Region,
+        [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
     )
     BEGIN
     {
         ## This can be used to create a random and unique string name for a resource: "defaultValue": "[concat('kv', uniquestring(resourceGroup().id))]",
 
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $($Name + $Index)
-        $KeyVaultName       = $($Name + $Index)
-        $StorageAccountName = $($Name + $Index).Replace("-", "")
-        $aspName            = $($Name + $Index)
-        $CDBAccountName     = $($Name + $Index)
-        $FunctionName       = $($Name + $Index)
-        $FrontDoorName      = $($Name + $Index)
+        $AppInsightsName    = $Name
+        $KeyVaultName       = $Name
+        $StorageAccountName = $Name.Replace("-", "")
+        $aspName            = $Name
+        $CDBAccountName     = $Name
+        $FunctionName       = $Name
+        $FrontDoorName      = $Name
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled Windows Package Manager Functions [CompiledFunctions.zip])
-        $CDBDatabaseName    = $("WinGet")
-        $CDBContainerName   = $("Manifests")
+        $CDBDatabaseName    = "WinGet"
+        $CDBContainerName   = "Manifests"
         
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
@@ -69,12 +68,6 @@ Function New-ARMParameterObject
         $TemplateCDBContainerPath   = "$TemplateFolderPath\cosmosdb-sql-container.json"
         $TemplateFunctionPath       = "$TemplateFolderPath\azurefunction.json"
         $TemplateFrontDoorPath      = "$TemplateFolderPath\frontdoor.json"
-
-        ## Relative Path from the Working Directory to the Azure ARM Parameter Files
-        if($null -ne $Index -or $Index -ne "") {
-            ## Prefixes the "." to the beginning of the $Index value.
-            $NameEntryIndex = ".$Index"
-        }
 
         $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights$NameEntryIndex.json"
         $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault$NameEntryIndex.json"
@@ -370,9 +363,9 @@ Function New-ARMParameterObject
             #             frontendEndpoints = @{
             #                 value = @(
             #                     @{
-            #                         name = "$($Name + "azurefd" + $Index)"
+            #                         name = "$($Name + "azurefd")"
             #                         properties = @{
-            #                             hostName = "$($Name + "azurefd" + $Index).azurefd.net"
+            #                             hostName = "$($Name + "azurefd").azurefd.net"
             #                             sessionAffinityEnabledState = "Disabled"
             #                             sessionAffinityTtlSeconds   = 0
             #                             resourceState               = "Enabled"
@@ -432,7 +425,7 @@ Function New-ARMParameterObject
             #                 value = @(
             #                     @{
             #                         name                = "api-rule"
-            #                         frontendEndpoint    = "$($Name + "azurefd" + $Index)"
+            #                         frontendEndpoint    = "$($Name + "azurefd")"
             #                         acceptedProtocols   = @( "Https" )
             #                         patternsToMatch     = @( "/api/*" )
             #                         enabledState        = "Enabled"

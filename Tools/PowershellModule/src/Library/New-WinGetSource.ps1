@@ -62,14 +62,13 @@ Function New-WinGetSource
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$Name,
-        [Parameter(Position=1, Mandatory=$false)] [string]$Index,
-        [Parameter(Position=2, Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
-        [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName,
-        [Parameter(Position=4, Mandatory=$false)] [string]$Region = "westus",
-        [Parameter(Position=5, Mandatory=$false)] [string]$ParameterOutput = $(Get-Location).Path,
-        [Parameter(Position=6, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\RestAPI\WinGet.RestSource.Functions.zip",
+        [Parameter(Position=1, Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
+        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName,
+        [Parameter(Position=3, Mandatory=$false)] [string]$Region = "westus",
+        [Parameter(Position=4, Mandatory=$false)] [string]$ParameterOutput = $(Get-Location).Path,
+        [Parameter(Position=5, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\RestAPI\WinGet.RestSource.Functions.zip",
         [ValidateSet("Demo", "Basic", "Enhanced")]
-        [Parameter(Position=7, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
+        [Parameter(Position=6, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
     BEGIN
@@ -108,7 +107,7 @@ Function New-WinGetSource
         
         ###############################
         ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Index $Index -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
 
         ###############################
         ## Connects to Azure, if not already connected.
