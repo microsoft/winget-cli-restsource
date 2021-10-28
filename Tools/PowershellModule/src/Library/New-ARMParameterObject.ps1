@@ -242,11 +242,13 @@ Function New-ARMParameterObject
                                 }
                             )
                         }
+                        # Allows requests from azure portal and Azure datacenter ip range (0.0.0.0)
                         ipRules =@{
                             value = @(
                                 @{
                                     ipAddressOrRange = "104.42.195.92"
                                 }
+
                                 @{
                                     ipAddressOrRange = "40.76.54.131"
                                 }
