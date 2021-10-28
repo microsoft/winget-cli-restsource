@@ -22,7 +22,7 @@ steps:
 
 - task: BinSkim@3
   inputs:
-    arguments: 'analyze "$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0\Microsoft.Winget.*.dll" --config default --recurse' 
+    arguments: 'analyze Microsoft.Winget.*.dll --config default --recurse' 
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
   displayName: 'Publish Security Analysis Logs'

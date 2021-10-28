@@ -1,10 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
 # CI pipeline for winget-cli-restsource
 
-# Branches that trigger a build on commit
-trigger:
-- main
-
 # PR triggers
 pr:
   branches:
@@ -20,7 +16,7 @@ jobs:
   displayName: 'Build, Publish & Test'
   timeoutInMinutes: 60
   pool:
-    vmImage: windows-2019
+    vmImage: windows-latest
     demands:
     - msbuild
     - visualstudio
