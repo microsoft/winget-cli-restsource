@@ -3,6 +3,7 @@ steps:
   inputs:
     scanFolder: '$(Build.SourcesDirectory)'
     debugMode: false
+    toolMajorVersion: V2
   continueOnError: true
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
