@@ -109,30 +109,6 @@ Function Remove-WinGetManifest
     {
         switch ($PsCmdlet.ParameterSetName) {
             "Azure" {
-                Write-Verbose -Message "Confirming that the Manifest ID exists in Azure for $ManifestIdentifier."
-                $GetResult = Get-WinGetManifest -FunctionName $FunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $ManifestIdentifier
-                
-                ## If the package doesn't exist, return Error
-                $GetResult | foreach-object {
-                    IF($_.PackageIdentifier -eq $ManifestIdentifier) {
-                        Write-Verbose -Message "Manifest matching to $ManifestIdentifier has been found."
-                        $Found = $true
-                        #Break
-                    }
-                }
-
-                ## If the Manifest ID did not match with the list of found Manifest ID's then return error and exit.
-                If(!$Found){
-                    $ErrReturnObject = @{
-                        FoundManifest     = $_
-                        SearchResults     = $GetResult
-                    }
-
-                    Write-Error -Message "Manifest does not exist for the specified ID, removal of the Manifest will not continue..." -Category ResourceExists -TargetObject $ErrReturnObject
-                    return
-                }
-
-                
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
                 Write-Verbose -Message "Constructing the REST API call for removal of manifest."
 
@@ -149,12 +125,7 @@ Function Remove-WinGetManifest
                     }
 
                     ## If the Post failed, then return User specific error messages:
-                    if($errInvoke -eq "Failure (409)"){
-                        Write-Warning -Message "Manifest file already exists."
-                    }
-                    else {
-                        Write-Error -Message "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again." -Category ResourceUnavailable -TargetObject $ErrReturnObject
-                    }
+                    Write-Error -Message "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again." -Category ResourceUnavailable -TargetObject $ErrReturnObject
                 }
             }
         }
