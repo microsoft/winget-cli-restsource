@@ -45,11 +45,11 @@ Function New-ARMObjects
         $AzStorageAccountName = $jsonStorageAccount.parameters.storageAccountName.value
         $CosmosAccountName    = $jsoncdba.Parameters.Name.Value
 
-        ## Azure Keyvault Secret Names - Do not change values
+        ## Azure Keyvault Secret Names - Do not change values (Must match with values in the Template files)
         $AzStorageAccountKeyName      = "AzStorageAccountKey"
         $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"
-        $CosmosAccountKeyReadKeyName  = "CosmosReadOnlyKey"
         $CosmosAccountKeyWriteKeyName = "CosmosReadWriteKey"
+        $CosmosAccountKeyReadKeyName  = "CosmosReadOnlyKey"
 
         ## Azure Storage Account Connection String Endpoint Suffix
         $AzEndpointSuffix     = "core.windows.net"
