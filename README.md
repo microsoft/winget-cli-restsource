@@ -9,12 +9,12 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | Required | Parameter                  | Description                                                                                                                                |
 |----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
-| Yes      | Index                      | A string of letters or numbers which will be sufixed to your newly created Azure resources.                                                |
+| Yes      | Index                      | A string of letters or numbers which will be suffix to your newly created Azure resources.                                                 |
 | Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
-| No       | WorkingDirectory           | The folder location that contains this the ARM template files, as well as where the Azure Parameter files will be created.                 |
-| No       | ARMFunctionPath            | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
+| No       | ParameterOutput            | The folder location that contains new items will be created in.                                                                            |
+| No       | RestSourcePath             | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                         |
 | No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager rest source. ["Demo", "Basic", "Enhanced"]        |
 | No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)                                 |
 
@@ -27,7 +27,7 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 ```PowerShell
 PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetPrivateSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
 ```
-1. After the above has completed (approximately 15 minutes), copy and run the connection information provided for your newly created Windows Package Manager rest source to add it to your WinGet client.
+1. After the above has completed, copy and run the connection information provided for your newly created Windows Package Manager rest source to add it to your WinGet client.
 
 
 ## Contributing

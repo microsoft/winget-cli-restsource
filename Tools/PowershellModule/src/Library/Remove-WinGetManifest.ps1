@@ -6,7 +6,7 @@ Function Remove-WinGetManifest
     Removes a Manifest file from the Azure rest source
 
     .DESCRIPTION
-    By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager rest source, then removes the application Manifest.
+    This function will connect to the Azure Tenant that hosts the Windows Package Manager rest source, removing the specified application Manifest.
         
     The following Azure Modules are used by this script:
         Az.Resources
@@ -38,10 +38,8 @@ Function Remove-WinGetManifest
     #>
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Custom")][string]$URL,
-        [Parameter(Position=1, Mandatory=$true, ParameterSetName="Custom")][string]$Key,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=2, Mandatory=$true)]  [string]$ManifestIdentifier = "",
+        [Parameter(Position=2, Mandatory=$true)]  [string]$ManifestIdentifier,
         [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName   = ""
     )
     BEGIN
@@ -104,28 +102,6 @@ Function Remove-WinGetManifest
 
                 $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $ManifestIdentifier
             }
-            "Custom"{
-                ###############################
-                ##  Rest api call  
-                
-                ## Specifies the Rest api call that will be performed
-                $TriggerName    = "ManifestDelete"
-                $apiContentType = "application/json"
-                $apiMethod      = "Delete"
-
-                ## can function key be part of the header
-                $DefaultHostName = $URL
-
-                ## Creates the API Post Header
-                $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-                $apiHeader.Add("Accept", 'application/json')
-                
-                if($Key) {
-                    $apiHeader.Add("x-functions-key", $Key)
-                }
-
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $ManifestIdentifier
-            }
         }
     }
     PROCESS
@@ -147,7 +123,6 @@ Function Remove-WinGetManifest
                 ## If the Manifest ID did not match with the list of found Manifest ID's then return error and exit.
                 If(!$Found){
                     $ErrReturnObject = @{
-                        SubmittedManifest = $ApplicationManifest
                         FoundManifest     = $_
                         SearchResults     = $GetResult
                     }
@@ -168,7 +143,6 @@ Function Remove-WinGetManifest
                         apiHeader           = $apiHeader
                         apiMethod           = $apiMethod
                         apiContentType      = $apiContentType
-                        ApplicationManifest = $ApplicationManifest
                         Response            = $Response
                         InvokeError         = $errInvoke
                     }

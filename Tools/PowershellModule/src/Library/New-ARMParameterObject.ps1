@@ -33,11 +33,11 @@ Function New-ARMParameterObject
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
-        [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
+        [Parameter(Position=1, Mandatory=$false)][string]$TemplateFolderPath = "$PSScriptRoot\ARMTemplate",
         [Parameter(Position=2, Mandatory=$false)][string]$Index,
         [Parameter(Position=3, Mandatory=$true)] [string]$Name,
         [Parameter(Position=4, Mandatory=$true)] [string]$Region,
-        [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
+        [Parameter(Position=5, Mandatory=$true)] [string]$ImplementationPerformance
     )
     BEGIN
     {
@@ -58,7 +58,6 @@ Function New-ARMParameterObject
         
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
-        $TemplateFolderPath         = "$PSScriptRoot\ARMTemplate"
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
         $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
         $TemplateStorageAccountPath = "$TemplateFolderPath\storageaccount.json"
@@ -91,26 +90,26 @@ Function New-ARMParameterObject
             "Demo" {
                 $KeyVaultSKU  = "Standard"
                 $StorageAccountPerformance = "Standard_LRS"
-#                $StorageAccountRedundancy = "LRS" ## Locally Redundant Storage (LRS)
-                $ASPSKU = "B1"  ## 41.11 CAD/Month (Just above shared instance - no time limits)
+                $ASPSKU = "B1"
                 $CosmosDBAEnableFreeTier   = $true
-                $CosmosDBACapabilities     = "[]"  ## To enable Serverless then set this to "[{"name"; ""EnableServerless""}]"
+                ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+                $CosmosDBACapabilities     = "[]"
             }
             "Basic" { 
                 $KeyVaultSKU  = "Standard"
                 $StorageAccountPerformance = "Standard_GRS"
-#                $StorageAccountRedundancy = "GRS" ## Zone Redundant Storage (GRS)
-                $ASPSKU = "S1"  ## 56.06 CAD/Month (no time limits)
+                $ASPSKU = "S1"
                 $CosmosDBAEnableFreeTier   = $false
-                $CosmosDBACapabilities     = "[]"  ## To enable Serverless then set this to "[{"name"; ""EnableServerless""}]"
+                ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+                $CosmosDBACapabilities     = "[]"
             }
             "Enhanced" {
-                $KeyVaultSKU  = "Standard"  ## Need to find the SKU for Premium
-                $StorageAccountPerformance = "Standard_GZRS" ## ?? Maybe.. set as "Premium" though that doesn't work with the below value though on Redundancy (File Shares, and Zone Redundant Storage (ZRS))
-#                $StorageAccountRedundancy = "GZRS" ## Geo Zone Redundant Storage (GZRS)
-                $ASPSKU = "P1V2"  ## 65.41 CAD/Month (no time limits)
+                $KeyVaultSKU  = "Standard"
+                $StorageAccountPerformance = "Standard_GZRS"
+                $ASPSKU = "P1V2"
                 $CosmosDBAEnableFreeTier   = $false
-                $CosmosDBACapabilities     = "[]"  ## To enable Serverless then set this to "[{"name"; ""EnableServerless""}]"
+                ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+                $CosmosDBACapabilities     = "[]"
             }
         }
         
@@ -343,7 +342,7 @@ Function New-ARMParameterObject
                     contentVersion = $JSONContentVersion
                     Parameters = @{
                         storageSecretName = @{ value = $AzKVStorageSecretName }     # Name used to contain the Storage Account connection string in the Key Value
-                        location          = @{ value = $Region      }           # Azure hosting location
+                        location          = @{ value = $Region          }           # Azure hosting location
                         serverIdentifier  = @{ value = $aspName         }           # 
                         functionName      = @{ value = $FunctionName    }           # Azure Function Name
                         appServiceName    = @{ value = $aspName         }           # Azure App Service Name

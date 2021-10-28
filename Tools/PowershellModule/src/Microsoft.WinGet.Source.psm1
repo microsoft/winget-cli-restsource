@@ -14,8 +14,16 @@ $WinGetDesktopAppInstallerLibLoaded = $false
 
 ## Loads the binaries from the Desktop App Installer Library - Only if running PowerShell at a specified version
 if ($WinGetModulePsVersion -ge $WinGetLibMinVersionPS51) {
-        $WinGetDesktopAppInstallerLibLoaded = $true
-        Add-Type -Path "$PSScriptRoot\Library\AppInstallerLib\Microsoft.Winget.PowershellSupport.dll"
+        if([intPtr]::size -eq 4){
+                ## PowerShell window is in x86 architecture.
+                Add-Type -Path "$PSScriptRoot\Library\HelperLib\Microsoft.Winget.PowershellSupport.dll"
+                $WinGetDesktopAppInstallerLibLoaded = $true
+        }
+        else{
+                ## PowerShell window is in x64 architecture.
+                Add-Type -Path "$PSScriptRoot\Library\HelperLib\Microsoft.Winget.PowershellSupport.dll"
+                $WinGetDesktopAppInstallerLibLoaded = $true
+        }
 }
 else {
         throw "Unable to load required binaries. Verify your PowerShell version is greater than $($WinGetLibMinVersionPS51.ToString())."
@@ -26,16 +34,14 @@ else {
 
 ## Verifies that the Azure Modules were previously installed.
 [Boolean] $TestResult = Test-PowerShellModuleExist -Modules $RequiredModules
-If(!$TestResult)
-{ 
+if(!$TestResult) { 
         ## Installs the required Azure Modules if not already installed
         $RequiredModules | ForEach-Object { Install-Module $_ -Force }
 }
 
 ## Verifies that the Azure Modules were successfully installed.
 [Boolean] $TestResult = Test-PowerShellModuleExist -Modules $RequiredModules
-If(!$TestResult)
-{ 
+if(!$TestResult) { 
         ## Modules have been identified as missing
         Write-Host ""
         $ErrorMessage = "There are missing PowerShell modules that must be installed.`n"

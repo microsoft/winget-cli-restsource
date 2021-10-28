@@ -14,8 +14,8 @@ Creates a Windows Package Manager rest source in Azure for private storage of Wi
 
 ```
 New-WinGetSource [-Name] <String> [[-Index] <String>] [[-ResourceGroup] <String>]
- [[-SubscriptionName] <String>] [[-Region] <String>] [[-WorkingDirectory] <String>]
- [[-ARMFunctionPath] <String>] [[-ImplementationPerformance] <String>] [-ShowConnectionInstructions]
+ [[-SubscriptionName] <String>] [[-Region] <String>] [[-ParameterOutput] <String>]
+ [[-RestSourcePath] <String>] [[-ImplementationPerformance] <String>] [-ShowConnectionInstructions]
  [<CommonParameters>]
 ```
 
@@ -39,7 +39,7 @@ Creates the Windows Package Manager rest source in Azure with resources named "c
 
 ### EXAMPLE 2
 ```
-New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -WorkingDirectory "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
+New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
 ```
 
 Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
@@ -78,8 +78,8 @@ Accept wildcard characters: False
 ```
 
 ### -ResourceGroup
-\[Optional\] The Name of the Resource Group that the Windows Package Manager rest source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetPrivateSource)
-(Default: WinGetPrivateSource)
+\[Optional\] The Name of the Resource Group that the Windows Package Manager rest source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetRestSource)
+(Default: WinGetRestSource)
 
 ```yaml
 Type: String
@@ -88,13 +88,13 @@ Aliases:
 
 Required: False
 Position: 3
-Default value: WinGetPrivateSource
+Default value: WinGetRestSource
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-{{ Fill SubscriptionName Description }}
+\[Optional\] The name of the subscription that will be used to host the Windows Package Manager rest source.
 
 ```yaml
 Type: String
@@ -124,7 +124,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WorkingDirectory
+### -ParameterOutput
 \[Optional\] The directory where Parameter objects will be created in.
 (Default: Current Directory)
 
@@ -140,7 +140,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ARMFunctionPath
+### -RestSourcePath
 \[Optional\] Path to the compiled Rest API Zip file.
 (Default: .\RestAPI\CompiledFunctions.ps1)
 

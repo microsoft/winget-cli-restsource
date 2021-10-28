@@ -58,7 +58,6 @@ Function Get-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Custom")][string]$URL,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$ManifestIdentifier,
         [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName

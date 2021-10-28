@@ -30,7 +30,7 @@
     Copyright = '(c) Microsoft. All rights reserved.'
     
     # Description of the functionality provided by this module
-    Description = 'This module provides support for working with private Windows Package Manager REST based sources. It was built as a Hackathon project for the Windows Package Manager.'
+    Description = 'This module provides support for working with Windows Package Manager REST based sources.'
         
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion = '5.1'

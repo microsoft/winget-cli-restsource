@@ -14,22 +14,22 @@ Function New-ARMObjects
         Az.Functions --> Get-AzFunctionApp
 
     .PARAMETER ARMObjects
-    Object returned from the "New-ARMParamterObject" providing the paths to the ARM Parameters and Template files.
+    Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
 
-    .PARAMETER ArchiveFunctionZip
+    .PARAMETER RestSourcePath
     Path to the compiled Function ZIP containing the Rest APIs
 
     .PARAMETER AzResourceGroup
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -ArchiveFunctionZip "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGetResourceGroup"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGetResourceGroup"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] $ARMObjects,
-        [Parameter(Position=1, Mandatory=$true)] [string] $ArchiveFunctionZip,
+        [Parameter(Position=1, Mandatory=$true)] [string] $RestSourcePath,
         [Parameter(Position=2, Mandatory=$true)] [string] $AzResourceGroup
     )
     BEGIN
@@ -48,7 +48,8 @@ Function New-ARMObjects
         ## Azure Keyvault Secret Names - Do not change values
         $AzStorageAccountKeyName      = "AzStorageAccountKey"
         $CosmosAccountEndpointKeyName = "CosmosAccountEndpoint"
-        $CosmosAccountKeyKeyName      = "CosmosAccountKey"
+        $CosmosAccountKeyReadKeyName  = "CosmosReadOnlyKey"
+        $CosmosAccountKeyWriteKeyName = "CosmosReadWriteKey"
 
         ## Azure Storage Account Connection String Endpoint Suffix
         $AzEndpointSuffix     = "core.windows.net"
@@ -58,6 +59,7 @@ Function New-ARMObjects
         ## Creates the Azure Resources following the ARM template / parameters
         Write-Information -MessageData "Creating Azure Resources following ARM Templates."
         
+        ## This is order specific, please ensure you used the New-ARMParameterObject function to create this object in the pre-determined order.
         foreach ($Object in $ARMObjects) {
             Write-Information -MessageData "  Creating the Azure Object - $($Object.ObjectType)"
     
@@ -70,7 +72,8 @@ Function New-ARMObjects
 
                 ## Retrieves the required information from the previously created Azure objects. Values will be used to generate required information for the Azure Keyvault.
                 $CosmosAccountEndpointValue       = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccount -ResourceGroupName $AzResourceGroup).DocumentEndpoint) -AsPlainText -Force
-                $CosmosAccountKeyValue            = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccountKey -ResourceGroupName $AzResourceGroup -Name $CosmosAccountName).PrimaryMasterKey) -AsPlainText -Force
+                $CosmosAccountKeyWriteValue       = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccountKey -ResourceGroupName $AzResourceGroup -Name $CosmosAccountName).PrimaryMasterKey) -AsPlainText -Force
+                $CosmosAccountKeyReadValue        = ConvertTo-SecureString -String $($(Get-AzCosmosDBAccountKey -ResourceGroupName $AzResourceGroup -Name $CosmosAccountName).PrimaryReadonlyMasterKey) -AsPlainText -Force
                 $AzStorageAccountConnectionString = ConvertTo-SecureString -String "DefaultEndpointsProtocol=https;AccountName=$AzStorageAccountName;AccountKey=$AzStorageAccountKey;EndpointSuffix=$AzEndpointSuffix" -AsPlainText -Force
 
                 ## Adds the Azure Storage Account Connection String to the Keyvault
@@ -82,9 +85,13 @@ Function New-ARMObjects
                 $Result = Set-AzKeyVaultSecret -VaultName $AzKeyVaultName -Name $CosmosAccountEndpointKeyName -SecretValue $CosmosAccountEndpointValue
     
                 ## Adds the Azure Cosmos Primary Account Key to the Keyvault
-                Write-Information -MessageData "      Creating Keyvault Secret for Azure CosmosDB Primary Key."
-                $Result = Set-AzKeyVaultSecret -VaultName $AzKeyVaultName -Name $CosmosAccountKeyKeyName -SecretValue $CosmosAccountKeyValue
-    
+                Write-Information -MessageData "      Creating Keyvault Secret for Azure CosmosDB Write Primary Key."
+                $Result = Set-AzKeyVaultSecret -VaultName $AzKeyVaultName -Name $CosmosAccountKeyWriteKeyName -SecretValue $CosmosAccountKeyWriteValue
+   
+                ## Adds the Azure Cosmos Primary Account Key to the Keyvault
+                Write-Information -MessageData "      Creating Keyvault Secret for Azure CosmosDB Read Primary Key."
+                $Result = Set-AzKeyVaultSecret -VaultName $AzKeyVaultName -Name $CosmosAccountKeyReadKeyName -SecretValue $CosmosAccountKeyReadValue
+
                 ## Create base object of the Azure Function, generating reference object ID for Keyvault
                 Write-Information -MessageData "    Creating base Azure Function object."
                 $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue
@@ -118,21 +125,21 @@ Function New-ARMObjects
     
                 ## Verifies the presence of the "CompiledFunctions.zip" file.
                 Write-Verbose -Message "    Confirming Compiled Azure Functions is present"
-                if(Test-Path $ArchiveFunctionZip) {
+                if(Test-Path $RestSourcePath) {
                     ## The "CompiledFunctions.zip" was found in the working directory
-                    Write-Verbose -Message "      File Path Found: $ArchiveFunctionZip"
+                    Write-Verbose -Message "      File Path Found: $RestSourcePath"
 
                     ## Uploads the Windows Package Manager functions to the Azure Function.
                     Write-Information -MessageData "    Copying function files to the Azure Function."
-                    $Result = Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
+                    $Result = Publish-AzWebApp -ArchivePath $RestSourcePath -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
                 }
                 else {
                     $ErrReturnObject = @{
-                        FunctionArchivePath = $ArchiveFunctionZip
-                        TestPathResults     = Test-Path $ArchiveFunctionZip
+                        FunctionArchivePath = $RestSourcePath
+                        TestPathResults     = Test-Path $RestSourcePath
                     }
                     ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
-                    Write-Error "File Path not found: $ArchiveFunctionZip" -TargetObject $ErrReturnObject
+                    Write-Error "File Path not found: $RestSourcePath" -TargetObject $ErrReturnObject
                 }
             }
         }
