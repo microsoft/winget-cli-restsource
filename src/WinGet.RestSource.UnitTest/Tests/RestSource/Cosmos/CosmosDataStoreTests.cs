@@ -24,6 +24,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Xunit.Abstractions;
     using Arrays = Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Objects = Microsoft.WinGet.RestSource.Utils.Models.Objects;
+    using Microsoft.WinGet.RestSource.Utils.Common;
 
     /// <summary>
     /// CosmosDataStore Tests.
@@ -220,7 +221,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
                 await this.TestSearchQuery("PowerToys", MatchType.Exact, PowerToysPackageIdentifier);
                 await this.TestSearchQuery("powertoys", MatchType.CaseInsensitive, PowerToysPackageIdentifier);
                 await this.TestSearchQuery("PowerT", MatchType.StartsWith, PowerToysPackageIdentifier);
-                await this.TestSearchQuery("owerToy", MatchType.Substring, PowerToysPackageIdentifier);
+                await this.TestSearchQuery("owertoy", MatchType.Substring, PowerToysPackageIdentifier);
+                await this.TestSearchQuery("nonexistentpackage", MatchType.Substring);
             }
 
             this.log.WriteLine("Tests that using ContinuationToken with SearchPackageManifests allows us to retrieve all manifests.");
@@ -249,21 +251,31 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             await this.TestSearchFilter(PackageMatchFields.PackageName, "PowerToys", MatchType.Exact, PowerToysPackageIdentifier);
             await this.TestSearchFilter(PackageMatchFields.PackageName, "powertoys", MatchType.CaseInsensitive, PowerToysPackageIdentifier);
             await this.TestSearchFilter(PackageMatchFields.PackageName, "PowerT", MatchType.StartsWith, PowerToysPackageIdentifier);
-            await this.TestSearchFilter(PackageMatchFields.PackageName, "owerToy", MatchType.Substring, PowerToysPackageIdentifier);
+            await this.TestSearchFilter(PackageMatchFields.PackageName, "owertoy", MatchType.Substring, PowerToysPackageIdentifier);
+            await this.TestSearchFilter(PackageMatchFields.PackageName, "nonexistentpackage", MatchType.Substring);
         }
 
-        private async Task TestSearchQuery(string value, string matchType, string expectedPackageIdentifier)
+        private static void VerifyResult(ApiDataPage<ManifestSearchResponse> results, params string[] expectedPackageIdentifiers)
+        {
+            Assert.Equal(expectedPackageIdentifiers.Length, results.Items.Count);
+            var packageIdentifierResults = results.Items.Select(i => i.PackageIdentifier).ToList();
+            foreach (var expectedPackageIdentifier in expectedPackageIdentifiers)
+            {
+                Assert.Contains(expectedPackageIdentifier, packageIdentifierResults);
+            }
+        }
+
+        private async Task TestSearchQuery(string value, string matchType, params string[] expectedPackageIdentifiers)
         {
             var manifestSearchRequest = new ManifestSearchRequest();
             manifestSearchRequest.Query = new Objects.SearchRequestMatch();
             manifestSearchRequest.Query.KeyWord = value;
             manifestSearchRequest.Query.MatchType = matchType;
             var results = await this.cosmosDataStore.SearchPackageManifests(manifestSearchRequest, null);
-            Assert.NotEqual(0, results.Items.Count);
-            Assert.Equal(expectedPackageIdentifier, results.Items.First().PackageIdentifier);
+            VerifyResult(results, expectedPackageIdentifiers);
         }
 
-        private async Task TestSearchFilter(string packageMatchField, string value, string matchType, string expectedPackageIdentifier)
+        private async Task TestSearchFilter(string packageMatchField, string value, string matchType, params string[] expectedPackageIdentifiers)
         {
             var manifestSearchRequest = new ManifestSearchRequest();
             manifestSearchRequest.Filters = new Arrays.SearchRequestPackageMatchFilter
@@ -272,8 +284,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             };
 
             var results = await this.cosmosDataStore.SearchPackageManifests(manifestSearchRequest, null);
-            Assert.Equal(1, results.Items.Count);
-            Assert.Equal(expectedPackageIdentifier, results.Items.Single().PackageIdentifier);
+            VerifyResult(results, expectedPackageIdentifiers);
         }
     }
 }
