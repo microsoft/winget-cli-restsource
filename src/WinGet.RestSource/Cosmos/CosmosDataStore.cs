@@ -40,8 +40,13 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             PackageMatchFields.Tag,
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
-            PackageMatchFields.NormalizedPackageNameAndPublisher,
             PackageMatchFields.ShortDescription,
+
+            /*********************************
+             * These are currently unsupported
+             *********************************
+            PackageMatchFields.NormalizedPackageNameAndPublisher,
+            */
         };
 
         /// <summary>

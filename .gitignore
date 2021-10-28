@@ -182,6 +182,9 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+# Azure functions publish settings
+profile.arm.json
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
