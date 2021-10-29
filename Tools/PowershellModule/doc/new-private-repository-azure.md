@@ -26,12 +26,11 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 1. Open a File Explorer window, and navigate to where you downloaded the Microsoft.WinGet.Source PowerShell module.
 1. Right-click on the Microsoft.WinGet.Source PowerShell module, and select **Extract all** from the drop-down menu.
 1. In the new Window, select the **Extract** button.
-1. After the extraction has completed, navigate to `.\Microsoft.WinGet.Source\src`.
+1. After the extraction has completed, navigate to `WinGet.RestSource-Winget.Powershell.Source`.
 1. In combination press [Ctrl]+[Shift]+Right-click on the Microsoft.WinGet.Source.psd1 file. Select **Copy Path** from the drop-down menu.
 1. Open an **Administrative PowerShell** window.
 1. Run the following command from the Administrative PowerShell window:
 ```Powershell
-PS C:\> Set-ExecutionPolicy Unrestricted
 PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
 ```
 

@@ -1,6 +1,7 @@
 # Template helper to copy powershell scripts and all dependencies
 parameters:
  helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+ templatesPath: '$(build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
 
 steps:
 - task: CopyFiles@2
@@ -23,7 +24,7 @@ steps:
      ${{ parameters.helperLibsPath }}\YamlDotNet.dll
      ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
      ${{ parameters.helperLibsPath }}\runtimes\win-x86\native\WinGetUtil.dll
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\HelperLib\x86'
     OverWrite: true
     flattenFolders: true
 
@@ -39,16 +40,27 @@ steps:
      ${{ parameters.helperLibsPath }}\YamlDotNet.dll
      ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
      ${{ parameters.helperLibsPath }}\runtimes\win-x64\native\WinGetUtil.dll
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x64'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\HelperLib\x64'
     OverWrite: true
     flattenFolders: true
 
 - task: CopyFiles@2
   displayName: 'Copy Files: Arm Templates'
   inputs:
-    SourceFolder: '$(build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+    Contents: |
+     ${{ parameters.templatesPath }}\**\applicationinsights.json
+     ${{ parameters.templatesPath }}\**\asp.json
+     ${{ parameters.templatesPath }}\**\azurefunction.json
+     ${{ parameters.templatesPath }}\**\applicationinsights.json
+     ${{ parameters.templatesPath }}\**\cosmosdb.json
+     ${{ parameters.templatesPath }}\**\cosmosdb-sql.json
+     ${{ parameters.templatesPath }}\**\cosmosdb-sql-container.json
+     ${{ parameters.templatesPath }}\**\frontdoor.json
+     ${{ parameters.templatesPath }}\**\keyvault.json
+     ${{ parameters.templatesPath }}\**\storageaccount.json
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\ARMTemplate'
     OverWrite: true
+    flattenFolders: true
 
 - task: CopyFiles@2
   displayName: 'Copy Files: azure function'
