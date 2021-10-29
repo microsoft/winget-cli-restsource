@@ -1,4 +1,8 @@
 # Template helper to copy powershell scripts and all dependencies
+variabes:
+-name: helperLibsPath
+value: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+
 steps:
 - task: CopyFiles@2
   displayName: 'Copy Files: Powershell module'
@@ -12,14 +16,14 @@ steps:
   displayName: 'Copy Files: Helper Libs x86'
   inputs:
     Contents: |
-     ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
-     ${{ parameters.source }}\Microsoft.WinGet.PowershellSupport.dll
-     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Utils.dll
-     ${{ parameters.source }}\Newtonsoft.Json.dll
-     ${{ parameters.source }}\System.ComponentModel.Annotations.dll
-     ${{ parameters.source }}\YamlDotNet.dll
-     ${{ parameters.source }}\WinGetUtilInterop.dll
-     ${{ parameters.source }}\runtimes\win-x86}\native\WinGetUtil.dll
+     $(helperLibsPath)\Microsoft.Extensions.Logging.Abstractions.dll
+     $(helperLibsPath)\Microsoft.WinGet.PowershellSupport.dll
+     $(helperLibsPath)\Microsoft.WinGet.RestSource.Utils.dll
+     $(helperLibsPath)\Newtonsoft.Json.dll
+     $(helperLibsPath)\System.ComponentModel.Annotations.dll
+     $(helperLibsPath)\YamlDotNet.dll
+     $(helperLibsPath)\WinGetUtilInterop.dll
+     $(helperLibsPath)\runtimes\win-x86\native\WinGetUtil.dll
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
     OverWrite: true
     flattenFolders: true
@@ -28,14 +32,14 @@ steps:
   displayName: 'Copy Files: Helper libs x64'
   inputs:
     Contents: |
-     ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
-     ${{ parameters.source }}\Microsoft.WinGet.PowershellSupport.dll
-     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Utils.dll
-     ${{ parameters.source }}\Newtonsoft.Json.dll
-     ${{ parameters.source }}\System.ComponentModel.Annotations.dll
-     ${{ parameters.source }}\YamlDotNet.dll
-     ${{ parameters.source }}\WinGetUtilInterop.dll
-     ${{ parameters.source }}\runtimes\win-x64}\native\WinGetUtil.dll
+     $(helperLibsPath)\Microsoft.Extensions.Logging.Abstractions.dll
+     $(helperLibsPath)\Microsoft.WinGet.PowershellSupport.dll
+     $(helperLibsPath)\Microsoft.WinGet.RestSource.Utils.dll
+     $(helperLibsPath)\Newtonsoft.Json.dll
+     $(helperLibsPath)\System.ComponentModel.Annotations.dll
+     $(helperLibsPath)\YamlDotNet.dll
+     $(helperLibsPath)\WinGetUtilInterop.dll
+     $(helperLibsPath)\runtimes\win-x64\native\WinGetUtil.dll
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x64'
     OverWrite: true
     flattenFolders: true
