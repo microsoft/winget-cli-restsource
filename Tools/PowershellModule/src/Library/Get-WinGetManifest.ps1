@@ -6,11 +6,11 @@ Function Get-WinGetManifest
     <#
     .SYNOPSIS
     Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    an array of all Manifests found. Allows for retrieving results based on the name when targetting the Rest APIs.
+    the manifest found. Allows for retrieving results based on the package identifier when targetting the Rest APIs.
 
     .DESCRIPTION
     Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    an array of all Manifests found. Allows for retrieving results based on the name.
+    an array of all Manifests found. Allows for retrieving results based on the package identifier.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -20,9 +20,12 @@ Function Get-WinGetManifest
 
     .PARAMETER Path
     Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
+    If you are processing a multi-file manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
+    the same application.
 
     .PARAMETER JSON
-    A JSON String containing a single applications manifest that will be merged with the retrieved yaml files.
+    A JSON String containing a single application's rest source package manifest that will be merged with locally processed files. This is
+    used by the script infrastructure internally and is NOT expected to be useful to an end user using this command.
 
     .PARAMETER URL
     Web URL to the host site containing the Rest APIs with access key (if required).
@@ -278,8 +281,12 @@ Function Get-WinGetManifest
                             else{
                                 $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
                             }
+
+                            Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
                         }
-                        Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
+                        else {
+                            Write-Error -Message "Unable to process YAML files. Re-import the module to reload the required dependencies." -Category ResourceUnavailable
+                        }
                     }
                     "Error" {
                     }

@@ -37,10 +37,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
 
             if (!string.IsNullOrWhiteSpace(priorManifest))
             {
-                var data = JObject.Parse(priorManifest);
-                string priorManifestData = data["Data"].ToString();
-
-                packageManifest = Parser.StringParser<PackageManifest>(priorManifestData);
+                packageManifest = Parser.StringParser<PackageManifest>(priorManifest);
             }
             else
             {
