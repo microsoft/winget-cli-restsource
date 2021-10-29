@@ -148,9 +148,7 @@ Function Add-WinGetManifest
 
             $Response += Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest.GetJson() -ContentType $apiContentType -ErrorVariable errInvoke
 
-            Wait-Debugger
             if($errInvoke -ne @{}) {
-                Wait-Debugger
                 $ErrReturnObject = @{
                     AzFunctionURL       = $AzFunctionURL
                     apiHeader           = $apiHeader
