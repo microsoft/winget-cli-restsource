@@ -78,10 +78,6 @@ steps:
 
 # Publish powershell
 - template: copy-and-publish-powershell.yml
-  parameters:
-    name: WinGet.Restsource.
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
-    TargetPlatform: 'x86'
 
 ## Run Unit Tests
 - template: run-unittests.yml

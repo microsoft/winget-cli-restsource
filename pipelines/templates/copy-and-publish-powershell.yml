@@ -1,9 +1,13 @@
 # Template helper to copy powershell scripts and all dependencies
-parameters:
-  name: ''
-  source: '' 
-
 steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: Powershell module'
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\Tools\PowershellModule\src'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source'
+    CleanTargetFolder: true
+    OverWrite: true
+
 - task: CopyFiles@2
   displayName: 'Copy Files: Helper Libs x86'
   inputs:
@@ -17,7 +21,6 @@ steps:
      ${{ parameters.source }}\WinGetUtilInterop.dll
      ${{ parameters.source }}\runtimes\win-x86}\native\WinGetUtil.dll
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
-    CleanTargetFolder: true
     OverWrite: true
     flattenFolders: true
 
@@ -32,9 +35,8 @@ steps:
      ${{ parameters.source }}\System.ComponentModel.Annotations.dll
      ${{ parameters.source }}\YamlDotNet.dll
      ${{ parameters.source }}\WinGetUtilInterop.dll
-     ${{ parameters.source }}\runtimes\win-x86}\native\WinGetUtil.dll
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
-    CleanTargetFolder: true
+     ${{ parameters.source }}\runtimes\win-x64}\native\WinGetUtil.dll
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x64'
     OverWrite: true
     flattenFolders: true
 
