@@ -53,17 +53,17 @@ Function Test-ARMTemplate
 
                 if($AzResourceResult -ne "") {
                     if($AzNameResult) { 
-                        $ErrorMessage = "$($Object.ObjectType) Name is already in use, or there is an error with the Parameter file"
+                        $ErrorMessage = "$($Object.ObjectType) name is already in use, or there is an error with the Parameter file"
                         Write-Verbose "Name is already in use."
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
                     }
                     else {
-                        Write-Error -Message "$($Object.ObjectType) Name does not meet the requirements" -TargetObject $ErrReturnObject
+                        Write-Error -Message "$($Object.ObjectType) name does not meet the requirements" -TargetObject $ErrReturnObject
                     }
                 }
                 ElseIF(!$AzNameResult)
                 {
-                    Write-Error "$($Object.ObjectType) Name does not meet the requirements." -TargetObject $ErrReturnObject
+                    Write-Error "$($Object.ObjectType) name does not meet the requirements." -TargetObject $ErrReturnObject
                 }
 
                 $TestResult = @{
