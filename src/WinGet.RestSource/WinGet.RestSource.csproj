@@ -12,7 +12,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1701;1702;NU1701</NoWarn>
-    <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.RestSource.Documentation.xml</DocumentationFile>
+    <DocumentationFile>Microsoft.WinGet.RestSource.Documentation.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -30,8 +30,6 @@
     <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
     <PackageReference Include="LinqKit" Version="1.1.26" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
 
   <ItemGroup>

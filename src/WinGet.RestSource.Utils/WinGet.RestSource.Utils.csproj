@@ -8,7 +8,7 @@
     <AssemblyName>Microsoft.WinGet.RestSource.Utils</AssemblyName>
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>$(SolutionDir)documentation\Microsoft.WinGet.RestSource.Utils.xml</DocumentationFile>
+    <DocumentationFile>Microsoft.WinGet.RestSource.Utils.Documentation.xml</DocumentationFile>
 
     <!-- Warning 1701;1702: These two compiler warnings are raised when a reference is bound to a different version
          than specified in the assembly reference version number. -->
@@ -17,14 +17,14 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>
@@ -42,7 +42,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.10" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
 

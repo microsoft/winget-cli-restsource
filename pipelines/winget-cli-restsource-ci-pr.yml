@@ -1,8 +1,19 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
-# CI pipeline for winget-cli-restsource
+# CI/PR pipeline for winget-cli-restsource
 
-trigger: none
-pr: none
+# Commit triggers
+trigger:
+- main
+
+# PR triggers
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - pipelines/*
+    - src/*
 
 jobs:
 - job: 'BuildTestPublish'
@@ -19,7 +30,4 @@ jobs:
 
   steps:
   # Restore and Build
-  - template: templates/restore-build-sign-publish-test.yml
-
-  # Run Compliance checks
-  - template: templates/compliance.yml
+  - template: templates/restore-build-publish-test.yml

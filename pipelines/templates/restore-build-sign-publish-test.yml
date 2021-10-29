@@ -1,0 +1,107 @@
+# Template helper to restore, build, and publish
+
+steps:
+
+# Checkout repo with lfs enabled
+- checkout: self
+  lfs: "true"
+
+## Restore
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGEt.config'
+    restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
+
+## Build
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+    clean: true
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: "ESRP CodeSigning - Powershell Module"
+  inputs:
+    ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
+    FolderPath: src
+    Pattern: |
+     **/Microsoft.WinGet.RestSource.Utils.dll
+     **/Microsoft.WinGet.PowershellSupport.dll
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.ps1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psd1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psm1
+    UseMinimatch: true
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolSign",
+            "Parameters" : {
+                "OpusName" : "Microsoft",
+                "OpusInfo" : "http://www.microsoft.com",
+                "FileDigest" : "/fd \"SHA256\"",
+                "PageHash" : "/NPH",
+                "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            },
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        },
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolVerify",
+            "Parameters" : {},
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        }
+     ]
+
+## Publish
+# Publish ARM Templates
+- template: copy-and-publish.yml
+  parameters:
+    name: WinGet.Restsource.Infrastructure
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+
+# Publish Rest Function App
+- template: package-and-publish.yml
+  parameters:
+    name: WinGet.RestSource.Functions
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
+    buildconfig: '$(BuildConfiguration)'
+    zipAfterPublish: True
+
+# Publish x86 powershell binaries
+- template: copy-and-publish-powershell.yml
+  parameters:
+    name: WinGet.Restsource.x86PowershellSupport
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+    TargetPlatform: 'x86'
+
+# Publish x64 powershell binaries
+- template: copy-and-publish-powershell.yml
+  parameters:
+    name: WinGet.Restsource.x64PowershellSupport
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
+    TargetPlatform: 'x64'
+
+## Run Unit Tests
+- template: run-unittests.yml
+  parameters:
+    name: WinGet.RestSource.UnitTest
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    dll: Microsoft.WinGet.RestSource.UnitTest.dll
+
+## Component Governance
+- task: ComponentGovernanceComponentDetection@0
+  displayName: Component Governance
+  inputs:
+    scanType: 'Register'
+    verbosity: 'Verbose'
+    alertWarningLevel: 'High'
+    failOnAlert: true

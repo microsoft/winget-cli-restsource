@@ -10,7 +10,7 @@
   <PropertyGroup>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1701;1702;NU1701</NoWarn>
-    <DocumentationFile>$(SolutionDir)WinGet.RestSource.UnitTest\Microsoft.Winget.RestSource.UnitTest.Documentation.xml</DocumentationFile>
+    <DocumentationFile>Microsoft.Winget.RestSource.UnitTest.Documentation.xml</DocumentationFile>
     <UserSecretsId>09404207-b3a3-4757-83f3-0a1ec9c39c4a</UserSecretsId>
   </PropertyGroup>
 

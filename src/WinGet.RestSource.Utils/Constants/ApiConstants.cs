@@ -30,12 +30,15 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
 
         /// <summary>
         /// Unsupported package match fields.
-        /// Note: NormalizedPackageNameAndPublisher field support is currently not implemented.
+        /// TODO: NormalizedPackageNameAndPublisher field support is currently not implemented.
         /// GitHub Issue: https://github.com/microsoft/winget-cli-restsource/issues/59.
         /// </summary>
         public static readonly PackageMatchFields UnsupportedPackageMatchFields = new PackageMatchFields()
         {
-            Enumerations.PackageMatchFields.NormalizedPackageNameAndPublisher,
+            // TODO: Currently the winget client sends this field up despite us reporting it as unsupported, so for compatibility
+            // we don't currently return it as unsupported. Above issue needs to be resolved.
+
+            // Enumerations.PackageMatchFields.NormalizedPackageNameAndPublisher,
         };
 
         /// <summary>

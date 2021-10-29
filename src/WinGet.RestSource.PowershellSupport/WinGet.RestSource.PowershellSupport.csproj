@@ -13,7 +13,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1701;1702;NU1701</NoWarn>
-    <DocumentationFile>$(SolutionDir)WinGet.RestSource\Microsoft.WinGet.PowershellSupport.Documentation.xml</DocumentationFile>
+    <DocumentationFile>Microsoft.WinGet.PowershellSupport.Documentation.xml</DocumentationFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
