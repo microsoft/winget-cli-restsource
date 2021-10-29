@@ -1,12 +1,11 @@
-# Template helper to copy powershell dependency files and publish them as an artifact
+# Template helper to copy powershell scripts and all dependencies
 parameters:
   name: ''
   source: '' 
-  TargetPlatform: ''
 
 steps:
 - task: CopyFiles@2
-  displayName: 'Copy Files: ${{ parameters.name }}'
+  displayName: 'Copy Files: Helper Libs x86'
   inputs:
     Contents: |
      ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
@@ -16,14 +15,45 @@ steps:
      ${{ parameters.source }}\System.ComponentModel.Annotations.dll
      ${{ parameters.source }}\YamlDotNet.dll
      ${{ parameters.source }}\WinGetUtilInterop.dll
-     ${{ parameters.source }}\runtimes\win-${{ parameters.TargetPlatform }}\native\WinGetUtil.dll
-    TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
+     ${{ parameters.source }}\runtimes\win-x86}\native\WinGetUtil.dll
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
     CleanTargetFolder: true
     OverWrite: true
     flattenFolders: true
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
+- task: CopyFiles@2
+  displayName: 'Copy Files: Helper libs x64'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.name }}'
-    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'
+    Contents: |
+     ${{ parameters.source }}\Microsoft.Extensions.Logging.Abstractions.dll
+     ${{ parameters.source }}\Microsoft.WinGet.PowershellSupport.dll
+     ${{ parameters.source }}\Microsoft.WinGet.RestSource.Utils.dll
+     ${{ parameters.source }}\Newtonsoft.Json.dll
+     ${{ parameters.source }}\System.ComponentModel.Annotations.dll
+     ${{ parameters.source }}\YamlDotNet.dll
+     ${{ parameters.source }}\WinGetUtilInterop.dll
+     ${{ parameters.source }}\runtimes\win-x86}\native\WinGetUtil.dll
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: Arm Templates'
+  inputs:
+    SourceFolder: '$(build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\ARMTemplate'
+    OverWrite: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: azure function'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\RestAPI'
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: WinGet.RestSource-Winget.Powershell.Source'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)\Winget.Powershell.Source'
+    ArtifactName: 'WinGet.RestSource-Winget.Powershell.Source'
