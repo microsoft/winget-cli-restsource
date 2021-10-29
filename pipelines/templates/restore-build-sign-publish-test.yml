@@ -25,16 +25,48 @@ steps:
     clean: true
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: "ESRP CodeSigning - Powershell Module"
+  displayName: "ESRP CodeSigning - Powershell support libs"
   inputs:
     ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
     FolderPath: src
     Pattern: |
      **/Microsoft.WinGet.RestSource.Utils.dll
      **/Microsoft.WinGet.PowershellSupport.dll
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.ps1
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psd1
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psm1
+    UseMinimatch: true
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolSign",
+            "Parameters" : {
+                "OpusName" : "Microsoft",
+                "OpusInfo" : "http://www.microsoft.com",
+                "FileDigest" : "/fd \"SHA256\"",
+                "PageHash" : "/NPH",
+                "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            },
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        },
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolVerify",
+            "Parameters" : {},
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        }
+     ]
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: "ESRP CodeSigning - Powershell module"
+  inputs:
+    ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
+    FolderPath: tools/PowershellModule
+    Pattern: |
+     **/*.ps1
+     **/*.psd1
+     **/*.psm1
     UseMinimatch: true
     signConfigType: inlineSignParams
     inlineOperation: |
@@ -76,19 +108,8 @@ steps:
     buildconfig: '$(BuildConfiguration)'
     zipAfterPublish: True
 
-# Publish x86 powershell binaries
+# Publish powershell
 - template: copy-and-publish-powershell.yml
-  parameters:
-    name: WinGet.Restsource.x86PowershellSupport
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
-    TargetPlatform: 'x86'
-
-# Publish x64 powershell binaries
-- template: copy-and-publish-powershell.yml
-  parameters:
-    name: WinGet.Restsource.x64PowershellSupport
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
-    TargetPlatform: 'x64'
 
 ## Run Unit Tests
 - template: run-unittests.yml
