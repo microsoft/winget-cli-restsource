@@ -62,6 +62,7 @@ Function Get-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
+        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$ManifestIdentifier,
         [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName
@@ -214,7 +215,12 @@ Function Get-WinGetManifest
                         if($Result) {
                             IF($WinGetDesktopAppInstallerLibLoaded) {
                                 Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
-                                $ApplicationManifest = [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                                if($Json){
+                                    $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
+                                }
+                                else{
+                                    $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                                }
                             }
                             
                             ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
@@ -236,7 +242,12 @@ Function Get-WinGetManifest
                         }
                         if($PathChildItemsYAML.Count -gt 0) {
                             Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
-                            $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                            if($Json){
+                                $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
+                            }
+                            else{
+                                $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                            }
                         }
                     }
                     default {

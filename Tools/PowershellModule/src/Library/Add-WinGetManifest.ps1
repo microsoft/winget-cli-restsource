@@ -103,7 +103,6 @@ Function Add-WinGetManifest
 
         ## Specifies the Rest api call that will be performed
         Write-Verbose -Message "Setting the REST API Invoke Actions."
-        $TriggerName    = "ManifestPost"
         $apiContentType = "application/json"
         $apiMethod      = "Post"
 
@@ -114,12 +113,10 @@ Function Add-WinGetManifest
         ## can function key be part of the header
         $FunctionAppId   = $FunctionApp.Id
         $DefaultHostName = $FunctionApp.DefaultHostName
-        $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
         
         ## Creates the API Post Header
         $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
         $apiHeader.Add("Accept", 'application/json')
-        $apiHeader.Add("x-functions-key", $FunctionKey)
         
         $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests"
     }
@@ -130,46 +127,46 @@ Function Add-WinGetManifest
             $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $Manifest.PackageIdentifier
 
             $ManifestObject = $Manifest
+            $TriggerName = "ManifestPost"
             
             ## If the package already exists, return Error
             $GetResult | foreach-object {
+                Write-Verbose -Message "Reviewing the name found ""$($_.PackageIdentifier)"" matches with what we are looking to add ""$($ManifestObject.PackageIdentifier)"""
                 IF($_.PackageIdentifier -eq $ManifestObject.PackageIdentifier) {
-                    $ErrorMessage = "Manifest is already existing for the specified ID, removal of the Manifest is required to continue..."
-                    $RecommendedAction = "Remove existing problematic manifest, then re-run. Or Update current matching manifest."
-                    $ErrReturnObject = @{
-                        SubmittedManifest = $Manifest
-                        FoundManifest     = $_
-                    }
-
-                    Write-Error -Message $ErrorMessage -Category ResourceExists -RecommendedAction $RecommendedAction -TargetObject $ErrReturnObject
-                    $apiMethod = "Put"; Break
+                    $apiMethod = "Put"
+                    $TriggerName = "VersionPost"
+                    $AzFunctionURL += "/$($ApplicationManifest.PackageIdentifier)"
+                    $ApplicationManifest = Get-WinGetManifest -Path $Path -JSON $_
                 }
             }
 
-            ## Do not update (Put) and only add (Post)
-            if($apiMethod -eq "Post"){
-                Write-Verbose -Message "Adding the Manifest to the WinGet Source $FunctionName.`n$($Manifest.GetJson())"
-                
-                $Response += Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $Manifest.GetJson() -ContentType $apiContentType  -ErrorVariable errInvoke
+            ## Determines the Rest API that will be called, generates keys, and performs either Add (Post) or Update (Put) action.
+            Write-Verbose -Message "The Manifest will be added using the $apiMethod REST API."
+            $TriggerName = "Manifest$apiMethod"
+            $FunctionKey = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
+            $apiHeader.Add("x-functions-key", $FunctionKey)
 
-                if($errInvoke -ne @{}) {
-                    $ErrReturnObject = @{
-                        AzFunctionURL       = $AzFunctionURL
-                        apiHeader           = $apiHeader
-                        apiMethod           = $apiMethod
-                        apiContentType      = $apiContentType
-                        ApplicationManifest = $Manifest.GetJson()
-                        Response            = $Response
-                        InvokeError         = $errInvoke
-                    }
+            $Response += Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest.GetJson() -ContentType $apiContentType -ErrorVariable errInvoke
 
-                    ## If the Post failed, then return User specific error messages:
-                    if($errInvoke -eq "Failure (409)"){
-                        Write-Warning -Message "Manifest file already exists."
-                    }
-                    else {
-                        Write-Error -Message "Unhandled Error" -TargetObject $ErrReturnObject
-                    }
+            Wait-Debugger
+            if($errInvoke -ne @{}) {
+                Wait-Debugger
+                $ErrReturnObject = @{
+                    AzFunctionURL       = $AzFunctionURL
+                    apiHeader           = $apiHeader
+                    apiMethod           = $apiMethod
+                    apiContentType      = $apiContentType
+                    ApplicationManifest = $Manifest.GetJson()
+                    Response            = $Response
+                    InvokeError         = $errInvoke
+                }
+
+                ## If the Post failed, then return User specific error messages:
+                if($errInvoke -eq "Failure (409)"){
+                    Write-Warning -Message "Manifest file already exists."
+                }
+                else {
+                    Write-Error -Message "Unhandled Error" -TargetObject $ErrReturnObject
                 }
             }
         }

@@ -16,12 +16,12 @@ $WinGetDesktopAppInstallerLibLoaded = $false
 if ($WinGetModulePsVersion -ge $WinGetLibMinVersionPS51) {
         if([intPtr]::size -eq 4){
                 ## PowerShell window is in x86 architecture.
-                Add-Type -Path "$PSScriptRoot\Library\HelperLib\Microsoft.Winget.PowershellSupport.dll"
+                Add-Type -Path "$PSScriptRoot\Library\HelperLib\x86\Microsoft.Winget.PowershellSupport.dll"
                 $WinGetDesktopAppInstallerLibLoaded = $true
         }
         else{
                 ## PowerShell window is in x64 architecture.
-                Add-Type -Path "$PSScriptRoot\Library\HelperLib\Microsoft.Winget.PowershellSupport.dll"
+                Add-Type -Path "$PSScriptRoot\Library\HelperLib\x64\Microsoft.Winget.PowershellSupport.dll"
                 $WinGetDesktopAppInstallerLibLoaded = $true
         }
 }
