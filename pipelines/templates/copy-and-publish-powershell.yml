@@ -1,6 +1,6 @@
 # Template helper to copy powershell scripts and all dependencies
 variables:
--helperLibsPath: $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0
+ helperLibsPath: $(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0
 
 steps:
 - task: CopyFiles@2
