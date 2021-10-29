@@ -1,9 +1,19 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
-# Commit pipeline for winget-cli-restsource
+# CI/PR pipeline for winget-cli-restsource
 
-# Branches that trigger a build on commit
+# Commit triggers
 trigger:
 - main
+
+# PR triggers
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - pipelines/*
+    - src/*
 
 jobs:
 - job: 'BuildTestPublish'
@@ -21,6 +31,3 @@ jobs:
   steps:
   # Restore and Build
   - template: templates/restore-build-publish-test.yml
-
-  # Run Compliance checks
-  - template: templates/compliance.yml

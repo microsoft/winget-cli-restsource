@@ -21,8 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Utils", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{0D917189-B042-45F5-A5C3-F90C7B86B835}"
 	ProjectSection(SolutionItems) = preProject
+		..\pipelines\winget-cli-restsource-ci-pr.yml = ..\pipelines\winget-cli-restsource-ci-pr.yml
 		..\pipelines\winget-cli-restsource-ci.yml = ..\pipelines\winget-cli-restsource-ci.yml
-		..\pipelines\winget-cli-restsource.yml = ..\pipelines\winget-cli-restsource.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{ACFA9838-3FB2-4091-8BFF-BCB069D77A4D}"
@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		..\pipelines\templates\copy-and-publish.yml = ..\pipelines\templates\copy-and-publish.yml
 		..\pipelines\templates\package-and-publish.yml = ..\pipelines\templates\package-and-publish.yml
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
+		..\pipelines\templates\restore-build-sign-publish-test.yml = ..\pipelines\templates\restore-build-sign-publish-test.yml
 		..\pipelines\templates\run-unittests.yml = ..\pipelines\templates\run-unittests.yml
 	EndProjectSection
 EndProject
