@@ -6,7 +6,7 @@ Function Get-WinGetManifest
     <#
     .SYNOPSIS
     Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    rhe manifest found. Allows for retrieving results based on the package identifier when targetting the Rest APIs.
+    the manifest found. Allows for retrieving results based on the package identifier when targetting the Rest APIs.
 
     .DESCRIPTION
     Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
