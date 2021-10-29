@@ -3,7 +3,7 @@
 
 # Commit triggers
 trigger:
-- master
+- main
 
 # PR triggers
 pr:
