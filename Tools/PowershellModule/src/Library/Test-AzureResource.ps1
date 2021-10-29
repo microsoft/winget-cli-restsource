@@ -60,10 +60,14 @@ Function Test-AzureResource
    }
     PROCESS
     {
-        Write-Verbose -Message "Azure Resources:`n           Azure Function Exists:       $AzureFunctionNameExists`n           Azure Resource Group Exists: $AzureResourceGroupNameExists"
+        $VerboseMessage =  "Azure Resources:`n"
+        $VerboseMessage += "           Azure Function Exists:       $AzureFunctionNameExists`n"
+        $VerboseMessage += "           Azure Resource Group Exists: $AzureResourceGroupNameExists"
+        Write-Verbose -Message $VerboseMessage
 
         ## If either the Azure Function Name or the Azure Resource Group Name are null, error.
         if(!$AzureFunctionNameNotNullOrEmpty -or !$AzureResourceGroupNameNotNullOrEmpty -or !$AzureFunctionNameExists -or !$AzureResourceGroupNameExists) {
+            $ErrorMessage = "Both the Azure Function and Resource Group Names can not be null and must exist. Please verify that the Azure function and Resource Group exist."
             $ErrReturnObject = @{
                 AzureFunctionNameNotNullOrEmpty      = $AzureFunctionNameNotNullOrEmpty
                 AzureResourceGroupNameNotNullOrEmpty = $AzureResourceGroupNameNotNullOrEmpty
@@ -72,7 +76,7 @@ Function Test-AzureResource
                 Result                               = $false
             }
 
-            Write-Error -Message "Both the Azure Function and Resource Group Names can not be null and must exist. Please verify that the Azure function and Resource Group exist." -Category InvalidArgument -TargetObject $ErrReturnObject
+            Write-Error -Message $ErrorMessage -Category InvalidArgument -TargetObject $ErrReturnObject
             $Result = $false
         }
     }

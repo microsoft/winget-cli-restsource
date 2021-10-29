@@ -27,7 +27,8 @@ Function Test-ARMResourceName
     .EXAMPLE
     Test-ARMResourceName -ARMObject $ARMObject
 
-    Parses through the $ARMObject array, recalling this function for each object in the array validating that the name meets the Azure resource requirements.
+    Parses through the $ARMObject array, recalling this function for each object in the array validating that the 
+    name meets the Azure resource requirements.
 
     .EXAMPLE
     Test-ARMResourceName -ResourceType "AppInsight" -ResourceName "contoso0002"

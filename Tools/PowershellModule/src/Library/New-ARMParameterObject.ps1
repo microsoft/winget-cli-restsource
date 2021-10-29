@@ -42,8 +42,6 @@ Function New-ARMParameterObject
     )
     BEGIN
     {
-        ## This can be used to create a random and unique string name for a resource: "defaultValue": "[concat('kv', uniquestring(resourceGroup().id))]",
-
         ## The Names that are to be assigned to each resource.
         $AppInsightsName    = $Name
         $KeyVaultName       = $Name
@@ -53,7 +51,8 @@ Function New-ARMParameterObject
         $FunctionName       = $Name
         $FrontDoorName      = $Name
 
-        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled Windows Package Manager Functions [CompiledFunctions.zip])
+        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled 
+        ## Windows Package Manager Functions [CompiledFunctions.zip])
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
         

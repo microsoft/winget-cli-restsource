@@ -22,7 +22,8 @@ Function New-WinGetSource
     [Optional] The suffix that will be added to each name and file names.
 
     .PARAMETER ResourceGroup
-    [Optional] The name of the Resource Group that the Windows Package Manager rest source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetrestsource)
+    [Optional] The name of the Resource Group that the Windows Package Manager rest source will reside. All Azure 
+    resources will be created in in this Resource Group (Default: WinGetrestsource)
 
     .PARAMETER SubscriptionName
     [Optional] The name of the subscription that will be used to host the Windows Package Manager rest source.
@@ -52,12 +53,15 @@ Function New-WinGetSource
     .EXAMPLE
     New-WinGetSource -Name "contoso0002"
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
+    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of 
+    Azure with the basic level performance.
 
     .EXAMPLE
     New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command to connect the WinGet client to the new rest source after the rest source has been created.
+    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of 
+    Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
+    to connect the WinGet client to the new rest source after the rest source has been created.
 
     #>
     PARAM(
@@ -74,7 +78,8 @@ Function New-WinGetSource
     BEGIN
     {
         if($ImplementationPerformance -eq "Demo") {
-            Write-Warning -Message "`n The ""Demo"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
+            $WarningMessage = "`n The ""Demo"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
+            Write-Warning -Message $WarningMessage
         }
         
         ## Paths to the Parameter and Template folders and the location of the Function Zip

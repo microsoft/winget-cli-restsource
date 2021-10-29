@@ -7,7 +7,9 @@ Function Add-WinGetManifest
     Submits a Manifest file(s) to the Azure rest source
 
     .DESCRIPTION
-    By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager rest source, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
+    By running this function with the required inputs, it will connect to the Azure Tenant that hosts the 
+    Windows Package Manager rest source, then collects the required URL for Manifest submission before 
+    retrieving the contents of the Manifest JSON to submit.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -19,7 +21,9 @@ Function Add-WinGetManifest
     Name of the Azure Function that hosts the rest source.
 
     .PARAMETER Path
-    The Path to the JSON manifest file or folder hosting the JSON / YAML files that will be uploaded to the rest source. This path may contain a single JSON / YAML file, or a folder containing multiple JSON / YAML files. Does not support targetting a single folder of multiple different applications in *.yaml format.
+    The Path to the JSON manifest file or folder hosting the JSON / YAML files that will be uploaded to the rest source. 
+    This path may contain a single JSON / YAML file, or a folder containing multiple JSON / YAML files. Does not support 
+    targetting a single folder of multiple different applications in *.yaml format.
 
     .PARAMETER SubscriptionName
     [Optional] The Subscription name contains the Windows Package Manager rest source
@@ -27,17 +31,20 @@ Function Add-WinGetManifest
     .EXAMPLE
     Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
 
-    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager rest source
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) 
+    to the Windows Package Manager rest source
 
     .EXAMPLE
     Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\"
 
-    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to adds the Manifest file(s) (*.json / *.yaml) found in the specified folder to the Windows Package Manager rest source
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to adds the Manifest file(s) (*.json / *.yaml) 
+    found in the specified folder to the Windows Package Manager rest source
     
     .EXAMPLE
     Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
 
-    Connects to Azure and the specified Subscription, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager rest source
+    Connects to Azure and the specified Subscription, then runs the Azure Function "PrivateSource" Rest APIs to add the 
+    specified Manifest file (*.json) to the Windows Package Manager rest source.
     #>
 
     PARAM(
@@ -127,12 +134,14 @@ Function Add-WinGetManifest
             ## If the package already exists, return Error
             $GetResult | foreach-object {
                 IF($_.PackageIdentifier -eq $ManifestObject.PackageIdentifier) {
+                    $ErrorMessage = "Manifest is already existing for the specified ID, removal of the Manifest is required to continue..."
+                    $RecommendedAction = "Remove existing problematic manifest, then re-run. Or Update current matching manifest."
                     $ErrReturnObject = @{
                         SubmittedManifest = $Manifest
                         FoundManifest     = $_
                     }
 
-                    Write-Error -Message "Manifest is already existing for the specified ID, removal of the Manifest is required to continue..." -Category ResourceExists -RecommendedAction "Remove existing problematic manifest, then re-run. Or Update current matching manifest." -TargetObject $ErrReturnObject
+                    Write-Error -Message $ErrorMessage -Category ResourceExists -RecommendedAction $RecommendedAction -TargetObject $ErrReturnObject
                     $apiMethod = "Put"; Break
                 }
             }

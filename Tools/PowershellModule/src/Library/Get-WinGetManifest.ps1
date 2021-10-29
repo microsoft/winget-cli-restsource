@@ -5,10 +5,12 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for retrieving results based on the name when targetting the Rest APIs.
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
+    an array of all Manifests found. Allows for retrieving results based on the name when targetting the Rest APIs.
 
     .DESCRIPTION
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found. Allows for retrieving results based on the name.
+    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
+    an array of all Manifests found. Allows for retrieving results based on the name.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -139,7 +141,8 @@ Function Get-WinGetManifest
                     $PathChildItemsJSON = Get-ChildItem -Path $Path -Filter "*.json"
                     $PathChildItemsYAML = Get-ChildItem -Path $Path -Filter "*.yaml"
 
-                    Write-Verbose -Message "Path pointed to a directory, found $($PathChildItemsJSON.count) JSON files, and $($PathChildItemsYAML.count) YAML files."
+                    $VerboseMessage = "Path pointed to a directory, found $($PathChildItemsJSON.count) JSON files, and $($PathChildItemsYAML.count) YAML files."
+                    Write-Verbose -Message $VerboseMessage
 
                     $ApplicationManifest = ""
                     $ManifestFile        = Get-Item -Path $Path
@@ -238,13 +241,14 @@ Function Get-WinGetManifest
                     }
                     default {
                         if($ManifestFileExists) {
+                            $ErrorMessage = "Incorrect filetype. Verify the file is of type '*.yaml' or '*.json' and try again."
                             $ErrReturnObject = @{
                                 ApplicationManifest = $ApplicationManifest
                                 ManifestFile        = $ManifestFile
                                 $ManifestFileType   = $ManifestFileType
                             }
 
-                            Write-Error -Message "Incorrect filetype. Verify the file is of type '*.yaml' or '*.json' and try again." -Category InvalidType -TargetObject $ErrReturnObject
+                            Write-Error -Message $ErrorMessage -Category InvalidType -TargetObject $ErrReturnObject
                         }
                     }
                 }

@@ -57,11 +57,12 @@ Function Test-PowerShellModuleExist
 
                 if(!($ValidationStatus)) {
                     ## Module Validation failed
+                    $ErrorMessage = "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module Az"
                     $ErrReturnObject = @{
                         TestResults = $TestResult
                     }
                     
-                    Write-Error "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module Az" -Category NotInstalled -TargetObject $ErrReturnObject
+                    Write-Error -Message $ErrorMessage -Category NotInstalled -TargetObject $ErrReturnObject
                 }
             }
             "Single" { 

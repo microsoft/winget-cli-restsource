@@ -4,10 +4,12 @@ Function Test-ARMTemplate
 {
     <#
     .SYNOPSIS
-    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
+    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
+    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
 
     .DESCRIPTION
-    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
+    Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
+    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
         - True, if the validation testing passes
         - False, if the validation testing fails.
 
@@ -51,8 +53,9 @@ Function Test-ARMTemplate
 
                 if($AzResourceResult -ne "") {
                     if($AzNameResult) { 
+                        $ErrorMessage = "$($Object.ObjectType) Name is already in use, or there is an error with the Parameter file"
                         Write-Verbose "Name is already in use."
-                        Write-Error -Message "$($Object.ObjectType) Name is already in use, or there is an error with the Parameter file" -TargetObject $ErrReturnObject
+                        Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
                     }
                     else {
                         Write-Error -Message "$($Object.ObjectType) Name does not meet the requirements" -TargetObject $ErrReturnObject

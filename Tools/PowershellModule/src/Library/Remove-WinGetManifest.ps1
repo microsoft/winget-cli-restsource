@@ -7,7 +7,8 @@ Function Remove-WinGetManifest
     Removes a Manifest file from the Azure rest source
 
     .DESCRIPTION
-    This function will connect to the Azure Tenant that hosts the Windows Package Manager rest source, removing the specified application Manifest.
+    This function will connect to the Azure Tenant that hosts the Windows Package Manager rest source, removing the 
+    specified application Manifest.
         
     The following Azure Modules are used by this script:
         Az.Resources
@@ -30,7 +31,8 @@ Function Remove-WinGetManifest
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager rest source
+    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from 
+    the Windows Package Manager rest source
 
     .EXAMPLE
     Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
@@ -115,6 +117,7 @@ Function Remove-WinGetManifest
                 $Response = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType  -ErrorVariable errInvoke
 
                 if($errInvoke -ne $()) {
+                    $ErrorMessage = "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again."
                     $ErrReturnObject = @{
                         AzFunctionURL       = $AzFunctionURL
                         apiHeader           = $apiHeader
@@ -125,7 +128,7 @@ Function Remove-WinGetManifest
                     }
 
                     ## If the Post failed, then return User specific error messages:
-                    Write-Error -Message "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again." -Category ResourceUnavailable -TargetObject $ErrReturnObject
+                    Write-Error -Message $ErrorMessage -Category ResourceUnavailable -TargetObject $ErrReturnObject
                 }
             }
         }
