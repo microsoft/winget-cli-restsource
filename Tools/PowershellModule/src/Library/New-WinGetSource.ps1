@@ -111,10 +111,6 @@ Function New-WinGetSource
         }
         
         ###############################
-        ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
-
-        ###############################
         ## Connects to Azure, if not already connected.
         Write-Verbose -Message "Testing connection to Azure."
         
@@ -123,6 +119,9 @@ Function New-WinGetSource
             throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
         }
 
+        ###############################
+        ## Creates the ARM files
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
 
         ###############################
         ## Create Resource Group 

@@ -8,8 +8,8 @@ schema: 2.0.0
 # Get-WinGetManifest
 
 ## SYNOPSIS
-Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
-Allows for filtering results based on the name when targetting the Rest APIs.
+Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
+Allows for filtering results based on the name when targetting the REST APIs.
 
 ## SYNTAX
 
@@ -30,7 +30,7 @@ Get-WinGetManifest [-URL] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
+Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
 Allows for filtering results based on the name.
     
 The following Azure Modules are used by this script:
@@ -60,14 +60,14 @@ Returns a Manifest object (*.json) of the specified JSON file.
 Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
+Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs.
 
 ### EXAMPLE 4
 ```
 Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
-Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
+Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
 ### EXAMPLE 5
 ```
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -URL
-Web URL to the host site containing the Rest APIs with access key (if required).
+Web URL to the host site containing the REST APIs with access key (if required).
 
 ```yaml
 Type: String
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -FunctionName
-Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
+Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
 ```yaml
 Type: String
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
+\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
 
 ```yaml
 Type: String
