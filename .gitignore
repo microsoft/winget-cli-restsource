@@ -362,7 +362,7 @@ src/WinGet.RestSource.Functions/local.settings.json
 test.runsettings.json
 
 # Exclude Documentation XML
-src/*/Microsoft.WinGet.*.Documentation.xml
+Microsoft.WinGet.*.Documentation.xml
 
 # Developer ARM template
 src/WinGet.RestSource.Infrastructure/**/*.dev.*json
