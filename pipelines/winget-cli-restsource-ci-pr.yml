@@ -1,10 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
 # CI/PR pipeline for winget-cli-restsource
 
-# Commit triggers
-trigger:
-- main
-
 # PR triggers
 pr:
   branches:
