@@ -58,7 +58,7 @@ steps:
      ${{ parameters.templatesPath }}\**\frontdoor.json
      ${{ parameters.templatesPath }}\**\keyvault.json
      ${{ parameters.templatesPath }}\**\storageaccount.json
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\ARMTemplate'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\ARMTemplate'
     OverWrite: true
     flattenFolders: true
 
@@ -66,7 +66,7 @@ steps:
   displayName: 'Copy Files: azure function'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\RestAPI'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\RestAPI'
     OverWrite: true
 
 - task: PublishBuildArtifacts@1
