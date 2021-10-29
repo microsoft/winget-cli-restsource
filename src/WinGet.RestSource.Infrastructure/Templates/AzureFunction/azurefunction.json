@@ -14,6 +14,18 @@
                 "description": "Azure Function Name"
             }
         },
+        "cosmosDatabase": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Database"
+            }
+        },
+        "cosmosContainer": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Container"
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -114,8 +126,8 @@
         "appInsightResourceId": "[resourceId(parameters('appInsightSubscription'), parameters('appInsightResourceGroup'), 'microsoft.insights/components', parameters('appInsightName'))]",
         "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
-        "kv_cosmosReadWriteKey_secretName": "CosmosReadWriteKey",
-        "kv_cosmosReadOnlyKey_secretName": "CosmosReadOnlyKey"
+        "kv_cosmosAccountWriteKey_secretName": "CosmosReadWriteKey",
+        "kv_cosmosAccountReadKey_secretName": "CosmosReadOnlyKey"
     },
     "resources": [
         {
@@ -155,6 +167,8 @@
                     "properties": {
                         "FunctionName": "[parameters('functionName')]",
                         "ServerIdentifier": "[parameters('serverIdentifier')]",
+                        "CosmosDatabase": "[parameters('cosmosDatabase')]",
+                        "CosmosContainer": "[parameters('cosmosContainer')]",
                         "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
                         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
@@ -163,8 +177,8 @@
                         "WEBSITE_CONTENTSHARE": "[toLower(parameters('functionName'))]",
                         "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
-                        "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosReadWriteKey_secretName'), '/)')]",
-                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosReadOnlyKey_secretName'), '/)')]"
+                        "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountWriteKey_secretName'), '/)')]",
+                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]"
                     }
                 }
             ]

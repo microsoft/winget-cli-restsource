@@ -8,6 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Functions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{145CC9B9-A93E-46C1-90F7-DFB81233B39F}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
@@ -34,6 +35,54 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
 		..\pipelines\templates\restore-build-sign-publish-test.yml = ..\pipelines\templates\restore-build-sign-publish-test.yml
 		..\pipelines\templates\run-unittests.yml = ..\pipelines\templates\run-unittests.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{80913221-D48E-4406-A9F1-A5C53F079029}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowershellModule", "PowershellModule", "{42633074-1FA8-4D9A-BA47-3C4E4AE5234B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\doc\new-private-repository-azure.md = ..\Tools\PowershellModule\doc\new-private-repository-azure.md
+		..\Tools\PowershellModule\doc\README.md = ..\Tools\PowershellModule\doc\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C510F11-3A5B-4E30-8189-05E87B7DE1F0}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Powershell", "Powershell", "{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md
+		..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7BF3F-415D-4A9D-B859-ED1168438F1F}"
+	ProjectSection(SolutionItems) = preProject
+		..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1 = ..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1
+		..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\Classes.ps1 = ..\Tools\PowershellModule\src\Library\Classes.ps1
+		..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1
+		..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1
+		..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1 = ..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1
+		..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\Test-ARMResourceName.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMResourceName.ps1
+		..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1
+		..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1 = ..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1
+		..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1 = ..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1
+		..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{5CA26277-F8CA-4136-81CD-1A3CDA3542A1}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\new-private-repository-azure.md = ..\doc\new-private-repository-azure.md
 	EndProjectSection
 EndProject
 Global
@@ -72,7 +121,14 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0D917189-B042-45F5-A5C3-F90C7B86B835} = {145CC9B9-A93E-46C1-90F7-DFB81233B39F}
+		{80913221-D48E-4406-A9F1-A5C53F079029} = {145CC9B9-A93E-46C1-90F7-DFB81233B39F}
 		{ACFA9838-3FB2-4091-8BFF-BCB069D77A4D} = {0D917189-B042-45F5-A5C3-F90C7B86B835}
+		{42633074-1FA8-4D9A-BA47-3C4E4AE5234B} = {80913221-D48E-4406-A9F1-A5C53F079029}
+		{954044E2-C2B4-4F62-BE4B-D9FAF66B05C2} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
+		{3C510F11-3A5B-4E30-8189-05E87B7DE1F0} = {42633074-1FA8-4D9A-BA47-3C4E4AE5234B}
+		{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5} = {954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}
+		{5DF7BF3F-415D-4A9D-B859-ED1168438F1F} = {3C510F11-3A5B-4E30-8189-05E87B7DE1F0}
+		{5CA26277-F8CA-4136-81CD-1A3CDA3542A1} = {145CC9B9-A93E-46C1-90F7-DFB81233B39F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24BCF9E2-C2E3-48E9-90BD-E619553ABE3D}

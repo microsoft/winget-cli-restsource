@@ -1,27 +1,27 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "value": ""
-        },
-        "accessPolicies": {
-            "value": [
-                {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
-                    "permissions": {
-                        "keys": [],
-                        "secrets": [
-                            "Get"
-                        ],
-                        "certificates": []
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
-                    }
-                }
-            ]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": ""
+    },
+    "accessPolicies": {
+      "value": [
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+          }
         }
+      ]
     }
+  }
 }
