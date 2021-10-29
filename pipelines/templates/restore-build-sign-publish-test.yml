@@ -25,13 +25,45 @@ steps:
     clean: true
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: "ESRP CodeSigning - Powershell Module"
+  displayName: "ESRP CodeSigning - Powershell support libs"
   inputs:
     ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
     FolderPath: src
     Pattern: |
      **/Microsoft.WinGet.RestSource.Utils.dll
      **/Microsoft.WinGet.PowershellSupport.dll
+    UseMinimatch: true
+    signConfigType: inlineSignParams
+    inlineOperation: |
+     [
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolSign",
+            "Parameters" : {
+                "OpusName" : "Microsoft",
+                "OpusInfo" : "http://www.microsoft.com",
+                "FileDigest" : "/fd \"SHA256\"",
+                "PageHash" : "/NPH",
+                "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+            },
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        },
+        {
+            "KeyCode" : "CP-230012",
+            "OperationCode" : "SigntoolVerify",
+            "Parameters" : {},
+            "ToolName" : "sign",
+            "ToolVersion" : "1.0"
+        }
+     ]
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: "ESRP CodeSigning - Powershell module"
+  inputs:
+    ConnectedServiceName: "Winget-cli-restsource-esrp-code-signing"
+    FolderPath: tools/PowershellModule
+    Pattern: |
      **/*.ps1
      **/*.psd1
      **/*.psm1
