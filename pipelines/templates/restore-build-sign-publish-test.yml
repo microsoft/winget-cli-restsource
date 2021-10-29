@@ -32,9 +32,9 @@ steps:
     Pattern: |
      **/Microsoft.WinGet.RestSource.Utils.dll
      **/Microsoft.WinGet.PowershellSupport.dll
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.ps1
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psd1
-     $(Build.SourcesDirectory)/Tools/PowershellModule/src/**/*.psm1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/Library/*.ps1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/*.psd1
+     $(Build.SourcesDirectory)/Tools/PowershellModule/src/*.psm1
     UseMinimatch: true
     signConfigType: inlineSignParams
     inlineOperation: |

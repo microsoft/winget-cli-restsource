@@ -15,14 +15,14 @@ steps:
   displayName: 'Copy Files: Helper Libs x86'
   inputs:
     Contents: |
-     $(helperLibsPath)\Microsoft.Extensions.Logging.Abstractions.dll
-     $(helperLibsPath)\Microsoft.WinGet.PowershellSupport.dll
-     $(helperLibsPath)\Microsoft.WinGet.RestSource.Utils.dll
-     $(helperLibsPath)\Newtonsoft.Json.dll
-     $(helperLibsPath)\System.ComponentModel.Annotations.dll
-     $(helperLibsPath)\YamlDotNet.dll
-     $(helperLibsPath)\WinGetUtilInterop.dll
-     $(helperLibsPath)\runtimes\win-x86\native\WinGetUtil.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.Extensions.Logging.Abstractions.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.WinGet.PowershellSupport.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.WinGet.RestSource.Utils.dll
+     ${{ parameters.helperLibsPath }}\Newtonsoft.Json.dll
+     ${{ parameters.helperLibsPath }}\System.ComponentModel.Annotations.dll
+     ${{ parameters.helperLibsPath }}\YamlDotNet.dll
+     ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
+     ${{ parameters.helperLibsPath }}\runtimes\win-x86\native\WinGetUtil.dll
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x86'
     OverWrite: true
     flattenFolders: true
@@ -31,14 +31,14 @@ steps:
   displayName: 'Copy Files: Helper libs x64'
   inputs:
     Contents: |
-     $(helperLibsPath)\Microsoft.Extensions.Logging.Abstractions.dll
-     $(helperLibsPath)\Microsoft.WinGet.PowershellSupport.dll
-     $(helperLibsPath)\Microsoft.WinGet.RestSource.Utils.dll
-     $(helperLibsPath)\Newtonsoft.Json.dll
-     $(helperLibsPath)\System.ComponentModel.Annotations.dll
-     $(helperLibsPath)\YamlDotNet.dll
-     $(helperLibsPath)\WinGetUtilInterop.dll
-     $(helperLibsPath)\runtimes\win-x64\native\WinGetUtil.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.Extensions.Logging.Abstractions.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.WinGet.PowershellSupport.dll
+     ${{ parameters.helperLibsPath }}\Microsoft.WinGet.RestSource.Utils.dll
+     ${{ parameters.helperLibsPath }}\Newtonsoft.Json.dll
+     ${{ parameters.helperLibsPath }}\System.ComponentModel.Annotations.dll
+     ${{ parameters.helperLibsPath }}\YamlDotNet.dll
+     ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
+     ${{ parameters.helperLibsPath }}\runtimes\win-x64\native\WinGetUtil.dll
     TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\HelperLib\x64'
     OverWrite: true
     flattenFolders: true
