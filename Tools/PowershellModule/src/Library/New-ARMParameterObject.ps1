@@ -106,6 +106,10 @@ Function New-ARMParameterObject
                 $CosmosDBACapabilities     = "[]"
             }
         }
+
+        $PrimaryRegionName   = $(Get-AzLocation).Where({$_.Location -eq $Region}).DisplayName
+        $SecondaryRegion     = Get-PairedAzureRegion -Region $Region
+        $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $SecondaryRegion}).DisplayName
         
         ## The name of the Secret that will be created in the Azure Keyvault - Do not change
         $AzKVStorageSecretName = "AzStorageAccountKey"
@@ -223,12 +227,12 @@ Function New-ARMParameterObject
                         locations = @{
                             value = @(
                                 @{
-                                    locationName     = "West US"
+                                    locationName     = $PrimaryRegionName
                                     failoverPriority = 0
                                     isZoneRedundant  = $false
                                 }
                                 @{
-                                    locationName     = "East US"
+                                    locationName     = $SecondaryRegionName
                                     failoverPriority = 1
                                     isZoneRedundant  = $false
                                 }
