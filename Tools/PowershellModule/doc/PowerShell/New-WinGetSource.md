@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-WinGetSource
 
 ## SYNOPSIS
-Creates a Windows Package Manager rest source in Azure for private storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for private storage of Windows Package Manager application Manifests.
 
 ## SYNTAX
 
@@ -20,7 +20,7 @@ New-WinGetSource [-Name] <String> [[-Index] <String>] [[-ResourceGroup] <String>
 ```
 
 ## DESCRIPTION
-Creates a Windows Package Manager rest source in Azure for private storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for private storage of Windows Package Manager application Manifests.
 
 The following Azure Modules are used by this script:
     Az.Resources
@@ -35,15 +35,15 @@ The following Azure Modules are used by this script:
 New-WinGetSource -Name "contoso0002"
 ```
 
-Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
+Creates the Windows Package Manager REST source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
 
 ### EXAMPLE 2
 ```
 New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
 ```
 
-Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
-Displays the required command to connect the WinGet client to the new rest source after the repository has been created.
+Creates the Windows Package Manager REST source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
+Displays the required command to connect the WinGet client to the new REST source after the repository has been created.
 
 ## PARAMETERS
 
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -ResourceGroup
-\[Optional\] The Name of the Resource Group that the Windows Package Manager rest source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetRestSource)
+\[Optional\] The Name of the Resource Group that the Windows Package Manager REST source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetRESTSource)
 (Default: WinGetRestSource)
 
 ```yaml
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] The name of the subscription that will be used to host the Windows Package Manager rest source.
+\[Optional\] The name of the subscription that will be used to host the Windows Package Manager REST source.
 
 ```yaml
 Type: String
@@ -141,8 +141,8 @@ Accept wildcard characters: False
 ```
 
 ### -RestSourcePath
-\[Optional\] Path to the compiled Rest API Zip file.
-(Default: .\RestAPI\CompiledFunctions.ps1)
+\[Optional\] Path to the compiled REST API Zip file.
+(Default: .\Library\RestAPI\WinGet.RestSource.Functions.zip)
 
 ```yaml
 Type: String
@@ -151,18 +151,18 @@ Aliases:
 
 Required: False
 Position: 7
-Default value: "$PSScriptRoot\RestAPI\CompiledFunctions.zip"
+Default value: "$PSScriptRoot\Library\RestAPI\WinGet.RestSource.Functions.zip"
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -ImplementationPerformance
-\[Optional\] \["Demo", "Basic", "Enhanced"\] specifies the performance of the resources to be created for the Windows Package Manager rest source.
+\[Optional\] \["Demo", "Basic", "Enhanced"\] specifies the performance of the resources to be created for the Windows Package Manager REST source.
 | Preference | Description                                                                                                             |
 |------------|-------------------------------------------------------------------------------------------------------------------------|
-| Demo       | Specifies lowest cost for demonstrating the Windows Package Manager rest source. Uses free-tier options when available. |
-| Basic      | Specifies a basic functioning Windows Package Manager rest source. Low cost.                                            |
-| Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers. High cost.                    |
+| Demo       | Specifies lowest cost for demonstrating the Windows Package Manager REST source. Uses free-tier options when available. |
+| Basic      | Specifies a basic functioning Windows Package Manager REST source.                                                      |
+| Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
 
 (Default: Basic)
 
@@ -179,7 +179,7 @@ Accept wildcard characters: False
 ```
 
 ### -ShowConnectionInstructions
-\[Optional\] If specified, the instructions for connecting to the Windows Package Manager rest source.
+\[Optional\] If specified, the instructions for connecting to the Windows Package Manager REST source.
 (Default: False)
 
 ```yaml

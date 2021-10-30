@@ -106,7 +106,6 @@ Function New-ARMParameterObject
                 $CosmosDBACapabilities     = "[]"
             }
         }
-
         $PrimaryRegionName   = $(Get-AzLocation).Where({$_.Location -eq $Region}).DisplayName
         $SecondaryRegion     = Get-PairedAzureRegion -Region $Region
         $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $SecondaryRegion}).DisplayName
@@ -115,8 +114,12 @@ Function New-ARMParameterObject
         $AzKVStorageSecretName = "AzStorageAccountKey"
         
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
+        Write-Verbose -Message "Retrieving the Azure Tenant and User Id Information"
         $AzTenantID            = $(Get-AzContext).Tenant.Id
-        $AzDirectoryID         = $(Get-AzADUser).Where({$_.UserPrincipalName -like "$($(Get-AzContext).Account.ID.Split("@")[0])*"}).ID
+        Write-Verbose -Message "Retrieved the Azure Tenant Id: $AzTenantID"
+
+        $AzDirectoryID         = $(Get-AzADUser -UserPrincipalName $(Get-AzContext).Account.ID).Id
+        Write-Verbose -Message "Retrieved the Azure User Id: $AzDirectoryId"
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"

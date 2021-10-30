@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-WinGetManifest
 
 ## SYNOPSIS
-Removes a Manifest file from the Azure rest source
+Removes a Manifest file from the Azure REST source
 
 ## SYNTAX
 
@@ -30,7 +30,7 @@ Remove-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] 
 ```
 
 ## DESCRIPTION
-This function will connect to the Azure Tenant that hosts the Windows Package Manager rest source, removing the specified application Manifest.
+This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the specified application Manifest.
     
 The following Azure Modules are used by this script:
     Az.Resources
@@ -45,19 +45,19 @@ The following Azure Modules are used by this script:
 Remove-WinGetManifest -FunctionName "RestSource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Connects to Azure, then runs the Azure Function "RestSource" Rest APIs to remove the specified Manifest file from the Windows Package Manager rest source
+Connects to Azure, then runs the Azure Function "RestSource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
 
 ### EXAMPLE 2
 ```
 Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager rest source
+Connects to a remote URL REST APIs to remove the Application Manifest from the Windows Package Manager REST source
 
 ## PARAMETERS
 
 ### -URL
-Name of the URL that hosts the rest source.
+Name of the URL that hosts the REST source.
 
 ```yaml
 Type: String
@@ -87,7 +87,7 @@ Accept wildcard characters: False
 ```
 
 ### -FunctionName
-Name of the Azure Function that hosts the rest source.
+Name of the Azure Function that hosts the REST source.
 
 ```yaml
 Type: String
@@ -117,7 +117,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] The Subscription name contains the Windows Package Manager rest source
+\[Optional\] The Subscription name contains the Windows Package Manager REST source
 
 ```yaml
 Type: String
