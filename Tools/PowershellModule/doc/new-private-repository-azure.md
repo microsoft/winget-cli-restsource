@@ -48,7 +48,7 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
 | No       | ParameterOutput            | The folder location that contains new items will be created in.                                                                            |
-| No       | RESTSourcePath             | Path to the compiled REST API Zip file. (Default: .\RESTAPI\CompiledFunctions.ps1)                                                         |
+| No       | RestSourcePath             | Path to the compiled REST API Zip file. (Default: .\Library\RestAPI\WinGet.RestSource.Functions.zip)                                                         |
 | No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager REST source. ["Demo", "Basic", "Enhanced"]        |
 | No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)                                 |
 

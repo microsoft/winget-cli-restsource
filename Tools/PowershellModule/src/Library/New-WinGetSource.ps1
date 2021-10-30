@@ -42,8 +42,8 @@ Function New-WinGetSource
     | Preference | Description                                                                                                             |
     |------------|-------------------------------------------------------------------------------------------------------------------------|
     | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager rest source. Uses free-tier options when available. |
-    | Basic      | Specifies a basic functioning Windows Package Manager rest source. Low cost.                                            |
-    | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers. High cost.                    |
+    | Basic      | Specifies a basic functioning Windows Package Manager rest source.                                                      |
+    | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
     
     (Default: Basic)
 
