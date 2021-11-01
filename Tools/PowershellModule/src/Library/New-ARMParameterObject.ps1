@@ -30,7 +30,7 @@ Function New-ARMParameterObject
     ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
 
     .EXAMPLE
-    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosoRESTSource" -AzLocation "westus" -ImplementationPerformance "Demo"
+    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Demo"
 
     Creates the Parameter files required for the creation of the ARM objects.
 

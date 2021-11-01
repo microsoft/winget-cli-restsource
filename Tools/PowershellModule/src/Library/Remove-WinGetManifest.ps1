@@ -8,7 +8,7 @@ Function Remove-WinGetManifest
 
     .DESCRIPTION
     This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the 
-    specified application Manifest.
+    specified package Manifest.
         
     The following Azure Modules are used by this script:
         Az.Resources

@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-WinGetSource
 
 ## SYNOPSIS
-Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager package Manifests.
 
 ## SYNTAX
 
@@ -20,7 +20,7 @@ New-WinGetSource [-Name] <String> [[-Index] <String>] [[-ResourceGroup] <String>
 ```
 
 ## DESCRIPTION
-Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager package Manifests.
 
 The following Azure Modules are used by this script:
     Az.Resources

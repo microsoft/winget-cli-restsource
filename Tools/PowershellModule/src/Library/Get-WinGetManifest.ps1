@@ -5,11 +5,11 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning 
+    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
     the manifest found. Allows for retrieving results based on the package identifier when targetting the REST APIs.
 
     .DESCRIPTION
-    Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning 
+    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
     an array of all Manifests found. Allows for retrieving results based on the package identifier.
         
     The following Azure Modules are used by this script:
@@ -24,7 +24,7 @@ Function Get-WinGetManifest
     the same application.
 
     .PARAMETER JSON
-    A JSON string containing a single application's REST source Application Manifest that will be merged with locally processed files. This is
+    A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed files. This is
     used by the script infrastructure internally and is not expected to be useful to an end user using this command.
 
     .PARAMETER URL
@@ -34,7 +34,7 @@ Function Get-WinGetManifest
     Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
     .PARAMETER ManifestIdentifier
-    [Optional] The Windows Package Manager Package Identifier of a specific Application Manifest result.
+    [Optional] The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
@@ -187,7 +187,7 @@ Function Get-WinGetManifest
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
                     }
                     elseif($PathChildItemsJSON.count -gt 1) {
-                        ## More than one Application Manifest's JSON files was found.
+                        ## More than one Package Manifest's JSON files was found.
                         $ErrorMessage    = "Directory contains more than one JSON file."
                         $ErrReturnObject = @{
                             JSONFiles = $PathChildItemsJSON
@@ -216,7 +216,7 @@ Function Get-WinGetManifest
                 }
                 else {
                     ## $Path variable is pointing at a file
-                    Write-Verbose -Message "Retrieving the Application Manifest for: $Path"
+                    Write-Verbose -Message "Retrieving the Package Manifest for: $Path"
             
                     ## Gets the Manifest object and contents of the Manifest - identifying the manifest file extension.
                     $ApplicationManifest = Get-Content -Path $Path -Raw

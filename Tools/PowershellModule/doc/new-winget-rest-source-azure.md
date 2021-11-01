@@ -11,15 +11,15 @@ There are two ways available for managing REST source repositories with Windows 
 
 ## Manage Windows Package Manager REST source with PowerShell
 
-To simplify the management and interaction with the Windows Package Manager REST source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get application manifests from your Windows Package Manager REST source, as well as stand up a new Windows Package Manager REST source in Azure.
+To simplify the management and interaction with the Windows Package Manager REST source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get package manifests from your Windows Package Manager REST source, as well as stand up a new Windows Package Manager REST source in Azure.
 
 The following steps are required for managing a Windows Package Manager REST source with PowerShell:
 
 1. Download and install the `Microsoft.WinGet.Source` PowerShell Module.
 2. Automate the creation of a Windows Package Manager REST source.
-3. Publishing Application Manifests to the Windows Package Manager REST source.
-4. Retrieve published Application Manifests from the Windows Package Manager REST source.
-5. Remove published Applications Manifests from the Windows Package Manager REST source.
+3. Publishing Package Manifests to the Windows Package Manager REST source.
+4. Retrieve published Package Manifests from the Windows Package Manager REST source.
+5. Remove published Package Manifests from the Windows Package Manager REST source.
 
 ### Download and install the PowerShell module
 
@@ -72,11 +72,11 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 
 ### Add manifests to the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](PowerShell/Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Package Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](PowerShell/Add-WinGetManifest.md) cmdlet will add new Package Manifests to your Windows Package Manager REST source.
 
-The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](PowerShell/Add-WinGetManifest.md).
+The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single package manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](PowerShell/Add-WinGetManifest.md).
 
-The PowerShell Module must be re-imported each time the PowerShell window is closed. To add an Application Manifest open the Administrative PowerShell Window and run the following:
+The PowerShell Module must be re-imported each time the PowerShell window is closed. To add an Package Manifest open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
 PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys\1.0.0"
@@ -84,11 +84,11 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all applications or a specific application by Package Identifier.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all packages or a specific package by Package Identifier.
 
 Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](PowerShell/Get-WinGetManifest.md).
 
-The PowerShell Module must be re-imported each time the PowerShell window is closed. To get an Application Manifest open the Administrative PowerShell Window and run the following:
+The PowerShell Module must be re-imported each time the PowerShell window is closed. To get a Package Manifest open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
 PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
@@ -96,11 +96,11 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Package Manifest from the specified Windows Package Manager REST source.
 
 The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](PowerShell/Remove-WinGetManifest.md).
 
-The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove an Application Manifest open the Administrative PowerShell Window and run the following:
+The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove a Package Manifest open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
 PS C:\> Remove-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
@@ -322,7 +322,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 #### Azure Cosmos container
 
-An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions. This allows for the Windows Package Manager application manifests, and database to span multiple Azure regions.
+An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions. This allows for the Windows Package Manager package manifests, and database to span multiple Azure regions.
 
 For more information on Azure Cosmos containers, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
 

@@ -9,7 +9,7 @@ Function Add-WinGetManifest
     .DESCRIPTION
     By running this function with the required inputs, it will connect to the Azure Tenant that hosts the 
     Windows Package Manager REST source, then collects the required URL for Manifest submission before 
-    retrieving the contents of the Application Manifest to submit.
+    retrieving the contents of the Package Manifest to submit.
 
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -21,8 +21,8 @@ Function Add-WinGetManifest
     Name of the Azure Function that hosts the REST source.
 
     .PARAMETER Path
-    The path to the Application Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
-    This path may contain a single Application Manifest file, or a folder containing files for a single Application Manifest. Does not support 
+    The path to the Package Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
+    This path may contain a single Package Manifest file, or a folder containing files for a single Package Manifest. Does not support 
     targeting a single folder of multiple different applications.
 
     .PARAMETER SubscriptionName
@@ -89,7 +89,7 @@ Function Add-WinGetManifest
         }
 
         ###############################
-        ## Gets the content from the Application Manifest (*.JSON, or *.YAML) file for posting to REST source.
+        ## Gets the content from the Package Manifest (*.JSON, or *.YAML) file for posting to REST source.
         Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."
         $ApplicationManifest = Get-WinGetManifest -Path $Path
         if(!$ApplicationManifest) {

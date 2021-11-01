@@ -4,10 +4,10 @@ Function New-WinGetSource
 {
     <#
     .SYNOPSIS
-    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
 
     .DESCRIPTION
-    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
 
     The following Azure Modules are used by this script:
         Az.Resources
@@ -53,13 +53,13 @@ Function New-WinGetSource
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource"
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
     Azure with the basic level performance.
 
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
     Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
     to connect the WinGet client to the new REST source after the REST source has been created.
 
