@@ -6,8 +6,8 @@ Windows Package Manager offers a comprehensive package manager solution includin
 
 There are two ways available for managing rest source repositories with Windows Package Manager:
 
-- [Manage Windows Package Manager rest source with PowerShell](#manage-windows-package-manager-private-source-with-powershell)
-- [Manage Windows Package Manager rest source manually](#manage-windows-package-manager-private-source-manually)
+- [Manage Windows Package Manager rest source with PowerShell](#manage-windows-package-manager-rest-source-with-powershell)
+- [Manage Windows Package Manager rest source manually](#manage-windows-package-manager-rest-source-manually)
 
 ## Manage Windows Package Manager rest source with PowerShell
 
@@ -93,7 +93,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a rest source
 
-The Windows Package Manager rest source provides a private location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
+The Windows Package Manager rest source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
 
 The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager rest source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
 
