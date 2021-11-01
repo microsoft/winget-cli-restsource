@@ -16,7 +16,7 @@ To simplify the management and interaction with the Windows Package Manager rest
 The following steps are required for managing a REST source repository with PowerShell:
 
 1. Download and install the `Microsoft.WinGet.Source` PowerShell Module.
-2. Automate the creation of a Windows Package Manager rest source.
+2. Automate the creation of a Windows Package Manager REST source.
 3. Publishing Application Manifests to the Windows Package Manager rest source.
 4. Retrieve published Application Manifests from the Windows Package Manager rest source.
 5. Remove published Applications Manifests from the Windows Package Manager rest source.
