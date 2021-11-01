@@ -48,7 +48,7 @@ Returns an array of the Application Manifest objects based on the files (*.yaml 
 Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys\Microsoft.PowerToys.json"
 ```
 
-Returns an Application Manifest object (*.json) of the specified JSON file.
+Returns an Application Manifest object of the specified JSON file.
 
 ### EXAMPLE 3
 ```
