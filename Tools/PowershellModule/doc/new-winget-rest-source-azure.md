@@ -91,7 +91,7 @@ Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a s
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To get a Package Manifest open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
+PS C:\> Get-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
 ```
 
 ## Remove manifests from a REST source
@@ -103,7 +103,7 @@ The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Win
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove a Package Manifest open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Remove-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
+PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
 ```
 
 ## Manage Windows Package Manager REST source manually
