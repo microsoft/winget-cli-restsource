@@ -91,7 +91,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-## Remove manifests from a rest source
+## Remove manifests from a REST source
 
 The Windows Package Manager rest source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
 
