@@ -21,7 +21,7 @@ Function Add-WinGetManifest
     Name of the Azure Function that hosts the rest source.
 
     .PARAMETER Path
-    The Path to the Application Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the rest source. 
+    The path to the Application Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the rest source. 
     This path may contain a single Application Manifest file, or a folder containing files for a single Application Manifest. Does not support 
     targetting a single folder of multiple different applications.
 

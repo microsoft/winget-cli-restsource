@@ -95,7 +95,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
 
-The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
+The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -121,7 +121,7 @@ The following instructions assumes the following Azure objects are named as foll
 The Windows Package Manager REST Source contains the APIs required to provide a Windows Package Manager REST source. To download a local copy of the Windows Package Manager REST Source from GitHub:
 
 1. Download a local copy of the Windows Package Manager REST Source from GitHub (github: [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource/releases))
-    1. Download *.Zip file from the latest release.
+    1. Download WinGet.RestSource.Functions.zip file from the latest release.
     1. Extract the newly downloaded ZIP file to *C:\Projects\\*
 
 ### Application Insights
@@ -140,7 +140,7 @@ To install Application Insights:
 6. Select **Application Insights** from the search results.
 7. Select the **Create** button.
 8. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription"
+    - Subscription: [Subscription Name]
     - Resource Group: "WinGet_RESTSource"
 
 9. In the **Instance Details** enter the following values:
@@ -537,7 +537,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Open a PowerShell window on your computer.
 
     ``` PowerShell
-    PS C:\> $ArchiveFunctionZip = "C:\Projects\winget-cli-restsource\src\WinGet.RestSource.Infrastructure\CompiledFunctions.zip"
+    PS C:\> $RestAPI = "C:\Projects\winget-cli-restsource\winget-cli-restsource.zip"
     PS C:\> Connect-AzAccount -SubscriptionName "Contoso Azure Subscription"
-    PS C:\> Publish-AzWebApp -ArchivePath $ArchiveFunctionZip -ResourceGroupName "WinGet_RestSource" -Name "contoso-function-demo" -Force
+    PS C:\> Publish-AzWebApp -ArchivePath $RestAPI -ResourceGroupName "WinGet_RestSource" -Name "contoso-function-demo" -Force
     ```
