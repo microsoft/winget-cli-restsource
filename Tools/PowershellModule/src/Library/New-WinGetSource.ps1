@@ -35,7 +35,7 @@ Function New-WinGetSource
     [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
 
     .PARAMETER RestSourcePath
-    [Optional] Path to the compiled REST API Zip file. (Default: \Library\RestAPI\WinGet.RestSource.Functions.zip)
+    [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\Library\RestAPI\WinGet.RestSource.Functions.zip)
 
     .PARAMETER ImplementationPerformance
     [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
