@@ -207,7 +207,7 @@ For more information on Azure Storage Accounts, visit [Storage account overview]
 
 ### App Service plan
 
-An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager rest source will operate within this Azure App Service plan allowing it to scale to the demand.
+An Azure App Service plan defines a set of compute resources for a web app to run. These compute resources are analogous to the server farm in conventional web hostings. The Azure Function that will be created to provide the Windows Package Manager REST source will operate within this Azure App Service plan allowing it to scale to the demand.
 
 For more information on App Service plans, visit their Docs article: [Azure App Service plan overview](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans).
 
