@@ -127,7 +127,7 @@ The Windows Package Manager REST Source contains the APIs required to provide a 
 
 ### Application Insights
 
-Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights can be used to monitor the health of the Windows Package Manager rest source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
+Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights can be used to monitor the health of the Windows Package Manager REST source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
 
 For more information on Azure Application Insights, visit their Docs article: [What is Application Insights?](/azure/azure-monitor/app/app-insights-overview)
 
