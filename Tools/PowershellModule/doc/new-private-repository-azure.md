@@ -2,7 +2,7 @@
 
 This section provides guidance on how to create a REST source repository that can be connected to using the Windows Package Manager for ISVs or Publishers who may have additional privacy requirements for their software distribution.
 
-Windows Package Manager offers a comprehensive package manager solution including a command line tool and set of services for installing applications that currently supports the following formats: MSIX, MSI, and EXE. For more general package submition information, see [submit packages to Windows Package Manager](../package/index.md).
+Windows Package Manager offers a comprehensive package manager solution including a command line tool and a set of services for installing applications. For more general package submission information, see [submit packages to Windows Package Manager](../package/index.md).
 
 There are two ways available for managing REST source repositories with Windows Package Manager:
 
