@@ -42,9 +42,9 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 
 ### Automate the creation of a Windows Package Manager REST source
 
-The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
+The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
-The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
+The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetSource.md) in Docs.
 
 | Required | Parameter                  | Description                                                                                                                         |
 |----------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -72,9 +72,9 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 
 ### Add manifests to the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
 
-The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](.\PowerShell\New-WinGetManifest.md).
+The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To add an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -84,9 +84,9 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all application or a specific application by Package Identifier.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all application or a specific application by Package Identifier.
 
-Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](.\PowerShell\Get-WinGetManifest.md).
+Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Get-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To get an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -96,9 +96,9 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
 
-The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
+The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Remove-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove an Application Manifest open the Administrative PowerShell Window and run the following:
 
