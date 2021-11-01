@@ -23,7 +23,7 @@ The following steps are required for managing a REST source repository with Powe
 
 ### Download and install the PowerShell module
 
-The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager rest source.
+The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager REST source.
 
 1. Open an Edge Browser.
 2. Navigate to [https://github.com/microsoft/winget-cli-restsource/releases](https://github.com/microsoft/winget-cli-restsource/releases).
