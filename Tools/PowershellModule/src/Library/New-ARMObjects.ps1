@@ -19,7 +19,7 @@ Function New-ARMObjects
     .PARAMETER ARMObjects
     Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
 
-    .PARAMETER RESTSourcePath
+    .PARAMETER RestSourcePath
     Path to the compiled Function ZIP containing the REST APIs
 
     .PARAMETER AzResourceGroup

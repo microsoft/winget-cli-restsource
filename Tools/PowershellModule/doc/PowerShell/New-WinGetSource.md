@@ -32,14 +32,14 @@ The following Azure Modules are used by this script:
 
 ### EXAMPLE 1
 ```
-New-WinGetSource -Name "contosoRESTSource"
+New-WinGetSource -Name "contosorestsource"
 ```
 
 Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance.
 
 ### EXAMPLE 2
 ```
-New-WinGetSource -Name "contosoRESTSource" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
+New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
 ```
 
 Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.

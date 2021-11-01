@@ -34,7 +34,7 @@ Function New-WinGetSource
     .PARAMETER ParameterOutput
     [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
 
-    .PARAMETER RESTSourcePath
+    .PARAMETER RestSourcePath
     [Optional] Path to the compiled REST API Zip file. (Default: \Library\RestAPI\WinGet.RestSource.Functions.zip)
 
     .PARAMETER ImplementationPerformance
@@ -51,13 +51,13 @@ Function New-WinGetSource
     [Optional] If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)
 
     .EXAMPLE
-    New-WinGetSource -Name "contosoRESTSource"
+    New-WinGetSource -Name "contosorestsource"
 
     Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
     Azure with the basic level performance.
 
     .EXAMPLE
-    New-WinGetSource -Name "contosoRESTSource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
+    New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
     Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
     Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
