@@ -118,7 +118,7 @@ The following instructions assumes the following Azure objects are named as foll
 
 ### Extract the Windows Package Manager Rest Source
 
-The Windows Package Manager Rest Source contains the APIs required to provide a Windows Package Manager rest source. To download a local copy of the Windows Package Manager Rest Source from GitHub:
+The Windows Package Manager REST Source contains the APIs required to provide a Windows Package Manager REST source. To download a local copy of the Windows Package Manager REST Source from GitHub:
 
 1. Visit [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource).
 2. Select *Code* from within GitHub.
