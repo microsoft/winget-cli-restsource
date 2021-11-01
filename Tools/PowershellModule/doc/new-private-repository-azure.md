@@ -79,7 +79,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys\1.0.0"
 ```
 
-## Get manifests from the rest source
+## Get manifests from the REST source
 
 The Windows Package Manager rest source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager rest source.
 
