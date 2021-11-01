@@ -1,4 +1,4 @@
-# Create a rest source Windows Package Manager repository
+# Create a Windows Package Manager rest source
 
 This section provides guidance on how to create a rest source repository that can be connected to using the Windows Package Manager for ISVs or Publishers who may have additional privacy requirements for their software distribution.
 
