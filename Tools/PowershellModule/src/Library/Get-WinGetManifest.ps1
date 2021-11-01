@@ -33,7 +33,7 @@ Function Get-WinGetManifest
     .PARAMETER FunctionName
     Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
-    .PARAMETER ManifestIdentifier
+    .PARAMETER PackageIdentifier
     [Optional] The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
@@ -50,12 +50,12 @@ Function Get-WinGetManifest
     Returns a Manifest object (*.json) of the specified JSON file.
     
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
+    Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 
     Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+    Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 
     Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
@@ -70,7 +70,7 @@ Function Get-WinGetManifest
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
         [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$ManifestIdentifier,
+        [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$PackageIdentifier,
         [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName
     )
     BEGIN
@@ -118,8 +118,8 @@ Function Get-WinGetManifest
                     throw "Failed to confirm resources exist in Azure. Please verify and try again."
                 }
 
-                if($ManifestIdentifier){
-                    $ManifestIdentifier = "/$ManifestIdentifier"
+                if($PackageIdentifier){
+                    $PackageIdentifier = "/$PackageIdentifier"
                 }
         
                 ###############################
@@ -244,7 +244,7 @@ Function Get-WinGetManifest
                 $DefaultHostName = $FunctionApp.DefaultHostName
                 $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
                 $apiHeader.Add("x-functions-key", $FunctionKey)
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $ManifestIdentifier
+                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $PackageIdentifier
                 
                 ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."

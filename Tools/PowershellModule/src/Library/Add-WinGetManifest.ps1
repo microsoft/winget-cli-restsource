@@ -124,7 +124,7 @@ Function Add-WinGetManifest
     {
         foreach ($Manifest in $ApplicationManifest) {
             Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
-            $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $Manifest.PackageIdentifier
+            $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -PackageIdentifier $Manifest.PackageIdentifier
 
             $ManifestObject = $Manifest
             $TriggerName = "ManifestPost"

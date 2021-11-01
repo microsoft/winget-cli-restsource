@@ -1,4 +1,4 @@
-# Template helper to copy powershell scripts and all dependencies
+# Template helper to copy PowerShell scripts and all dependencies
 parameters:
  helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netstandard2.0'
  templatesPath: '$(build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
@@ -8,7 +8,7 @@ steps:
   displayName: 'Copy Files: Powershell module'
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\Tools\PowershellModule\src'
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source'
     CleanTargetFolder: true
     OverWrite: true
 
@@ -24,7 +24,7 @@ steps:
      ${{ parameters.helperLibsPath }}\YamlDotNet.dll
      ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
      ${{ parameters.helperLibsPath }}\runtimes\win-x86\native\WinGetUtil.dll
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\HelperLib\x86'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source\Library\HelperLib\x86'
     OverWrite: true
     flattenFolders: true
 
@@ -40,7 +40,7 @@ steps:
      ${{ parameters.helperLibsPath }}\YamlDotNet.dll
      ${{ parameters.helperLibsPath }}\WinGetUtilInterop.dll
      ${{ parameters.helperLibsPath }}\runtimes\win-x64\native\WinGetUtil.dll
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\HelperLib\x64'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source\Library\HelperLib\x64'
     OverWrite: true
     flattenFolders: true
 
@@ -58,7 +58,7 @@ steps:
      ${{ parameters.templatesPath }}\**\frontdoor.json
      ${{ parameters.templatesPath }}\**\keyvault.json
      ${{ parameters.templatesPath }}\**\storageaccount.json
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\ARMTemplate'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source\Library\ARMTemplate'
     OverWrite: true
     flattenFolders: true
 
@@ -66,11 +66,11 @@ steps:
   displayName: 'Copy Files: azure function'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
-    TargetFolder: '$(build.artifactstagingdirectory)\Winget.Powershell.Source\Library\RestAPI'
+    TargetFolder: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source\Library\RestAPI'
     OverWrite: true
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: WinGet.RestSource-Winget.Powershell.Source'
+  displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
   inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)\Winget.Powershell.Source'
+    PathtoPublish: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source'
     ArtifactName: 'WinGet.RestSource-Winget.Powershell.Source'

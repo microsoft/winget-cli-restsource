@@ -19,14 +19,14 @@ Function Remove-WinGetManifest
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the REST source.
 
-    .PARAMETER ManifestIdentifier
+    .PARAMETER PackageIdentifier
     THe Package Id that represents the App Manifest to be removed.
 
     .PARAMETER SubscriptionName
     [Optional] The Subscription name contains the Windows Package Manager REST source
 
     .EXAMPLE
-    Remove-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
+    Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 
     Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from 
     the Windows Package Manager REST source
@@ -35,7 +35,7 @@ Function Remove-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=2, Mandatory=$true)]  [string]$ManifestIdentifier,
+        [Parameter(Position=2, Mandatory=$true)]  [string]$PackageIdentifier,
         [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName   = ""
     )
     BEGIN
@@ -72,8 +72,8 @@ Function Remove-WinGetManifest
                     throw "Failed to confirm resources exist in Azure. Please verify and try again."
                 }
 
-                if($ManifestIdentifier){
-                    $ManifestIdentifier = "$ManifestIdentifier"
+                if($PackageIdentifier){
+                    $PackageIdentifier = "$PackageIdentifier"
                 }
         
                 ###############################
@@ -96,7 +96,7 @@ Function Remove-WinGetManifest
                 $apiHeader.Add("Accept", 'application/json')
                 $apiHeader.Add("x-functions-key", $FunctionKey)
 
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $ManifestIdentifier
+                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $PackageIdentifier
             }
         }
     }
