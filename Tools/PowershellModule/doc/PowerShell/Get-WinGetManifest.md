@@ -15,7 +15,7 @@ Allows for filtering results based on the name when targetting the REST APIs.
 
 ### Azure (Default)
 ```
-Get-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>]
+Get-WinGetManifest [-FunctionName] <String> [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>]
  [<CommonParameters>]
 ```
 
@@ -52,14 +52,14 @@ Returns a Package Manifest object of the specified JSON file.
 
 ### EXAMPLE 3
 ```
-Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
+Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 ```
 
 Returns an Manifest object of the specified Application Package Identifier that is queried against in the REST APIs.
 
 ### EXAMPLE 4
 ```
-Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
 Returns a Package Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
@@ -103,7 +103,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ManifestIdentifier
+### -PackageIdentifier
 \[Optional\] The Windows Package Manager Package Identifier of a specific Manifest result
 
 ```yaml
