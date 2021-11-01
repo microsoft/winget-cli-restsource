@@ -52,21 +52,21 @@ Returns an Application Manifest object (*.json) of the specified JSON file.
 
 ### EXAMPLE 3
 ```
-Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
+Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
 Returns an Manifest object of the specified Application Package Identifier that is queried against in the REST APIs.
 
 ### EXAMPLE 4
 ```
-Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
 Returns an Application Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
 ### EXAMPLE 5
 ```
-Get-WinGetManifest -FunctionName "contosoRESTSource"
+Get-WinGetManifest -FunctionName "contosorestsource"
 ```
 
 Returns an array of Application Manifest objects that are found in the specified Azure Function.

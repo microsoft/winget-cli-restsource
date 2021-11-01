@@ -35,14 +35,14 @@ The following Azure Modules are used by this script:
 New-WinGetSource -Name "contosorestsource"
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance.
+Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of Azure with the basic level performance.
 
 ### EXAMPLE 2
 ```
-New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
+New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
+Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
 Displays the required command to connect the WinGet client to the new REST source after the repository has been created.
 
 ## PARAMETERS
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -ResourceGroup
-\[Optional\] The Name of the Resource Group that the Windows Package Manager REST source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetRESTSource)
+\[Optional\] The Name of the Resource Group that the Windows Package Manager REST source will reside. All Azure resources will be created in in this Resource Group (Default: WinGetRestSource)
 (Default: WinGetRestSource)
 
 ```yaml

@@ -36,10 +36,10 @@ The following Azure Modules are used by this script:
 
 ### EXAMPLE 1
 ```
-Remove-WinGetManifest -FunctionName "RestSource" -ManifestIdentifier "Windows.PowerToys"
+Remove-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Connects to Azure, then runs the Azure Function "RestSource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
+Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
 
 ## PARAMETERS
 

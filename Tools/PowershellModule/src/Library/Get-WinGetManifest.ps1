@@ -50,17 +50,17 @@ Function Get-WinGetManifest
     Returns a Manifest object (*.json) of the specified JSON file.
     
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
+    Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
 
     Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+    Get-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 
     Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "RESTSource"
+    Get-WinGetManifest -FunctionName "contosorestSource"
 
     Returns an array of Manifest objects that are found in the specified Azure Function.
 

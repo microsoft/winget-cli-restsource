@@ -26,9 +26,9 @@ Function Remove-WinGetManifest
     [Optional] The Subscription name contains the Windows Package Manager REST source
 
     .EXAMPLE
-    Remove-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
+    Remove-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "contosoRESTSource" REST APIs to remove the specified Manifest file from 
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from 
     the Windows Package Manager REST source
 
     #>

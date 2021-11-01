@@ -29,21 +29,21 @@ Function Add-WinGetManifest
     [Optional] The Subscription name contains the Windows Package Manager REST source
 
     .EXAMPLE
-    Add-WinGetManifest -FunctionName "contosoRESTSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
+    Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
 
-    Connects to Azure, then runs the Azure Function "contosoRESTSource" REST APIs to add the specified Manifest file (*.json) 
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to add the specified Manifest file (*.json) 
     to the Windows Package Manager REST source
 
     .EXAMPLE
-    Add-WinGetManifest -FunctionName "contosoRESTSource" -Path "C:\AppManifests\Microsoft.PowerToys\"
+    Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\"
 
-    Connects to Azure, then runs the Azure Function "contosoRESTSource" REST APIs to adds the Manifest file(s) (*.json / *.yaml) 
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to adds the Manifest file(s) (*.json / *.yaml) 
     found in the specified folder to the Windows Package Manager REST source
     
     .EXAMPLE
-    Add-WinGetManifest -FunctionName "contosoRESTSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
+    Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
 
-    Connects to Azure and the specified Subscription, then runs the Azure Function "contosoRESTSource" REST APIs to add the 
+    Connects to Azure and the specified Subscription, then runs the Azure Function "contosorestsource" REST APIs to add the 
     specified Manifest file (*.json) to the Windows Package Manager REST source.
     #>
 

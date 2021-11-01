@@ -26,7 +26,7 @@ Function New-ARMObjects
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RESTSourcePath "C:\WinGet-CLI-RESTSource\CompiledFunction.zip" -AzResourceGroup "WinGet"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet-CLI-RestSource.zip" -AzResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
