@@ -1,19 +1,19 @@
-# Create a Windows Package Manager rest source
+# Create a REST source Windows Package Manager
 
-This section provides guidance on how to create a REST source repository that can be connected to using the Windows Package Manager for ISVs or Publishers who may have additional privacy requirements for their software distribution.
+This section provides guidance on how to create a REST source that can be connected to using the Windows Package Manager for ISVs or Publishers who may have additional privacy requirements for their software distribution.
 
 Windows Package Manager offers a comprehensive package manager solution including a command line tool and a set of services for installing applications. For more general package submission information, see [submit packages to Windows Package Manager](../package/index.md).
 
 There are two ways available for managing REST source repositories with Windows Package Manager:
 
-- [Manage Windows Package Manager rest source with PowerShell](#manage-windows-package-manager-rest-source-with-powershell)
-- [Manage Windows Package Manager rest source manually](#manage-windows-package-manager-rest-source-manually)
+- [Manage Windows Package Manager REST source with PowerShell](#manage-windows-package-manager-rest-source-with-powershell)
+- [Manage Windows Package Manager REST source manually](#manage-windows-package-manager-rest-source-manually)
 
-## Manage Windows Package Manager rest source with PowerShell
+## Manage Windows Package Manager REST source with PowerShell
 
-To simplify the management and interaction with the Windows Package Manager rest source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get application manifests from your Windows Package Manager rest source, as well as stand up a new Windows Package Manager REST source in Azure.
+To simplify the management and interaction with the Windows Package Manager REST source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get application manifests from your Windows Package Manager REST source, as well as stand up a new Windows Package Manager REST source in Azure.
 
-The following steps are required for managing a REST source repository with PowerShell:
+The following steps are required for managing a Windows Package Manager REST source with PowerShell:
 
 1. Download and install the `Microsoft.WinGet.Source` PowerShell Module.
 2. Automate the creation of a Windows Package Manager REST source.
@@ -40,7 +40,7 @@ The following steps must be performed before the PowerShell cmdlets are availabl
     PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
     ```
 
-### Automate the creation of a Windows Package Manager rest source
+### Automate the creation of a Windows Package Manager REST source
 
 The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
@@ -53,11 +53,11 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                     |
 | No       | ParameterOutput            | The folder location where the ARM parameter files will be created.                                                                  |
-| No       | RestSourcePath             | Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)                                                  |
-| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager rest source. ["Demo", "Basic", "Enhanced"] |
-| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)                          |
+| No       | RESTSourcePath             | Path to the compiled REST API Zip file. (Default: .\RESTAPI\CompiledFunctions.ps1)                                                  |
+| No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager REST source. ["Demo", "Basic", "Enhanced"] |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)                          |
 
-The PowerShell Module must be re-imported each time the PowerShell window is closed. To do this:
+The PowerShell Module must be re-imported each time the PowerShell window is closed. To create a new Windows Package Manager REST source this:
 
 1. From an Administrative PowerShell window run the following:
 
@@ -65,11 +65,11 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
     PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetRestSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
     ```
 
-2. After the above command has completed (~15 minutes), copy and run the connection information provided for your newly created Windows Package Manager rest source to add to your winget client.
+2. After the above command has completed (~15 minutes), copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
 
-### Add manifests to the rest source
+### Add manifests to the REST source
 
-The Windows Package Manager rest source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager rest source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager rest source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
 
 The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](.\PowerShell\New-WinGetManifest.md).
 
@@ -83,7 +83,7 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will query for all, or a specific Application Manifest found in a specified Windows Package Manager REST source.
 
-The `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager rest source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](.\PowerShell\Get-WinGetManifest.md).
+The `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](.\PowerShell\Get-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To get an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -93,7 +93,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a REST source
 
-The Windows Package Manager rest source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
 
 The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
 
@@ -103,7 +103,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 PS C:\> Remove-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-## Manage Windows Package Manager rest source manually
+## Manage Windows Package Manager REST source manually
 
 The following instructions assumes the following Azure objects are named as follows:
 
@@ -116,14 +116,13 @@ The following instructions assumes the following Azure objects are named as foll
 
 *We assume that the Resource Group and Subscription are pre-existing in your Azure Tenant.*
 
-### Extract the Windows Package Manager Rest Source
+### Extract the Windows Package Manager REST Source
 
 The Windows Package Manager REST Source contains the APIs required to provide a Windows Package Manager REST source. To download a local copy of the Windows Package Manager REST Source from GitHub:
 
-1. Visit [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource).
-2. Select *Code* from within GitHub.
-3. Select *Download ZIP* from the drop-down menu.
-4. Extract the newly downloaded ZIP file to *C:\Projects\\*
+1. Download a local copy of the Windows Package Manager REST Source from GitHub (github: [winget-cli-restsource](https://github.com/microsoft/winget-cli-restsource/releases))
+    1. Download *.Zip file from the latest release.
+    1. Extract the newly downloaded ZIP file to *C:\Projects\\*
 
 ### Application Insights
 
@@ -135,14 +134,14 @@ To install Application Insights:
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal: [https://portal.azure.com](https://portal.azure.com)
 2. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-3. Select your Resource Group ("*WinGet_restsource*") from the list.
+3. Select your Resource Group ("*WinGet_RESTsource*") from the list.
 4. At the top of the window, select the **+ Create** button.
 5. In the search bar, type in "*Application Insights*".
 6. Select **Application Insights** from the search results.
 7. Select the **Create** button.
 8. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription"
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 9. In the **Instance Details** enter the following values:
     - Name: contoso-appinsights-demo
@@ -161,14 +160,14 @@ For more information on Azure Storage Accounts, visit [Storage account overview]
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 2. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-3. Select your Resource Group ("*WinGet_RestSource*") from the list.
+3. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 4. At the top of the window, select the **+ Create** button.
 5. In the search bar, type in "*Storage Account*".
 6. Select **Storage Account** from the search results.
 7. Select the **Create** button.
 8. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription"
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 9. In the **Instance Details** enter the following values:
     - Storage account name: contosostoreaccountdemo
@@ -213,14 +212,14 @@ For more information on App Service plans, visit their Docs article: [Azure App 
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. At the top of the window, select the **+ Create** button.
 1. In the search bar, type in "*App Service plan*".
 1. Select **App Service plan** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription"
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 1. In the **App Service plan details** ensure that the following values have been set:
     - Name: contoso-asp-demo
@@ -250,7 +249,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. At the top of the window, select the **+ Create** button.
 1. In the search bar, type in "*Azure Cosmos DB*".
 1. Select **Azure Cosmos DB** from the search results.
@@ -258,7 +257,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 1. Select the **Create** button in relation to *Core (SQL) - Recommended*.
 1. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription"
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance Details** section, ensure that the following values have been set:
     - Account Name: contoso-cdba-demo
@@ -305,7 +304,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. Select **contoso-cdba-demo** for the Cosmos DB Account in the list of resources.
 1. Select **Data Explorer** from the left side navigation.
 1. Select the drop-down arrow next to **New Container**
@@ -326,7 +325,7 @@ For more information on Azure Cosmos containers, visit their Docs article: [Azur
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. Select **contoso-cdba-demo** for the Cosmos DB Account in the list of resources.
 1. Select **Data Explorer** from the left side navigation.
 1. Hover over WinGet, and select the ellipses (…).
@@ -346,14 +345,14 @@ For more information on Azure Key Vault, visit their Docs article: [About Azure 
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. At the top of the window, select the **+ Create** button.
 1. In the search bar, type in "*Key Vault*".
 1. Select **Key Vault** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription" 
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance details** section, ensure that the following values have been set:
     - Key vault name: contoso-keyvault-demo
@@ -388,11 +387,12 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 |-----------------------|---------------------------------------------|
 | AzStorageAccountKey   | Connection string to Azure Storage Account. |
 | CosmosAccountEndpoint | Endpoint                                    |
-| CosmosAccountKey      | The Cosmos Database Account Key.            |
+| CosmosReadOnlyKey     | The Cosmos Database Account Key.            |
+| CosmosReadWriteKey    | The Cosmos Database Read Account Key.       |
 
 1. Create the **AzStorageAccountKey** Secret in your Azure Key Vault.
     1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-    1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+    1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
     1. Select **contosostoreaccountdemo** for the Storage account from the list of resources.
     1. Select **Access keys** from the left side navigation.
     1. Select the **Show keys** button at the top of the page.
@@ -410,7 +410,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 1. Create the CosmosAccountEndpoint Secret in your Azure Key Vault.
     1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-    1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+    1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
     1. Select **cosmos-cdba-demo** for the Cosmos DB Account from the list of resources.
     1. Select **Keys** from the left side navigation.
     1. Copy the value under **URI**.
@@ -427,7 +427,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 1. Create the CosmosAccountKey Secret in your Azure Key Vault.
     1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-    1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+    1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
     1. Select **cosmos-cdba-demo** for the Cosmos DB Account from the list of resources.
     1. Select **Keys** from the left side navigation.
     1. Copy the value under **Primary Key**.
@@ -444,20 +444,20 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 ### Azure Function
 
-An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager rest source, responding to rest api requests.
+An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager REST source, responding to REST api requests.
 
 For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](/azure/azure-functions/functions-overview)
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. At the top of the window, select the **+ Create** button.
 1. In the search bar, type in "*Function App*".
 1. Select **Function App** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
     - Subscription: "Contoso Azure Subscription" 
-    - Resource Group: "WinGet_RestSource"
+    - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance Details** section, ensure that the following values have been set:
     - Function App name: contoso-function-demo
@@ -480,7 +480,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Wait for the deployment to complete before going to the next section.
 
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
 1. Select **contoso_function_demo** for the Function from the list of resources.
 1. Select **Identity** from the left side navigation.
 1. In the **Identity** section, set the following:
@@ -508,9 +508,12 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 |------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | AzureWebJobsStorage                      | @Microsoft.KeyVault(SecretUri=https://contoso-keyvault-demo.vault.azure.net/secrets/AzStorageAccountKey/)   |
 | CosmosAccountEndpoint                    | @Microsoft.KeyVault(SecretUri=https://contoso-keyvault-demo.vault.azure.net/secrets/CosmosAccountEndpoint/) |
-| CosmosAccountKey                         | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/CosmosAccountKey/)       |
+| CosmosReadOnlyKey                        | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/CosmosReadOnlyKey/)      |
+| CosmosReadWriteKey                       | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/CosmosReadWriteKey/)     |
 | FunctionName                             | contoso-function-demo                                                                                       |
 | ServerIdentifier                         | contoso-asp-demo                                                                                            |
+| CosmosDatabase                           | WinGet                                                                                                      |
+| CosmosContainer                          | Manifests                                                                                                   |
 | WEBSITE_CONTENTAZUREFILECONNECTIONSTRING | @Microsoft.KeyVault(SecretUri=https://cosmos-keyvault-demo.vault.azure.net/secrets/AzStorageAccountKey/)    |
 | WEBSITE_CONTENTSHARE                     | azfun-pkgman3pr-westus-test                                                                                 |
 | WEBSITE_LOAD_CERTIFICATES                | *                                                                                                           |
@@ -520,7 +523,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 
 1. Configure Application Settings for the Website runs from packages.
     1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
-    1. Select your Resource Group ("*WinGet_RestSource*") from the list.
+    1. Select your Resource Group ("*WinGet_RESTSource*") from the list.
     1. Select **contoso-function-demo** for the Key Vault in the list of resources.
     1. Select **Configuration** from the left side navigation.
     1. Select **+ New application setting** from the **Application settings** section.
