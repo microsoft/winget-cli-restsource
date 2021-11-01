@@ -102,15 +102,18 @@ Function New-ARMObjects
     
             ## Creates the Azure Resource
             Write-Information -MessageData "    Creating $($Object.ObjectType) following the ARM Parameter File..."
-            $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror
+            $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror -AsJob
     
-            ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
-            Start-Sleep -Seconds 10
+            while ($Result.State -eq "Running") {
+                ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
+                Start-Sleep -Seconds 10
+            }
     
             ## Verifies that no error occured when creating the Azure resource
-            if($objerror) {
+            if($objerror -or $Result.Error) {
                 $ErrReturnObject = @{
                     ObjectError = $objerror
+                    JobError    = $Result.Error
                 }
                 ## Creating the object following the ARM template failed.
                 Write-Error "Failed to create Azure object." -TargetObject $ErrReturnObject

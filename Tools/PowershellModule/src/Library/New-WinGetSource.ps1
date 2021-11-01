@@ -42,8 +42,8 @@ Function New-WinGetSource
     | Preference | Description                                                                                                             |
     |------------|-------------------------------------------------------------------------------------------------------------------------|
     | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager rest source. Uses free-tier options when available. |
-    | Basic      | Specifies a basic functioning Windows Package Manager rest source. Low cost.                                            |
-    | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers. High cost.                    |
+    | Basic      | Specifies a basic functioning Windows Package Manager rest source.                                                      |
+    | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
     
     (Default: Basic)
 
@@ -111,10 +111,6 @@ Function New-WinGetSource
         }
         
         ###############################
-        ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
-
-        ###############################
         ## Connects to Azure, if not already connected.
         Write-Verbose -Message "Testing connection to Azure."
         
@@ -123,6 +119,9 @@ Function New-WinGetSource
             throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
         }
 
+        ###############################
+        ## Creates the ARM files
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
 
         ###############################
         ## Create Resource Group 
