@@ -27,11 +27,11 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 
 1. Open an Edge Browser.
 2. Navigate to [https://github.com/microsoft/winget-cli-restsource/releases](https://github.com/microsoft/winget-cli-restsource/releases).
-3. Download the latest release of the Microsoft.WinGet.Source PowerShell module.
+3. Download the latest release of the Microsoft.WinGet.Source PowerShell module. (WinGet.RestSource-Winget.PowerShell.Source.zip)
 4. Open a File Explorer window, and navigate to where you downloaded the Microsoft.WinGet.Source PowerShell module.
-5. Right-click on the `Microsoft.WinGet.Source` PowerShell module, and select **Extract all** from the drop-down menu.
+5. Right-click on WinGet.RestSource-Winget.PowerShell.Source.zip, and select **Extract all** from the drop-down menu.
 6. In the new window, select the **Extract** button.
-7. After the extraction has completed, navigate to `.\Microsoft.WinGet.Source\src`.
+7. After the extraction has completed, navigate to '<extracted folder>\WinGet.RestSource-Winget.Powershell.Source'.
 8. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.Source.psd1` file. Select **Copy Path** from the drop-down menu.
 9. Open an **Administrative PowerShell** window.
 10. Run the following command from the Administrative PowerShell window:
