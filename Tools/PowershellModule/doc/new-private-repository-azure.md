@@ -95,7 +95,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 The Windows Package Manager rest source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager rest source.
 
-The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager rest source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
+The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Manifest Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove an Application Manifest open the Administrative PowerShell Window and run the following:
 
