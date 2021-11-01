@@ -55,14 +55,14 @@ Returns an Application Manifest object (*.json) of the specified JSON file.
 Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
 ```
 
-Returns an Manifest object of the specified Application Manifest Identifier that is queried against in the REST APIs.
+Returns an Manifest object of the specified Application Package Identifier that is queried against in the REST APIs.
 
 ### EXAMPLE 4
 ```
 Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
-Returns an Application Manifest object of the specified Manifest Identifier that is queried against in the REST APIs from the specified Subscription Name.
+Returns an Application Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
 ### EXAMPLE 5
 ```

@@ -20,7 +20,7 @@ Function Remove-WinGetManifest
     Name of the Azure Function that hosts the REST source.
 
     .PARAMETER ManifestIdentifier
-    THe Manifest Id that represents the App Manifest to be removed.
+    THe Package Id that represents the App Manifest to be removed.
 
     .PARAMETER SubscriptionName
     [Optional] The Subscription name contains the Windows Package Manager REST source

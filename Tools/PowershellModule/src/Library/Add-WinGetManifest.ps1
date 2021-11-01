@@ -123,7 +123,7 @@ Function Add-WinGetManifest
     PROCESS
     {
         foreach ($Manifest in $ApplicationManifest) {
-            Write-Verbose -Message "Confirming that the Manifest ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
+            Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
             $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -ManifestIdentifier $Manifest.PackageIdentifier
 
             $ManifestObject = $Manifest

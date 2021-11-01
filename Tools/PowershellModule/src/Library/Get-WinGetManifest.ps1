@@ -34,7 +34,7 @@ Function Get-WinGetManifest
     Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
     .PARAMETER ManifestIdentifier
-    [Optional] The Windows Package Manager Manifest Identifier of a specific Application Manifest result.
+    [Optional] The Windows Package Manager Package Identifier of a specific Application Manifest result.
 
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
@@ -52,12 +52,12 @@ Function Get-WinGetManifest
     .EXAMPLE
     Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs.
+    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs.
 
     .EXAMPLE
     Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs from the specified Subscription Name.
+    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
     .EXAMPLE
     Get-WinGetManifest -FunctionName "RESTSource"
