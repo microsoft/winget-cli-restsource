@@ -1,6 +1,6 @@
 # Create a Windows Package Manager REST source
 
-This section provides guidance on how to create a REST source that can be connected to using the Windows Package Manager for ISVs or Publishers who may have additional privacy requirements for their software distribution.
+This section provides guidance on how to create a REST source for the Windows Package Manager. ISVs or Publishers may host and manage a rest source if they would like full control of the applications available in a source. An independently hosted source may choose to expose the read endpoints publicly or restrict access to specific IP address via the addition of a traffic shaping module.  The basic setups configured by the cmdlets and examples result in a source that is publicly readable but requires an authorization key to manage. 
 
 Windows Package Manager offers a comprehensive package manager solution including a command line tool and a set of services for installing applications. For more general package submission information, see [submit packages to Windows Package Manager](../package/index.md).
 
