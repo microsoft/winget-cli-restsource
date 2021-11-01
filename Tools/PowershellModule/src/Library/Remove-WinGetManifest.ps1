@@ -28,7 +28,7 @@ Function Remove-WinGetManifest
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "RestSource" Rest APIs to remove the specified Manifest file from 
+    Connects to Azure, then runs the Azure Function "contosoRestSource" Rest APIs to remove the specified Manifest file from 
     the Windows Package Manager rest source
 
     #>

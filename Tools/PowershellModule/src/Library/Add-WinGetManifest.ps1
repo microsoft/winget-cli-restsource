@@ -89,7 +89,7 @@ Function Add-WinGetManifest
         }
 
         ###############################
-        ## Gets the content from the Application Manifest (*.JSON) file for posting to rest source
+        ## Gets the content from the Application Manifest (*.JSON, or *.YAML) file for posting to rest source.
         Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."
         $ApplicationManifest = Get-WinGetManifest -Path $Path
         if(!$ApplicationManifest) {
