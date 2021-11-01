@@ -73,4 +73,4 @@ steps:
   displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)\Winget.PowerShell.Source'
-    ArtifactName: 'WinGet.RestSource-Winget.Powershell.Source'
+    ArtifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
