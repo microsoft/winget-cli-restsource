@@ -14,12 +14,12 @@ Removes a Manifest file from the Azure REST source
 
 ### WinGet (Default)
 ```
-Remove-WinGetManifest [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>] [<CommonParameters>]
+Remove-WinGetManifest [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>] [<CommonParameters>]
 ```
 
 ### Azure
 ```
-Remove-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>]
+Remove-WinGetManifest [-FunctionName] <String> [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>]
  [<CommonParameters>]
 ```
 
@@ -36,7 +36,7 @@ The following Azure Modules are used by this script:
 
 ### EXAMPLE 1
 ```
-Remove-WinGetManifest -FunctionName "contosorestsource" -ManifestIdentifier "Windows.PowerToys"
+Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 ```
 
 Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
@@ -58,8 +58,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ManifestIdentifier
-THe Manifest Id that represents the App Manifest to be removed.
+### -PackageIdentifier
+The Package Identifier that represents the App Manifest to be removed.
 
 ```yaml
 Type: String
