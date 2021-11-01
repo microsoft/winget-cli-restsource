@@ -67,6 +67,9 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 
 2. After the above command has completed, copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
 
+> [!Note]
+> To prevent having to re-install this new PowerShell module each time, review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://docs.microsoft.com/en-us/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.1)
+
 ### Add manifests to the REST source
 
 The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
