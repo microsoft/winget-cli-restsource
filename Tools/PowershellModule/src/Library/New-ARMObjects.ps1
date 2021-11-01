@@ -4,29 +4,29 @@ Function New-ARMObjects
 {
     <#
     .SYNOPSIS
-    Creates the Azure Resources to stand-up a Windows Package Manager Rest Source.
+    Creates the Azure Resources to stand-up a Windows Package Manager REST Source.
 
     .DESCRIPTION
     Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will 
-    create the the Key Vault secrets and publish the Windows Package Manager rest source rest apis to the Azure Function.
+    create the the Key Vault secrets and publish the Windows Package Manager REST source REST apis to the Azure Function.
         
     The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
+        Az.Resources
+        Az.Accounts
+        Az.Websites
+        Az.Functions
 
     .PARAMETER ARMObjects
     Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
 
     .PARAMETER RestSourcePath
-    Path to the compiled Function ZIP containing the Rest APIs
+    Path to the compiled Function ZIP containing the REST APIs
 
     .PARAMETER AzResourceGroup
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGetResourceGroup"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet.RestSource.Functions.zip" -AzResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
@@ -129,10 +129,10 @@ Function New-ARMObjects
                 ## Gets the Azure Function Name from the Parameter JSON file contents.
                 $AzFunctionName = $jsonFunction.parameters.functionName.value
     
-                ## Verifies the presence of the "CompiledFunctions.zip" file.
+                ## Verifies the presence of the "WinGet.RestSource.Functions.zip" file.
                 Write-Verbose -Message "    Confirming Compiled Azure Functions is present"
                 if(Test-Path $RestSourcePath) {
-                    ## The "CompiledFunctions.zip" was found in the working directory
+                    ## The "WinGet.RestSource.Functions.zip" was found in the working directory
                     Write-Verbose -Message "      File Path Found: $RestSourcePath"
 
                     ## Uploads the Windows Package Manager functions to the Azure Function.
@@ -144,7 +144,7 @@ Function New-ARMObjects
                         FunctionArchivePath = $RestSourcePath
                         TestPathResults     = Test-Path $RestSourcePath
                     }
-                    ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
+                    ## The "WinGet.RestSource.Functions.zip" was not found. Unable to uploaded to the Azure Function.
                     Write-Error "File Path not found: $RestSourcePath" -TargetObject $ErrReturnObject
                 }
             }
