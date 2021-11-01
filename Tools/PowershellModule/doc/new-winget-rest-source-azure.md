@@ -42,9 +42,9 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 
 ### Automate the creation of a Windows Package Manager REST source
 
-The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
+The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](.\PowerShell\New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
-The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetSource.md) in Docs.
+The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
 
 | Required | Parameter                  | Description                                                                                                                         |
 |----------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -72,9 +72,9 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 
 ### Add manifests to the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Application Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](.\PowerShell\Add-WinGetManifest.md) cmdlet will add new Application Manifests to your Windows Package Manager REST source.
 
-The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/New-WinGetManifest.md).
+The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single application manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](.\PowerShell\Add-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To add an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -84,9 +84,9 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all application or a specific application by Package Identifier.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](.\PowerShell\Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all application or a specific application by Package Identifier.
 
-Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Get-WinGetManifest.md).
+Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](.\PowerShell\Get-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To get an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -96,9 +96,9 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -ManifestIdentifier "Windows.
 
 ## Remove manifests from a REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](.\PowerShell\Remove-WinGetManifest.md) cmdlet that will remove a specific Application Manifest from the specified Windows Package Manager REST source.
 
-The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](https://github.com/microsoft/winget-cli-restsource/tree/main/Tools/PowershellModule/doc/PowerShell/Remove-WinGetManifest.md).
+The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](.\PowerShell\Remove-WinGetManifest.md).
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To remove an Application Manifest open the Administrative PowerShell Window and run the following:
 
@@ -131,7 +131,7 @@ The Windows Package Manager REST Source contains the APIs required to provide a 
 
 Application Insights, a feature of Azure Monitor, is an extensible Application Performance Management (APM) service for developers and DevOps professionals. Azure's Application Insights can be used to monitor the health of the Windows Package Manager REST source, as well as provide powerful analytical insights to help with diagnosing any issues, and identify user experiences.
 
-For more information on Azure Application Insights, visit their Docs article: [What is Application Insights?](/azure/azure-monitor/app/app-insights-overview)
+For more information on Azure Application Insights, visit their Docs article: [What is Application Insights?](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 
 To install Application Insights:
 
@@ -159,7 +159,7 @@ To install Application Insights:
 
 An Azure storage account contains all of your Azure Storage data objects: blobs, file shares, queues, tables, and disks. The Storage account created below will be used to store the Azure Function binaries.
 
-For more information on Azure Storage Accounts, visit [Storage account overview](/azure/storage/common/storage-account-overview).
+For more information on Azure Storage Accounts, visit [Storage account overview](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 2. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
@@ -240,13 +240,13 @@ For more information on App Service plans, visit their Docs article: [Azure App 
 
 Azure Cosmos DB is a fully managed platform-as-a-service (PaaS).
 
-For more information on Cosmos Databases, visit their Docs article: [Welcome to Azure Cosmos DB](/azure/cosmos-db/introduction).
+For more information on Cosmos Databases, visit their Docs article: [Welcome to Azure Cosmos DB](https://docs.microsoft.com/en-us//azure/cosmos-db/introduction).
 
 #### Azure Cosmos account
 
 The Azure Cosmos account is the fundamental unit of global distribution and high availability. Your Azure Cosmos account contains a unique DNS name, and can virtually manage an unlimited amount of data and provisioned throughput. We will first create our Azure Cosmos account, before creating the individual Windows Package Manager Azure Cosmos database.
 
-For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](/azure/cosmos-db/account-databases-containers-items#elements-in-an-azure-cosmos-account)
+For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us//azure/cosmos-db/account-databases-containers-items#elements-in-an-azure-cosmos-account)
 
 **How to:**
 
@@ -303,7 +303,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 A single or multiple Azure Cosmos databases can be created under a specific Azure Cosmos account. The Azure Cosmos Database is analogous to a namespace.
 
-For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](/azure/cosmos-db/account-databases-containers-items#azure-cosmos-databases)
+For more information on Azure Cosmos database, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us//azure/cosmos-db/account-databases-containers-items#azure-cosmos-databases)
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
@@ -324,7 +324,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 
 An Azure Cosmos container is the unit of scalability both for provisioned throughput and storage. A container is horizontally partitioned and then replicated across multiple regions. This allows for the Windows Package Manager application manifests, and database to span multiple Azure regions.
 
-For more information on Azure Cosmos containers, visit their Docs article: [Azure Cosmos DB resource model](/azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
+For more information on Azure Cosmos containers, visit their Docs article: [Azure Cosmos DB resource model](https://docs.microsoft.com/en-us//azure/cosmos-db/account-databases-containers-items#azure-cosmos-containers)
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
@@ -344,7 +344,7 @@ For more information on Azure Cosmos containers, visit their Docs article: [Azur
 
 An Azure Key Vault centralizes the storage of application secrets, allowing you to control their distribution. The Key Vault greatly reduces the chances that secrets may be accidentally leaked. We will use the Azure Key Vault to securely store specific connection account details that will be used by the Azure Function.
 
-For more information on Azure Key Vault, visit their Docs article: [About Azure Key Vault secrets](/azure/key-vault/secrets/about-secrets)
+For more information on Azure Key Vault, visit their Docs article: [About Azure Key Vault secrets](https://docs.microsoft.com/en-us//azure/key-vault/secrets/about-secrets)
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
@@ -449,7 +449,7 @@ Azure Key Vault Secrets provide secure storage of generic secrets, such as passw
 
 An Azure Function is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. This Azure Function will provide the interactive functionality of the Windows Package Manager REST source, responding to REST api requests.
 
-For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](/azure/azure-functions/functions-overview)
+For more information on Azure Functions, visit their Docs article: [Introduction to Azure Functions](https://docs.microsoft.com/en-us//azure/azure-functions/functions-overview)
 
 1. Open your Microsoft Edge browser, and navigate to your Azure Portal ([https://portal.azure.com](https://portal.azure.com))
 1. In the search bar at the top of the Azure Portal, type *Resource Groups* and select **Resource groups** from the drop down.
