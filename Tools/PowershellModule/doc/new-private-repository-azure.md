@@ -55,7 +55,7 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | ParameterOutput            | The folder location where the ARM parameter files will be created.                                                                  |
 | No       | RESTSourcePath             | Path to the compiled REST API Zip file. (Default: .\RESTAPI\CompiledFunctions.ps1)                                                  |
 | No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager REST source. ["Demo", "Basic", "Enhanced"] |
-| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)                          |
+| No       | ShowConnectionInstructions | If specified, the instructions for connecting to the new Windows Package Manager REST source will be provided. (Default: False)     |
 
 The PowerShell Module must be re-imported each time the PowerShell window is closed. To create a new Windows Package Manager REST source this:
 
