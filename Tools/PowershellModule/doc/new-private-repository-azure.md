@@ -11,7 +11,7 @@ There are two ways available for managing REST source repositories with Windows 
 
 ## Manage Windows Package Manager rest source with PowerShell
 
-To simplify the management and interaction with the Windows Package Manager rest source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get application manifests from your Windows Package Manager rest source, as well as stand up a new Windows Package Manager rest source in Azure.
+To simplify the management and interaction with the Windows Package Manager rest source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get application manifests from your Windows Package Manager rest source, as well as stand up a new Windows Package Manager REST source in Azure.
 
 The following steps are required for managing a rest source repository with PowerShell:
 
