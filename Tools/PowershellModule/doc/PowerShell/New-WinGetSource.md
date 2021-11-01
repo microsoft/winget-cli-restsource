@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-WinGetSource
 
 ## SYNOPSIS
-Creates a Windows Package Manager REST source in Azure for private storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager application Manifests.
 
 ## SYNTAX
 
@@ -20,7 +20,7 @@ New-WinGetSource [-Name] <String> [[-Index] <String>] [[-ResourceGroup] <String>
 ```
 
 ## DESCRIPTION
-Creates a Windows Package Manager REST source in Azure for private storage of Windows Package Manager application Manifests.
+Creates a Windows Package Manager REST source in Azure for storage of Windows Package Manager application Manifests.
 
 The following Azure Modules are used by this script:
     Az.Resources
@@ -32,17 +32,17 @@ The following Azure Modules are used by this script:
 
 ### EXAMPLE 1
 ```
-New-WinGetSource -Name "contoso0002"
+New-WinGetSource -Name "contosoRESTSource"
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance.
+Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance.
 
 ### EXAMPLE 2
 ```
-New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
+New-WinGetSource -Name "contosoRESTSource" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInstructions
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contoso0002" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
+Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
 Displays the required command to connect the WinGet client to the new REST source after the repository has been created.
 
 ## PARAMETERS
