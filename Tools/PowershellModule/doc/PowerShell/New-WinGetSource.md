@@ -119,7 +119,7 @@ Aliases:
 
 Required: False
 Position: 5
-Default value: Westus
+Default value: westus
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

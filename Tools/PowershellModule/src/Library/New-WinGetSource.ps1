@@ -23,7 +23,7 @@ Function New-WinGetSource
 
     .PARAMETER ResourceGroup
     [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure 
-    resources will be created in in this Resource Group (Default: WinGetRESTsource)
+    resources will be created in in this Resource Group (Default: WinGetRestsource)
 
     .PARAMETER SubscriptionName
     [Optional] The name of the subscription that will be used to host the Windows Package Manager REST source.
@@ -35,7 +35,7 @@ Function New-WinGetSource
     [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
 
     .PARAMETER RESTSourcePath
-    [Optional] Path to the compiled REST API Zip file. (Default: .\RESTAPI\CompiledFunctions.ps1)
+    [Optional] Path to the compiled REST API Zip file. (Default: \Library\RestAPI\WinGet.RestSource.Functions.zip)
 
     .PARAMETER ImplementationPerformance
     [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
