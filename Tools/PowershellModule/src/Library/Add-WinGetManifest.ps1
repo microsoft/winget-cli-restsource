@@ -23,7 +23,7 @@ Function Add-WinGetManifest
     .PARAMETER Path
     The path to the Application Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
     This path may contain a single Application Manifest file, or a folder containing files for a single Application Manifest. Does not support 
-    targetting a single folder of multiple different applications.
+    targeting a single folder of multiple different applications.
 
     .PARAMETER SubscriptionName
     [Optional] The Subscription name contains the Windows Package Manager REST source
