@@ -26,7 +26,7 @@ Function New-ARMObjects
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet-CLI-RestSource.zip" -AzResourceGroup "WinGet"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet.RestSource.Functions.zip" -AzResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
@@ -129,10 +129,10 @@ Function New-ARMObjects
                 ## Gets the Azure Function Name from the Parameter JSON file contents.
                 $AzFunctionName = $jsonFunction.parameters.functionName.value
     
-                ## Verifies the presence of the "CompiledFunctions.zip" file.
+                ## Verifies the presence of the "WinGet.RestSource.Functions.zip" file.
                 Write-Verbose -Message "    Confirming Compiled Azure Functions is present"
                 if(Test-Path $RestSourcePath) {
-                    ## The "CompiledFunctions.zip" was found in the working directory
+                    ## The "WinGet.RestSource.Functions.zip" was found in the working directory
                     Write-Verbose -Message "      File Path Found: $RestSourcePath"
 
                     ## Uploads the Windows Package Manager functions to the Azure Function.
@@ -144,7 +144,7 @@ Function New-ARMObjects
                         FunctionArchivePath = $RestSourcePath
                         TestPathResults     = Test-Path $RestSourcePath
                     }
-                    ## The "CompiledFunctions.zip" was not found. Unable to uploaded to the Azure Function.
+                    ## The "WinGet.RestSource.Functions.zip" was not found. Unable to uploaded to the Azure Function.
                     Write-Error "File Path not found: $RestSourcePath" -TargetObject $ErrReturnObject
                 }
             }

@@ -54,7 +54,7 @@ Function New-ARMParameterObject
         $FrontDoorName      = $Name
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled 
-        ## Windows Package Manager Functions [CompiledFunctions.zip])
+        ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
         

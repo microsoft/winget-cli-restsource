@@ -57,12 +57,12 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | ImplementationPerformance  | specifies the performance of the resources to be created for the Windows Package Manager REST source. ["Demo", "Basic", "Enhanced"] |
 | No       | ShowConnectionInstructions | If specified, the instructions for connecting to the new Windows Package Manager REST source will be provided. (Default: False)     |
 
-The PowerShell Module must be re-imported each time the PowerShell window is closed. To create a new Windows Package Manager REST source this:
+The PowerShell Module must be re-imported each time the PowerShell window is closed. To create a new Windows Package Manager REST source open the Administrative PowerShell Window and run the following:
 
 1. From an Administrative PowerShell window run the following:
 
     ```PowerShell
-    PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetRestSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
+    PS C:\> New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
     ```
 
 2. After the above command has completed, copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
@@ -84,7 +84,7 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all application or a specific application by Package Identifier.
+The Windows Package Manager REST source provides a location for hosting your Application Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all applications or a specific application by Package Identifier.
 
 Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](PowerShell/Get-WinGetManifest.md).
 
@@ -169,7 +169,7 @@ For more information on Azure Storage Accounts, visit [Storage account overview]
 6. Select **Storage Account** from the search results.
 7. Select the **Create** button.
 8. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription"
+    - Subscription: [Subscription Name]
     - Resource Group: "WinGet_RESTSource"
 
 9. In the **Instance Details** enter the following values:
@@ -221,7 +221,7 @@ For more information on App Service plans, visit their Docs article: [Azure App 
 1. Select **App Service plan** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription"
+    - Subscription: [Subscription Name]
     - Resource Group: "WinGet_RESTSource"
 
 1. In the **App Service plan details** ensure that the following values have been set:
@@ -259,7 +259,7 @@ For more information on Azure Cosmos database, visit their Docs article: [Azure 
 1. Select the **Create** button.
 1. Select the **Create** button in relation to *Core (SQL) - Recommended*.
 1. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription"
+    - Subscription: [Subscription Name]
     - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance Details** section, ensure that the following values have been set:
@@ -354,7 +354,7 @@ For more information on Azure Key Vault, visit their Docs article: [About Azure 
 1. Select **Key Vault** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription" 
+    - Subscription: [Subscription Name] 
     - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance details** section, ensure that the following values have been set:
@@ -459,7 +459,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Select **Function App** from the search results.
 1. Select the **Create** button.
 1. In the **Project Details** ensure the following values have been set:
-    - Subscription: "Contoso Azure Subscription" 
+    - Subscription: [Subscription Name] 
     - Resource Group: "WinGet_RESTSource"
 
 1. In the **Instance Details** section, ensure that the following values have been set:
@@ -540,7 +540,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Open a PowerShell window on your computer.
 
     ``` PowerShell
-    PS C:\> $RestAPI = "C:\Projects\winget-cli-restsource\winget-cli-restsource.zip"
+    PS C:\> $RestAPI = "C:\Projects\winget-cli-restsource\WinGet.RestSource.Functions.zip"
     PS C:\> Connect-AzAccount -SubscriptionName "Contoso Azure Subscription"
     PS C:\> Publish-AzWebApp -ArchivePath $RestAPI -ResourceGroupName "WinGet_RestSource" -Name "contoso-function-demo" -Force
     ```
