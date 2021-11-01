@@ -65,7 +65,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
     PS C:\> New-WinGetSource -Name "contoso" -ResourceGroup "WinGetRestSource" -Region "westus" -ImplementationPerformance "Demo" -ShowConnectionInstructions
     ```
 
-2. After the above command has completed (~15 minutes), copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
+2. After the above command has completed, copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
 
 ### Add manifests to the REST source
 
