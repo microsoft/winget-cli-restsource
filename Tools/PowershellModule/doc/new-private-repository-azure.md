@@ -230,7 +230,7 @@ For more information on App Service plans, visit their Docs article: [Azure App 
 1. In the **Pricing Tier** section, ensure that the following values have been set:
     - Sku and size: Premium V2 P1v2
 
-1. Select the **Review + crerate** button.
+1. Select the **Review + create** button.
 1. Assuming the Validation has passed, select the **Create** button.
 1. After your deployment has completed, continue to the steps in the next section.
 
