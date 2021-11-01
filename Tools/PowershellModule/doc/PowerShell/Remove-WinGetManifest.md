@@ -17,12 +17,6 @@ Removes a Manifest file from the Azure REST source
 Remove-WinGetManifest [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>] [<CommonParameters>]
 ```
 
-### Custom
-```
-Remove-WinGetManifest [-URL] <String> [-Key] <String> [[-ManifestIdentifier] <String>]
- [[-SubscriptionName] <String>] [<CommonParameters>]
-```
-
 ### Azure
 ```
 Remove-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>]
@@ -47,44 +41,7 @@ Remove-WinGetManifest -FunctionName "RestSource" -ManifestIdentifier "Windows.Po
 
 Connects to Azure, then runs the Azure Function "RestSource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
 
-### EXAMPLE 2
-```
-Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
-```
-
-Connects to a remote URL REST APIs to remove the Application Manifest from the Windows Package Manager REST source
-
 ## PARAMETERS
-
-### -URL
-Name of the URL that hosts the REST source.
-
-```yaml
-Type: String
-Parameter Sets: Custom
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Key
-{{ Fill Key Description }}
-
-```yaml
-Type: String
-Parameter Sets: Custom
-Aliases:
-
-Required: True
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### -FunctionName
 Name of the Azure Function that hosts the REST source.

@@ -51,15 +51,15 @@ Function New-WinGetSource
     [Optional] If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)
 
     .EXAMPLE
-    New-WinGetSource -Name "contoso0002"
+    New-WinGetSource -Name "contosoRestSource"
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of 
+    Creates the Windows Package Manager rest source in Azure with resources named "contosoRestSource" in the westus region of 
     Azure with the basic level performance.
 
     .EXAMPLE
-    New-WinGetSource -Name "contoso0002" -ResourceGroup "WinGetSource" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
+    New-WinGetSource -Name "contosoRestSource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contoso0002" in the westus region of 
+    Creates the Windows Package Manager rest source in Azure with resources named "contosoRestSource" in the westus region of 
     Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
     to connect the WinGet client to the new rest source after the rest source has been created.
 

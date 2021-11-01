@@ -16,9 +16,6 @@ Function Remove-WinGetManifest
         Az.Websites
         Az.Functions
 
-    .PARAMETER URL
-    Name of the URL that hosts the rest source.
-
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the rest source.
 
@@ -29,15 +26,11 @@ Function Remove-WinGetManifest
     [Optional] The Subscription name contains the Windows Package Manager rest source
 
     .EXAMPLE
-    Remove-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+    Remove-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to remove the specified Manifest file from 
+    Connects to Azure, then runs the Azure Function "RestSource" Rest APIs to remove the specified Manifest file from 
     the Windows Package Manager rest source
 
-    .EXAMPLE
-    Remove-WinGetManifest -URL "https://contoso.azure.web.net/api/packageManifests" -ManifestIdentifier "Windows.PowerToys"
-
-    Connects to a remote URL Rest APIs to remove the Application Manifest from the Windows Package Manager rest source
     #>
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(

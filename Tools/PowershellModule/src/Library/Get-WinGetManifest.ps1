@@ -24,8 +24,8 @@ Function Get-WinGetManifest
     the same application.
 
     .PARAMETER JSON
-    A JSON String containing a single application's rest source package manifest that will be merged with locally processed files. This is
-    used by the script infrastructure internally and is NOT expected to be useful to an end user using this command.
+    A JSON string containing a single application's rest source Application Manifest that will be merged with locally processed files. This is
+    used by the script infrastructure internally and is not expected to be useful to an end user using this command.
 
     .PARAMETER URL
     Web URL to the host site containing the Rest APIs with access key (if required).
@@ -34,7 +34,7 @@ Function Get-WinGetManifest
     Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
 
     .PARAMETER ManifestIdentifier
-    [Optional] The Windows Package Manager Package Identifier of a specific Manifest result
+    [Optional] The Windows Package Manager Manifest Identifier of a specific Application Manifest result.
 
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
@@ -50,17 +50,17 @@ Function Get-WinGetManifest
     Returns a Manifest object (*.json) of the specified JSON file.
     
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+    Get-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys"
 
     Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+    Get-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 
     Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource"
+    Get-WinGetManifest -FunctionName "RestSource"
 
     Returns an array of Manifest objects that are found in the specified Azure Function.
 
@@ -187,7 +187,7 @@ Function Get-WinGetManifest
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
                     }
                     elseif($PathChildItemsJSON.count -gt 1) {
-                        ## More than one Application's JSON file was found.
+                        ## More than one Application Manifest's JSON files was found.
                         $ErrorMessage    = "Directory contains more than one JSON file."
                         $ErrReturnObject = @{
                             JSONFiles = $PathChildItemsJSON

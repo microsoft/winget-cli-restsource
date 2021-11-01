@@ -4,21 +4,21 @@ Function Test-AzureResource
 {
     <#
     .SYNOPSIS
-    
+    Returns a boolean result validating that the Resource Group and Function exist.
 
     .DESCRIPTION
-
+    Returns a boolean result validating that the Resource Group and Function exist.
 
     .PARAMETER ResourceGroup
     The Resource Group that the objects will be tested in reference to.
 
     .PARAMETER FunctionName
-    
+    Name of the Azure function name.
 
     .EXAMPLE
-    Test-AzureResource -ResourceGroup "WinGetResourceGroup" -FunctionName "Contoso0002"
+    Test-AzureResource -ResourceGroup "WinGet" -FunctionName "contosoRestSource"
 
-
+    Returns a boolean result validating that the Resource Group and Function exist.
 
     #>
     PARAM(

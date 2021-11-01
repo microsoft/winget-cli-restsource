@@ -22,9 +22,9 @@ Function Add-AzureResourceGroup
     The Region (westus, eastus, centralcanada, etc.) that the Resource Group will be created in.
 
     .EXAMPLE
-    Add-AzureResourceGroup -Name "WinGetResourceGroup" -Region "westus"
+    Add-AzureResourceGroup -Name "contosoRestSource" -Region "westus"
 
-    Assumes an active connection to Azure. Creates a new Resource Group named "WinGetResourceGroup" in the West US region.
+    Assumes an active connection to Azure. Creates a new Resource Group named "contosoRestSource" in the West US region.
     #>
 
     PARAM(

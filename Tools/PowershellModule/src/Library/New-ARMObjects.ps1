@@ -11,10 +11,10 @@ Function New-ARMObjects
     create the the Key Vault secrets and publish the Windows Package Manager rest source rest apis to the Azure Function.
         
     The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
+        Az.Resources
+        Az.Accounts
+        Az.Websites
+        Az.Functions
 
     .PARAMETER ARMObjects
     Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
@@ -26,7 +26,7 @@ Function New-ARMObjects
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGetResourceGroup"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
