@@ -31,9 +31,9 @@ Function Test-ARMResourceName
     name meets the Azure resource requirements.
 
     .EXAMPLE
-    Test-ARMResourceName -ResourceType "AppInsight" -ResourceName "contosoRestSource"
+    Test-ARMResourceName -ResourceType "AppInsight" -ResourceName "contosoRESTSource"
 
-    Verifies that the name "contosoRestSource" meets the requirements for Azure App Insights.
+    Verifies that the name "contosoRESTSource" meets the requirements for Azure App Insights.
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Targetted")]

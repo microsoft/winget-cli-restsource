@@ -4,10 +4,10 @@ Function Remove-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Removes a Manifest file from the Azure rest source
+    Removes a Manifest file from the Azure REST source
 
     .DESCRIPTION
-    This function will connect to the Azure Tenant that hosts the Windows Package Manager rest source, removing the 
+    This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the 
     specified application Manifest.
         
     The following Azure Modules are used by this script:
@@ -17,19 +17,19 @@ Function Remove-WinGetManifest
         Az.Functions
 
     .PARAMETER FunctionName
-    Name of the Azure Function that hosts the rest source.
+    Name of the Azure Function that hosts the REST source.
 
     .PARAMETER ManifestIdentifier
     THe Manifest Id that represents the App Manifest to be removed.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name contains the Windows Package Manager rest source
+    [Optional] The Subscription name contains the Windows Package Manager REST source
 
     .EXAMPLE
-    Remove-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys"
+    Remove-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "contosoRestSource" Rest APIs to remove the specified Manifest file from 
-    the Windows Package Manager rest source
+    Connects to Azure, then runs the Azure Function "contosoRESTSource" REST APIs to remove the specified Manifest file from 
+    the Windows Package Manager REST source
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'WinGet')]
@@ -77,9 +77,9 @@ Function Remove-WinGetManifest
                 }
         
                 ###############################
-                ##  Rest api call  
+                ##  REST api call  
                 
-                ## Specifies the Rest api call that will be performed
+                ## Specifies the REST api call that will be performed
                 $TriggerName    = "ManifestDelete"
                 $apiContentType = "application/json"
                 $apiMethod      = "Delete"

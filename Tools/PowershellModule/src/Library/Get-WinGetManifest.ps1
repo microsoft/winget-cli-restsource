@@ -5,11 +5,11 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    the manifest found. Allows for retrieving results based on the package identifier when targetting the Rest APIs.
+    Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning 
+    the manifest found. Allows for retrieving results based on the package identifier when targetting the REST APIs.
 
     .DESCRIPTION
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
+    Connects to the specified source REST API, or local file system path to retrieve the application Manifests, returning 
     an array of all Manifests found. Allows for retrieving results based on the package identifier.
         
     The following Azure Modules are used by this script:
@@ -24,20 +24,20 @@ Function Get-WinGetManifest
     the same application.
 
     .PARAMETER JSON
-    A JSON string containing a single application's rest source Application Manifest that will be merged with locally processed files. This is
+    A JSON string containing a single application's REST source Application Manifest that will be merged with locally processed files. This is
     used by the script infrastructure internally and is not expected to be useful to an end user using this command.
 
     .PARAMETER URL
-    Web URL to the host site containing the Rest APIs with access key (if required).
+    Web URL to the host site containing the REST APIs with access key (if required).
 
     .PARAMETER FunctionName
-    Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
+    Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
     .PARAMETER ManifestIdentifier
     [Optional] The Windows Package Manager Manifest Identifier of a specific Application Manifest result.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
+    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
 
     .EXAMPLE
     Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
@@ -50,17 +50,17 @@ Function Get-WinGetManifest
     Returns a Manifest object (*.json) of the specified JSON file.
     
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys"
+    Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys"
 
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
-
-    .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosoRestSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
-
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
+    Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "RestSource"
+    Get-WinGetManifest -FunctionName "contosoRESTSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+
+    Returns a Manifest object of the specified Manifest Identifier that is queried against in the REST APIs from the specified Subscription Name.
+
+    .EXAMPLE
+    Get-WinGetManifest -FunctionName "RESTSource"
 
     Returns an array of Manifest objects that are found in the specified Azure Function.
 
@@ -123,9 +123,9 @@ Function Get-WinGetManifest
                 }
         
                 ###############################
-                ##  Rest api call  
+                ##  REST api call  
                 
-                ## Specifies the Rest api call that will be performed
+                ## Specifies the REST api call that will be performed
                 $TriggerName    = "ManifestGet"
                 $apiContentType = "application/json"
                 $apiMethod      = "Get"
@@ -234,7 +234,7 @@ Function Get-WinGetManifest
             "Azure" {
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
 
-                ## Retrieves the Azure Function URL used to add new manifests to the rest source
+                ## Retrieves the Azure Function URL used to add new manifests to the REST source
                 $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
                         
                 ## can function key be part of the header
@@ -246,7 +246,7 @@ Function Get-WinGetManifest
                 $apiHeader.Add("x-functions-key", $FunctionKey)
                 $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $ManifestIdentifier
                 
-                ## Publishes the Manifest to the Windows Package Manager rest source
+                ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."
 
                 $Results = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType

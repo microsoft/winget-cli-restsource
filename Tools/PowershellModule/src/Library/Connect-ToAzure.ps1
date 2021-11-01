@@ -14,10 +14,10 @@ Function Connect-ToAzure
         Az.Accounts  --> Connect-AzAccount, Get-AzContext
         
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name that contains the Windows Package Manager rest source Rest APIs
+    [Optional] The Subscription name that contains the Windows Package Manager REST source REST APIs
 
     .PARAMETER SubscriptionId
-    [Optional] The Subscription Id that contains the Windows Package Manager rest source Rest APIs
+    [Optional] The Subscription Id that contains the Windows Package Manager REST source REST APIs
 
     .EXAMPLE
     Connect-ToAzure -SubscriptionName "Visual Studio Subscription"

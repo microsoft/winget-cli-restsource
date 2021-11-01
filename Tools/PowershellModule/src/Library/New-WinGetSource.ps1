@@ -4,10 +4,10 @@ Function New-WinGetSource
 {
     <#
     .SYNOPSIS
-    Creates a Windows Package Manager rest source in Azure for the storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager application Manifests.
 
     .DESCRIPTION
-    Creates a Windows Package Manager rest source in Azure for the storage of Windows Package Manager application Manifests.
+    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager application Manifests.
 
     The following Azure Modules are used by this script:
         Az.Resources
@@ -22,11 +22,11 @@ Function New-WinGetSource
     [Optional] The suffix that will be added to each name and file names.
 
     .PARAMETER ResourceGroup
-    [Optional] The name of the Resource Group that the Windows Package Manager rest source will reside. All Azure 
-    resources will be created in in this Resource Group (Default: WinGetrestsource)
+    [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure 
+    resources will be created in in this Resource Group (Default: WinGetRESTsource)
 
     .PARAMETER SubscriptionName
-    [Optional] The name of the subscription that will be used to host the Windows Package Manager rest source.
+    [Optional] The name of the subscription that will be used to host the Windows Package Manager REST source.
 
     .PARAMETER Region
     [Optional] The Azure location where objects will be created in. (Default: westus)
@@ -34,34 +34,34 @@ Function New-WinGetSource
     .PARAMETER ParameterOutput
     [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
 
-    .PARAMETER RestSourcePath
-    [Optional] Path to the compiled Rest API Zip file. (Default: .\RestAPI\CompiledFunctions.ps1)
+    .PARAMETER RESTSourcePath
+    [Optional] Path to the compiled REST API Zip file. (Default: .\RESTAPI\CompiledFunctions.ps1)
 
     .PARAMETER ImplementationPerformance
-    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager rest source.
+    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
     | Preference | Description                                                                                                             |
     |------------|-------------------------------------------------------------------------------------------------------------------------|
-    | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager rest source. Uses free-tier options when available. |
-    | Basic      | Specifies a basic functioning Windows Package Manager rest source.                                                      |
+    | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager REST source. Uses free-tier options when available. |
+    | Basic      | Specifies a basic functioning Windows Package Manager REST source.                                                      |
     | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
     
     (Default: Basic)
 
     .PARAMETER ShowConnectionInstructions
-    [Optional] If specified, the instructions for connecting to the Windows Package Manager rest source. (Default: False)
+    [Optional] If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)
 
     .EXAMPLE
-    New-WinGetSource -Name "contosoRestSource"
+    New-WinGetSource -Name "contosoRESTSource"
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contosoRestSource" in the westus region of 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
     Azure with the basic level performance.
 
     .EXAMPLE
-    New-WinGetSource -Name "contosoRestSource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
+    New-WinGetSource -Name "contosoRESTSource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager rest source in Azure with resources named "contosoRestSource" in the westus region of 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosoRESTSource" in the westus region of 
     Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
-    to connect the WinGet client to the new rest source after the rest source has been created.
+    to connect the WinGet client to the new REST source after the REST source has been created.
 
     #>
     PARAM(
@@ -125,7 +125,7 @@ Function New-WinGetSource
 
         ###############################
         ## Create Resource Group 
-        Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager rest source."
+        Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager REST source."
         Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
         
         #### Verifies ARM Parameters are correct ####
@@ -157,15 +157,15 @@ Function New-WinGetSource
         New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -AzResourceGroup $ResourceGroup
 
         ###############################
-        ## Shows how to connect local Windows Package Manager Client to newly created rest source
+        ## Shows how to connect local Windows Package Manager Client to newly created REST source
         if($ShowConnectionInstructions) {
             $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
             $AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
             $AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $ResourceGroup).DefaultHostName
 
             ## Post script Run Informational:
-            #### Instructions on how to add the rest source to your Windows Package Manager Client
-            Write-Information -MessageData "Use the following command to register the new rest source with your Windows Package Manager Client:"
+            #### Instructions on how to add the REST source to your Windows Package Manager Client
+            Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:"
             Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
 
             #### For more information about how to use the solution, visit the aka.ms link.

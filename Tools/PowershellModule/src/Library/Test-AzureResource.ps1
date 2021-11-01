@@ -16,7 +16,7 @@ Function Test-AzureResource
     Name of the Azure function name.
 
     .EXAMPLE
-    Test-AzureResource -ResourceGroup "WinGet" -FunctionName "contosoRestSource"
+    Test-AzureResource -ResourceGroup "WinGet" -FunctionName "contosoRESTSource"
 
     Returns a boolean result validating that the Resource Group and Function exist.
 

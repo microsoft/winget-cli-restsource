@@ -4,11 +4,11 @@ Function New-ARMObjects
 {
     <#
     .SYNOPSIS
-    Creates the Azure Resources to stand-up a Windows Package Manager Rest Source.
+    Creates the Azure Resources to stand-up a Windows Package Manager REST Source.
 
     .DESCRIPTION
     Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will 
-    create the the Key Vault secrets and publish the Windows Package Manager rest source rest apis to the Azure Function.
+    create the the Key Vault secrets and publish the Windows Package Manager REST source REST apis to the Azure Function.
         
     The following Azure Modules are used by this script:
         Az.Resources
@@ -19,14 +19,14 @@ Function New-ARMObjects
     .PARAMETER ARMObjects
     Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
 
-    .PARAMETER RestSourcePath
-    Path to the compiled Function ZIP containing the Rest APIs
+    .PARAMETER RESTSourcePath
+    Path to the compiled Function ZIP containing the REST APIs
 
     .PARAMETER AzResourceGroup
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\CompiledFunction.zip" -AzResourceGroup "WinGet"
+    New-ARMObjects -ARMObjects $ARMObjects -RESTSourcePath "C:\WinGet-CLI-RESTSource\CompiledFunction.zip" -AzResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
