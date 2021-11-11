@@ -120,8 +120,8 @@ Function New-ARMParameterObject
         $AzTenantID            = $(Get-AzContext).Tenant.Id
         Write-Verbose -Message "Retrieved the Azure Tenant Id: $AzTenantID"
 
-        $AzDirectoryID         = $(Get-AzADUser -UserPrincipalName $(Get-AzContext).Account.ID).Id
-        Write-Verbose -Message "Retrieved the Azure User Id: $AzDirectoryId"
+        $AzObjectID         = $(Get-AzContext).Account.ID
+        Write-Verbose -Message "Retrieved the Azure User Id: $AzObjectID"
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
@@ -162,7 +162,7 @@ Function New-ARMParameterObject
                             value = @(
                                 @{
                                     tenantId = $AzTenantID
-                                    objectID = $AzDirectoryID
+                                    objectID = $AzObjectID
                                     permissions = @{
                                         keys         = @()
                                         secrets      = @( "Get", "Set" )
