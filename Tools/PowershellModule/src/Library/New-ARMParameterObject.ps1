@@ -466,7 +466,9 @@ Function New-ARMParameterObject
         foreach ($object in $ARMObjects) {
             ## Converts the structure of the variable to a JSON file.
             Write-Verbose -Message "  Creating the Parameter file for $($Object.ObjectType) in the following location:`n    $($Object.ParameterPath)"
-            $Object.Parameters | ConvertTo-Json -Depth 7 | Out-File -FilePath $Object.ParameterPath -Force
+            $parameterFile = $Object.Parameters | ConvertTo-Json -Depth 7
+            $parameterFile| Out-File -FilePath $Object.ParameterPath -Force
+            Write-Verbose -Message "Parameter file: ($parameterFile)"
         }
     }
     END
