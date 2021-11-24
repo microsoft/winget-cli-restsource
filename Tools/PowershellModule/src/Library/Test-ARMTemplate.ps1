@@ -20,7 +20,7 @@ Function Test-ARMTemplate
     The Resource Group that the objects will be tested in reference to.
 
     .EXAMPLE
-    Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup "WinGetResourceGroup"
+    Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup "WinGet"
 
     Tests that the Azure Resource can be created in the specified Azure Resource Group with the parameter and template files.
 

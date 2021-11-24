@@ -5,12 +5,12 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    an array of all Manifests found. Allows for retrieving results based on the name when targetting the Rest APIs.
+    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
+    the manifest found. Allows for retrieving results based on the package identifier when targetting the REST APIs.
 
     .DESCRIPTION
-    Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning 
-    an array of all Manifests found. Allows for retrieving results based on the name.
+    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
+    an array of all Manifests found. Allows for retrieving results based on the package identifier.
         
     The following Azure Modules are used by this script:
         Az.Resources --> Invoke-AzResourceAction
@@ -21,20 +21,24 @@ Function Get-WinGetManifest
     .PARAMETER Path
     Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
 
+    If you are processing a multi-file manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
+    the same application.
+
     .PARAMETER JSON
-    A JSON String containing a single applications manifest that will be merged with the retrieved yaml files.
+    A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed files. This is
+    used by the script infrastructure internally and is not expected to be useful to an end user using this command.
 
     .PARAMETER URL
-    Web URL to the host site containing the Rest APIs with access key (if required).
+    Web URL to the host site containing the REST APIs with access key (if required).
 
     .PARAMETER FunctionName
-    Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
+    Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
-    .PARAMETER ManifestIdentifier
-    [Optional] The Windows Package Manager Package Identifier of a specific Manifest result
+    .PARAMETER PackageIdentifier
+    [Optional] The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
+    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
 
     .EXAMPLE
     Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
@@ -47,17 +51,17 @@ Function Get-WinGetManifest
     Returns a Manifest object (*.json) of the specified JSON file.
     
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+    Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
-
-    .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
-
-    Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
+    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs.
 
     .EXAMPLE
-    Get-WinGetManifest -FunctionName "PrivateSource"
+    Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+
+    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
+
+    .EXAMPLE
+    Get-WinGetManifest -FunctionName "contosorestSource"
 
     Returns an array of Manifest objects that are found in the specified Azure Function.
 
@@ -67,7 +71,7 @@ Function Get-WinGetManifest
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
         [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$ManifestIdentifier,
+        [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure")] [string]$PackageIdentifier,
         [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName
     )
     BEGIN
@@ -115,14 +119,14 @@ Function Get-WinGetManifest
                     throw "Failed to confirm resources exist in Azure. Please verify and try again."
                 }
 
-                if($ManifestIdentifier){
-                    $ManifestIdentifier = "/$ManifestIdentifier"
+                if($PackageIdentifier){
+                    $PackageIdentifier = "/$PackageIdentifier"
                 }
         
                 ###############################
-                ##  Rest api call  
+                ##  REST api call  
                 
-                ## Specifies the Rest api call that will be performed
+                ## Specifies the REST api call that will be performed
                 $TriggerName    = "ManifestGet"
                 $apiContentType = "application/json"
                 $apiMethod      = "Get"
@@ -184,7 +188,7 @@ Function Get-WinGetManifest
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
                     }
                     elseif($PathChildItemsJSON.count -gt 1) {
-                        ## More than one Application's JSON file was found.
+                        ## More than one Package Manifest's JSON files was found.
                         $ErrorMessage    = "Directory contains more than one JSON file."
                         $ErrReturnObject = @{
                             JSONFiles = $PathChildItemsJSON
@@ -213,7 +217,7 @@ Function Get-WinGetManifest
                 }
                 else {
                     ## $Path variable is pointing at a file
-                    Write-Verbose -Message "Retrieving the Application Manifest for: $Path"
+                    Write-Verbose -Message "Retrieving the Package Manifest for: $Path"
             
                     ## Gets the Manifest object and contents of the Manifest - identifying the manifest file extension.
                     $ApplicationManifest = Get-Content -Path $Path -Raw
@@ -231,7 +235,7 @@ Function Get-WinGetManifest
             "Azure" {
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
 
-                ## Retrieves the Azure Function URL used to add new manifests to the rest source
+                ## Retrieves the Azure Function URL used to add new manifests to the REST source
                 $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
                         
                 ## can function key be part of the header
@@ -241,9 +245,9 @@ Function Get-WinGetManifest
                 $DefaultHostName = $FunctionApp.DefaultHostName
                 $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
                 $apiHeader.Add("x-functions-key", $FunctionKey)
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $ManifestIdentifier
+                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $PackageIdentifier
                 
-                ## Publishes the Manifest to the Windows Package Manager rest source
+                ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."
 
                 $Results = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType
@@ -278,8 +282,12 @@ Function Get-WinGetManifest
                             else{
                                 $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
                             }
+
+                            Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
                         }
-                        Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
+                        else {
+                            Write-Error -Message "Unable to process YAML files. Re-import the module to reload the required dependencies." -Category ResourceUnavailable
+                        }
                     }
                     "Error" {
                     }

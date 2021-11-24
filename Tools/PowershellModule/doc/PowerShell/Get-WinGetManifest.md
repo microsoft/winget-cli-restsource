@@ -8,14 +8,14 @@ schema: 2.0.0
 # Get-WinGetManifest
 
 ## SYNOPSIS
-Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
-Allows for filtering results based on the name when targetting the Rest APIs.
+Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning an array of all Manifests found.
+Allows for filtering results based on the name when targetting the REST APIs.
 
 ## SYNTAX
 
 ### Azure (Default)
 ```
-Get-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] [[-SubscriptionName] <String>]
+Get-WinGetManifest [-FunctionName] <String> [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>]
  [<CommonParameters>]
 ```
 
@@ -24,13 +24,8 @@ Get-WinGetManifest [-FunctionName] <String> [[-ManifestIdentifier] <String>] [[-
 Get-WinGetManifest [-Path] <String> [<CommonParameters>]
 ```
 
-### Custom
-```
-Get-WinGetManifest [-URL] <String> [<CommonParameters>]
-```
-
 ## DESCRIPTION
-Connects to the specified source Rest API, or local file system path to retrieve the application Manifests, returning an array of all Manifests found.
+Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning an array of all Manifests found.
 Allows for filtering results based on the name.
     
 The following Azure Modules are used by this script:
@@ -46,35 +41,35 @@ The following Azure Modules are used by this script:
 Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
 ```
 
-Returns an array of all Manifest objects based on the files found within the specified Path.
+Returns an array of the Package Manifest objects based on the files (*.yaml or *.json) found within the specified Path.
 
 ### EXAMPLE 2
 ```
 Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys\Microsoft.PowerToys.json"
 ```
 
-Returns a Manifest object (*.json) of the specified JSON file.
+Returns a Package Manifest object of the specified JSON file.
 
 ### EXAMPLE 3
 ```
-Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys"
+Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 ```
 
-Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs.
+Returns an Manifest object of the specified Application Package Identifier that is queried against in the REST APIs.
 
 ### EXAMPLE 4
 ```
-Get-WinGetManifest -FunctionName "PrivateSource" -ManifestIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
+Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
-Returns a Manifest object of the specified Manifest Identifier that is queried against in the Rest APIs from the specified Subscription Name.
+Returns a Package Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
 
 ### EXAMPLE 5
 ```
-Get-WinGetManifest -FunctionName "PrivateSource"
+Get-WinGetManifest -FunctionName "contosorestsource"
 ```
 
-Returns an array of Manifest objects that are found in the specified Azure Function.
+Returns an array of Package Manifest objects that are found in the specified Azure Function.
 
 ## PARAMETERS
 
@@ -93,23 +88,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -URL
-Web URL to the host site containing the Rest APIs with access key (if required).
-
-```yaml
-Type: String
-Parameter Sets: Custom
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -FunctionName
-Name of the Azure Function Name that contains the Windows Package Manager Rest APIs.
+Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
 ```yaml
 Type: String
@@ -123,7 +103,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ManifestIdentifier
+### -PackageIdentifier
 \[Optional\] The Windows Package Manager Package Identifier of a specific Manifest result
 
 ```yaml
@@ -139,7 +119,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the Rest APIs.
+\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
 
 ```yaml
 Type: String

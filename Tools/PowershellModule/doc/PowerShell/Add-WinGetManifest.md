@@ -8,7 +8,7 @@ schema: 2.0.0
 # Add-WinGetManifest
 
 ## SYNOPSIS
-Submits a Manifest file(s) to the Azure rest source
+Submits a Manifest file(s) to the Azure REST source
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Add-WinGetManifest [-FunctionName] <String> [-Path] <String> [[-SubscriptionName
 ```
 
 ## DESCRIPTION
-By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager rest source, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
+By running this function with the required inputs, it will connect to the Azure Tenant that hosts the Windows Package Manager REST source, then collects the required URL for Manifest submission before retrieving the contents of the Manifest JSON to submit.
     
 The following Azure Modules are used by this script:
     Az.Resources
@@ -30,29 +30,29 @@ The following Azure Modules are used by this script:
 
 ### EXAMPLE 1
 ```
-Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
+Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"
 ```
 
-Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager rest source
+Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to add the specified Manifest file (*.json) to the Windows Package Manager REST source
 
 ### EXAMPLE 2
 ```
-Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\"
+Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\"
 ```
 
-Connects to Azure, then runs the Azure Function "PrivateSource" Rest APIs to adds the Manifest file(s) (*.json / *.yaml) found in the specified folder to the Windows Package Manager rest source
+Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to adds the Manifest file(s) (*.json / *.yaml) found in the specified folder to the Windows Package Manager REST source
 
 ### EXAMPLE 3
 ```
-Add-WinGetManifest -FunctionName "PrivateSource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
+Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json" -SubscriptionName "Visual Studio Subscription"
 ```
 
-Connects to Azure and the specified Subscription, then runs the Azure Function "PrivateSource" Rest APIs to add the specified Manifest file (*.json) to the Windows Package Manager rest source
+Connects to Azure and the specified Subscription, then runs the Azure Function "contosorestsource" REST APIs to add the specified Manifest file (*.json) to the Windows Package Manager REST source
 
 ## PARAMETERS
 
 ### -FunctionName
-Name of the Azure Function that hosts the rest source.
+Name of the Azure Function that hosts the REST source.
 
 ```yaml
 Type: String
@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-The Path to the JSON manifest file or folder hosting the JSON / YAML files that will be uploaded to the rest source. This path may contain a single JSON / YAML file, or a folder containing multiple JSON / YAML files. Does not support targetting a single folder of multiple different applications in *.yaml format.
+The Path to the JSON manifest file or folder hosting the JSON / YAML files that will be uploaded to the REST source. This path may contain a single JSON / YAML file, or a folder containing multiple JSON / YAML files. Does not support targetting a single folder of multiple different applications in *.yaml format.
 
 ```yaml
 Type: String
@@ -82,7 +82,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] The Subscription name contains the Windows Package Manager rest source
+\[Optional\] The Subscription name contains the Windows Package Manager REST source
 
 ```yaml
 Type: String
