@@ -22,7 +22,7 @@ Function Get-WinGetManifest
     Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
 
     If you are processing a multi-file manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
-    the same application.
+    the same package manifest.
 
     .PARAMETER JSON
     A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed files. This is
