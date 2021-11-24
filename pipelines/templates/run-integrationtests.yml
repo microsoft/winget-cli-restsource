@@ -1,0 +1,45 @@
+# Template helper to copy files and publish them as an artifact
+# If we end up with multiple test dlls, copy the dlls to a test directory
+# and update how the dlls are specified.
+parameters:
+  name: ''
+  dll: ''
+  source: ''
+
+steps:
+- task: DownloadGitHubRelease@0
+  inputs:
+    connection: Microsoft
+    userRepository: microsoft\winget-cli
+    defaultVersionType: 'latest'
+    itemPattern: "+(Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle|*.xml)"
+    downloadPath: '$(System.ArtifactsDirectory)'
+  displayName: Download latest Winget release
+
+- powershell: |
+    # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
+    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
+
+    # Get path to license file downloaded from GitHub
+    $licensePath = @(dir "$(System.ArtifactsDirectory)\*License*.xml")[0].FullName
+    $licensePath
+
+    # Install Winget
+    $ProgressPreference = 'SilentlyContinue'
+    iwr https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
+    # iwr https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+    Add-AppxProvisionedPackage -Online -PackagePath "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -DependencyPackagePath .\Microsoft.VCLibs.x64.14.00.Desktop.appx -LicensePath $licensePath
+    Add-AppxPackage "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+    winget source add -n "winget-pkgs-restsource" -a $(RestSourceUrl) -t "Microsoft.Rest"
+  displayName: "Setup test pre-requisites"
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run tests: ${{ parameters.name }}'
+  inputs:
+    command: 'test'
+    arguments: "--no-build -c Release"
+    publishTestResults: true
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\*.csproj'
+  env:
+    RestSourceUrl: "$(RestSourceUrl)" #  variable set in pipeline settings
+    

@@ -16,30 +16,10 @@ steps:
     Start-CosmosDbEmulator
   displayName: "Setup test pre-requisites"
 
-- task: CopyFiles@2
-  displayName: 'Copy Files: ${{ parameters.name }}'
-  inputs:
-    SourceFolder: ${{ parameters.source }}
-    TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
-    CleanTargetFolder: true
-    OverWrite: true
-  condition: succeeded()
-
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   displayName: 'Run tests: ${{ parameters.name }}'
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: ${{ parameters.dll }}
-    searchFolder: '$(build.artifactstagingdirectory)\${{ parameters.name }}'
-    codeCoverageEnabled: true
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-    overrideTestrunParameters: '-CosmosAccountEndpoint "$(CosmosDbEmulator.Endpoint)"'
-  condition: succeeded()
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
-  condition: succeededOrFailed()
-  inputs:
-    PathtoPublish: '$(Agent.TempDirectory)\TestResults'
-    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'
+    command: 'test'
+    arguments: "--no-build -c Release"
+    publishTestResults: true
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\*.csproj'

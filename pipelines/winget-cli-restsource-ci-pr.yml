@@ -20,7 +20,7 @@ jobs:
   displayName: 'Build, Publish & Test'
   timeoutInMinutes: 60
   pool:
-    vmImage: windows-latest
+    vmImage: windows-2022
     demands:
     - msbuild
     - visualstudio

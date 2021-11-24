@@ -37,7 +37,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         private const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
 
         private readonly ITestOutputHelper log;
-        private readonly IConfigurationRoot configuration;
         private readonly CosmosDataStore cosmosDataStore;
         private IList<CosmosPackageManifest> allTestManifests;
 
@@ -49,7 +48,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         {
             this.log = log;
 
-            this.configuration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
 
                 // Defaults specified in the Test.runsettings.json
                 .AddJsonFile("Test.runsettings.json", true)
@@ -58,11 +57,11 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
                 .AddEnvironmentVariables()
                 .Build();
 
-            string endpoint = this.configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new ArgumentNullException();
-            string readOnlyKey = this.configuration[CosmosConnectionConstants.CosmosReadOnlyKeySetting] ?? throw new ArgumentNullException();
-            string readWriteKey = this.configuration[CosmosConnectionConstants.CosmosReadWriteKeySetting] ?? throw new ArgumentNullException();
-            string databaseId = this.configuration[CosmosConnectionConstants.DatabaseNameSetting] ?? throw new ArgumentNullException();
-            string containerId = this.configuration[CosmosConnectionConstants.ContainerNameSetting] ?? throw new ArgumentNullException();
+            string endpoint = configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new ArgumentNullException();
+            string readOnlyKey = configuration[CosmosConnectionConstants.CosmosReadOnlyKeySetting] ?? throw new ArgumentNullException();
+            string readWriteKey = configuration[CosmosConnectionConstants.CosmosReadWriteKeySetting] ?? throw new ArgumentNullException();
+            string databaseId = configuration[CosmosConnectionConstants.DatabaseNameSetting] ?? throw new ArgumentNullException();
+            string containerId = configuration[CosmosConnectionConstants.ContainerNameSetting] ?? throw new ArgumentNullException();
 
             this.log.WriteLine($"{CosmosConnectionConstants.CosmosAccountEndpointSetting}: {endpoint}");
             this.log.WriteLine($"{CosmosConnectionConstants.CosmosReadOnlyKeySetting}: {readOnlyKey}");
@@ -168,7 +167,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             this.log.WriteLine("Tests that GetPackages returns the expected package.");
             {
                 var packages = await this.cosmosDataStore.GetPackages(PowerToysPackageIdentifier, null);
-                Assert.NotEqual(0, packages.Items.Count);
+                Assert.NotEmpty(packages.Items);
                 Assert.Equal(PowerToysPackageIdentifier, packages.Items.First().PackageIdentifier);
             }
 
@@ -185,7 +184,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             this.log.WriteLine("Tests that GetPackageManifests returns the expected package.");
             {
                 var packageManifests = await this.cosmosDataStore.GetPackageManifests(PowerToysPackageIdentifier);
-                Assert.NotEqual(0, packageManifests.Items.Count);
+                Assert.NotEmpty(packageManifests.Items);
                 Assert.Equal(PowerToysPackageIdentifier, packageManifests.Items.First().PackageIdentifier);
             }
 
@@ -193,7 +192,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             {
                 const string version = "0.37.0";
                 var packageManifests = await this.cosmosDataStore.GetPackageManifests(PowerToysPackageIdentifier, null, version);
-                Assert.NotEqual(0, packageManifests.Items.Count);
+                Assert.NotEmpty(packageManifests.Items);
                 Assert.Equal(PowerToysPackageIdentifier, packageManifests.Items.First().PackageIdentifier);
                 Assert.Equal(version, packageManifests.Items.First().Versions.Single().PackageVersion);
             }

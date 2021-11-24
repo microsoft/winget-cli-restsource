@@ -339,7 +339,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.PackageIdentifier, this.PackageName, this.Publisher, this.Versions).GetHashCode();
+            return HashCode.Combine(this.PackageIdentifier, this.PackageName, this.Publisher, this.Versions);
         }
     }
 }
