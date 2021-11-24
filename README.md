@@ -46,7 +46,7 @@ In Visual Studio, run the tests from the menu with Test > Run All Tests
 
 The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](./Tools/PowershellModule/doc/PowerShell/New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager rest source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
-The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\PowerShell\New-WinGetSource.md) in Docs.
+The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](.\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md) in Docs.
 
 | Required | Parameter                  | Description                                                                                                                                |
 |----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
