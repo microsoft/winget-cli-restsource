@@ -46,14 +46,14 @@ steps:
 - template: run-unittests.yml
   parameters:
     name: WinGet.RestSource.UnitTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
     dll: Microsoft.WinGet.RestSource.UnitTest.dll
 
 ## Run Integration Tests
 - template: run-integrationtests.yml
   parameters:
     name: WinGet.RestSource.IntegrationTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\bin\$(BuildConfiguration)\netcoreapp5.0'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\bin\$(BuildConfiguration)\netcoreapp5.0'
     dll: Microsoft.WinGet.RestSource.IntegrationTest.dll
 
 ## Component Governance

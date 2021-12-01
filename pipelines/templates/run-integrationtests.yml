@@ -1,10 +1,10 @@
-# Template helper to copy files and publish them as an artifact
+# Template helper to run unit tests
 # If we end up with multiple test dlls, copy the dlls to a test directory
 # and update how the dlls are specified.
 parameters:
   name: ''
   dll: ''
-  source: ''
+  testDirectory: ''
 
 steps:
 - task: DownloadGitHubRelease@0
@@ -18,7 +18,7 @@ steps:
 
 - powershell: |
     # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
-    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
+    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
 
     # Get path to license file downloaded from GitHub
     $licensePath = @(dir "$(System.ArtifactsDirectory)\*License*.xml")[0].FullName
@@ -27,10 +27,10 @@ steps:
     # Install Winget
     $ProgressPreference = 'SilentlyContinue'
     iwr https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
-    # iwr https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+    iwr https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
     Add-AppxProvisionedPackage -Online -PackagePath "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -DependencyPackagePath .\Microsoft.VCLibs.x64.14.00.Desktop.appx -LicensePath $licensePath
     Add-AppxPackage "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-    winget source add -n "winget-pkgs-restsource" -a $(RestSourceUrl) -t "Microsoft.Rest"
+    winget source add -n "winget-cli-restsource" -a $(RestSourceUrl) -t "Microsoft.Rest"
   displayName: "Setup test pre-requisites"
 
 - task: DotNetCoreCLI@2

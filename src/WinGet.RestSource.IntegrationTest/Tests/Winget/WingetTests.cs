@@ -32,7 +32,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         /// <inheritdoc/>
         public async Task InitializeAsync()
         {
-            if (this.addRestSource)
+            if (this.AddRestSource)
             {
                 // Must be running as admin to succeed.
                 await this.AddSource();
@@ -42,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         /// <inheritdoc/>
         public async Task DisposeAsync()
         {
-            if (this.addRestSource)
+            if (this.AddRestSource)
             {
                 // Must be running as admin to succeed.
                 await this.RemoveSource();
@@ -99,6 +99,14 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
                 return Enumerable.Empty<WingetApp>();
             }
 
+            /* Output expected to be in this format:
+                Name                              Id                                      Version          Match
+                ----------------------------------------------------------------------------------------------------------
+                PowerToys (Preview)               Microsoft.PowerToys                     0.51.0
+                PowerShell Preview                Microsoft.PowerShell.Preview            7.2.0.10
+                PowerShell                        Microsoft.PowerShell                    7.2.0.0
+                Microsoft PowerApps CLI           Microsoft.PowerAppsCLI                  1.0
+            */
             return rows
                 .Skip(2)
                 .Select(r =>
@@ -127,7 +135,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
 
         private async Task TestWingetQuery(string query, Func<string, bool> validator, params string[] expectedPackageIdentifiers)
         {
-            string output = await RunWinget($"{query} -s {this.restSourceName}");
+            string output = await RunWinget($"{query} -s {this.RestSourceName}");
             if (validator != null)
             {
                 Assert.True(validator(output));
@@ -143,12 +151,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         private async Task AddSource()
         {
             await this.RemoveSource();
-            await RunWinget($"source add -n {this.restSourceName} -a {this.restSourceUrl} -t \"Microsoft.Rest\"", CommandResultValidation.ZeroExitCode);
+            await RunWinget($"source add -n {this.RestSourceName} -a {this.RestSourceUrl} -t \"Microsoft.Rest\"", CommandResultValidation.ZeroExitCode);
         }
 
         private async Task RemoveSource()
         {
-            await RunWinget($"source remove {this.restSourceName}");
+            await RunWinget($"source remove {this.RestSourceName}");
         }
 
         private record WingetApp(string Name, string Id, string Version);

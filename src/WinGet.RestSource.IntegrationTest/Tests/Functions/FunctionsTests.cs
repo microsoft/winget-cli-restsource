@@ -45,8 +45,8 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         public FunctionsTests(ITestOutputHelper log)
             : base(log)
         {
-            this.packagesUrl = this.restSourceUrl.AppendPathSegment("packages");
-            this.packageManifestsUrl = this.restSourceUrl.AppendPathSegment("packageManifests");
+            this.packagesUrl = this.RestSourceUrl.AppendPathSegment("packages");
+            this.packageManifestsUrl = this.RestSourceUrl.AppendPathSegment("packageManifests");
             this.powerToysPackageManifestUrl = this.packageManifestsUrl.AppendPathSegment(PowerToysPackageIdentifier);
             this.powerToysPackageUrl = this.packagesUrl.AppendPathSegment(PowerToysPackageIdentifier);
         }
@@ -76,21 +76,6 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 await this.RunAndTestProtectedApi(this.powerToysPackageManifestUrl, HttpMethod.Delete);
                 await this.RunAndTestProtectedApi(this.packageManifestsUrl, HttpMethod.Post, this.powerToysManifestJson);
             }
-        }
-
-        private async Task RunAndTestProtectedApi(string url, HttpMethod httpMethod, object data = null)
-        {
-            Func<string, Task> method = data == null ?
-                (url => url.SendAsync(httpMethod)) :
-                    data is string str ?
-                        (url => url.SendStringAsync(httpMethod, str)) :
-                        (url => url.SendJsonAsync(httpMethod, data));
-
-            // Protected API should fail without an authorization code.
-            await Assert.ThrowsAsync<FlurlHttpException>(() => method(url));
-
-            // Should succeed once the authorization key is added.
-            await method(url.SetQueryParam("code", this.functionsMasterKey));
         }
 
         /// <summary>
@@ -166,14 +151,14 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         [Fact]
         public async Task GetPackages()
         {
-            this.log.WriteLine("Tests that GetPackages returns the expected package.");
+            this.Log.WriteLine("Tests that GetPackages returns the expected package.");
             {
                 var packages = await GetConsistentApiResponse<Package>(this.powerToysPackageUrl);
                 Assert.NotEmpty(packages.Data);
                 Assert.Equal(PowerToysPackageIdentifier, packages.Data.First().PackageIdentifier);
             }
 
-            this.log.WriteLine("Tests that ContinuationToken has an effect for GetPackages.");
+            this.Log.WriteLine("Tests that ContinuationToken has an effect for GetPackages.");
             {
                 var firstPackageSet = await GetConsistentApiResponse<Package>(this.packagesUrl);
                 Assert.Equal(MaxResultsPerPage, firstPackageSet.Data.Count);
@@ -183,18 +168,18 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 Assert.False(firstPackageSet.Data.Intersect(continuedPackageSet.Data).Any());
             }
 
-            this.log.WriteLine("Tests that GetPackageManifests returns the expected package.");
+            this.Log.WriteLine("Tests that GetPackageManifests returns the expected package.");
             {
                 var packageManifests = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
                 Assert.NotEmpty(packageManifests.Data);
                 Assert.Equal(PowerToysPackageIdentifier, packageManifests.Data.First().PackageIdentifier);
             }
 
-            this.log.WriteLine("Tests that GetPackageManifests returns the expected package and version.");
+            this.Log.WriteLine("Tests that GetPackageManifests returns the expected package and version.");
             {
                 const string version = "0.37.0";
                 var packageManifests = await GetConsistentApiResponse<PackageManifest>(
-                    this.restSourceUrl
+                    this.RestSourceUrl
                     .AppendPathSegment("packageManifests")
                     .AppendPathSegment(PowerToysPackageIdentifier)
                     .SetQueryParam("Version", version));
@@ -203,7 +188,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 Assert.Equal(version, packageManifests.Data.First().Versions.Single().PackageVersion);
             }
 
-            this.log.WriteLine("Tests that ContinuationToken has an effect for GetPackageManifests.");
+            this.Log.WriteLine("Tests that ContinuationToken has an effect for GetPackageManifests.");
             {
                 var firstPackageManifestSet = await GetConsistentApiResponse<Package>(this.packageManifestsUrl);
                 Assert.Equal(MaxResultsPerPage, firstPackageManifestSet.Data.Count);
@@ -221,7 +206,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         [Fact]
         public async Task SearchUsingQuery()
         {
-            this.log.WriteLine("Tests that SearchPackageManifests returns the expected results when using the Query property.");
+            this.Log.WriteLine("Tests that SearchPackageManifests returns the expected results when using the Query property.");
             {
                 await this.TestSearchQuery("PowerToys", MatchType.Exact, PowerToysPackageIdentifier);
                 await this.TestSearchQuery("powertoys", MatchType.CaseInsensitive, PowerToysPackageIdentifier);
@@ -230,8 +215,10 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 await this.TestSearchQuery("nonexistentpackage", MatchType.Substring);
             }
 
-            this.log.WriteLine("Tests that using ContinuationToken with SearchPackageManifests allows us to retrieve all manifests.");
+            this.Log.WriteLine("Tests that using ContinuationToken with SearchPackageManifests allows us to retrieve all manifests.");
             {
+                /* TODO: Test writing to the repository between reads on the continuation token. */
+
                 var allResults = new HashSet<ManifestSearchResponse>();
                 string continuationToken = null;
                 do
@@ -290,9 +277,24 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             }
         }
 
+        private async Task RunAndTestProtectedApi(string url, HttpMethod httpMethod, object data = null)
+        {
+            Func<string, Task> method = data == null ?
+                (url => url.SendAsync(httpMethod)) :
+                    data is string str ?
+                        (url => url.SendStringAsync(httpMethod, str)) :
+                        (url => url.SendJsonAsync(httpMethod, data));
+
+            // Protected API should fail without an authorization code.
+            await Assert.ThrowsAsync<FlurlHttpException>(() => method(url));
+
+            // Should succeed once the authorization key is added.
+            await method(url.SetQueryParam("code", this.FunctionsHostKey));
+        }
+
         private async Task<SearchApiResponse<List<ManifestSearchResponse>>> GetSearchResults(ManifestSearchRequest manifestSearchRequest, string continuationToken = null)
         {
-            string url = this.restSourceUrl.AppendPathSegment("manifestSearch");
+            string url = this.RestSourceUrl.AppendPathSegment("manifestSearch");
 
             IFlurlResponse response;
             if (continuationToken != null)

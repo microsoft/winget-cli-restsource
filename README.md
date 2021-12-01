@@ -46,7 +46,7 @@ Running tests are a great way to ensure that functionality is preserved across m
 * Copy the `WinGet.RestSource.IntegrationTest\Test.runsettings.template.json` template configuration to `Test.runsettings.json`
   * Modify the `RestSourceUrl` property to point to a deployed rest source endpoint. You can use the below instructions to deploy a rest instance.
   * If the local winget client doesn't already have the source added, the integration tests can add it. To do so, change the `AddRestSource` property to true. Visual Studio must be running as admin in this case.
-  * There is a test case that **modifies** the rest source. By default it's disabled, to run it the `RunWriteTests` setting must be set to true. The `FunctionsMasterKey` setting must also be set since the add/update/delete endpoints all require function authorization.
+  * There is a test case that **modifies** the rest source. By default it's disabled, to run it the `RunWriteTests` setting must be set to true. The `FunctionsHostKey` setting must also be set since the add/update/delete endpoints all require function authorization. We recommend creating a new pipeline-specific host key for this purpose.
 
 ## Automatically create a rest source
 

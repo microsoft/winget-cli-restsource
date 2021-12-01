@@ -1,15 +1,15 @@
-# Template helper to copy files and publish them as an artifact
+# Template helper to run integration tests
 # If we end up with multiple test dlls, copy the dlls to a test directory
 # and update how the dlls are specified.
 parameters:
   name: ''
   dll: ''
-  source: ''
+  testDirectory: ''
 
 steps:
 - powershell: |
     # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
-    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.source }}\Test.runsettings.json"
+    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
 
     # Launch Cosmos DB emulator
     Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"

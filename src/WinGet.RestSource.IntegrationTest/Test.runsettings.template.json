@@ -1,7 +1,7 @@
 ﻿{
-    "RestSourceName": "winget-pkgs-restsource",
+    "RestSourceName": "winget-cli-restsource",
     "RestSourceUrl": "https://localhost:7071/api",
     "AddRestSource": "false",
     "RunWriteTests": "false",
-    "FunctionsMasterKey": null
+    "FunctionsHostKey": null
 }
