@@ -6,12 +6,11 @@
 
 namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Validators;
-    using Microsoft.WinGet.RestSource.Utils.Validators.StringValidators;
 
     /// <summary>
     /// ManifestSearchRequest.
@@ -146,7 +145,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.MaximumResults, this.FetchAllManifests, this.Query, this.Inclusions, this.Filters).GetHashCode();
+            return HashCode.Combine(this.MaximumResults, this.FetchAllManifests, this.Query, this.Inclusions, this.Filters);
         }
     }
 }

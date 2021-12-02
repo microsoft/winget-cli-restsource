@@ -29,18 +29,24 @@ The REST functions can be run locally, but to use winget with them, the function
 
 Your commands to winget will now use your locally running REST instance as the primary source.
 
-## Running Unit Tests
+## Running Tests
 
-Running unit tests are a great way to ensure that functionality is preserved across major changes. You can run these tests in Visual Studio Test Explorer.
+Running tests are a great way to ensure that functionality is preserved across major changes. You can run these tests in Visual Studio Test Explorer. In Visual Studio, run the tests from the menu with Test > Run All Tests
 
-### Testing Prerequisites
+### Unit Testing Prerequisites
 
 * Install the [Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
 * Copy the `WinGet.RestSource.UnitTest\Test.runsettings.template.json` template configuration to `Test.runsettings.json`
   * The defaults should work for your local Cosmos DB emulator instance. You can change the configuration to point to a Cosmos DB instance in Azure instead.
   * Alternatively, all of the test configuration properties can be set as environment variables. This is useful for overriding properties in an ADO build.
 
-In Visual Studio, run the tests from the menu with Test > Run All Tests
+### Integration Testing Prerequisites
+
+* Install the [winget client](https://github.com/microsoft/winget-cli) locally.
+* Copy the `WinGet.RestSource.IntegrationTest\Test.runsettings.template.json` template configuration to `Test.runsettings.json`
+  * Modify the `RestSourceUrl` property to point to a deployed rest source endpoint. You can use the below instructions to deploy a rest instance.
+  * If the local winget client doesn't already have the source added, the integration tests can add it. To do so, change the `AddRestSource` property to true. Visual Studio must be running as admin in this case.
+  * There is a test case that **modifies** the rest source. By default it's disabled, to run it the `RunWriteTests` setting must be set to true. The `FunctionsHostKey` setting must also be set since the add/update/delete endpoints all require function authorization. We recommend creating a new pipeline-specific host key for this purpose.
 
 ## Automatically create a rest source
 

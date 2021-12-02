@@ -191,7 +191,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Fetch Results
-                packages = await this.dataStore.GetPackages(packageIdentifier, req.Query[QueryConstants.ContinuationToken]);
+                packages = await this.dataStore.GetPackages(packageIdentifier, headers.GetValueOrDefault(QueryConstants.ContinuationToken));
             }
             catch (DefaultException e)
             {

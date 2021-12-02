@@ -188,8 +188,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                string continuationToken = headers.GetValueOrDefault(QueryConstants.ContinuationToken);
 
-                string continuationToken = null;
                 string versionFilter = null;
                 string channelFilter = null;
                 string marketFilter = null;
@@ -197,7 +197,6 @@ namespace Microsoft.WinGet.RestSource.Functions
                 // Schema supports query parameters only when PackageIdentifier is specified.
                 if (!string.IsNullOrWhiteSpace(packageIdentifier))
                 {
-                    continuationToken = req.Query[QueryConstants.ContinuationToken];
                     versionFilter = req.Query[QueryConstants.Version];
                     channelFilter = req.Query[QueryConstants.Channel];
                     marketFilter = req.Query[QueryConstants.Market];

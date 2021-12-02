@@ -13,7 +13,7 @@ steps:
     command: 'restore'
     projects: '**/*.csproj'
     feedsToUse: 'config'
-    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGEt.config'
+    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGet.config'
     restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
 
 ## Build
@@ -42,12 +42,19 @@ steps:
 # Publish powershell
 - template: copy-and-publish-powershell.yml
 
-## Run Unit Tests
+# Run Unit Tests
 - template: run-unittests.yml
   parameters:
     name: WinGet.RestSource.UnitTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
     dll: Microsoft.WinGet.RestSource.UnitTest.dll
+
+## Run Integration Tests
+- template: run-integrationtests.yml
+  parameters:
+    name: WinGet.RestSource.IntegrationTest
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\bin\$(BuildConfiguration)\netcoreapp5.0'
+    dll: Microsoft.WinGet.RestSource.IntegrationTest.dll
 
 ## Component Governance
 - task: ComponentGovernanceComponentDetection@0
