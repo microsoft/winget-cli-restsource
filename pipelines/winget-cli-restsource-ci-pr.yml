@@ -20,6 +20,8 @@ jobs:
   displayName: 'Build, Publish & Test'
   timeoutInMinutes: 60
   pool:
+    # Need to specify windows-2022 until windows-latest moves to Server 2022.
+    # We need Server 2022 to use the "winget" appExecutionAlias in the integration tests.
     vmImage: windows-2022
     demands:
     - msbuild

@@ -1,4 +1,4 @@
-# Template helper to run unit tests
+# Template helper to run integration tests
 # If we end up with multiple test dlls, copy the dlls to a test directory
 # and update how the dlls are specified.
 parameters:
@@ -27,7 +27,6 @@ steps:
     # Install Winget
     $ProgressPreference = 'SilentlyContinue'
     iwr https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
-    iwr https://github.com/microsoft/winget-cli/releases/download/v1.1.12653/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
     Add-AppxProvisionedPackage -Online -PackagePath "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -DependencyPackagePath .\Microsoft.VCLibs.x64.14.00.Desktop.appx -LicensePath $licensePath
     Add-AppxPackage "$(System.ArtifactsDirectory)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
     winget source add -n "winget-cli-restsource" -a $(RestSourceUrl) -t "Microsoft.Rest"

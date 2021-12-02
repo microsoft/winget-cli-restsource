@@ -1,4 +1,4 @@
-# Template helper to run integration tests
+# Template helper to run unit tests
 # If we end up with multiple test dlls, copy the dlls to a test directory
 # and update how the dlls are specified.
 parameters:
