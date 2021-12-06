@@ -117,10 +117,18 @@ Function New-ARMParameterObject
         
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
         Write-Verbose -Message "Retrieving the Azure Tenant and User Id Information"
-        $AzTenantID            = $(Get-AzContext).Tenant.Id
+        $AzContext = $(Get-AzContext)
+        $AzTenantID = $AzContext.Tenant.Id
         Write-Verbose -Message "Retrieved the Azure Tenant Id: $AzTenantID"
 
-        $AzObjectID         = $(Get-AzContext).Account.ID
+        if ($AzContext.Account.type -eq "User")
+        {
+            $AzObjectID = $(Get-AzADUser -UserPrincipalName $AzContext.Account.ID).Id
+        }
+        else
+        {
+            $AzObjectID = $(Get-AzADServicePrinciple -ApplicationId $AzContext.Account.ID).Id
+        }
         Write-Verbose -Message "Retrieved the Azure User Id: $AzObjectID"
         
         ## This is specific to the JSON file creation
