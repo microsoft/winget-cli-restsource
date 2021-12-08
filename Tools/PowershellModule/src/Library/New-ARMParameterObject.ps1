@@ -127,7 +127,7 @@ Function New-ARMParameterObject
         }
         else
         {
-            $AzObjectID = $(Get-AzADServicePrinciple -ApplicationId $AzContext.Account.ID).Id
+            $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         }
         Write-Verbose -Message "Retrieved the Azure User Id: $AzObjectID"
         
