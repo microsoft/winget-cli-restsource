@@ -22,5 +22,4 @@ jobs:
   - template: templates/restore-build-sign-publish-test.yml
 
   # Run Compliance checks
-  # TODO reenable before checkin
-  #- template: templates/compliance.yml
+  - template: templates/compliance.yml
