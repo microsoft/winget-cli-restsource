@@ -129,7 +129,7 @@ Function New-ARMParameterObject
         {
             $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         }
-        Write-Verbose -Message "Retrieved the Azure User Id: $AzObjectID"
+        Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
