@@ -121,11 +121,14 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         private static async Task<string> RunWinget(string arguments, CommandResultValidation commandResultValidation = CommandResultValidation.None)
         {
             var result = await Cli.Wrap(@"winget")
-            .WithArguments(arguments)
-            .WithValidation(commandResultValidation)
-            .ExecuteBufferedAsync();
+                .WithArguments(arguments)
+                .WithValidation(commandResultValidation)
+                .ExecuteBufferedAsync();
+                
+            if (!string.IsNullOrWhiteSpace(result.StandardOutput))
+                return result.StandardOutput;
 
-            return result.StandardOutput ?? result.StandardError;
+            return result.StandardError;
         }
 
         private async Task TestWingetSearchQuery(string query, params string[] expectedPackageIdentifiers)
