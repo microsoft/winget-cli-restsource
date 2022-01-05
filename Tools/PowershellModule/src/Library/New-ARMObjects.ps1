@@ -116,7 +116,8 @@ Function New-ARMObjects
                     JobError    = $Result.Error
                 }
                 ## Creating the object following the ARM template failed.
-                Write-Error "Failed to create Azure object." -TargetObject $ErrReturnObject
+                ## TODO: extend error reporting in logs across scripts.
+                Write-Error "Failed to create Azure object. $($Result.Error)" -TargetObject $ErrReturnObject
                 Return
             }
             else {

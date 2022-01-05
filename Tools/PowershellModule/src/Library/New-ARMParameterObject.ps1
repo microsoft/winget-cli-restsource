@@ -117,11 +117,19 @@ Function New-ARMParameterObject
         
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
         Write-Verbose -Message "Retrieving the Azure Tenant and User Id Information"
-        $AzTenantID            = $(Get-AzContext).Tenant.Id
+        $AzContext = $(Get-AzContext)
+        $AzTenantID = $AzContext.Tenant.Id
         Write-Verbose -Message "Retrieved the Azure Tenant Id: $AzTenantID"
 
-        $AzDirectoryID         = $(Get-AzADUser -UserPrincipalName $(Get-AzContext).Account.ID).Id
-        Write-Verbose -Message "Retrieved the Azure User Id: $AzDirectoryId"
+        if ($AzContext.Account.type -eq "User")
+        {
+            $AzObjectID = $(Get-AzADUser -UserPrincipalName $AzContext.Account.ID).Id
+        }
+        else
+        {
+            $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
+        }
+        Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
         
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
@@ -162,7 +170,7 @@ Function New-ARMParameterObject
                             value = @(
                                 @{
                                     tenantId = $AzTenantID
-                                    objectID = $AzDirectoryID
+                                    objectID = $AzObjectID
                                     permissions = @{
                                         keys         = @()
                                         secrets      = @( "Get", "Set" )
@@ -466,7 +474,9 @@ Function New-ARMParameterObject
         foreach ($object in $ARMObjects) {
             ## Converts the structure of the variable to a JSON file.
             Write-Verbose -Message "  Creating the Parameter file for $($Object.ObjectType) in the following location:`n    $($Object.ParameterPath)"
-            $Object.Parameters | ConvertTo-Json -Depth 7 | Out-File -FilePath $Object.ParameterPath -Force
+            $parameterFile = $Object.Parameters | ConvertTo-Json -Depth 7
+            $parameterFile| Out-File -FilePath $Object.ParameterPath -Force
+            Write-Verbose -Message "Parameter file: ($parameterFile)"
         }
     }
     END
