@@ -124,9 +124,11 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
                 .WithArguments(arguments)
                 .WithValidation(commandResultValidation)
                 .ExecuteBufferedAsync();
-                
+
             if (!string.IsNullOrWhiteSpace(result.StandardOutput))
+            {
                 return result.StandardOutput;
+            }
 
             return result.StandardError;
         }

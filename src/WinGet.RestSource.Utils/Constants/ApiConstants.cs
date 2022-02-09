@@ -20,6 +20,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static readonly string SourceIdentifier = ApiConstants.ServerIdentifier;
 
         /// <summary>
+        /// Whether certificate authentication is enabled.
+        /// TODO Make official.
+        /// </summary>
+        public static readonly bool CertificateAuthenticationRequired = bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
+
+        /// <summary>
         /// Server Supported Versions.
         /// </summary>
         public static readonly ApiVersions ServerSupportedVersions = new ApiVersions()
@@ -60,5 +66,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         /// Gets server Identifier.
         /// </summary>
         public static string ServerIdentifier => Environment.GetEnvironmentVariable("ServerIdentifier");
+
+        /// <summary>
+        /// Gets whether certificate authentication is enabled.
+        /// TODO Make official.
+        /// </summary>
+        public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationRequired");
     }
 }
