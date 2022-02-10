@@ -117,7 +117,28 @@
             "type": "string",
             "defaultValue": "*",
             "metadata": {
-                "description": "This is the thumbprint loading Certs."
+              "description": "This is the thumbprint loading Certs."
+            }
+        },
+        "certificateAuthenticationEnabled": {
+            "type": "string",
+            "defaultValue": "false",
+            "metadata": {
+                "description": "Whether certificate authentication is enabled."
+            }
+        },
+        "certificateAuthenticationAllowSelfSigned": {
+            "type": "string",
+            "defaultValue": "false",
+            "metadata": {
+              "description": "Whether self signed certificates are allowed as the server root/intermediate certificate."
+            }
+        },
+        "certificateAuthenticationSubjectName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Subject name of the server root/intermediate certificate. The key vault of this rest souce must be provisioned manually with the appropriate root/intermediate certificate for client certificate validation."
             }
         }
     },
@@ -164,22 +185,25 @@
                         "[concat('Microsoft.Web/Sites/', parameters('functionName'))]",
                         "AzureFunctionKeyVaultAccessPolicy"
                     ],
-                    "properties": {
-                        "FunctionName": "[parameters('functionName')]",
-                        "ServerIdentifier": "[parameters('serverIdentifier')]",
-                        "CosmosDatabase": "[parameters('cosmosDatabase')]",
-                        "CosmosContainer": "[parameters('cosmosContainer')]",
-                        "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
-                        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
-                        "AzureWebJobsStorage": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
-                        "WEBSITE_CONTENTSHARE": "[toLower(parameters('functionName'))]",
-                        "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
-                        "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
-                        "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountWriteKey_secretName'), '/)')]",
-                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]"
-                    }
+                  "properties": {
+                    "FunctionName": "[parameters('functionName')]",
+                    "ServerIdentifier": "[parameters('serverIdentifier')]",
+                    "CosmosDatabase": "[parameters('cosmosDatabase')]",
+                    "CosmosContainer": "[parameters('cosmosContainer')]",
+                    "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
+                    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+                    "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
+                    "AzureWebJobsStorage": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
+                    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
+                    "WEBSITE_CONTENTSHARE": "[toLower(parameters('functionName'))]",
+                    "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
+                    "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
+                    "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountWriteKey_secretName'), '/)')]",
+                    "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]",
+                    "CertificateAuthenticationRequired": "[parameters('certificateAuthenticationEnabled')]",
+                    "CertificateAuthenticationSelfSigned": "[parameters('certificateAuthenticationAllowSelfSigned')]",
+                    "CertificateAuthenticationSubjectName": "[parameters('certificateAuthenticationSubjectName')]"
+                  }
                 }
             ]
         },
