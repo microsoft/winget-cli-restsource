@@ -60,6 +60,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Locale locale;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -107,6 +109,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         {
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
@@ -150,6 +154,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Locale locale;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -207,6 +213,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 

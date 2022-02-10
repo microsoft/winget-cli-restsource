@@ -58,6 +58,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             PackageMatchFields requiredFields;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);

@@ -63,6 +63,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Installer installer;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -110,6 +112,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         {
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteInstaller(packageIdentifier, packageVersion, installerIdentifier);
@@ -153,6 +157,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Installer installer;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -210,6 +216,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 

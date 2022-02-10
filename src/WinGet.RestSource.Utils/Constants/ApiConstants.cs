@@ -21,9 +21,18 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
 
         /// <summary>
         /// Whether certificate authentication is enabled.
-        /// TODO Make official.
         /// </summary>
         public static readonly bool CertificateAuthenticationRequired = bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
+
+        /// <summary>
+        /// Subject name of the root/intermediate certificate.
+        /// </summary>
+        public static readonly string CertificateAuthenticationSubjectName = ApiConstants.CertificateAuthenticationSubjectNameEnv;
+
+        /// <summary>
+        /// Whether self signed certificates are allowed as the root/intermediate certificate.
+        /// </summary>
+        public static readonly bool CertificateAuthenticationSelfSigned = bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
 
         /// <summary>
         /// Server Supported Versions.
@@ -69,8 +78,17 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
 
         /// <summary>
         /// Gets whether certificate authentication is enabled.
-        /// TODO Make official.
         /// </summary>
         public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationRequired");
+
+        /// <summary>
+        /// Gets the expected root/intermediate cert subject name.
+        /// </summary>
+        public static string CertificateAuthenticationSubjectNameEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSubjectName");
+
+        /// <summary>
+        /// Gets whether self signed certificates are allowed.
+        /// </summary>
+        public static string CertificateAuthenticationSelfSignedEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSelfSigned");
     }
 }

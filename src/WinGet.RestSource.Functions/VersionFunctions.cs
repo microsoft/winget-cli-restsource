@@ -59,6 +59,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Version version;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -102,6 +104,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         {
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteVersion(packageIdentifier, packageVersion);
@@ -140,6 +144,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             Version version;
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -193,6 +199,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
 

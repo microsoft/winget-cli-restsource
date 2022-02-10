@@ -53,6 +53,9 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
                 case ErrorConstants.ToManyContinuationTokensErrorCode:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.BadRequest);
 
+                case ErrorConstants.ForbiddenErrorCode:
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.Forbidden);
+
                 case ErrorConstants.HttpRequestExceptionErrorCode:
                 case ErrorConstants.UnhandledErrorCode:
                 default:

@@ -204,14 +204,15 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public const string ToManyContinuationTokensErrorMessage = "To many continuations were provided to the server.";
 
         /// <summary>
-        /// This is the code for a resource Conflict.
+        /// This is the code for an invalid certificate.
         /// </summary>
-        public const int ResourceConflictErrorCode = 409;
+        public const int ForbiddenErrorCode = 403;
 
         /// <summary>
-        /// This is the message for a resource Conflict.
+        /// This is the message for a invalid certificate.
         /// </summary>
-        public const string ResourceConflictErrorMessage = "A resource conflict exists for this operation.";
+        public const string ForbiddenErrorMessage =
+            "The client must provide a trusted certificate for {0}";
 
         /// <summary>
         /// This is the code for a resource not found.
@@ -222,6 +223,16 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         /// This is the message for a resource not found.
         /// </summary>
         public const string ResourceNotFoundErrorMessage = "The selected resource was not found.";
+
+        /// <summary>
+        /// This is the code for a resource Conflict.
+        /// </summary>
+        public const int ResourceConflictErrorCode = 409;
+
+        /// <summary>
+        /// This is the message for a resource Conflict.
+        /// </summary>
+        public const string ResourceConflictErrorMessage = "A resource conflict exists for this operation.";
 
         /// <summary>
         /// This is the code for a failed precondition.
