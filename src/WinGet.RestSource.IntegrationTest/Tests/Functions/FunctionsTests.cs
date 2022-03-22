@@ -15,6 +15,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     using System.Threading.Tasks;
     using Flurl;
     using Flurl.Http;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
@@ -30,6 +31,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     /// </summary>
     public class FunctionsTests : TestsBase, IAsyncLifetime
     {
+        /// <summary>
+        /// Package Identifier of app to use for testing, must be present in repository.
+        /// </summary>
+        private const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
+        private const string PowerToysJsonFileName = "powertoys.json";
+
         private const int MaxResultsPerPage = 20;
         private readonly string packagesUrl;
         private readonly string packageManifestsUrl;
@@ -54,17 +61,14 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         /// <inheritdoc/>
         public async Task InitializeAsync()
         {
-            // Store PowerToys manifest so we can ensure it's re-added at the end.
-            var packageManifests = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
-            if (packageManifests == null)
-            {
-                throw new System.IO.InvalidDataException($"{PowerToysPackageIdentifier} isn't present in REST source. Populate source prior to running tests");
-            }
-            else
-            {
-                var powerToysManifest = packageManifests.Data.SingleOrDefault();
-                this.powerToysManifestJson = JsonConvert.SerializeObject(powerToysManifest);
-            }
+            await this.CleanSource();
+            await this.PopulateSource();
+
+            // TODO: remove this when tests move to data driven approach.
+            var packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+
+            var powerToysManifest = packageManifestsResult.Data.SingleOrDefault();
+            this.powerToysManifestJson = JsonConvert.SerializeObject(powerToysManifest);
         }
 
         /// <inheritdoc/>
@@ -275,6 +279,46 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 var singleResult = JsonConvert.DeserializeObject<ApiResponse<T>>(json);
                 return new ApiResponse<List<T>>(new List<T> { singleResult.Data });
             }
+        }
+
+        private async Task CleanSource()
+        {
+            string restSourceUrl = this.RestSourceUrl.TrimEnd('/');
+            var storageCleanup = new StorageCleanup()
+            {
+                FunctionKey = this.FunctionsHostKey,
+                EndPointRequests = new EndPointRequest[]
+                {
+                    new EndPointRequest()
+                    {
+                        Url = $"{restSourceUrl}/packageManifests/{PowerToysPackageIdentifier}",
+                    },
+                },
+            };
+
+            await storageCleanup.CleanupAsync();
+        }
+
+        /// <summary>
+        /// Populate source with manifests.
+        /// </summary>
+        private async Task PopulateSource()
+        {
+            string restSourceUrl = this.RestSourceUrl.TrimEnd('/');
+            var storageSetup = new StorageSetup()
+            {
+                FunctionKey = this.FunctionsHostKey,
+                EndPointRequests = new EndPointRequest[]
+                {
+                    new EndPointRequest()
+                    {
+                        Url = $"{restSourceUrl}/packageManifests",
+                        JsonFileName = PowerToysJsonFileName,
+                    },
+                },
+            };
+
+            await storageSetup.SetupAsync(this.TestCollateral);
         }
 
         private async Task RunAndTestProtectedApi(string url, HttpMethod httpMethod, object data = null)

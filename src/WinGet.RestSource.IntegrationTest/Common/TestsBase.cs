@@ -8,6 +8,10 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest
 {
     using System;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Xunit.Abstractions;
     using Xunit.Sdk;
 
@@ -16,11 +20,6 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest
     /// </summary>
     public abstract class TestsBase
     {
-        /// <summary>
-        /// Package Identifier of app to use for testing, must be present in repository.
-        /// </summary>
-        protected const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TestsBase"/> class.
         /// </summary>
@@ -43,6 +42,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest
             const string addRestSourceKey = "AddRestSource";
             const string RunWriteTestsKey = "RunWriteTests";
             const string functionsHostKeyKey = "FunctionsHostKey";
+
             this.RestSourceName = configuration[restSourceNameKey] ?? throw new NullException(restSourceNameKey);
             this.RestSourceUrl = configuration[restSourceUrlKey] ?? throw new NullException(restSourceUrlKey);
             this.FunctionsHostKey = configuration[functionsHostKeyKey] ?? throw new NullException(functionsHostKeyKey);
@@ -59,6 +59,8 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest
             {
                 throw new ArgumentException($"RunWriteTests is set to true, but FunctionsHostKey is not set");
             }
+
+            this.TestCollateral = new TestCollateral();
         }
 
         /// <summary>
@@ -90,5 +92,15 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest
         /// Gets the logger to use for tests.
         /// </summary>
         protected ITestOutputHelper Log { get; }
+
+        /// <summary>
+        /// Gets the Cosmos Data store.
+        /// </summary>
+        protected CosmosDataStore CosmosDataStore { get; }
+
+        /// <summary>
+        /// Gets the test collateral.
+        /// </summary>
+        protected TestCollateral TestCollateral { get; }
     }
 }

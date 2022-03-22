@@ -21,6 +21,11 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
     public class WingetTests : TestsBase, IAsyncLifetime
     {
         /// <summary>
+        /// Package Identifier of app to use for testing, must be present in repository.
+        /// </summary>
+        private const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="WingetTests"/> class.
         /// </summary>
         /// <param name="log">ITestOutputHelper.</param>
@@ -124,9 +129,11 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
                 .WithArguments(arguments)
                 .WithValidation(commandResultValidation)
                 .ExecuteBufferedAsync();
-                
+
             if (!string.IsNullOrWhiteSpace(result.StandardOutput))
+            {
                 return result.StandardOutput;
+            }
 
             return result.StandardError;
         }
