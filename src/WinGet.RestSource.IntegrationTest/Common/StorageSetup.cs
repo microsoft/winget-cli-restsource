@@ -48,7 +48,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
                 HttpContent content = new StringContent(
                     testCollateral.FetchTestCollateralContent(request.JsonFileName));
                 await request
-                        .Url
+                        .RelativeUrlPath
                         .WithHeader("x-functions-key", this.FunctionKey)
                         .SendAsync(HttpMethod.Post, content);
             }

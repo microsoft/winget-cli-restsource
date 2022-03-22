@@ -14,11 +14,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
     using System.Text;
     using System.Threading.Tasks;
     using Flurl.Http;
+    using Xunit.Abstractions;
 
     /// <summary>
     /// Represents storage cleanup.
     /// </summary>
-    public class StorageCleanup : IStorageCleanup
+    public class StorageCleanup : IStorageCleanup, IXunitSerializable
     {
         /// <summary>
         /// Gets or sets the EndpointRequest.
@@ -35,15 +36,29 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         {
             foreach (EndPointRequest request in this.EndPointRequests)
             {
-                var response = await request.Url.SendAsync(HttpMethod.Get);
+                var response = await request.RelativeUrlPath.SendAsync(HttpMethod.Get);
                 if (response.StatusCode == (int)HttpStatusCode.OK)
                 {
                     await request
-                        .Url
+                        .RelativeUrlPath
                         .WithHeader("x-functions-key", this.FunctionKey)
                         .SendAsync(HttpMethod.Delete);
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
+            this.EndPointRequests = info.GetValue<EndPointRequest[]>(nameof(this.EndPointRequests));
+            this.FunctionKey = info.GetValue<string>(nameof(this.FunctionKey));
+        }
+
+        /// <inheritdoc/>
+        public void Serialize(IXunitSerializationInfo info)
+        {
+            info.AddValue(nameof(this.EndPointRequests), this.EndPointRequests, typeof(EndPointRequest[]));
+            info.AddValue(nameof(this.FunctionKey), this.FunctionKey, typeof(string));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         /// <summary>
         /// Gets or sets the Endpoint url.
         /// </summary>
-        public string Url { get; set; }
+        public string RelativeUrlPath { get; set; }
 
         /// <summary>
         /// Gets or sets the Json file name.
@@ -26,7 +26,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         /// <inheritdoc/>
         public void Deserialize(IXunitSerializationInfo info)
         {
-            this.Url = info.GetValue<string>(nameof(this.Url));
+            this.RelativeUrlPath = info.GetValue<string>(nameof(this.RelativeUrlPath));
             this.JsonFileName = info.GetValue<string>(nameof(this.JsonFileName));
         }
 
@@ -34,7 +34,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         public void Serialize(IXunitSerializationInfo info)
         {
             info.AddValue(nameof(this.JsonFileName), this.JsonFileName, typeof(string));
-            info.AddValue(nameof(this.Url), this.Url, typeof(string));
+            info.AddValue(nameof(this.RelativeUrlPath), this.RelativeUrlPath, typeof(string));
         }
     }
 }

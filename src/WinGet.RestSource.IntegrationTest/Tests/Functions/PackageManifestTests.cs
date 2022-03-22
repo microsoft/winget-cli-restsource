@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FunctionsTests.cs" company="Microsoft Corporation">
+// <copyright file="PackageManifestTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -16,6 +16,8 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     using Flurl;
     using Flurl.Http;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
@@ -29,7 +31,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     /// <summary>
     /// CosmosDataStore Tests.
     /// </summary>
-    public class FunctionsTests : TestsBase, IAsyncLifetime
+    public class PackageManifestTests : TestsBase, IAsyncLifetime
     {
         /// <summary>
         /// Package Identifier of app to use for testing, must be present in repository.
@@ -46,10 +48,10 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         private bool modifiedManifest;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctionsTests"/> class.
+        /// Initializes a new instance of the <see cref="PackageManifestTests"/> class.
         /// </summary>
         /// <param name="log">ITestOutputHelper.</param>
-        public FunctionsTests(ITestOutputHelper log)
+        public PackageManifestTests(ITestOutputHelper log)
             : base(log)
         {
             this.packagesUrl = this.RestSourceUrl.AppendPathSegment("packages");
@@ -251,6 +253,43 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             await this.TestSearchFilter(PackageMatchFields.PackageName, "nonexistentpackage", MatchType.Substring);
         }
 
+        /// <summary>
+        /// Represents test for package manifest versions.
+        /// </summary>
+        /// <param name="helper">An object of type <see cref="EndPointRequest"/>.</param>
+        [Theory]
+        [ClassData(typeof(PackageManifestVersionTestData))]
+        public async void PackageManifestVersionsTest(PackageManifestVersionTestHelper helper)
+        {
+            Assert.NotNull(helper.TestId);
+            Assert.NotNull(helper.PackageIdentifier);
+            Assert.NotNull(helper.EndPointRequest);
+            Assert.NotNull(helper.EndPointRequest.RelativeUrlPath);
+
+            string url = $"{this.RestSourceUrl.TrimEnd('/')}/{helper.EndPointRequest.RelativeUrlPath.TrimStart('/')}";
+            var response = await GetConsistentApiResponse<PackageManifest>(url);
+
+            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.IdentifierNotFound)
+            {
+                Assert.Null(response);
+            }
+
+            int versionsCount = response.Data[0].Versions.Count();
+            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.NoApplicableVersion)
+            {
+                Assert.Equal(helper.PackageIdentifier, response.Data[0].PackageIdentifier);
+                Assert.True(versionsCount == 0, $"Version count: {versionsCount} must have a value of 0 for NoApplicationVersion scenario");
+            }
+
+            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.VersionFound)
+            {
+                Assert.Equal(helper.PackageIdentifier, response.Data[0].PackageIdentifier);
+                Assert.True(versionsCount == 1, $"Version count: {versionsCount} must have a value of 1 for VersionFound scenario");
+                PackageManifest packageManifest = response.Data[0];
+                Assert.Equal(helper.ExpectedVersion, packageManifest.Versions[0].PackageVersion);
+            }
+        }
+
         private static void VerifyResult(SearchApiResponse<List<ManifestSearchResponse>> results, params string[] expectedPackageIdentifiers)
         {
             Assert.Equal(expectedPackageIdentifiers.Length, results.Data.Count);
@@ -291,7 +330,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 {
                     new EndPointRequest()
                     {
-                        Url = $"{restSourceUrl}/packageManifests/{PowerToysPackageIdentifier}",
+                        RelativeUrlPath = $"{restSourceUrl}/packageManifests/{PowerToysPackageIdentifier}",
                     },
                 },
             };
@@ -312,7 +351,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 {
                     new EndPointRequest()
                     {
-                        Url = $"{restSourceUrl}/packageManifests",
+                        RelativeUrlPath = $"{restSourceUrl}/packageManifests",
                         JsonFileName = PowerToysJsonFileName,
                     },
                 },
