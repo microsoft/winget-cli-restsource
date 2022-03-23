@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PackageManifestTests.cs" company="Microsoft Corporation">
+// <copyright file="PackageManifestFunctionsTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -16,6 +16,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     using Flurl;
     using Flurl.Http;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers;
     using Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData;
     using Microsoft.WinGet.RestSource.Utils.Common;
@@ -31,7 +32,8 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
     /// <summary>
     /// CosmosDataStore Tests.
     /// </summary>
-    public class PackageManifestTests : TestsBase, IAsyncLifetime
+    [Collection("IntegrationTestCollection")]
+    public class PackageManifestFunctionsTests : IAsyncLifetime
     {
         /// <summary>
         /// Package Identifier of app to use for testing, must be present in repository.
@@ -46,18 +48,24 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         private readonly string powerToysPackageUrl;
         private string powerToysManifestJson;
         private bool modifiedManifest;
+        private IntegrationTestFixture fixture;
+        private ITestOutputHelper log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageManifestTests"/> class.
+        /// Initializes a new instance of the <see cref="PackageManifestFunctionsTests"/> class.
         /// </summary>
         /// <param name="log">ITestOutputHelper.</param>
-        public PackageManifestTests(ITestOutputHelper log)
-            : base(log)
+        /// <param name="fixture">An object of integration test fixture.</param>
+        public PackageManifestFunctionsTests(ITestOutputHelper log, IntegrationTestFixture fixture)
         {
-            this.packagesUrl = this.RestSourceUrl.AppendPathSegment("packages");
-            this.packageManifestsUrl = this.RestSourceUrl.AppendPathSegment("packageManifests");
+            this.fixture = fixture;
+
+            this.packagesUrl = this.fixture.RestSourceUrl.AppendPathSegment("packages");
+            this.packageManifestsUrl = this.fixture.RestSourceUrl.AppendPathSegment("packageManifests");
             this.powerToysPackageManifestUrl = this.packageManifestsUrl.AppendPathSegment(PowerToysPackageIdentifier);
             this.powerToysPackageUrl = this.packagesUrl.AppendPathSegment(PowerToysPackageIdentifier);
+            this.fixture = fixture;
+            this.log = log;
         }
 
         /// <inheritdoc/>
@@ -67,7 +75,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             await this.PopulateSource();
 
             // TODO: remove this when tests move to data driven approach.
-            var packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            var packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
 
             var powerToysManifest = packageManifestsResult.Data.SingleOrDefault();
             this.powerToysManifestJson = JsonConvert.SerializeObject(powerToysManifest);
@@ -92,37 +100,37 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         public async Task CreateUpdateReadDeleteTest()
         {
             // Only run this test if the setting is explicitly set.
-            Skip.IfNot(this.RunWriteTests);
+            Skip.IfNot(this.fixture.RunWriteTests);
 
-            var packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            var packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             PackageManifest addedManifest = packageManifestsResult.Data.Single();
 
             // Start by deleting the manifest from the source and verify it's gone.
             await this.RunAndTestProtectedApi(this.powerToysPackageManifestUrl, HttpMethod.Delete);
             this.modifiedManifest = true;
-            packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             Assert.Null(packageManifestsResult);
 
             // Now add it and verify it's present.
             await this.RunAndTestProtectedApi(this.packageManifestsUrl, HttpMethod.Post, addedManifest);
-            packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             Assert.Equal(PowerToysPackageIdentifier, packageManifestsResult.Data.Single().PackageIdentifier);
 
             // Now update it and verify that it got updated.
             string updatedName = "BOGUS_NAME";
             addedManifest.Versions.First().DefaultLocale.PackageName = updatedName;
             await this.RunAndTestProtectedApi(this.powerToysPackageManifestUrl, HttpMethod.Put, addedManifest);
-            packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             Assert.Equal(updatedName, packageManifestsResult.Data.Single().Versions.First().DefaultLocale.PackageName);
 
             // Now delete it, and verify it's gone.
             await this.RunAndTestProtectedApi(this.powerToysPackageManifestUrl, HttpMethod.Delete);
-            packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             Assert.Null(packageManifestsResult);
 
             // Now add just the package, and verify it's present.
             await this.RunAndTestProtectedApi(this.packagesUrl, HttpMethod.Post, addedManifest);
-            var packageResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageUrl);
+            var packageResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageUrl);
             Assert.Equal(PowerToysPackageIdentifier, packageResult.Data.Single().PackageIdentifier);
 
             // Now add a version, installer, and locale to the package.
@@ -134,7 +142,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             await this.RunAndTestProtectedApi(versionUrl.AppendPathSegment("locales"), HttpMethod.Post, addedVersion.DefaultLocale);
 
             // Verify that everything got added correctly.
-            packageManifestsResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+            packageManifestsResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
             var resultVersion = packageManifestsResult.Data.First().Versions.First();
             Assert.Equal(addedVersion.PackageVersion, resultVersion.PackageVersion);
             Assert.Equal(addedVersion.DefaultLocale.PackageName, resultVersion.DefaultLocale.PackageName);
@@ -142,7 +150,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
 
             // Delete the package using the packages API, and verify it's gone.
             await this.RunAndTestProtectedApi(this.powerToysPackageUrl, HttpMethod.Delete);
-            packageResult = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageUrl);
+            packageResult = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageUrl);
             Assert.Null(packageResult);
 
             // Lastly, re-add the original copy.
@@ -157,35 +165,35 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         [Fact]
         public async Task GetPackages()
         {
-            this.Log.WriteLine("Tests that GetPackages returns the expected package.");
+            this.log.WriteLine("Tests that GetPackages returns the expected package.");
             {
-                var packages = await GetConsistentApiResponse<Package>(this.powerToysPackageUrl);
+                var packages = await IntegrationTestFixture.GetConsistentApiResponse<Package>(this.powerToysPackageUrl);
                 Assert.NotEmpty(packages.Data);
                 Assert.Equal(PowerToysPackageIdentifier, packages.Data.First().PackageIdentifier);
             }
 
-            this.Log.WriteLine("Tests that ContinuationToken has an effect for GetPackages.");
+            this.log.WriteLine("Tests that ContinuationToken has an effect for GetPackages.");
             {
-                var firstPackageSet = await GetConsistentApiResponse<Package>(this.packagesUrl);
+                var firstPackageSet = await IntegrationTestFixture.GetConsistentApiResponse<Package>(this.packagesUrl);
                 Assert.Equal(MaxResultsPerPage, firstPackageSet.Data.Count);
 
-                var continuedPackageSet = await GetConsistentApiResponse<Package>(this.packagesUrl.WithHeader(HeaderConstants.ContinuationToken, firstPackageSet.ContinuationToken));
+                var continuedPackageSet = await IntegrationTestFixture.GetConsistentApiResponse<Package>(this.packagesUrl.WithHeader(HeaderConstants.ContinuationToken, firstPackageSet.ContinuationToken));
                 Assert.Equal(MaxResultsPerPage, continuedPackageSet.Data.Count);
                 Assert.False(firstPackageSet.Data.Intersect(continuedPackageSet.Data).Any());
             }
 
-            this.Log.WriteLine("Tests that GetPackageManifests returns the expected package.");
+            this.log.WriteLine("Tests that GetPackageManifests returns the expected package.");
             {
-                var packageManifests = await GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
+                var packageManifests = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(this.powerToysPackageManifestUrl);
                 Assert.NotEmpty(packageManifests.Data);
                 Assert.Equal(PowerToysPackageIdentifier, packageManifests.Data.First().PackageIdentifier);
             }
 
-            this.Log.WriteLine("Tests that GetPackageManifests returns the expected package and version.");
+            this.log.WriteLine("Tests that GetPackageManifests returns the expected package and version.");
             {
                 const string version = "0.37.0";
-                var packageManifests = await GetConsistentApiResponse<PackageManifest>(
-                    this.RestSourceUrl
+                var packageManifests = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(
+                    this.fixture.RestSourceUrl
                     .AppendPathSegment("packageManifests")
                     .AppendPathSegment(PowerToysPackageIdentifier)
                     .SetQueryParam("Version", version));
@@ -194,12 +202,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 Assert.Equal(version, packageManifests.Data.First().Versions.Single().PackageVersion);
             }
 
-            this.Log.WriteLine("Tests that ContinuationToken has an effect for GetPackageManifests.");
+            this.log.WriteLine("Tests that ContinuationToken has an effect for GetPackageManifests.");
             {
-                var firstPackageManifestSet = await GetConsistentApiResponse<Package>(this.packageManifestsUrl);
+                var firstPackageManifestSet = await IntegrationTestFixture.GetConsistentApiResponse<Package>(this.packageManifestsUrl);
                 Assert.Equal(MaxResultsPerPage, firstPackageManifestSet.Data.Count);
 
-                var continuedPackageManifestSet = await GetConsistentApiResponse<Package>(this.packageManifestsUrl.WithHeader(HeaderConstants.ContinuationToken, firstPackageManifestSet.ContinuationToken));
+                var continuedPackageManifestSet = await IntegrationTestFixture.GetConsistentApiResponse<Package>(this.packageManifestsUrl.WithHeader(HeaderConstants.ContinuationToken, firstPackageManifestSet.ContinuationToken));
                 Assert.Equal(MaxResultsPerPage, continuedPackageManifestSet.Data.Count);
                 Assert.False(firstPackageManifestSet.Data.Intersect(continuedPackageManifestSet.Data).Any());
             }
@@ -212,7 +220,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         [Fact]
         public async Task SearchUsingQuery()
         {
-            this.Log.WriteLine("Tests that SearchPackageManifests returns the expected results when using the Query property.");
+            this.log.WriteLine("Tests that SearchPackageManifests returns the expected results when using the Query property.");
             {
                 await this.TestSearchQuery("PowerToys", MatchType.Exact, PowerToysPackageIdentifier);
                 await this.TestSearchQuery("powertoys", MatchType.CaseInsensitive, PowerToysPackageIdentifier);
@@ -221,7 +229,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
                 await this.TestSearchQuery("nonexistentpackage", MatchType.Substring);
             }
 
-            this.Log.WriteLine("Tests that using ContinuationToken with SearchPackageManifests allows us to retrieve all manifests.");
+            this.log.WriteLine("Tests that using ContinuationToken with SearchPackageManifests allows us to retrieve all manifests.");
             {
                 /* TODO: Test writing to the repository between reads on the continuation token. */
 
@@ -259,34 +267,35 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         /// <param name="helper">An object of type <see cref="EndPointRequest"/>.</param>
         [Theory]
         [ClassData(typeof(PackageManifestVersionTestData))]
-        public async void PackageManifestVersionsTest(PackageManifestVersionTestHelper helper)
+        public async void PackageManifestVersionsTest(PackageVersionTestHelper helper)
         {
             Assert.NotNull(helper.TestId);
             Assert.NotNull(helper.PackageIdentifier);
             Assert.NotNull(helper.EndPointRequest);
             Assert.NotNull(helper.EndPointRequest.RelativeUrlPath);
 
-            string url = $"{this.RestSourceUrl.TrimEnd('/')}/{helper.EndPointRequest.RelativeUrlPath.TrimStart('/')}";
-            var response = await GetConsistentApiResponse<PackageManifest>(url);
+            string url = $"{this.fixture.RestSourceUrl}/{helper.EndPointRequest.RelativeUrlPath.TrimStart('/')}";
+            var response = await IntegrationTestFixture.GetConsistentApiResponse<PackageManifest>(url);
 
-            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.IdentifierNotFound)
+            if (helper.ApiResponse == PackageVersionTestHelper.ApiResponseScenario.IdentifierNotFound)
             {
                 Assert.Null(response);
             }
 
-            int versionsCount = response.Data[0].Versions.Count();
-            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.NoApplicableVersion)
+            if (helper.ApiResponse == PackageVersionTestHelper.ApiResponseScenario.NoApplicableVersion)
             {
+                int versionsCount = response.Data[0].Versions.Count();
                 Assert.Equal(helper.PackageIdentifier, response.Data[0].PackageIdentifier);
                 Assert.True(versionsCount == 0, $"Version count: {versionsCount} must have a value of 0 for NoApplicationVersion scenario");
             }
 
-            if (helper.ApiResponse == PackageManifestVersionTestHelper.ApiResponseScenario.VersionFound)
+            if (helper.ApiResponse == PackageVersionTestHelper.ApiResponseScenario.VersionFound)
             {
+                int versionsCount = response.Data[0].Versions.Count();
                 Assert.Equal(helper.PackageIdentifier, response.Data[0].PackageIdentifier);
                 Assert.True(versionsCount == 1, $"Version count: {versionsCount} must have a value of 1 for VersionFound scenario");
                 PackageManifest packageManifest = response.Data[0];
-                Assert.Equal(helper.ExpectedVersion, packageManifest.Versions[0].PackageVersion);
+                Assert.Equal(helper.ExpectedVersions[0], packageManifest.Versions[0].PackageVersion);
             }
         }
 
@@ -300,42 +309,20 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             }
         }
 
-        private static async Task<ApiResponse<List<T>>> GetConsistentApiResponse<T>(string url)
-        {
-            return await GetConsistentApiResponse<T>(new FlurlRequest(url));
-        }
-
-        private static async Task<ApiResponse<List<T>>> GetConsistentApiResponse<T>(IFlurlRequest url)
-        {
-            string json = await url.GetStringAsync();
-
-            try
-            {
-                return JsonConvert.DeserializeObject<ApiResponse<List<T>>>(json);
-            }
-            catch (JsonSerializationException)
-            {
-                var singleResult = JsonConvert.DeserializeObject<ApiResponse<T>>(json);
-                return new ApiResponse<List<T>>(new List<T> { singleResult.Data });
-            }
-        }
-
         private async Task CleanSource()
         {
-            string restSourceUrl = this.RestSourceUrl.TrimEnd('/');
             var storageCleanup = new StorageCleanup()
             {
-                FunctionKey = this.FunctionsHostKey,
                 EndPointRequests = new EndPointRequest[]
                 {
                     new EndPointRequest()
                     {
-                        RelativeUrlPath = $"{restSourceUrl}/packageManifests/{PowerToysPackageIdentifier}",
+                        RelativeUrlPath = $"packageManifests/{PowerToysPackageIdentifier}",
                     },
                 },
             };
 
-            await storageCleanup.CleanupAsync();
+            await storageCleanup.CleanupAsync(this.fixture);
         }
 
         /// <summary>
@@ -343,21 +330,19 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
         /// </summary>
         private async Task PopulateSource()
         {
-            string restSourceUrl = this.RestSourceUrl.TrimEnd('/');
             var storageSetup = new StorageSetup()
             {
-                FunctionKey = this.FunctionsHostKey,
                 EndPointRequests = new EndPointRequest[]
                 {
                     new EndPointRequest()
                     {
-                        RelativeUrlPath = $"{restSourceUrl}/packageManifests",
+                        RelativeUrlPath = $"packageManifests",
                         JsonFileName = PowerToysJsonFileName,
                     },
                 },
             };
 
-            await storageSetup.SetupAsync(this.TestCollateral);
+            await storageSetup.SetupAsync(this.fixture);
         }
 
         private async Task RunAndTestProtectedApi(string url, HttpMethod httpMethod, object data = null)
@@ -372,12 +357,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
             await Assert.ThrowsAsync<FlurlHttpException>(() => method(url));
 
             // Should succeed once the authorization key is added.
-            await method(url.SetQueryParam("code", this.FunctionsHostKey));
+            await method(url.SetQueryParam("code", this.fixture.FunctionsHostKey));
         }
 
         private async Task<SearchApiResponse<List<ManifestSearchResponse>>> GetSearchResults(ManifestSearchRequest manifestSearchRequest, string continuationToken = null)
         {
-            string url = this.RestSourceUrl.AppendPathSegment("manifestSearch");
+            string url = this.fixture.RestSourceUrl.AppendPathSegment("manifestSearch");
 
             IFlurlResponse response;
             if (continuationToken != null)

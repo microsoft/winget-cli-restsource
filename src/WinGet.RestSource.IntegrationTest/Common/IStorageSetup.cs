@@ -7,6 +7,7 @@
 namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
 {
     using System.Threading.Tasks;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
 
     /// <summary>
     /// Interface to setup storage.
@@ -16,8 +17,8 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         /// <summary>
         /// Sets up the storage state.
         /// </summary>
-        /// <param name="testCollateral">Test Collateral.</param>
+        /// <param name="fixture">An object of type <see cref="IntegrationTestFixture"/>.</param>
         /// <returns>An object of type <see cref="Task"/> representing an asynchronous operation.</returns>
-        Task SetupAsync(TestCollateral testCollateral);
+        Task SetupAsync(IntegrationTestFixture fixture);
     }
 }

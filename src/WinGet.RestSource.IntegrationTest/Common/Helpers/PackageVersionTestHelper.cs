@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PackageManifestVersionTestHelper.cs" company="Microsoft Corporation">
+// <copyright file="PackageVersionTestHelper.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers
     /// <summary>
     /// helper class for package manifest version test data.
     /// </summary>
-    public class PackageManifestVersionTestHelper : IXunitSerializable
+    public class PackageVersionTestHelper : IXunitSerializable
     {
         /// <summary>
         /// Represents the expercted response scenario.
@@ -32,6 +32,11 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers
             /// Query scenario for version not found.
             /// </summary>
             NoApplicableVersion,
+
+            /// <summary>
+            /// Query scenario for identifier not found.
+            /// </summary>
+            IdentifierFound,
 
             /// <summary>
             /// Version query succesful.
@@ -55,9 +60,19 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers
         public EndPointRequest EndPointRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether version is found or not.
+        /// Gets or sets the storage cleanup.
         /// </summary>
-        public string ExpectedVersion { get; set; }
+        public StorageCleanup StorageCleanup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the storage setup.
+        /// </summary>
+        public StorageSetup StorageSetup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expected version.
+        /// </summary>
+        public string[] ExpectedVersions { get; set; }
 
         /// <summary>
         /// Gets or sets the api response scenario.
@@ -69,7 +84,10 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers
         {
             this.TestId = info.GetValue<string>(nameof(this.TestId));
             this.EndPointRequest = info.GetValue<EndPointRequest>(nameof(this.EndPointRequest));
-            this.ExpectedVersion = info.GetValue<string>(nameof(this.ExpectedVersion));
+            this.StorageCleanup = info.GetValue<StorageCleanup>(nameof(this.StorageCleanup));
+            this.StorageSetup = info.GetValue<StorageSetup>(nameof(this.StorageSetup));
+            this.ExpectedVersions = info.GetValue<string[]>(nameof(this.ExpectedVersions));
+            this.PackageIdentifier = info.GetValue<string>(nameof(this.PackageIdentifier));
             this.ApiResponse = info.GetValue<ApiResponseScenario>(nameof(this.ApiResponse));
         }
 
@@ -78,8 +96,11 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers
         {
             info.AddValue(nameof(this.TestId), this.TestId, typeof(string));
             info.AddValue(nameof(this.EndPointRequest), this.EndPointRequest, typeof(EndPointRequest));
-            info.AddValue(nameof(this.ExpectedVersion), this.ExpectedVersion, typeof(string));
+            info.AddValue(nameof(this.StorageCleanup), this.StorageCleanup, typeof(StorageCleanup));
+            info.AddValue(nameof(this.StorageSetup), this.StorageSetup, typeof(StorageSetup));
+            info.AddValue(nameof(this.ExpectedVersions), this.ExpectedVersions, typeof(string[]));
             info.AddValue(nameof(this.ApiResponse), this.ApiResponse, typeof(ApiResponseScenario));
+            info.AddValue(nameof(this.PackageIdentifier), this.PackageIdentifier, typeof(string));
         }
     }
 }

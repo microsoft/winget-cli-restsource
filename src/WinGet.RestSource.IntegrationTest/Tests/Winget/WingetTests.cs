@@ -12,32 +12,36 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
     using System.Threading.Tasks;
     using CliWrap;
     using CliWrap.Buffered;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
     using Xunit;
     using Xunit.Abstractions;
 
     /// <summary>
     /// E2E tests that use the winget client to test the REST service.
     /// </summary>
-    public class WingetTests : TestsBase, IAsyncLifetime
+    public class WingetTests : IAsyncLifetime
     {
         /// <summary>
         /// Package Identifier of app to use for testing, must be present in repository.
         /// </summary>
         private const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
 
+        private IntegrationTestFixture fixture;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WingetTests"/> class.
         /// </summary>
         /// <param name="log">ITestOutputHelper.</param>
-        public WingetTests(ITestOutputHelper log)
-            : base(log)
+        /// <param name="fixture">An object of type <see cref="IntegrationTestFixture"/>.</param>
+        public WingetTests(ITestOutputHelper log, IntegrationTestFixture fixture)
         {
+            this.fixture = fixture;
         }
 
         /// <inheritdoc/>
         public async Task InitializeAsync()
         {
-            if (this.AddRestSource)
+            if (this.fixture.AddRestSource)
             {
                 // Must be running as admin to succeed.
                 await this.AddSource();
@@ -47,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         /// <inheritdoc/>
         public async Task DisposeAsync()
         {
-            if (this.AddRestSource)
+            if (this.fixture.AddRestSource)
             {
                 // Must be running as admin to succeed.
                 await this.RemoveSource();
@@ -145,7 +149,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
 
         private async Task TestWingetQuery(string query, Func<string, bool> validator, params string[] expectedPackageIdentifiers)
         {
-            string output = await RunWinget($"{query} -s {this.RestSourceName}");
+            string output = await RunWinget($"{query} -s {this.fixture.RestSourceName}");
             if (validator != null)
             {
                 Assert.True(validator(output));
@@ -161,12 +165,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         private async Task AddSource()
         {
             await this.RemoveSource();
-            await RunWinget($"source add -n {this.RestSourceName} -a {this.RestSourceUrl} -t \"Microsoft.Rest\"", CommandResultValidation.ZeroExitCode);
+            await RunWinget($"source add -n {this.fixture.RestSourceName} -a {this.fixture.RestSourceUrl} -t \"Microsoft.Rest\"", CommandResultValidation.ZeroExitCode);
         }
 
         private async Task RemoveSource()
         {
-            await RunWinget($"source remove {this.RestSourceName}");
+            await RunWinget($"source remove {this.fixture.RestSourceName}");
         }
 
         private record WingetApp(string Name, string Id, string Version);

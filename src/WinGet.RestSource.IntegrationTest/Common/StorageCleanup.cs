@@ -14,6 +14,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
     using System.Text;
     using System.Threading.Tasks;
     using Flurl.Http;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
     using Xunit.Abstractions;
 
     /// <summary>
@@ -26,22 +27,17 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         /// </summary>
         public EndPointRequest[] EndPointRequests { get; set; }
 
-        /// <summary>
-        /// Gets or sets the EndpointRequest.
-        /// </summary>
-        public string FunctionKey { get; set; }
-
         /// <inheritdoc/>
-        public async Task CleanupAsync()
+        public async Task CleanupAsync(IntegrationTestFixture fixture)
         {
             foreach (EndPointRequest request in this.EndPointRequests)
             {
-                var response = await request.RelativeUrlPath.SendAsync(HttpMethod.Get);
+                string url = $"{fixture.RestSourceUrl}/{request.RelativeUrlPath}";
+                var response = await url.SendAsync(HttpMethod.Get);
                 if (response.StatusCode == (int)HttpStatusCode.OK)
                 {
-                    await request
-                        .RelativeUrlPath
-                        .WithHeader("x-functions-key", this.FunctionKey)
+                    await url
+                        .WithHeader("x-functions-key", fixture.FunctionsHostKey)
                         .SendAsync(HttpMethod.Delete);
                 }
             }
@@ -51,14 +47,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common
         public void Deserialize(IXunitSerializationInfo info)
         {
             this.EndPointRequests = info.GetValue<EndPointRequest[]>(nameof(this.EndPointRequests));
-            this.FunctionKey = info.GetValue<string>(nameof(this.FunctionKey));
         }
 
         /// <inheritdoc/>
         public void Serialize(IXunitSerializationInfo info)
         {
             info.AddValue(nameof(this.EndPointRequests), this.EndPointRequests, typeof(EndPointRequest[]));
-            info.AddValue(nameof(this.FunctionKey), this.FunctionKey, typeof(string));
         }
     }
 }

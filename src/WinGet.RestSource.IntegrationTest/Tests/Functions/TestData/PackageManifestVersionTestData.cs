@@ -26,7 +26,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData
             {
                 new object[]
                 {
-                    new PackageManifestVersionTestHelper()
+                    new PackageVersionTestHelper()
                     {
                         TestId = "Version 0.31.4 found in repo",
                         PackageIdentifier = PowerToysPackageIdentifier,
@@ -34,13 +34,13 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData
                         {
                             RelativeUrlPath = $"/packageManifests/{PowerToysPackageIdentifier}?version=0.31.4",
                         },
-                        ApiResponse = PackageManifestVersionTestHelper.ApiResponseScenario.VersionFound,
-                        ExpectedVersion = "0.31.4",
+                        ApiResponse = PackageVersionTestHelper.ApiResponseScenario.VersionFound,
+                        ExpectedVersions = new string[] { "0.31.42345" },
                     },
                 },
                 new object[]
                 {
-                    new PackageManifestVersionTestHelper()
+                    new PackageVersionTestHelper()
                     {
                         TestId = "Version 0.31.42345 not found in repo",
                         PackageIdentifier = PowerToysPackageIdentifier,
@@ -48,13 +48,12 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData
                         {
                             RelativeUrlPath = $"/packageManifests/{PowerToysPackageIdentifier}?version=0.31.42345",
                         },
-                        ApiResponse = PackageManifestVersionTestHelper.ApiResponseScenario.NoApplicableVersion,
-                        ExpectedVersion = "0.31.42345",
+                        ApiResponse = PackageVersionTestHelper.ApiResponseScenario.NoApplicableVersion,
                     },
                 },
                 new object[]
                 {
-                    new PackageManifestVersionTestHelper()
+                    new PackageVersionTestHelper()
                     {
                         TestId = "Invalid package identifier",
                         PackageIdentifier = PowerToysPackageIdentifier,
@@ -62,7 +61,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData
                         {
                             RelativeUrlPath = $"/packageManifests/123456?version=0.31.42345",
                         },
-                        ApiResponse = PackageManifestVersionTestHelper.ApiResponseScenario.IdentifierNotFound,
+                        ApiResponse = PackageVersionTestHelper.ApiResponseScenario.IdentifierNotFound,
                     },
                 },
             };
