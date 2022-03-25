@@ -56,7 +56,7 @@ steps:
 
 - powershell: |
     & winget source add -n "winget-cli-restsource" -a "$(RestSourceUrl)" -t "Microsoft.Rest"
-    Write-Host "Added Rest Source."
+    Write-Host "Added rest source to winget cli."
 
   displayName: "Rest source"
 
