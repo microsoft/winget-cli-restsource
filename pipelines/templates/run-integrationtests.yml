@@ -17,6 +17,28 @@ steps:
   displayName: Download latest Winget release
 
 - powershell: |
+    $tempPath = [System.IO.Path]::GetTempPath()
+    $XAMLPackagePathZip = "$($tempPath)\Microsoft.UI.Xaml.2.7.0.zip"
+    $XAMLPackageSubDirectory = "$($tempPath)\Microsoft.UI.Xaml.2.7.0"
+
+    Write-Host "Downloading XAML nuget package"
+    Invoke-WebRequest 'https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0' -OutFile $XAMLPackagePathZip
+
+    Write-Host "Expanding nuget package"
+    Expand-Archive -Path $XAMLPackagePathZip -Destination $XAMLPackageSubDirectory
+
+    $OSArchitecture = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
+    $XAMLPackageAppxPath = ""
+
+    Switch ($OSArchitecture)
+    {
+        "64-bit" { $XAMLPackageAppxPath = "$($XAMLPackageSubDirectory)\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx" }
+        "32-bit" { $XAMLPackageAppxPath = "$($XAMLPackageSubDirectory)\tools\AppX\x86\Release\Microsoft.UI.Xaml.2.7.appx" }
+    }
+
+    
+    Add-AppxPackage -Path $XAMLPackageAppxPath
+    Write-Host "Installed XAML Appx Package"
     # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
     copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
 
