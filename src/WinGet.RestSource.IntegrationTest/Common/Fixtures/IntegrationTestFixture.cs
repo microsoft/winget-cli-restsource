@@ -59,12 +59,6 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures
             this.AddRestSource = bool.TryParse(configuration[addRestSourceKey], out bool addRestSource) && addRestSource;
             this.RunWriteTests = bool.TryParse(configuration[RunWriteTestsKey], out bool runWriteTests) && runWriteTests;
 
-            this.WriteMessage($"{restSourceNameKey}: {this.RestSourceName}");
-            this.WriteMessage($"{restSourceUrlKey}: {this.RestSourceUrl}");
-            this.WriteMessage($"{functionsHostKeyKey}: {this.FunctionsHostKey}");
-            this.WriteMessage($"{addRestSourceKey}: {this.AddRestSource}");
-            this.WriteMessage($"{RunWriteTestsKey}: {this.RunWriteTests}");
-
             if (this.RunWriteTests && string.IsNullOrEmpty(this.FunctionsHostKey))
             {
                 throw new ArgumentException($"RunWriteTests is set to true, but FunctionsHostKey is not set");
