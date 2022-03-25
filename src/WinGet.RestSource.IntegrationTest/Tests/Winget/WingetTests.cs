@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
     /// <summary>
     /// E2E tests that use the winget client to test the REST service.
     /// </summary>
+    [Collection("IntegrationTestCollection")]
     public class WingetTests : IAsyncLifetime
     {
         /// <summary>
@@ -76,7 +77,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Winget
         [Fact]
         public async Task WingetList()
         {
-            await this.TestWingetQuery("list \"Windows Software Development Kit\"", output => output.Contains("Microsoft.WindowsSDK"));
+            await this.TestWingetQuery("list \"Windows Software Development Kit\"", output => output.Contains("Windows Software Development Kit"));
         }
 
         /// <summary>
