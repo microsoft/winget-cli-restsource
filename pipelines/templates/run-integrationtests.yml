@@ -54,6 +54,12 @@ steps:
     winget source add -n "winget-cli-restsource" -a $(RestSourceUrl) -t "Microsoft.Rest"
   displayName: "Setup test pre-requisites"
 
+- powershell: |
+    & winget source add -n "winget-cli-restsource" -a "$(RestSourceUrl)" -t "Microsoft.Rest"
+    Write-Host "Added Rest Source."
+
+  displayName: "Rest source"
+
 - task: DotNetCoreCLI@2
   displayName: 'Run tests: ${{ parameters.name }}'
   inputs:
