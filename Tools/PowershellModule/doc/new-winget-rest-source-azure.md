@@ -21,6 +21,28 @@ The following steps are required for managing a Windows Package Manager REST sou
 4. Retrieve published Package Manifests from the Windows Package Manager REST source.
 5. Remove published Package Manifests from the Windows Package Manager REST source.
 
+### PowerShell pre-Requisites
+
+Before getting started with the Windows Package Manager REST source with PowerShell, here are a few recommended steps you should complete before using the PowerShell module to ensure you can successfully stand up a new Windows Package Manager REST source in Azure.
+
+1. Open PowerShell as an Administrator
+2. Set the PowerShell execution policies
+     ```Powershell
+    PS C:\> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
+4. Install the Azure Az module 
+    ```Powershell
+    PS C:\> install-module az -AllowClobber
+    ```
+5. Connect to Azure with an authenticated account
+    ```Powershell
+    PS C:\> Connect-AzAccount
+    ```
+6. Select the required subscription using Set-AzContext
+    ```Powershell
+    PS C:\> Set-AzContext -Subscription [Paste the Azure Subscription here]
+    ```
+
 ### Download and install the PowerShell module
 
 The following steps must be performed before the PowerShell cmdlets are available for use with the Windows Package Manager REST source.
@@ -32,9 +54,15 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 5. Right-click on WinGet.RestSource-Winget.PowerShell.Source.zip, and select **Extract all** from the drop-down menu.
 6. In the new window, select the **Extract** button.
 7. After the extraction has completed, navigate to '<extracted folder>\WinGet.RestSource-Winget.Powershell.Source'.
-8. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.Source.psd1` file. Select **Copy Path** from the drop-down menu.
-9. Open an **Administrative PowerShell** window.
-10. Run the following command from the Administrative PowerShell window:
+8. Open an **Administrative PowerShell** window.
+9. Ensure the downloaded `Microsoft.WinGet.Source` files are not blocked
+   
+    ```Powershell
+    PS C:\> Get-ChildItem -Path [Paste the path to the root folder of Microsoft.WinGet.Source] -Recurse | Unblock-File
+    ```
+10. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.Source.psd1` file. Select **Copy Path** from the drop-down menu.
+
+11. Run the following command from the Administrative PowerShell window:
 
     ```Powershell
     PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
