@@ -96,7 +96,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 2. After the above command has completed, copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
 
 > [!Note]
-> To prevent having to re-install this new PowerShell module each time, review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://docs.microsoft.compowershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.1)
+> To prevent having to re-install this new PowerShell module each time, review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://docs.microsoft.com/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.1)
 
 ### Add manifests to the REST source
 
