@@ -20,7 +20,7 @@ The REST functions can be run locally, but to use winget with them, the function
 1. In the `src\WinGet.RestSource.Functions` directory, run `generate_self_sign_cert.ps1` in PowerShell.
    * This will generate a test pfx and install it into the Root store.
    * It will automatically be used as the HTTPS cert during local execution, thanks to `launchSettings.json`
-2. Create a CosmosDB database instance in Azure, using either the above instructions, or [manually](https://docs.microsoft.com/en-us/azure/cosmos-db/sql/create-cosmosdb-resources-portal).
+2. Create a CosmosDB database instance in Azure, using either the above instructions, or [manually](https://docs.microsoft.com/azure/cosmos-db/sql/create-cosmosdb-resources-portal).
    * Navigate to the Keys section of your CosmosDB instance in the Azure portal to find your connection information.
    * If you've used the ARM templates as described above, your Database will be named `WinGet` and your Collection will be `Manifests`
 3. Copy `src\WinGet.RestSource.Functions\local.settings.template.json` to `local.settings.json` and populate required fields from the above Keys section.
@@ -35,7 +35,7 @@ Running tests are a great way to ensure that functionality is preserved across m
 
 ### Unit Testing Prerequisites
 
-* Install the [Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
+* Install the [Cosmos DB Emulator](https://docs.microsoft.com/azure/cosmos-db/local-emulator?tabs=ssl-netstd21)
 * Copy the `WinGet.RestSource.UnitTest\Test.runsettings.template.json` template configuration to `Test.runsettings.json`
   * The defaults should work for your local Cosmos DB emulator instance. You can change the configuration to point to a Cosmos DB instance in Azure instead.
   * Alternatively, all of the test configuration properties can be set as environment variables. This is useful for overriding properties in an ADO build.
