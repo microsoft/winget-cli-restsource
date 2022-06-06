@@ -1,5 +1,5 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
-# CI pipeline for OWCValidation
+# CI pipeline for winget-cli-restsource
 
 # PR triggers
 pr:
