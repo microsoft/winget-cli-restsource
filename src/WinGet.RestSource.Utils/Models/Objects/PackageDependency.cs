@@ -42,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <summary>
         /// Gets or sets MinimumVersion.
         /// </summary>
-        [PackageVersionValidator]
+        [PackageDependencyVersionValidator]
         public string MinimumVersion { get; set; }
 
         /// <summary>

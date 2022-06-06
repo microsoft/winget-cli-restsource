@@ -22,6 +22,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         public const string PackageName = "PackageName";
 
         /// <summary>
+        /// Publisher.
+        /// </summary>
+        public const string Publisher = "Publisher";
+
+        /// <summary>
         /// Moniker.
         /// </summary>
         public const string Moniker = "Moniker";

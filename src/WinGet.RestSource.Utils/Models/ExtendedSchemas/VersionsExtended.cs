@@ -305,16 +305,21 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             return results;
         }
 
+        /// <summary>
+        /// Does version exists.
+        /// </summary>
+        /// <param name="version">Version string.</param>
+        /// <returns>True if exists.</returns>
+        public bool VersionExists(string version)
+        {
+            return this.Any(p => p.PackageVersion == version);
+        }
+
         private void SetDefaults()
         {
             this.APIArrayName = nameof(VersionsExtended);
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
-        }
-
-        private bool VersionExists(string version)
-        {
-            return this.Any(p => p.PackageVersion == version);
         }
 
         private void AssertVersionExists(string version)

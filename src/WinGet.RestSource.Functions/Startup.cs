@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.WinGet.RestSource.Functions.Constants;
+
 [assembly:
     Microsoft.Azure.Functions.Extensions.DependencyInjection.FunctionsStartup(
         typeof(Microsoft.WinGet.RestSource.Functions.Startup))]
@@ -16,6 +19,9 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Factories;
+    using Microsoft.WinGet.RestSource.Helpers;
+    using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
 
@@ -27,13 +33,44 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <inheritdoc />
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            builder.Services.AddHttpClient();
+
             string endpoint = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ?? throw new InvalidDataException();
             string readOnlyKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
             string readWriteKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
             string databaseId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting) ?? throw new InvalidDataException();
             string containerId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting) ?? throw new InvalidDataException();
 
-            builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(sp => new CosmosDataStore(sp.GetRequiredService<ILogger<CosmosDataStore>>(), endpoint, readWriteKey, readOnlyKey, databaseId, containerId));
+            builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(
+                sp => new CosmosDataStore(
+                    sp.GetRequiredService<ILogger<CosmosDataStore>>(),
+                    endpoint,
+                    readWriteKey,
+                    readOnlyKey,
+                    databaseId,
+                    containerId));
+
+            builder.Services.AddSingleton<IRebuild>((s) => RebuildFactory.InitializeRebuildInstance());
+            builder.Services.AddSingleton<IUpdate>((s) => UpdateFactory.InitializeUpdateInstance());
+            builder.Services.AddSingleton<IRestSourceTriggerFunction>((s) => new RestSourceTriggerFunctions(
+                ApiConstants.AzFuncRestSourceEndpoint,
+                ApiConstants.AzureFunctionHostKey));
+
+            InjectTelemetryConfiguration(builder);
+        }
+
+        private static void InjectTelemetryConfiguration(IFunctionsHostBuilder builder)
+        {
+            builder.Services.AddSingleton<TelemetryConfiguration>(sp =>
+            {
+                var key = AzureFunctionEnvironment.AppInsightsInstrumentationKey;
+                if (!string.IsNullOrWhiteSpace(key))
+                {
+                    return new TelemetryConfiguration(key);
+                }
+
+                return new TelemetryConfiguration();
+            });
         }
     }
 }

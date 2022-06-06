@@ -13,6 +13,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
@@ -35,6 +36,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             PackageMatchFields.PackageIdentifier,
             PackageMatchFields.PackageName,
+            PackageMatchFields.Publisher,
             PackageMatchFields.Moniker,
             PackageMatchFields.Command,
             PackageMatchFields.Tag,
@@ -587,6 +589,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             {
                 case PackageMatchFields.PackageIdentifier:
                 case PackageMatchFields.PackageName:
+                case PackageMatchFields.Publisher:
                 case PackageMatchFields.PackageFamilyName:
                 case PackageMatchFields.ProductCode:
                 case PackageMatchFields.Tag:

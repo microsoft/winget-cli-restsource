@@ -11,6 +11,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System.Threading.Tasks;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Linq;
+    using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;

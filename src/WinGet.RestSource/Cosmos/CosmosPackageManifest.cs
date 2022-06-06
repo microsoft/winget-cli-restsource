@@ -4,9 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
+namespace Microsoft.WinGet.RestSource.Cosmos
 {
-    using Microsoft.WinGet.RestSource.Cosmos;
+    using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Newtonsoft.Json;
 

@@ -1,7 +1,4 @@
 ﻿{
-    "RestSourceName": "winget-cli-restsource",
     "RestSourceUrl": "https://localhost:7071/api",
-    "AddRestSource": "false",
-    "RunWriteTests": "false",
     "FunctionsHostKey": null
 }

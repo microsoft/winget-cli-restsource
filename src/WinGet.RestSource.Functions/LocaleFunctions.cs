@@ -16,6 +16,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Functions.Common;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
@@ -57,11 +58,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Locale locale;
+            Locale locale = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as locale
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
@@ -77,6 +80,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.LocalePost,
+                    req.Path.Value,
+                    headers,
+                    locale,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -105,10 +116,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
@@ -119,6 +132,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.LocaleDelete,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -147,11 +167,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            Locale locale;
+            Locale locale = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 locale = await Parser.StreamParser<Locale>(req.Body, log);
@@ -175,6 +197,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.LocalePut,
+                    req.Path.Value,
+                    headers,
+                    locale,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -204,11 +234,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             ILogger log)
         {
             ApiDataPage<Locale> locales;
+            Dictionary<string, string> headers = null;
 
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale);
             }
@@ -220,6 +251,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseGetError,
+                    FunctionConstants.LocaleGet,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 

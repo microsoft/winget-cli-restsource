@@ -1,0 +1,57 @@
+﻿{
+  "PackageIdentifier": "RestIntegrationTest.[publisher-name-placeholder]",
+  "Versions": [
+    {
+      "PackageVersion": "2.32.0",
+      "Installers": [
+        {
+          "Architecture": "x64",
+          "InstallerIdentifier": "Microsoft.AzureCLI_2.32.0_en_x64",
+          "InstallerSha256": "3811E0DA074B78993756CE2C074035432C3EE78B0575115436FFCDF7073D64B8",
+          "InstallerUrl": "https://azcliprod.azureedge.net/msi/azure-cli-2.32.0.msi",
+          "ProductCode": "{AD2E4EED-81D9-4D14-9389-5E36DB2D037B}",
+          "InstallerType": "wix"
+        }
+      ],
+      "DefaultLocale": {
+        "License": "Copyright (C) Microsoft Corporation",
+        "ManifestVersion": "1.1.0",
+        "MinimumOSVersion": "10.0.0.0",
+        "Moniker": "azure-cli",
+        "PackageLocale": "en-US",
+        "PackageName": "Microsoft Azure CLI",
+        "PackageUrl": "https://docs.microsoft.com/en-us/cli/azure/",
+        "Publisher": "Microsoft Corporation",
+        "Scope": "machine",
+        "tags": [ "developer-tools" ],
+        "ShortDescription": "The Azure command-line interface (Azure CLI) is a set of commands used to create and manage Azure resources. The Azure CLI is available across Azure services and is designed to get you working quickly with Azure, with an emphasis on automation."
+      }
+    },
+    {
+      "PackageVersion": "2.33.0",
+      "Installers": [
+        {
+          "Architecture": "x64",
+          "InstallerIdentifier": "Microsoft.AzureCLI_2.33.0_en_x64",
+          "InstallerSha256": "3811E0DA074B78993756CE2C074035432C3EE78B0575115436FFCDF7073D64B8",
+          "InstallerUrl": "https://azcliprod.azureedge.net/msi/azure-cli-2.32.0.msi",
+          "ProductCode": "{AD2E4EED-81D9-4D14-9389-5E36DB2D037B}",
+          "InstallerType": "wix"
+        }
+      ],
+      "DefaultLocale": {
+        "License": "Copyright (C) Microsoft Corporation",
+        "ManifestVersion": "1.1.0",
+        "MinimumOSVersion": "10.0.0.0",
+        "Moniker": "azure-cli",
+        "PackageLocale": "en-US",
+        "PackageName": "Microsoft Azure CLI",
+        "PackageUrl": "https://docs.microsoft.com/en-us/cli/azure/",
+        "Publisher": "Microsoft Corporation",
+        "Scope": "machine",
+        "tags": [ "developer-tools" ],
+        "ShortDescription": "The Azure command-line interface (Azure CLI) is a set of commands used to create and manage Azure resources. The Azure CLI is available across Azure services and is designed to get you working quickly with Azure, with an emphasis on automation."
+      }
+    }
+  ]
+}

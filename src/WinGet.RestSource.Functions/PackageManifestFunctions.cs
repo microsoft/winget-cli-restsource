@@ -16,6 +16,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Functions.Common;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
@@ -54,11 +55,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            PackageManifest packageManifest;
+            PackageManifest packageManifest = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -74,6 +77,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.ManifestPost,
+                    req.Path.Value,
+                    headers,
+                    packageManifest,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -95,10 +106,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
             }
             catch (DefaultException e)
@@ -109,6 +122,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.ManifestDelete,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -130,11 +150,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            PackageManifest packageManifest;
+            PackageManifest packageManifest = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse Stream
                 packageManifest = await Parser.StreamParser<PackageManifest>(req.Body, log);
@@ -159,6 +181,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.ManifestPut,
+                    req.Path.Value,
+                    headers,
+                    packageManifest,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -183,11 +213,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             ApiDataPage<PackageManifest> manifests;
             QueryParameters unsupportedQueryParameters;
             QueryParameters requiredQueryParameters;
+            Dictionary<string, string> headers = null;
 
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(QueryConstants.ContinuationToken);
 
                 string versionFilter = null;
@@ -214,6 +245,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.ManifestGet,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
