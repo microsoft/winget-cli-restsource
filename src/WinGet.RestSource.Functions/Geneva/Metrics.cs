@@ -9,8 +9,7 @@ namespace Microsoft.WinGet.RestSource.Functions.Geneva
     using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
-    using Microsoft.OWCUtils.Diagnostics;
-    using Microsoft.OWCUtils.Helpers.FormatHelpers;
+    using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Utils;
     using Microsoft.WinGet.RestSource.Functions.Constants;
 

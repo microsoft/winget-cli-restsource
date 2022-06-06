@@ -47,7 +47,6 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.4.2" />
-    <PackageReference Include="Microsoft.OWCUtil" Version="0.0.2.38-pre" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
 
     <!-- Fix azure warnings. https://github.com/Azure/azure-functions-host/issues/6899 -->

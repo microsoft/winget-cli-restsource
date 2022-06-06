@@ -19,7 +19,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Msix.Utils.Logger;
-    using Microsoft.OWCUtils.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Models;
     using Microsoft.WindowsPackageManager.Rest.Utils;
@@ -29,7 +28,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Functions.Geneva;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Constants;
-    using LoggingContextUtils = Microsoft.WindowsPackageManager.Rest.Diagnostics.Tmp.LoggingContext;
+    using LoggingContextUtils = Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext;
 
     /// <summary>
     /// This class contains the functions for uploads from and querying data from a repository.

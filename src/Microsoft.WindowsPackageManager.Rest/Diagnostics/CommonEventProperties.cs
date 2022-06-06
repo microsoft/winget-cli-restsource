@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="CommonEventProperties.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.OWCUtils.Diagnostics
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     /// <summary>
     /// Class to store common values for the telemetry events derived from AppServiceBaseEvent.

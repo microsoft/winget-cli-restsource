@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="TelemetryMetadata.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.OWCUtils.Diagnostics
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     /// <summary>
     /// Class that contains telemetry metadata read on function startup.

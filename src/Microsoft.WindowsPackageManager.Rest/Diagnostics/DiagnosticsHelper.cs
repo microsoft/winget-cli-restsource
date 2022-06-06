@@ -1,17 +1,17 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="DiagnosticsHelper.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.OWCUtils.Diagnostics
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     using System;
     using System.Collections.Generic;
     using System.Text;
     using Microsoft.Extensions.Logging;
     using Microsoft.Msix.Utils.Logger;
-    using Microsoft.WindowsPackageManager.Rest.Diagnostics.Tmp;
+    using Microsoft.WindowsPackageManager.Rest.Diagnostics;
 
     /// <summary>
     /// A singleton class containing properties and helpers related to diagnostics and logging.

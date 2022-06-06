@@ -44,7 +44,6 @@
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
-    <PackageReference Include="Microsoft.OWCUtil" Version="0.0.2.38-pre" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
   </ItemGroup>
 

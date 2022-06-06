@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="TelemetryOperation.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.OWCUtils.Diagnostics
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     using System;
     using System.Net;

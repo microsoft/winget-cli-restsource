@@ -1,16 +1,16 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="MetricsManager.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.OWCUtils.Diagnostics
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Cloud.InstrumentationFramework;
     using Microsoft.Msix.Utils.Logger;
-    using Microsoft.WindowsPackageManager.Rest.Diagnostics.Tmp;
+    using Microsoft.WindowsPackageManager.Rest.Diagnostics;
 
     /// <summary>
     /// Class that contains Metrics manager functionality.
