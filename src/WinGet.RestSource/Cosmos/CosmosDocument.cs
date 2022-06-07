@@ -6,6 +6,8 @@
 
 namespace Microsoft.WinGet.RestSource.Cosmos
 {
+    using Microsoft.WinGet.RestSource.Interfaces;
+
     /// <summary>
     /// This represents a cosmos document.
     /// It contains the document, associated data (such as e-tag), as well as error information.

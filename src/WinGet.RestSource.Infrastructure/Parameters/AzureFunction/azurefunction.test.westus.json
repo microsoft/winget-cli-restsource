@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "serverIdentifier": {
+            "value": "winget-pkgs-intune-rest-test"
+        },
+        "manifestCacheEndpoint": {
+            "value": "https://winget.azureedge.net/cache/"
+        },
+        "cosmosContainer": {
+            "value": "Manifests"
+        },
+        "cosmosDatabase": {
+            "value": "cosmossql-wgrest-test"
+        },
+        "functionName": {
+            "value": "azfun-wgrest-api-westus-test"
+        },
+        "storageSecretName": {
+            "value": "stwgrestwestustestConnectionString"
+        },
+        "appServiceName": {
+            "value": "asp-wgrest-westus-test"
+        },
+        "keyVaultName": {
+            "value": "kv-wgrest-westus-test"
+        },
+        "appInsightName": {
+            "value": "appin-wgrest-westus-test"
+        },
+        "monitoringTenant": {
+            "value": "PkgMgrTest"
+        },
+        "monitoringRole": {
+            "value": "azfun-wgrest-api-westus-test"
+        },
+        "monitoringMetricsAccount": {
+            "value": "MsPkgMgrMetrics"
+        }
+    }
+}

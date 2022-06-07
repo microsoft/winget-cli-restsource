@@ -1,14 +1,15 @@
 {
-    "version": "2.0",
-    "logging": {
-        "logLevel": {
-            "Microsoft.WinGet.RestSource": "Information"
-        },
-        "applicationInsights": {
-            "samplingExcludedTypes": "Request",
-            "samplingSettings": {
-                "isEnabled": true
-            }
-        }
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "Microsoft.WinGet.RestSource": "Information"
+    },
+    "applicationInsights": {
+      "samplingExcludedTypes": "Request",
+      "samplingSettings": {
+        "isEnabled": true
+      }
     }
+  },
+  "functionTimeout": "06:00:00"
 }

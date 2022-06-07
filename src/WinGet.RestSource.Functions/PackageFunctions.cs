@@ -15,8 +15,8 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.WinGet.RestSource.Functions.Common;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
@@ -54,11 +54,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Package package;
+            Package package = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -75,6 +77,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.PackagePost,
+                    req.Path.Value,
+                    headers,
+                    package,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -97,10 +107,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackage(packageIdentifier);
             }
             catch (DefaultException e)
@@ -111,6 +123,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.PackageDelete,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -132,11 +151,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Package package;
+            Package package = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
                 package = await Parser.StreamParser<Package>(req.Body, log);
@@ -161,6 +182,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseUpdateError,
+                    FunctionConstants.PackagePut,
+                    req.Path.Value,
+                    headers,
+                    package,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -184,11 +213,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             ILogger log)
         {
             ApiDataPage<Package> packages;
+            Dictionary<string, string> headers = null;
 
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Fetch Results
                 packages = await this.dataStore.GetPackages(packageIdentifier, headers.GetValueOrDefault(QueryConstants.ContinuationToken));
@@ -201,6 +231,13 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseGetError,
+                    FunctionConstants.PackageGet,
+                    req.Path.Value,
+                    headers,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 

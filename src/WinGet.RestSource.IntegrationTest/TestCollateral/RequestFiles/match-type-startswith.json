@@ -1,0 +1,12 @@
+﻿{
+  "MaximumResults": 50,
+  "Inclusions": [
+    {
+      "PackageMatchField": "PackageName",
+      "RequestMatch": {
+        "KeyWord": "Starts-With",
+        "MatchType": "StartsWith"
+      }
+    }
+  ]
+}

@@ -1,9 +1,5 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
-# CI/PR pipeline for winget-cli-restsource
-
-# Commit triggers
-trigger:
-- main
+# CI pipeline for winget-cli-restsource
 
 # PR triggers
 pr:
@@ -16,13 +12,11 @@ pr:
     - src/*
 
 jobs:
-- job: 'BuildTestPublish'
-  displayName: 'Build, Publish & Test'
+- job: 'BuildPublishTest'
+  displayName: 'Build Publish & Tests'
   timeoutInMinutes: 60
   pool:
-    # Need to specify windows-2022 until windows-latest moves to Server 2022.
-    # We need Server 2022 to use the "winget" appExecutionAlias in the integration tests.
-    vmImage: windows-2022
+    vmImage: windows-latest
     demands:
     - msbuild
     - visualstudio
@@ -33,3 +27,33 @@ jobs:
   steps:
   # Restore and Build
   - template: templates/restore-build-publish-test.yml
+
+# Static Analysis Job
+- job: 'StaticAnalysis'
+  displayName: 'Static Analysis'
+  timeoutInMinutes: 60
+  pool:
+    vmImage: windows-2019
+    demands:
+    - msbuild
+    - visualstudio
+
+  steps:
+  # Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+    displayName: 'Run CredScan'
+    inputs:
+      toolMajorVersion: V2
+      debugMode: false
+
+  # Publish SDT Logs
+  - template: templates/copy-and-publish.yml
+    parameters:
+      name: StaticAnalysisLogs
+      source: '$(Agent.BuildDirectory)\_sdt\logs'
+
+  # SDT Post Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      CredScan: true

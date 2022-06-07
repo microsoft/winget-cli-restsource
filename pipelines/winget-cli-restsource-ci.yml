@@ -1,12 +1,13 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
 # CI pipeline for winget-cli-restsource
 
-trigger: none
-pr: none
+# Branches that trigger a build on commit
+trigger:
+- main
 
 jobs:
 - job: 'BuildTestPublish'
-  displayName: 'Build, Publish & Test'
+  displayName: 'Build Test & Publish'
   timeoutInMinutes: 60
   pool:
     vmImage: windows-latest
@@ -19,7 +20,75 @@ jobs:
 
   steps:
   # Restore and Build
-  - template: templates/restore-build-sign-publish-test.yml
+  - template: templates/restore-build-publish-test.yml
 
-  # Run Compliance checks
-  - template: templates/compliance.yml
+  # Build Analysis - Binary Analysis (must run after build is complete on agent performing build)
+  - template: templates/binSkim.yml
+    parameters:
+      name: winget-pkgs-restsource.BinSkim.ArtifactStagingDirectory
+      binaries: "$(Build.ArtifactStagingDirectory)"
+  
+  # Publish SDT Logs
+  - template: templates/copy-and-publish.yml
+    parameters:
+      name: StaticAnalysisLogs
+      source: '$(Agent.BuildDirectory)\_sdt\logs'
+  
+  # SDT Post Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      BinSkim: true
+
+# Static Analysis Job
+- job: 'StaticAnalysis'
+  displayName: 'Static Analysis'
+  timeoutInMinutes: 120
+  pool:
+    vmImage: windows-2019
+    demands:
+    - msbuild
+    - visualstudio
+
+  steps:
+  # Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+    displayName: 'Run CredScan'
+    inputs:
+      toolMajorVersion: V2
+      debugMode: false
+
+  # Semmle Requires Restore on Agent
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      projects: '**/*.csproj'
+      feedsToUse: 'config'
+      nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGet.config'
+      restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
+
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-semmle.Semmle@0
+    displayName: 'Run Semmle'
+    inputs:
+      cleanupBuildCommands: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln /t:Clean'
+      buildCommands: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln'
+
+  # Publish SDT Logs
+  - template: templates/copy-and-publish.yml
+    parameters:
+      name: StaticAnalysisLogs
+      source: '$(Agent.BuildDirectory)\_sdt\logs'
+
+  # SDT Post Analysis
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      CredScan: true
+      Semmle: true
+      $testBinaryPath: 
+
+  # Code Inspector
+  - task: CodeInspector@2
+    inputs:
+      ProductId: 'd2ca06e4-302f-4a16-99e5-27e39570d352'

@@ -1,0 +1,17 @@
+﻿import "Ifx.bond"
+
+namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
+
+struct AppServiceBaseEvent : Ifx.OperationSchema
+{
+    10: required wstring AspEnvironment;
+}
+
+struct DiagnosticEvent : AppServiceBaseEvent
+{
+    10: required wstring Message;
+    20: required wstring MemberName;
+    30: required wstring SourceFilePath;
+    40: required int32 SourceLineNumber;
+    50: required wstring TracingLevel;
+}

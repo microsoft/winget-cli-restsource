@@ -8,14 +8,12 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Models.V1;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Wrapper class around PackageManifest object.
@@ -27,23 +25,37 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
         /// Merges a merged manifest object into an existing json representation of the app.
         /// </summary>
         /// <param name="manifest">Merged manifest object.</param>
-        /// <param name="priorManifest">Prior json data to merge with.</param>
+        /// <param name="priorManifest">String package manifest.</param>
         /// <returns>A <see cref="PackageManifest"/> representing the rest source json representation of the package.</returns>
         public static PackageManifest AddManifestToPackageManifest(
             Manifest manifest,
             string priorManifest)
         {
+            PackageManifest priorPackageManifest = Parser.StringParser<PackageManifest>(priorManifest);
+            return AddManifestToPackageManifest(manifest, priorPackageManifest);
+        }
+
+        /// <summary>
+        /// Merges a merged manifest object into an existing json representation of the app.
+        /// </summary>
+        /// <param name="manifest">Merged manifest object.</param>
+        /// <param name="priorPackageManifest">Optional PackageManifest.</param>
+        /// <returns>A <see cref="PackageManifest"/> representing the rest source json representation of the package.</returns>
+        public static PackageManifest AddManifestToPackageManifest(
+            Manifest manifest,
+            PackageManifest priorPackageManifest = null)
+        {
             PackageManifest packageManifest = null;
 
-            if (!string.IsNullOrWhiteSpace(priorManifest))
-            {
-                packageManifest = Parser.StringParser<PackageManifest>(priorManifest);
-            }
-            else
+            if (priorPackageManifest == null)
             {
                 Package package = new Package();
                 package.PackageIdentifier = manifest.Id;
                 packageManifest = new PackageManifest(package);
+            }
+            else
+            {
+                packageManifest = priorPackageManifest;
             }
 
             // Create a new VersionExtended object and populate it with manifest info

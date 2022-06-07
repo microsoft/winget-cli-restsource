@@ -1,0 +1,111 @@
+﻿{
+  "PackageIdentifier": "RestIntegrationTest.VisualStudioCode",
+  "Versions": [
+    {
+      "PackageVersion": "1.65.2",
+      "Installers": [
+        {
+          "Architecture": "arm64",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.2_arm64",
+          "InstallerSha256": "4b478915f2c1e3115599590c8d6952e27726539c31b456193a6e13186b63b8e9",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-arm64-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        },
+        {
+          "Architecture": "x64",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.2_x64",
+          "InstallerSha256": "534c0916f917d8527185bb8731f5bab7df1424ce6b97973180e0f8cda838ab4b",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-x64-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        },
+        {
+          "Architecture": "x86",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.2_x86",
+          "InstallerSha256": "caa9d6ff81f6e8a36aa1076bc451ccaf3a4fc043fe6d877bb3d7b9d2e77e2cdb",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-ia32-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        }
+      ],
+      "DefaultLocale": {
+        "License": "Microsoft Software License",
+        "LicenseUrl": "https://code.visualstudio.com/license",
+        "ManifestType": "merged",
+        "ManifestVersion": "1.0.0",
+        "Moniker": "vscode",
+        "PackageLocale": "en-US",
+        "PackageName": "Starts-With, match type substring and some random data",
+        "PackageUrl": "https://code.visualstudio.com",
+        "PrivacyUrl": "https://privacy.microsoft.com/",
+        "Publisher": "Microsoft Corporation",
+        "PublisherUrl": "https://www.microsoft.com/",
+        "ShortDescription": "Microsoft Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications. Microsoft Visual Studio Code is free and available on your favorite platform - Linux, macOS, and Windows.",
+        "Tags": [
+          "developer-tools",
+          "editor"
+        ]
+      }
+    },
+    {
+      "PackageVersion": "1.65.3",
+      "Installers": [
+        {
+          "Architecture": "arm64",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.3_arm64",
+          "InstallerSha256": "4b478915f2c1e3115599590c8d6952e27726539c31b456193a6e13186b63b8e9",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-arm64-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        },
+        {
+          "Architecture": "x64",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.3_x64",
+          "InstallerSha256": "534c0916f917d8527185bb8731f5bab7df1424ce6b97973180e0f8cda838ab4b",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-x64-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        },
+        {
+          "Architecture": "x86",
+          "InstallerIdentifier": "Microsoft.VisualStudioCode_1.65.3_x86",
+          "InstallerSha256": "caa9d6ff81f6e8a36aa1076bc451ccaf3a4fc043fe6d877bb3d7b9d2e77e2cdb",
+          "InstallerUrl": "https://az764295.vo.msecnd.net/stable/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/VSCodeSetup-ia32-1.65.2.exe",
+          "Scope": "machine",
+          "Commands": [
+            "code"
+          ]
+        }
+      ],
+      "DefaultLocale": {
+        "License": "Microsoft Software License",
+        "LicenseUrl": "https://code.visualstudio.com/license",
+        "ManifestType": "merged",
+        "ManifestVersion": "1.0.0",
+        "Moniker": "vscode",
+        "PackageLocale": "en-US",
+        "PackageName": "Starts-With, match type substring and some random data",
+        "PackageUrl": "https://code.visualstudio.com",
+        "PrivacyUrl": "https://privacy.microsoft.com/",
+        "Publisher": "Microsoft Corporation",
+        "PublisherUrl": "https://www.microsoft.com/",
+        "ShortDescription": "Microsoft Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications. Microsoft Visual Studio Code is free and available on your favorite platform - Linux, macOS, and Windows.",
+        "Tags": [
+          "developer-tools",
+          "editor"
+        ]
+      }
+    }
+  ]
+}

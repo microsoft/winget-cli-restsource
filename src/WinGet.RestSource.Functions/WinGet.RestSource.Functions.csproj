@@ -2,37 +2,36 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>V3</AzureFunctionsVersion>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
     <Platforms>AnyCPU</Platforms>
     <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <WarningsAsErrors />
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Warning 1701;1702: These two compiler warnings are raised when a reference is bound to a different version
+         than specified in the assembly reference version number. -->
+    <!-- Warning NU1701: Warning for using Nuget packages in a .Net Core project compiled in .Net Framework. -->
     <NoWarn>1701;1702;NU1701</NoWarn>
-    <DocumentationFile>Microsoft.WinGet.RestSource.Functions.Documentation.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <WarningsAsErrors />
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version, most likely when updating to dotnet 5.0 -->
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
-    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
-  </ItemGroup>
-
+  <!-- StyleCop Item Group. -->
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
@@ -40,6 +39,31 @@
     </PackageReference>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
+    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.10" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.4.2" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
+
+    <!-- Fix azure warnings. https://github.com/Azure/azure-functions-host/issues/6899 -->
+    <PackageReference Include="Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator" Version="1.2.3" />
+  </ItemGroup>
+
+  <!-- Component Governance fix Item Group. -->
+  <ItemGroup>
+    <!-- Remove when dependency resolving correctly picks up security fixed version-->
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
+  </ItemGroup>
+
+  <!-- see GitHub issue https://github.com/Azure/azure-functions-host/issues/5894 -->
+  <PropertyGroup>
+    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Update="host.json">
@@ -56,6 +80,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
     <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
   </ItemGroup>
 </Project>

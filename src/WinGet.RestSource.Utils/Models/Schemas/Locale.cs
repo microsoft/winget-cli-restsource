@@ -71,6 +71,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         [AuthorValidator]
         public string Author { get; set; }
 
+        // TODO: The nullability of these fields differs from default and locales.
+        // TODO: For now to unblock me, im allowing nulls on most things.
+        // Bug 35680315: [Rest] Address locale vs default locales nullability differences
+
         /// <summary>
         /// Gets or sets PackageName.
         /// </summary>

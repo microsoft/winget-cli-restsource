@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "kv-wgrest-westus-test"
+        },
+        "accessPolicies": {
+            "value": [{
+                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "objectId": "841ffed1-e7e1-4850-9a90-7139d60a472f",
+                    "permissions": {
+                        "keys": [
+                            "List"
+                        ],
+                        "secrets": [
+                            "Get",
+                            "List"
+                        ],
+                        "certificates": [
+                            "List"
+                        ],
+                        "storage": [
+                            "List"
+                        ]
+                    },
+                    "metadata": {
+                        "description": "This is the object for the Package Manager Team (Package Manager - Team)."
+                    }
+                },
+                {
+                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "objectId": "39c5cc61-31ea-41be-af81-bc0cb5cb8c6b",
+                    "permissions": {
+                        "keys": [
+                            "Get",
+                            "List"
+                        ],
+                        "secrets": [
+                            "Get",
+                            "List",
+                            "Set"
+                        ],
+                        "certificates": [
+                            "Get",
+                            "List"
+                        ],
+                        "storage": [
+                            "Get"
+                        ]
+                    },
+                    "metadata": {
+                        "description": "This is the object for DEP-APT-PackageManagerService-Test (09da13ec-aba3-4471-842e-e0493cb809fa)."
+                    }
+                },
+                {
+                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
+                    "permissions": {
+                        "keys": [],
+                        "secrets": [
+                            "Get"
+                        ],
+                        "certificates": []
+                    },
+                    "metadata": {
+                        "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+                    }
+                },
+                {
+                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "objectId": "21bf1420-2ed9-48b9-bf6d-ece1337d4fd1",
+                    "permissions": {
+                        "keys": [],
+                        "secrets": [
+                            "Get"
+                        ],
+                        "certificates": []
+                    },
+                    "metadata": {
+                        "description": "This is the object for the Microsoft.Azure.FrontDoor Service Principal. It allows FrontDoor to import certificates for SSL."
+                    }
+                },
+                {
+                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "objectId": "54a2b188-fc77-433a-b00a-27acbad34a73",
+                    "permissions": {
+                        "keys": [],
+                        "secrets": [],
+                        "certificates": [
+                            "List"
+                        ]
+                    },
+                    "metadata": {
+                        "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
+                    }
+                }
+            ]
+        }
+    }
+}

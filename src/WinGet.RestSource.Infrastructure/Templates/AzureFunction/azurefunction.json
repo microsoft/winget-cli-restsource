@@ -11,7 +11,13 @@
         "serverIdentifier": {
             "type": "string",
             "metadata": {
-                "description": "Azure Function Name"
+                "description": "The source identifier is a unique identifier for the source server"
+            }
+        },
+        "manifestCacheEndpoint": {
+            "type": "string",
+            "metadata": {
+                "description": "The endpoint where we expect manifests to be cached for this deployment ring."
             }
         },
         "cosmosDatabase": {
@@ -119,6 +125,38 @@
             "metadata": {
                 "description": "This is the thumbprint loading Certs."
             }
+        },
+        "cors": {
+            "type": "object",
+            "defaultValue": {
+                "allowedOrigins": [
+                    "https://functions.azure.com",
+					"https://functions-staging.azure.com",
+					"https://functions-next.azure.com"
+                ],
+                "supportCredentials": false
+            },
+            "metadata": {
+                "description": "Function CORS Settings."
+            }
+        },
+        "monitoringTenant": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Tenant"
+            }
+        },
+        "monitoringRole": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
+        },
+        "monitoringMetricsAccount": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
         }
     },
     "variables": {
@@ -127,7 +165,9 @@
         "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
         "kv_cosmosAccountWriteKey_secretName": "CosmosReadWriteKey",
-        "kv_cosmosAccountReadKey_secretName": "CosmosReadOnlyKey"
+        "kv_cosmosAccountReadKey_secretName": "CosmosReadOnlyKey",
+        "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
+        "kv_packageManifestsFunctionEndpoint_SecretName": "AzFuncPackageManifestsEndpoint",
     },
     "resources": [
         {
@@ -178,7 +218,26 @@
                         "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
                         "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountWriteKey_secretName'), '/)')]",
-                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]"
+                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]",
+                        "ManifestCacheEndpoint": "[parameters('manifestCacheEndpoint')]",
+                        "FunctionHostKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_functionHostKey_SecretName'), '/)')]",
+                        "AzFuncPackageManifestsEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_packageManifestsFunctionEndpoint_SecretName'), '/)')]",
+                        "WEBSITE_FIRST_PARTY_ID": "AntMDS",
+                        "WinGetRest::SubscriptionId": "[parameters('appServiceSubscription')]",
+                        "WinGetRest:Telemetry:Role": "[parameters('monitoringRole')]",
+                        "WinGetRest:Telemetry:Tenant": "[parameters('monitoringTenant')]",
+                        "WinGetRest:Telemetry:Metrics": "[parameters('monitoringMetricsAccount')]"
+                    }
+                },
+                {
+                    "apiVersion": "2021-03-01",
+                    "type": "config",
+                    "name": "web",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]"
+                    ],
+                    "properties": {
+                        "cors": "[parameters('cors')]"
                     }
                 }
             ]

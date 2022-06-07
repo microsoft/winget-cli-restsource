@@ -121,6 +121,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             clause = filter.PackageMatchField switch
             {
                 PackageMatchFields.PackageName => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.PackageName, keyword),
+                PackageMatchFields.Publisher => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.Publisher, keyword),
                 PackageMatchFields.Moniker => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.Moniker, keyword),
                 PackageMatchFields.ShortDescription => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.ShortDescription, keyword),
                 PackageMatchFields.Tag => v => v.DefaultLocale.Tags.Any(t => LinqKit.Extensions.Invoke(op, t, keyword)),

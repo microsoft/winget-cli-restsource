@@ -24,6 +24,7 @@
   <!-- vertag<:>end -->
   <ItemGroup>
     <Content Include="Templates\**" />
+    <Content Include="Parameters\**" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>

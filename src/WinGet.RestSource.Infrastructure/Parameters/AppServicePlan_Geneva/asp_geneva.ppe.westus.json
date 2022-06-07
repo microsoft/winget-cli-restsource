@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "aspName": {
+            "value": "asp-wgrest-westus-ppe"
+        },
+        "skuCode": {
+            "value": "P3v2"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "genevaName": {
+            "value": "geneva-wgrest-westus-ppe"
+        },
+        "keyVaultName": {
+            "value": "kv-wgrest-westus-ppe"
+        },
+        "monitoringTenant": {
+            "value": "PkgMgrPPE"
+        },
+        "monitoringRole": {
+            "value": "asp-wgrest-westus-ppe"
+        },
+        "monitoringMetricsAccount": {
+            "value": "MsPkgMgrProd"
+        },
+        "monitoringGcsEnvironment": {
+            "value": "Diagnostics Prod"
+        },
+        "monitoringGcsAccount": {
+            "value": "MsPkgMgrProdLogs"
+        },
+        "monitoringGcsNamespace": {
+            "value": "MsPkgMgrProdLogs"
+        },
+        "monitoringGcsAuthId": {
+            "value": "ppe.geneva.keyvault.pmrest.onmicrosoft.com"
+        },
+        "monitoringConfigVersion": {
+            "value": "1.12"
+        }
+    }
+}

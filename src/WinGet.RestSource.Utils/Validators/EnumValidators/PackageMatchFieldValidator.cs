@@ -18,6 +18,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
         {
             PackageMatchFields.PackageIdentifier,
             PackageMatchFields.PackageName,
+            PackageMatchFields.Publisher,
             PackageMatchFields.Moniker,
             PackageMatchFields.Command,
             PackageMatchFields.Tag,

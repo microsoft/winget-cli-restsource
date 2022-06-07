@@ -16,10 +16,10 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Functions.Common;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
-    using Microsoft.WinGet.RestSource.Utils.Models;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGet.RestSource.Utils.Validators;
@@ -56,14 +56,17 @@ namespace Microsoft.WinGet.RestSource.Functions
             ApiDataPage<ManifestSearchResponse> manifestSearchResponse;
             PackageMatchFields unsupportedFields;
             PackageMatchFields requiredFields;
+            ManifestSearchRequest manifestSearch = null;
+            Dictionary<string, string> headers = null;
+
             try
             {
                 // Parse Headers
-                Dictionary<string, string> headers = HeaderProcessor.ToDictionary(req.Headers);
+                headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);
 
                 // Get Manifest Search Request and Validate.
-                ManifestSearchRequest manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
+                manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
                 ApiDataValidator.Validate(manifestSearch);
 
                 manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, continuationToken);
@@ -79,6 +82,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                Geneva.Metrics.EmitMetricForOperation(
+                    Geneva.ErrorMetrics.DatabaseGetError,
+                    FunctionConstants.ManifestSearchPost,
+                    req.Path.Value,
+                    headers,
+                    manifestSearch,
+                    e,
+                    log);
                 return ActionResultHelper.UnhandledError(e);
             }
 

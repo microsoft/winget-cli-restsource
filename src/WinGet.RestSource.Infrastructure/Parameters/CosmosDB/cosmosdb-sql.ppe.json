@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cosmosName": {
+            "value": "cosmos-wgrest-ppe"
+        },
+        "sqlname": {
+            "value": "cosmossql-wgrest-ppe"
+        },
+        "options": { // TODO: adjust costing 
+            "value": {
+                "autoscaleSettings": {
+                    "maxThroughput": 4000
+                }
+            }
+        }
+    }
+}

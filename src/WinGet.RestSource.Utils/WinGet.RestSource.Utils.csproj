@@ -1,20 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
-    <RootNamespace>Microsoft.WinGet.RestSource.Utils</RootNamespace>
     <AssemblyName>Microsoft.WinGet.RestSource.Utils</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.RestSource.Utils</RootNamespace>
+    <LangVersion>8</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <WarningsAsErrors />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>Microsoft.WinGet.RestSource.Utils.Documentation.xml</DocumentationFile>
-
     <!-- Warning 1701;1702: These two compiler warnings are raised when a reference is bound to a different version
          than specified in the assembly reference version number. -->
     <!-- Warning NU1701: Warning for using Nuget packages in a .Net Standard project compiled in .Net Framework. -->
     <NoWarn>1701;1702;NU1701</NoWarn>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -29,20 +31,30 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
+  <!-- StyleCop Item Group. -->
   <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Component Governance fix. Remove when dependency resolving correctly picks up new version, most likely when updating to dotnet 5.0 -->
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="0.3.4" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
+  </ItemGroup>
+
+  <!-- Component Governance fix Item Group. -->
+  <ItemGroup>
+    <!-- Remove when dependency resolving correctly picks up security fixed version-->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
   </ItemGroup>
 
 </Project>
