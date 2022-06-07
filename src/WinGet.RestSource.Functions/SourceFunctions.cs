@@ -28,7 +28,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Functions.Geneva;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Constants;
-    using LoggingContextUtils = Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext;
 
     /// <summary>
     /// This class contains the functions for uploads from and querying data from a repository.
@@ -301,7 +300,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 inputHelper = durableContext.GetInput<TFunctionInput>();
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     inputHelper.OperationId);
@@ -379,7 +378,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 TFunctionInput functionInput = durableContext.GetInput<TFunctionInput>();
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     functionInput.OperationId);
@@ -451,7 +450,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                     req.Body,
                     true);
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     input.OperationId);
@@ -486,22 +485,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             // We expect the client to poll for results and pull the success/fail of the operation from the output of the status response.
             // We are leveraging the full durable function pre-built infrastructure to offer our API Async.
             return durableClient.CreateCheckStatusResponse(req, orchestrationInstanceId);
-        }
-
-        private LoggingContext GetLoggingContext(
-            string functionName,
-            string invocationId,
-            string operationId,
-            string manifestId = null,
-            string installerId = null)
-        {
-            LoggingContextUtils tmpLoggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
-                    functionName,
-                    invocationId,
-                    operationId,
-                    manifestId,
-                    installerId);
-            return new LoggingContext(tmpLoggingContext.ToString());
         }
     }
 }
