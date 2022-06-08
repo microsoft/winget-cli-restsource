@@ -24,10 +24,6 @@
             {
               "name": "fd_root",
               "type": "string"
-            },
-            {
-              "name": "function_name",
-              "type": "string"
             }
           ],
           "output": {
