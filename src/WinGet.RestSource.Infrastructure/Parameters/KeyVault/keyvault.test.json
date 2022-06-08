@@ -30,7 +30,7 @@
                 },
                 {
                     "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "39c5cc61-31ea-41be-af81-bc0cb5cb8c6b",
+                    "objectId": "94068ac3-3b3c-4ce5-8f6d-b0ec26875e07",
                     "permissions": {
                         "keys": [
                             "Get",
@@ -50,7 +50,7 @@
                         ]
                     },
                     "metadata": {
-                        "description": "This is the object for DEP-APT-PackageManagerService-Test (09da13ec-aba3-4471-842e-e0493cb809fa)."
+                        "description": "This is the object for DEP-APT-WinGetService-Test (winget-cli-restsource)."
                     }
                 },
                 {
