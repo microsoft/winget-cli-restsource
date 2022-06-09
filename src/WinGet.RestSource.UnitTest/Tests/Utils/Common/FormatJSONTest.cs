@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Common
+namespace Microsoft.Winget.RestSource.UnitTest.Tests.UtilsTests.Common
 {
     using System.Collections.Generic;
     using Microsoft.WinGet.RestSource.Utils.Common;

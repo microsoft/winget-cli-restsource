@@ -69,7 +69,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             }
             else if (referenceType == ReferenceType.Delete)
             {
-                await this.DeleteManifestFromSource(
+                await this.ProcessManifestDeleteAsync(
                     httpClient,
                     manifest,
                     restSourceTriggerFunction,
@@ -181,7 +181,7 @@ namespace Microsoft.WinGet.RestSource.Operations
         /// <param name="restSourceTriggerFunction">Rest source trigger.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        internal async Task DeleteManifestFromSource(
+        internal async Task ProcessManifestDeleteAsync(
             HttpClient httpClient,
             Manifest manifest,
             IRestSourceTriggerFunction restSourceTriggerFunction,

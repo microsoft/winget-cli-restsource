@@ -17,9 +17,9 @@ namespace Microsoft.WinGet.RestSource.Operations
     using Microsoft.WindowsPackageManager.Rest.Models;
     using Microsoft.WindowsPackageManager.Rest.Utils;
     using Microsoft.WinGet.RestSource.Exceptions;
-    using Microsoft.WinGet.RestSource.Helpers.Sql;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.PowershellSupport.Helpers;
+    using Microsoft.WinGet.RestSource.Sql;
     using Microsoft.WinGet.RestSource.Utils.Extensions;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Models.V1;
@@ -50,16 +50,49 @@ namespace Microsoft.WinGet.RestSource.Operations
             string manifestCacheEndpoint,
             LoggingContext loggingContext)
         {
-            Logger.Info($"{loggingContext}Starting to process rebuild request.");
+            // Get packages from sql source.
+            string databasePath = await httpClient.DownloadFileAsync(sasReference, loggingContext);
+            var sqlPackages = this.GetPackagesFromDatabase(databasePath);
 
-            var sqlPackages = await this.GetPackagesFromDatabaseAsync(httpClient, sasReference, loggingContext);
-            Logger.Info($"{loggingContext}Number of packages in database {sqlPackages.Count}");
-
+            // Get packages from rest source.
             var restPackages = await restSourceTriggerFunction.GetAllPackagesAsync(
                     httpClient,
                     loggingContext);
-            Logger.Info($"{loggingContext}Number of packages in rest {restPackages.Count}");
             var restPackagesSet = new HashSet<string>(restPackages.Select(p => p.PackageIdentifier));
+
+            Logger.Info($"{loggingContext}Number of packages in database {sqlPackages.Count}");
+            Logger.Info($"{loggingContext}Number of packages in rest {restPackages.Count}");
+            await this.ProcessRebuildRequestInternalAsync(
+                httpClient,
+                operationId,
+                sqlPackages,
+                restPackagesSet,
+                restSourceTriggerFunction,
+                manifestCacheEndpoint,
+                loggingContext);
+        }
+
+        /// <summary>
+        /// Processes a rebuild request from database path.
+        /// </summary>
+        /// <param name="httpClient">The function's http client.</param>
+        /// <param name="operationId">Operation id.</param>
+        /// <param name="sqlPackages">Sql packages.</param>
+        /// <param name="restPackages">Rest packages.</param>
+        /// <param name="restSourceTriggerFunction">IRestSourceTriggerFunction.</param>
+        /// <param name="manifestCacheEndpoint">Manifest cache endpoint.</param>
+        /// <param name="loggingContext">Logging context.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        internal async Task ProcessRebuildRequestInternalAsync(
+            HttpClient httpClient,
+            string operationId,
+            IReadOnlyList<SqlPackage> sqlPackages,
+            HashSet<string> restPackages,
+            IRestSourceTriggerFunction restSourceTriggerFunction,
+            string manifestCacheEndpoint,
+            LoggingContext loggingContext)
+        {
+            Logger.Info($"{loggingContext}Starting to process rebuild request.");
 
             // Process all packages in sql.
             foreach (var sqlPackage in sqlPackages)
@@ -86,7 +119,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                 // to override it, otherwise post.
                 try
                 {
-                    if (restPackagesSet.Contains(sqlPackage.Id))
+                    if (restPackages.Contains(sqlPackage.Id))
                     {
                         Logger.Info($"{loggingContext}{sqlPackage.Id} exists in both sources");
                         await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
@@ -98,7 +131,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                             loggingContext,
                             waitTime: RetryWaitTime);
 
-                        restPackagesSet.Remove(sqlPackage.Id);
+                        restPackages.Remove(sqlPackage.Id);
                     }
                     else
                     {
@@ -123,7 +156,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             }
 
             // Successfully added all the packages from sql, but there might still be remnants packages in rest. Delete them.
-            foreach (var restPackage in restPackagesSet)
+            foreach (var restPackage in restPackages)
             {
                 Logger.Info($"{loggingContext}Deleting from rest source {restPackage}");
                 await RetryHelper.RunAndRetryWithExceptionAsync<Exception>(
@@ -139,14 +172,8 @@ namespace Microsoft.WinGet.RestSource.Operations
             Logger.Info($"{loggingContext}Finish Rebuild");
         }
 
-        private async Task<IReadOnlyList<SqlPackage>> GetPackagesFromDatabaseAsync(
-            HttpClient httpClient,
-            string sasReference,
-            LoggingContext loggingContext)
+        private IReadOnlyList<SqlPackage> GetPackagesFromDatabase(string databasePath)
         {
-            // Download the SQLite index to process.
-            string databasePath = await httpClient.DownloadFileAsync(sasReference, loggingContext);
-
             using var sqlReader = new SqlReader(databasePath);
             return sqlReader.GetPackages();
         }

@@ -18,11 +18,11 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;
-    using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Newtonsoft.Json;
     using Xunit;
     using Xunit.Abstractions;
+    using static Microsoft.Winget.RestSource.UnitTest.Common.TestCollateralHelper;
     using Arrays = Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Objects = Microsoft.WinGet.RestSource.Utils.Models.Objects;
 
@@ -31,7 +31,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
     /// </summary>
     public class CosmosDataStoreTests : IAsyncLifetime
     {
-        private const string ManifestsPath = @"Tests\RestSource\Cosmos\manifests.json";
+        private const string ManifestsTestFile = @"manifests.json";
         private const int ManifestCount = 500;
         private const int TestDatabaseRUs = 4000;
         private const string PowerToysPackageIdentifier = "Microsoft.PowerToys";
@@ -78,7 +78,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         {
             var sw = Stopwatch.StartNew();
 
-            string json = System.IO.File.ReadAllText(ManifestsPath);
+            string json = System.IO.File.ReadAllText(
+                TestCollateralHelper.GetTestCollateralFilePath(TestCollateral.CosmosPackageManifests, ManifestsTestFile));
             this.allTestManifests = JsonConvert.DeserializeObject<List<CosmosPackageManifest>>(json);
 
             // Ensure container exists prior to getting count

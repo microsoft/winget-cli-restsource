@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Helpers.Sql
+namespace Microsoft.WinGet.RestSource.Sql
 {
     using System;
     using System.Collections.Generic;
@@ -73,7 +73,12 @@ namespace Microsoft.WinGet.RestSource.Helpers.Sql
             return packages;
         }
 
-        private IReadOnlyList<SqlVersion> GetVersions(string idsRowid)
+        /// <summary>
+        /// Get versions of a pacakge.
+        /// </summary>
+        /// <param name="idsRowid">ids row id.</param>
+        /// <returns>Versions of package.</returns>
+        internal IReadOnlyList<SqlVersion> GetVersions(string idsRowid)
         {
             var versions = new List<SqlVersion>();
 
@@ -99,7 +104,12 @@ namespace Microsoft.WinGet.RestSource.Helpers.Sql
             return versions;
         }
 
-        private string GetVersion(string versionsRowId)
+        /// <summary>
+        /// Get version.
+        /// </summary>
+        /// <param name="versionsRowId">Version row id.</param>
+        /// <returns>Version string.</returns>
+        internal string GetVersion(string versionsRowId)
         {
             // Get the string version.
             var versionCommand = this.connection.CreateCommand();
@@ -117,7 +127,12 @@ namespace Microsoft.WinGet.RestSource.Helpers.Sql
             throw new ArgumentException();
         }
 
-        private string ReadPathPartFromId(string pathPathRowId)
+        /// <summary>
+        /// Gets the path where the manifest is located.
+        /// </summary>
+        /// <param name="pathPathRowId">Path path row id.</param>
+        /// <returns>Path of manifest.</returns>
+        internal string ReadPathPartFromId(string pathPathRowId)
         {
             // Get path for that pathrowid
             var pathPartCommand = this.connection.CreateCommand();
