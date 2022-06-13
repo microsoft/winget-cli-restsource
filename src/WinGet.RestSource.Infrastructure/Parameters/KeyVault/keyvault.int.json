@@ -29,7 +29,7 @@
                 },
                 {
                     "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "ae14f7cf-a053-47d1-9b07-f1bbb414bbc0",
+                    "objectId": "3aec9770-cb67-4244-8a11-fb86b4bc4988",
                     "permissions": {
                         "keys": [
                             "Get",
@@ -49,7 +49,7 @@
                         ]
                     },
                     "metadata": {
-                        "description": "This is the object for DEP-APT-WinGetService-Internal (a811107b-baf7-4d9f-9b79-2404197e9b8c)."
+                        "description": "This is the object for DEP-APT-WinGetService-Internal (winget-cli-restsource)."
                     }
                 },
                 {

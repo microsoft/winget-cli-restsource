@@ -29,7 +29,7 @@
                 },
                 {
                     "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "5c690764-190e-4a83-a4ba-f2d2d83c5c47",
+                    "objectId": "f9c437e7-f49e-4226-81eb-0944531afa02",
                     "permissions": {
                         "keys": [
                             "Get",
@@ -49,7 +49,7 @@
                         ]
                     },
                     "metadata": {
-                        "description": "This is the object for DEP-APT-PackageManagerService-PPE (597b565c-d5fa-4794-9442-40e3c2361181)."
+                        "description": "This is the object for DEP-APT-WinGetService-PPE (winget-cli-restsource)."
                     }
                 },
                 {
