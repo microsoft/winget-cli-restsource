@@ -1,100 +1,143 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "value": "kv-wgrest-westus-ppe"
-        },
-        "accessPolicies": {
-            "value": [{
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "841ffed1-e7e1-4850-9a90-7139d60a472f",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "List"
-                        ],
-                        "certificates": [
-                            "List"
-                        ],
-                        "storage": [
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Package Manager Team (Package Manager - Team)."
-                    }
-                },
-                {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "f9c437e7-f49e-4226-81eb-0944531afa02",
-                    "permissions": {
-                        "keys": [
-                            "Get",
-                            "List"
-                        ],
-                        "secrets": [
-                            "Get",
-                            "List",
-                            "Set"
-                        ],
-                        "certificates": [
-                            "Get",
-                            "List"
-                        ],
-                        "storage": [
-                            "Get"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for DEP-APT-WinGetService-PPE (winget-cli-restsource)."
-                    }
-                },
-                {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
-                    "permissions": {
-                        "keys": [],
-                        "secrets": [
-                            "Get"
-                        ],
-                        "certificates": []
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
-                    }
-                },
-                {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "21bf1420-2ed9-48b9-bf6d-ece1337d4fd1",
-                    "permissions": {
-                        "keys": [],
-                        "secrets": [
-                            "Get"
-                        ],
-                        "certificates": []
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Microsoft.Azure.FrontDoor Service Principal. It allows FrontDoor to import certificates for SSL."
-                    }
-                },
-                {
-                    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "objectId": "54a2b188-fc77-433a-b00a-27acbad34a73",
-                    "permissions": {
-                        "keys": [],
-                        "secrets": [],
-                        "certificates": [
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
-                    }
-                }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "kv-wgrest-westus-ppe"
+    },
+    "accessPolicies": {
+      "value": [
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "841ffed1-e7e1-4850-9a90-7139d60a472f",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "List"
+            ],
+            "certificates": [
+              "List"
+            ],
+            "storage": [
+              "List"
             ]
+          },
+          "metadata": {
+            "description": "This is the object for the Package Manager Team (Package Manager - Team)."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "f9c437e7-f49e-4226-81eb-0944531afa02",
+          "permissions": {
+            "keys": [
+              "Get",
+              "List"
+            ],
+            "secrets": [
+              "Get",
+              "List",
+              "Set"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ],
+            "storage": [
+              "Get"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for DEP-APT-WinGetService-PPE (winget-cli-restsource)."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "f8daea97-62e7-4026-becf-13c2ea98e8b4",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "21bf1420-2ed9-48b9-bf6d-ece1337d4fd1",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the Microsoft.Azure.FrontDoor Service Principal. It allows FrontDoor to import certificates for SSL."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "54a2b188-fc77-433a-b00a-27acbad34a73",
+          "permissions": {
+            "keys": [],
+            "secrets": [],
+            "certificates": [
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "c600e0af-3926-4201-a544-952bbcd499b4",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-validation-easus2-ppe."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "9d18d063-31b9-4607-910e-524ff64d292e",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-validation-centus-ppe."
+          }
+        },
+        {
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "8965a7c7-bb1e-4509-ba6e-294eff45d97f",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-scheduler-westus-ppe."
+          }
         }
+      ]
     }
+  }
 }

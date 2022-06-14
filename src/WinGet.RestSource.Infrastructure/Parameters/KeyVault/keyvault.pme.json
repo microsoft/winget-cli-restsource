@@ -1,147 +1,204 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "value": "kv-wgrest-westus-pme"
-        },
-        "accessPolicies": {
-            "value": [{
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "ad2e78a3-296a-4eab-a9f9-88506c927053",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "List"
-                        ],
-                        "certificates": [
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Package Manager Team Group (TM-MSPKG-SERVICE)."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "9d2ad22f-6354-40ca-aa46-ce0a4754e500",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "List"
-                        ],
-                        "certificates": [
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Package Manager Admin Group (AD-MSPKG-SERVICE)."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "6a695a50-74b4-4fe0-a4be-5051d94c810e",
-                    "permissions": {
-                        "keys": [
-                            "Get",
-                            "List"
-                        ],
-                        "secrets": [
-                            "Get",
-                            "List",
-                            "Set"
-                        ],
-                        "certificates": [
-                            "Get",
-                            "List"
-                        ],
-                        "storage": [
-                            "Get"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the deployment agent (WDX-APT-WPMService-Deployment(winget-cli-restsource))."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "e6f9aa95-06a3-42e9-b54d-e222b3e432d7",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "Get",
-                            "List"
-                        ],
-                        "certificates": [
-                            "Get",
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "b453993d-81d4-41a7-be3a-549bc2435ffa",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "Get",
-                            "List"
-                        ],
-                        "certificates": [
-                            "Get",
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "44876786-90e8-4b4b-b1b4-1a8b00a47005",
-                    "permissions": {
-                        "keys": [
-                            "List"
-                        ],
-                        "secrets": [
-                            "Get",
-                            "List"
-                        ],
-                        "certificates": [
-                            "Get",
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Microsoft.Azure.FrontDoor Service Principal. It allows FrontDoor to import certificates for SSL."
-                    }
-                },
-                {
-                    "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-                    "objectId": "a5e9de6f-8e2c-4f38-88ec-45775c9be764",
-                    "permissions": {
-                        "keys": [],
-                        "secrets": [],
-                        "certificates": [
-                            "List"
-                        ]
-                    },
-                    "metadata": {
-                        "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
-                    }
-                }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "kv-wgrest-westus-pme"
+    },
+    "accessPolicies": {
+      "value": [
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "ad2e78a3-296a-4eab-a9f9-88506c927053",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "List"
+            ],
+            "certificates": [
+              "List"
             ]
+          },
+          "metadata": {
+            "description": "This is the object for the Package Manager Team Group (TM-MSPKG-SERVICE)."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "9d2ad22f-6354-40ca-aa46-ce0a4754e500",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "List"
+            ],
+            "certificates": [
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for the Package Manager Admin Group (AD-MSPKG-SERVICE)."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "6a695a50-74b4-4fe0-a4be-5051d94c810e",
+          "permissions": {
+            "keys": [
+              "Get",
+              "List"
+            ],
+            "secrets": [
+              "Get",
+              "List",
+              "Set"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ],
+            "storage": [
+              "Get"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for the deployment agent (WDX-APT-WPMService-Deployment(winget-cli-restsource))."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "e6f9aa95-06a3-42e9-b54d-e222b3e432d7",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "Get",
+              "List"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "b453993d-81d4-41a7-be3a-549bc2435ffa",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "Get",
+              "List"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for Microsoft.Azure.WebSites Service Principal. It allows Function Apps to import certificates."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "44876786-90e8-4b4b-b1b4-1a8b00a47005",
+          "permissions": {
+            "keys": [
+              "List"
+            ],
+            "secrets": [
+              "Get",
+              "List"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for the Microsoft.Azure.FrontDoor Service Principal. It allows FrontDoor to import certificates for SSL."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "a5e9de6f-8e2c-4f38-88ec-45775c9be764",
+          "permissions": {
+            "keys": [],
+            "secrets": [],
+            "certificates": [
+              "List"
+            ]
+          },
+          "metadata": {
+            "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "4e0394b5-0f92-4c48-8150-218ca205ff3d",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-validation-easus2-pme."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "cdd794d9-2a8e-481e-ba86-26c90e516f62",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-validation-dewecn-pme."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "b28a0428-ffc3-46a4-a054-40958c03c898",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-validation-centus-pme."
+          }
+        },
+        {
+          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
+          "objectId": "6bb7254a-1ac9-41ea-b508-9caa0e6ae7cc",
+          "permissions": {
+            "keys": [],
+            "secrets": [
+              "Get"
+            ],
+            "certificates": []
+          },
+          "metadata": {
+            "description": "This is the object for the azfun-pkgman-scheduler-westus-pme."
+          }
         }
+      ]
     }
+  }
 }

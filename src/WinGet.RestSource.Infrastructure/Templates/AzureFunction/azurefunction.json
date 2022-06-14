@@ -167,7 +167,7 @@
     "kv_cosmosAccountWriteKey_secretName": "CosmosReadWriteKey",
     "kv_cosmosAccountReadKey_secretName": "CosmosReadOnlyKey",
     "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
-    "kv_packageManifestsFunctionEndpoint_SecretName": "AzFuncPackageManifestsEndpoint"
+    "kv_restSourceApiEndpoint_SecretName": "AzFuncRestSourceEndpoint"
   },
   "resources": [
     {
@@ -221,7 +221,7 @@
             "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]",
             "ManifestCacheEndpoint": "[parameters('manifestCacheEndpoint')]",
             "FunctionHostKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_functionHostKey_SecretName'), '/)')]",
-            "AzFuncPackageManifestsEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_packageManifestsFunctionEndpoint_SecretName'), '/)')]",
+            "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
             "WEBSITE_FIRST_PARTY_ID": "AntMDS",
             "WinGetRest::SubscriptionId": "[parameters('appServiceSubscription')]",
             "WinGetRest:Telemetry:Role": "[parameters('monitoringRole')]",
