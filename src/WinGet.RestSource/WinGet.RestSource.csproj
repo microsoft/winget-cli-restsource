@@ -45,10 +45,6 @@
     <PackageReference Include="LinqKit" Version="1.1.26" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="4.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.12" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.12" />
-    <PackageReference Include="Microsoft.FeatureManagement" Version="2.2.0" />
   </ItemGroup>
 
   <!-- Component Governance fix Item Group. -->
@@ -62,10 +58,6 @@
     <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
     <ProjectReference Include="..\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj" />
     <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\AppConfig" />
   </ItemGroup>
 
 </Project>

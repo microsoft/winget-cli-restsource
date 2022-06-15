@@ -42,7 +42,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="LinqKit" Version="1.1.26" />
         <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.5" />
         <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="4.1.0" />
@@ -55,13 +54,9 @@
     <ItemGroup>
         <!-- Remove when dependency resolving correctly picks up security fixed version-->
         <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-        <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
     </ItemGroup>
-
     <ItemGroup>
-        <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
-        <ProjectReference Include="..\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj" />
-        <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
+      <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
     </ItemGroup>
 
 </Project>
