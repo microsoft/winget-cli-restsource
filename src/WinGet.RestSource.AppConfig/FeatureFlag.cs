@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
+namespace Microsoft.WinGet.RestSource.AppConfig
 {
     /// <summary>
     /// Names of flag. Must match the name in the App Configuration.

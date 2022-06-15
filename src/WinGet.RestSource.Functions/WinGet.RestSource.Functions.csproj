@@ -81,6 +81,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
+    <ProjectReference Include="..\WinGet.RestSource.AppConfig\WinGet.RestSource.AppConfig.csproj" />
     <ProjectReference Include="..\WinGet.RestSource\WinGet.RestSource.csproj" />
   </ItemGroup>
 </Project>

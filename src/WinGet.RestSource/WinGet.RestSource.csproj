@@ -65,8 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Factories\" />
-    <Folder Include="Operations\" />
+    <Folder Include="Helpers\AppConfig" />
   </ItemGroup>
 
 </Project>

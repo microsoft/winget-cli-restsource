@@ -4,9 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
+namespace Microsoft.WinGet.RestSource.AppConfig
 {
-    using System;
     using System.Threading.Tasks;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
 

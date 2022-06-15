@@ -18,10 +18,10 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Factories;
     using Microsoft.WinGet.RestSource.Helpers;
-    using Microsoft.WinGet.RestSource.Helpers.AppConfig;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;

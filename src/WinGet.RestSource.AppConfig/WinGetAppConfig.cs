@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
+namespace Microsoft.WinGet.RestSource.AppConfig
 {
     using System;
     using System.Collections.Generic;
