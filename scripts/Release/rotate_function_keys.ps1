@@ -20,12 +20,8 @@ Param(
     $webAppKeyName,
 
     [Parameter(Mandatory=$true)]
-    [String]
-    $azureKeyVault,
-
-    [Parameter(Mandatory=$true)]
-    [String]
-    $azureKeyVaultSecret,
+    [hashtable]
+    $azureKeyVaultSecretPair,
 
     [Parameter(Mandatory=$false)]
     [String]
@@ -110,8 +106,7 @@ Write-Host "subscriptionId: $subscriptionId"
 Write-Host "resourceGroup: $resourceGroup"
 Write-Host "webAppName: $webAppName"
 Write-Host "webAppKeyName: $webAppKeyName"
-Write-Host "azureKeyVault: $azureKeyVault"
-Write-Host "azureKeyVaultSecret: $azureKeyVaultSecret"
+Write-Host "azureKeyVaultSecretPair: " + ($azureKeyVaultSecretPair | Out-String)
 Write-Host "functionName: $functionName"
 Write-Host "keyLength: $keyLength"
 Write-Host "maxAttempts: $maxAttempts"
@@ -201,18 +196,23 @@ foreach ($app in $webAppName)
     }
 }
 
-# Update Key Vault
-PrintHeader -message "Updating Key-Vault: $azureKeyVault"
-$attempt = 0
-do {
-    CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
-    $attempt++
-    Write-Host "Attempting to update key-vault:" $attempt
-    $_ = az keyvault secret set --vault-name $azureKeyVault --name $azureKeyVaultSecret --value $primaryKey
-} while(!$? -and $attempt -lt $maxAttempts)
-if(!$?) {
-    Write-Host "Failed to update keyvault."
-    exit 1
+$azureKeyVaultSecretPair.GetEnumerator() | ForEach-Object {
+    $azureKeyVault = $_.Key
+    $azureKeyVaultSecret = $_.Value
+
+    # Update Key Vault
+    PrintHeader -message "Updating Key-Vault: $azureKeyVault"
+    $attempt = 0
+    do {
+        CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
+        $attempt++
+        Write-Host "Attempting to update key-vault:" $attempt
+        $_ = az keyvault secret set --vault-name $azureKeyVault --name $azureKeyVaultSecret --value $primaryKey
+    } while(!$? -and $attempt -lt $maxAttempts)
+    if(!$?) {
+        Write-Host "Failed to update keyvault."
+        exit 1
+    }
 }
 
 PrintHeader -message "Keys Updated"
