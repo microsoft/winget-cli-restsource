@@ -27,8 +27,8 @@ namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
 
         private static readonly Lazy<WinGetAppConfig> LazyInstance = new Lazy<WinGetAppConfig>(() => new WinGetAppConfig());
 
-        private readonly string appConfigurationPrimary = Environment.GetEnvironmentVariable("WinGet:AppConfig:Primary");
-        private readonly string appConfigurationSecondary = Environment.GetEnvironmentVariable("WinGet:AppConfig:Secondary");
+        private readonly string appConfigurationPrimary = Environment.GetEnvironmentVariable("WinGetRest:AppConfig:Primary");
+        private readonly string appConfigurationSecondary = Environment.GetEnvironmentVariable("WinGetRest:AppConfig:Secondary");
 
         private readonly Dictionary<FeatureFlag, bool> defaultValue = new Dictionary<FeatureFlag, bool>();
         private readonly string failedReason;
@@ -55,20 +55,26 @@ namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
                     var builder = new ConfigurationBuilder();
 
                     // Secondary
-                    builder.AddAzureAppConfiguration(
-                        options =>
-                        {
-                            this.Load(options, this.appConfigurationSecondary);
-                        },
-                        true);
+                    if (!string.IsNullOrWhiteSpace(this.appConfigurationSecondary))
+                    {
+                        builder.AddAzureAppConfiguration(
+                            options =>
+                            {
+                                this.Load(options, this.appConfigurationSecondary);
+                            },
+                            true);
+                    }
 
                     // Primary
-                    builder.AddAzureAppConfiguration(
-                        options =>
-                        {
-                            this.Load(options, this.appConfigurationPrimary);
-                        },
-                        true);
+                    if (!string.IsNullOrWhiteSpace(this.appConfigurationPrimary))
+                    {
+                        builder.AddAzureAppConfiguration(
+                            options =>
+                            {
+                                this.Load(options, this.appConfigurationPrimary);
+                            },
+                            true);
+                    }
 
                     IConfiguration configuration = builder.Build();
 
