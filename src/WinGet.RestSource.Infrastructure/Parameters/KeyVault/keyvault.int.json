@@ -94,48 +94,6 @@
           "metadata": {
             "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
           }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "2a8f8ea4-e762-46c8-a5bf-800874f652e1",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-westus-int."
-          }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "fde21aff-bb1b-4cc4-b923-35a110126ffb",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-eastus-int."
-          }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "1e4d08a8-93db-4617-a574-dc892ab0c227",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-scheduler-centus-int."
-          }
         }
       ]
     }

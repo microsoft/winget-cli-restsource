@@ -141,62 +141,6 @@
           "metadata": {
             "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
           }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "4e0394b5-0f92-4c48-8150-218ca205ff3d",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-easus2-pme."
-          }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "cdd794d9-2a8e-481e-ba86-26c90e516f62",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-dewecn-pme."
-          }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "b28a0428-ffc3-46a4-a054-40958c03c898",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-centus-pme."
-          }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "6bb7254a-1ac9-41ea-b508-9caa0e6ae7cc",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-scheduler-westus-pme."
-          }
         }
       ]
     }

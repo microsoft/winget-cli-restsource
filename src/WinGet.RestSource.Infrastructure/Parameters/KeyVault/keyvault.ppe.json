@@ -94,48 +94,6 @@
           "metadata": {
             "description": "This is the object for the Azure Manager. It is a required for monitoring our certs."
           }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "c600e0af-3926-4201-a544-952bbcd499b4",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-easus2-ppe."
-          }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "9d18d063-31b9-4607-910e-524ff64d292e",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-validation-centus-ppe."
-          }
-        },
-        {
-          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "8965a7c7-bb1e-4509-ba6e-294eff45d97f",
-          "permissions": {
-            "keys": [],
-            "secrets": [
-              "Get"
-            ],
-            "certificates": []
-          },
-          "metadata": {
-            "description": "This is the object for the azfun-pkgman-scheduler-westus-ppe."
-          }
         }
       ]
     }
