@@ -17,6 +17,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Helpers.AppConfig;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
@@ -31,14 +32,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class InstallerFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstallerFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public InstallerFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public InstallerFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -82,14 +86,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.InstallerPost,
-                    req.Path.Value,
-                    headers,
-                    installer,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.InstallerPost,
+                        req.Path.Value,
+                        headers,
+                        installer,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -134,13 +143,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.InstallerDelete,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.InstallerDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -199,14 +213,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.InstallerPut,
-                    req.Path.Value,
-                    headers,
-                    installer,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.InstallerPut,
+                        req.Path.Value,
+                        headers,
+                        installer,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -253,13 +272,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseGetError,
-                    FunctionConstants.InstallerGet,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseGetError,
+                        FunctionConstants.InstallerGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 

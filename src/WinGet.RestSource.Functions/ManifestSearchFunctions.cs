@@ -17,6 +17,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Helpers.AppConfig;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
@@ -30,14 +31,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class ManifestSearchFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManifestSearchFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public ManifestSearchFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public ManifestSearchFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -82,14 +86,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseGetError,
-                    FunctionConstants.ManifestSearchPost,
-                    req.Path.Value,
-                    headers,
-                    manifestSearch,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseGetError,
+                        FunctionConstants.ManifestSearchPost,
+                        req.Path.Value,
+                        headers,
+                        manifestSearch,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
