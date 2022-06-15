@@ -18,7 +18,7 @@ namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
 
     /// <summary>
-    ///     WinGet App Configuration.
+    /// WinGet App Configuration.
     /// </summary>
     public class WinGetAppConfig : IWinGetAppConfig
     {
@@ -106,14 +106,14 @@ namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
         }
 
         /// <summary>
-        ///     Gets instance.
+        /// Gets instance.
         /// </summary>
         public static WinGetAppConfig Instance => LazyInstance.Value;
 
         /// <summary>
-        ///     Modifies a feature flag using the specified Azure App Config connection string at runtime.
-        ///     WARNING: If the WinGetAppConfig is already initialized the change will be reflected in 30s because that's
-        ///     the refresh timeout.
+        /// Modifies a feature flag using the specified Azure App Config connection string at runtime.
+        /// WARNING: If the WinGetAppConfig is already initialized the change will be reflected in 30s because that's
+        /// the refresh timeout.
         /// </summary>
         /// <param name="flag">Feature flag.</param>
         /// <param name="value">New value.</param>
@@ -209,8 +209,8 @@ namespace Microsoft.WinGet.RestSource.Helpers.AppConfig
         }
 
         /// <summary>
-        ///     Retry when the function returns a specific value. Copy paste from RetryHelper because don't want
-        ///     to add dependencies to this project.
+        /// Retry when the function returns a specific value. Copy paste from RetryHelper because don't want
+        /// to add dependencies to this project.
         /// </summary>
         /// <param name="func">Function to call.</param>
         /// <returns>TReturn. If the retries expired, then return the retry value.</returns>
