@@ -21,6 +21,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Factories;
     using Microsoft.WinGet.RestSource.Helpers;
+    using Microsoft.WinGet.RestSource.Helpers.AppConfig;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
@@ -40,6 +41,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string readWriteKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
             string databaseId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting) ?? throw new InvalidDataException();
             string containerId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting) ?? throw new InvalidDataException();
+
+            builder.Services.AddSingleton<IWinGetAppConfig>(sp => WinGetAppConfig.Instance);
 
             builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(
                 sp => new CosmosDataStore(
