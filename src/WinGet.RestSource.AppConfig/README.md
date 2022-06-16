@@ -1,4 +1,4 @@
-# WinGetSvc Feature Flags.
+# WinGet.RestSource Feature Flags.
 
 This project uses Azure App Configuration to enable features.
 For more information see https://docs.microsoft.com/en-us/azure/azure-app-configuration/overview
@@ -51,11 +51,11 @@ For more information see https://docs.microsoft.com/en-us/azure/azure-app-config
     ]
 }
 ```
-2. Add a new value in the FeatureFlag enum in WinGetAppConfig.cs of the WinGet.FeatureFlags project. The name *MUST* match the id value of the new variable defined in appconfig.json
+2. Add a new value in the FeatureFlag enum in FeatureFlag.cs of the WinGet.RestSource.FeatureFlags project. The name *MUST* match the id value of the new variable defined in appconfig.json
 3. Add a default value in the private constructor of WinGetAppConfig. The value must be the bahaviour of the feature if Azure App Config is down.
 4. Add the new parameter in all the appconfig.*.*.json files WinGet.RestSource.Infrastructure project. It should match per env.
 
-## How does it work in WinGetSvc
+## How does it work in WinGet.RestSource
 We setup two Azure App Config per environment, the primary and secondary. WinGetAppConfig loads it will try to load the features from the secondary first, then it will try to load from the primary (which overrites the secondary). This allows us to have georedundancy as Azure App Config doesn't support it for now. If primary fails, then we already have the secondary loaded. If secondary also fails we have the default values. By default, we refresh the feature flags every 30 seconds.
 
 ## How to enable/disable features without deployment
