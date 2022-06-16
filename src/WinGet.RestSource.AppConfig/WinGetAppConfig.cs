@@ -103,6 +103,7 @@ namespace Microsoft.WinGet.RestSource.AppConfig
 
             // Add default values
             this.defaultValue[FeatureFlag.GenevaLogging] = true;
+            this.defaultValue[FeatureFlag.AuthorizationCertificate] = false;
         }
 
         /// <summary>

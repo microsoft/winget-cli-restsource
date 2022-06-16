@@ -15,5 +15,10 @@ namespace Microsoft.WinGet.RestSource.AppConfig
         /// Enable Geneva Logging
         /// </summary>
         GenevaLogging,
+
+        /// <summary>
+        /// Enable Certificate Authorization for All Pages.
+        /// </summary>
+        AuthorizationCertificate,
     }
 }
