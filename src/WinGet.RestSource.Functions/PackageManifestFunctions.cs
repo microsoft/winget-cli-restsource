@@ -15,6 +15,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
@@ -32,14 +33,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class PackageManifestFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageManifestFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public PackageManifestFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public PackageManifestFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -77,14 +81,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.ManifestPost,
-                    req.Path.Value,
-                    headers,
-                    packageManifest,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestPost,
+                        req.Path.Value,
+                        headers,
+                        packageManifest,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -122,13 +131,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.ManifestDelete,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -181,14 +195,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.ManifestPut,
-                    req.Path.Value,
-                    headers,
-                    packageManifest,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestPut,
+                        req.Path.Value,
+                        headers,
+                        packageManifest,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -245,13 +264,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.ManifestGet,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 

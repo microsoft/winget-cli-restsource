@@ -60,9 +60,4 @@
     <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Factories\" />
-    <Folder Include="Operations\" />
-  </ItemGroup>
-
 </Project>

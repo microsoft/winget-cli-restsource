@@ -13,6 +13,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
@@ -25,11 +26,15 @@ namespace Microsoft.WinGet.RestSource.Functions
     /// </summary>
     public class ServerFunctions
     {
+        private readonly IWinGetAppConfig appConfig;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerFunctions"/> class.
         /// </summary>
-        public ServerFunctions()
+        /// <param name="appConfig">App Config.</param>
+        public ServerFunctions(IWinGetAppConfig appConfig)
         {
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -62,14 +67,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.ServerInformationError,
-                    FunctionConstants.InformationGet,
-                    req.Path.Value,
-                    headers,
-                    information,
-                    e,
-                    log);
+
+                if (this.appConfig.IsEnabled(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.ServerInformationError,
+                        FunctionConstants.InformationGet,
+                        req.Path.Value,
+                        headers,
+                        information,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 

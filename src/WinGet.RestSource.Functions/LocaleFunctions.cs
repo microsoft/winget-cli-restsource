@@ -15,6 +15,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
@@ -31,14 +32,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class LocaleFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public LocaleFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public LocaleFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -80,14 +84,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.LocalePost,
-                    req.Path.Value,
-                    headers,
-                    locale,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocalePost,
+                        req.Path.Value,
+                        headers,
+                        locale,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -132,13 +141,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.LocaleDelete,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocaleDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -197,14 +211,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseUpdateError,
-                    FunctionConstants.LocalePut,
-                    req.Path.Value,
-                    headers,
-                    locale,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocalePut,
+                        req.Path.Value,
+                        headers,
+                        locale,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -251,13 +270,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
-                Geneva.Metrics.EmitMetricForOperation(
-                    Geneva.ErrorMetrics.DatabaseGetError,
-                    FunctionConstants.LocaleGet,
-                    req.Path.Value,
-                    headers,
-                    e,
-                    log);
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseGetError,
+                        FunctionConstants.LocaleGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
