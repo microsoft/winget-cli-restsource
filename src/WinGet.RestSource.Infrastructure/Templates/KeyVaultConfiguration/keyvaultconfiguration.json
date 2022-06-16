@@ -57,7 +57,7 @@
   "resources": [
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[concat(parameters('keyVaultName'),'/',variables('kv_restSourceApiEndpoint_SecretName'))]",
+      "name": "[concat(parameters('keyVaultName'),'/',variables('kv_restSourceEndpoint_SecretName'))]",
       "apiVersion": "2016-10-01",
       "properties": {
         "value": "[variables('restsource_api_endpoint')]"
