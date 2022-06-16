@@ -1,31 +1,33 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PowerShellSupportTests.cs" company="Microsoft Corporation">
+// <copyright file="YamlToRestConverterTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.PowerShellSupport
+namespace Microsoft.Winget.RestSource.UnitTest.Tests.PowerShellSupport
 {
     using System.Linq;
     using Microsoft.WinGet.RestSource.PowershellSupport;
+    using Microsoft.Winget.RestSource.UnitTest.Common;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Newtonsoft.Json;
     using Xunit;
     using Xunit.Abstractions;
+    using static Microsoft.Winget.RestSource.UnitTest.Common.TestCollateralHelper;
 
     /// <summary>
     /// PowerShell support tests.
     /// </summary>
-    public class PowerShellSupportTests
+    public class YamlToRestConverterTests
     {
         private readonly ITestOutputHelper log;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PowerShellSupportTests"/> class.
+        /// Initializes a new instance of the <see cref="YamlToRestConverterTests"/> class.
         /// </summary>
         /// <param name="log">ITestOutputHelper.</param>
-        public PowerShellSupportTests(ITestOutputHelper log)
+        public YamlToRestConverterTests(ITestOutputHelper log)
         {
             this.log = log;
         }
@@ -36,7 +38,9 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.PowerShellSuppor
         [Fact]
         public void CreateMergedManifest()
         {
-            string json = YamlToRestConverter.AddManifestToPackageManifest(@"Tests\RestSource\PowerShellSupport\TestManifest", string.Empty);
+            string testPath = TestCollateralHelper.GetTestCollateralPath(TestCollateral.TestMultiManifest);
+
+            string json = YamlToRestConverter.AddManifestToPackageManifest(testPath, string.Empty);
             var manifest = JsonConvert.DeserializeObject<PackageManifest>(json);
             VersionExtended version = manifest.Versions.Single();
 

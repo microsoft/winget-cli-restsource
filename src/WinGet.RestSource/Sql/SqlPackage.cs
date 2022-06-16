@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.Helpers.Sql
+namespace Microsoft.WinGet.RestSource.Sql
 {
     using System.Collections.Generic;
 

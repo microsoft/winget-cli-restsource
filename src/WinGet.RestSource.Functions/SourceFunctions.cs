@@ -28,7 +28,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Functions.Geneva;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Constants;
-    using LoggingContextUtils = Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext;
 
     /// <summary>
     /// This class contains the functions for uploads from and querying data from a repository.
@@ -214,6 +213,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 {
                     // This is mostly user error.
                     Logger.Warning($"{loggingContext}Expected error occurred during Update: {e}");
+                    taskResult = new SourceResultOutputHelper(SourceResultType.Failure);
                 }
                 catch (Exception e)
                 {
@@ -263,7 +263,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
         /// <summary>
         /// Source orchestrator helper that does all boilerplate for logging.
-        /// Currently it handles calling only one activity function and the only accepted input is ContextAndReferenceInputHelper.
+        /// Currently it handles calling only one activity function and the only accepted input is ContextAndReferenceInput.
         /// If a a more complex orchestration is needed, this can be updated to take a lambda with the orchestrator work
         /// and use generics for input and output.
         /// Because this is executed in an Azure Orchestration Function there MUST NOT be awaitable calls that are
@@ -290,7 +290,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             SourceResultOutputHelper sourceResultOutput = new SourceResultOutputHelper(SourceResultType.Error);
             Dictionary<string, string> customDimensions = new Dictionary<string, string>();
 
-            ContextAndReferenceInput inputHelper = null;
+            TFunctionInput inputHelper = null;
             try
             {
                 DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
@@ -301,7 +301,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 inputHelper = durableContext.GetInput<TFunctionInput>();
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     inputHelper.OperationId);
@@ -379,7 +379,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 TFunctionInput functionInput = durableContext.GetInput<TFunctionInput>();
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     functionInput.OperationId);
@@ -451,7 +451,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                     req.Body,
                     true);
 
-                loggingContext = this.GetLoggingContext(
+                loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionName,
                     executionContext.InvocationId.ToString(),
                     input.OperationId);
@@ -486,22 +486,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             // We expect the client to poll for results and pull the success/fail of the operation from the output of the status response.
             // We are leveraging the full durable function pre-built infrastructure to offer our API Async.
             return durableClient.CreateCheckStatusResponse(req, orchestrationInstanceId);
-        }
-
-        private LoggingContext GetLoggingContext(
-            string functionName,
-            string invocationId,
-            string operationId,
-            string manifestId = null,
-            string installerId = null)
-        {
-            LoggingContextUtils tmpLoggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
-                    functionName,
-                    invocationId,
-                    operationId,
-                    manifestId,
-                    installerId);
-            return new LoggingContext(tmpLoggingContext.ToString());
         }
     }
 }

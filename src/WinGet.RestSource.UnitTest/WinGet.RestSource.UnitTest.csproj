@@ -45,6 +45,7 @@
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="Moq" Version="4.18.1" />
   </ItemGroup>
 
   <!-- Component Governance fix Item Group. -->
@@ -68,16 +69,31 @@
     <None Update="Test.runsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Tests\RestSource\Cosmos\manifests.json">
+    <None Update="TestCollateral\CosmosPackageManifests\manifests.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.installer.yaml">
+    <None Update="TestCollateral\Database\testIndex.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.locale.en-US.yaml">
+    <None Update="TestCollateral\TestManifests\Etest.test.0.0.0.1.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Tests\RestSource\PowerShellSupport\TestManifest\Multifile.MsixTest.yaml">
+    <None Update="TestCollateral\TestManifests\Atest.test.0.0.0.1.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCollateral\TestManifests\Rtest.test.0.0.0.2.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCollateral\TestManifests\Rtest.test.0.0.0.1.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCollateral\TestMultiManifest\Multifile.MsixTest.installer.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCollateral\TestMultiManifest\Multifile.MsixTest.locale.en-US.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCollateral\TestMultiManifest\Multifile.MsixTest.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
