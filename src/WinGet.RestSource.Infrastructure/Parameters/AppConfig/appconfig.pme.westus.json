@@ -8,8 +8,19 @@
         "location": {
             "value": "westus"
         },
-        "genevaLogging": {
-            "value": true
+        "featureFlags": {
+            "value": [
+                {
+                    "id": "GenevaLogging",
+                    "description": "Feature flag to use Geneva Monitoring.",
+                    "enabled": "true"
+                },
+                {
+                    "id": "AuthorizationCertificate",
+                    "description": "Feature flag to force certificate authorization.",
+                    "enabled": "false"
+                }
+            ]
         }
     }
 }
