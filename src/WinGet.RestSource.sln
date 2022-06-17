@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		NuGet.config = NuGet.config
 		stylecop.json = stylecop.json
+		..\.editorconfig = ..\.editorconfig
 	EndProjectSection
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "WinGet.RestSource.Infrastructure", "WinGet.RestSource.Infrastructure\WinGet.RestSource.Infrastructure.deployproj", "{0F98E939-EC64-40DA-9630-336A40807BBE}"
