@@ -56,8 +56,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             builder.Services.AddSingleton<IRebuild>((s) => RebuildFactory.InitializeRebuildInstance());
             builder.Services.AddSingleton<IUpdate>((s) => UpdateFactory.InitializeUpdateInstance());
             builder.Services.AddSingleton<IRestSourceTriggerFunction>((s) => new RestSourceTriggerFunctions(
-                ApiConstants.AzFuncRestSourceEndpoint,
-                ApiConstants.AzureFunctionHostKey));
+                ApiConstants.AzFuncRestSourceEndpoint));
 
             InjectTelemetryConfiguration(builder);
         }

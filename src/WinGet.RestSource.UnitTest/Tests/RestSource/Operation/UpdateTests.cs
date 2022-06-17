@@ -26,6 +26,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
     /// </summary>
     public class UpdateTests
     {
+        private const string AzFuncHostKey = "1234567890";
+
         private readonly ITestOutputHelper log;
         private readonly LoggingContext loggingContext;
 
@@ -59,6 +61,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -67,6 +70,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.PostPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     It.Is<PackageManifest>(p => p.PackageIdentifier == inputManifest.Id),
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -74,6 +78,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 mockHttpClient.Object,
                 inputManifest,
                 mockRestSourceTriggerFunction.Object,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockRestSourceTriggerFunction.Verify();
@@ -101,6 +106,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -109,6 +115,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.PutPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     It.Is<PackageManifest>(p => p.PackageIdentifier == inputManifest.Id && p.Versions.VersionExists(inputManifest.Version)),
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -116,6 +123,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 mockHttpClient.Object,
                 inputManifest,
                 mockRestSourceTriggerFunction.Object,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockRestSourceTriggerFunction.Verify();
@@ -140,6 +148,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -149,6 +158,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     mockHttpClient.Object,
                     inputManifest,
                     mockRestSourceTriggerFunction.Object,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockRestSourceTriggerFunction.Verify();
@@ -173,6 +183,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -181,6 +192,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.PutPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     It.Is<PackageManifest>(p => p.PackageIdentifier == inputManifest.Id),
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -188,6 +200,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 mockHttpClient.Object,
                 inputManifest,
                 mockRestSourceTriggerFunction.Object,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockRestSourceTriggerFunction.Verify();
@@ -212,6 +225,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -221,6 +235,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     mockHttpClient.Object,
                     inputManifest,
                     mockRestSourceTriggerFunction.Object,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockRestSourceTriggerFunction.Verify();
@@ -247,6 +262,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -256,6 +272,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     mockHttpClient.Object,
                     inputManifest,
                     mockRestSourceTriggerFunction.Object,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockRestSourceTriggerFunction.Verify();
@@ -280,6 +297,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -288,6 +306,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.DeletePackageAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -295,6 +314,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 mockHttpClient.Object,
                 inputManifest,
                 mockRestSourceTriggerFunction.Object,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockRestSourceTriggerFunction.Verify();
@@ -324,6 +344,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -333,6 +354,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
                     inputManifest.Version,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -340,6 +362,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 mockHttpClient.Object,
                 inputManifest,
                 mockRestSourceTriggerFunction.Object,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockRestSourceTriggerFunction.Verify();
@@ -366,6 +389,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -375,6 +399,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     mockHttpClient.Object,
                     inputManifest,
                     mockRestSourceTriggerFunction.Object,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockRestSourceTriggerFunction.Verify();
@@ -399,6 +424,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.GetPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     inputManifest.Id,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .ReturnsAsync(packageManifest)
                 .Verifiable();
@@ -408,6 +434,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                     mockHttpClient.Object,
                     inputManifest,
                     mockRestSourceTriggerFunction.Object,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockRestSourceTriggerFunction.Verify();

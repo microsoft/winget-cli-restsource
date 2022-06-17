@@ -394,6 +394,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     referenceType,
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
+                    It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -447,6 +448,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     sasReference,
                     referenceType,
                     It.IsAny<IRestSourceTriggerFunction>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Throws(new Exception())
@@ -504,6 +506,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     sasReference,
                     referenceType,
                     It.IsAny<IRestSourceTriggerFunction>(),
+                    It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -560,6 +563,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     sasReference,
                     referenceType,
                     It.IsAny<IRestSourceTriggerFunction>(),
+                    It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Throws(new RestSourceCallException("message"))
                 .Verifiable();
@@ -617,6 +621,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     sasReference,
                     referenceType,
                     It.IsAny<IRestSourceTriggerFunction>(),
+                    It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Throws(new Exception())
                 .Verifiable();

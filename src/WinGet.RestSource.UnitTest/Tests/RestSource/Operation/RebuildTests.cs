@@ -31,6 +31,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
     public class RebuildTests
     {
         private const string AzFuncRestSourceEndpoint = "https://fakestorage.blob.core.windows.net/cache/";
+        private const string AzFuncHostKey = "1234567890";
 
         private readonly ITestOutputHelper log;
         private readonly LoggingContext loggingContext;
@@ -130,6 +131,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.PostPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     It.Is<PackageManifest>(p => p.PackageIdentifier == rtestPackage.Id),
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -138,6 +140,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.PutPackageManifestAsync(
                     It.IsAny<HttpClient>(),
                     It.Is<PackageManifest>(p => p.PackageIdentifier == atestPackage.Id),
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -146,6 +149,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 m => m.DeletePackageAsync(
                     It.IsAny<HttpClient>(),
                     etestPackageId,
+                    AzFuncHostKey,
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
@@ -159,6 +163,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
                 inputRestPackages,
                 mockRestSourceTriggerFunction.Object,
                 AzFuncRestSourceEndpoint,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();

@@ -109,6 +109,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         inputHelper.ReferenceType,
                         this.restSourceTriggerFunction,
                         ApiConstants.ManifestCacheEndpoint,
+                        ApiConstants.AzureFunctionHostKey,
                         loggingContext);
 
                     taskResult = new SourceResultOutputHelper(SourceResultType.Success);
@@ -204,6 +205,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         inputHelper.SASReference,
                         inputHelper.ReferenceType,
                         this.restSourceTriggerFunction,
+                        ApiConstants.AzureFunctionHostKey,
                         loggingContext);
 
                     taskResult = new SourceResultOutputHelper(SourceResultType.Success);

@@ -52,7 +52,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackageManifests_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             var apiResponse = new ApiResponse<PackageManifest>(new PackageManifest());
@@ -80,6 +80,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var result = await restSourceTriggerFunctions.GetPackageManifestAsync(
                 httpClient,
                 packageIdentifier,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -98,7 +99,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackageManifests_NoContentTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
@@ -125,6 +126,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var result = await restSourceTriggerFunctions.GetPackageManifestAsync(
                 httpClient,
                 packageIdentifier,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -138,7 +140,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackageManifests_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
@@ -165,6 +167,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 async () => await restSourceTriggerFunctions.GetPackageManifestAsync(
                     httpClient,
                     packageIdentifier,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -177,7 +180,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task PostPackageManifestAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             var packageManifest = new PackageManifest();
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests");
@@ -203,6 +206,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             await restSourceTriggerFunctions.PostPackageManifestAsync(
                 httpClient,
                 packageManifest,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -215,7 +219,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task PostPackageManifestAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             var packageManifest = new PackageManifest();
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests");
@@ -242,6 +246,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 async () => await restSourceTriggerFunctions.PostPackageManifestAsync(
                     httpClient,
                     packageManifest,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -254,7 +259,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task PutPackageManifestAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             var packageManifest = new PackageManifest();
             packageManifest.PackageIdentifier = "packageIdentifier";
@@ -281,6 +286,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             await restSourceTriggerFunctions.PutPackageManifestAsync(
                 httpClient,
                 packageManifest,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -293,7 +299,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task PutPackageManifestAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             var packageManifest = new PackageManifest();
             packageManifest.PackageIdentifier = "packageIdentifier";
@@ -321,6 +327,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 async () => await restSourceTriggerFunctions.PutPackageManifestAsync(
                     httpClient,
                     packageManifest,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -333,7 +340,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeletePackageManifestAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
@@ -359,6 +366,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             await restSourceTriggerFunctions.DeletePackageManifestAsync(
                 httpClient,
                 packageIdentifier,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -371,7 +379,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeletePackageManifestAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
@@ -398,6 +406,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 async () => await restSourceTriggerFunctions.DeletePackageManifestAsync(
                     httpClient,
                     packageIdentifier,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -410,7 +419,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetAllPackagesAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages");
 
@@ -472,6 +481,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             var result = await restSourceTriggerFunctions.GetAllPackagesAsync(
                 httpClient,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -485,7 +495,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackagesAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages");
 
@@ -517,6 +527,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             var result = await restSourceTriggerFunctions.GetPackagesAsync(
                 httpClient,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -530,7 +541,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackagesAsync_NoContentTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages");
 
@@ -554,6 +565,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             var result = await restSourceTriggerFunctions.GetPackagesAsync(
                 httpClient,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -567,7 +579,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task GetPackagesAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages");
 
@@ -592,6 +604,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             await Assert.ThrowsAsync<RestSourceCallException>(
                 async () => await restSourceTriggerFunctions.GetPackagesAsync(
                     httpClient,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -604,7 +617,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeletePackageAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}");
@@ -630,6 +643,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             await restSourceTriggerFunctions.DeletePackageAsync(
                 httpClient,
                 packageIdentifier,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -642,7 +656,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeletePackageAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}");
@@ -669,6 +683,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 async () => await restSourceTriggerFunctions.DeletePackageAsync(
                     httpClient,
                     packageIdentifier,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
@@ -681,7 +696,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeleteVersionAsync_Test()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             string version = "version";
@@ -709,6 +724,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                 httpClient,
                 packageIdentifier,
                 version,
+                AzFuncHostKey,
                 this.loggingContext);
 
             mockHttpMessageHandler.Verify();
@@ -721,7 +737,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
         [Fact]
         public async Task DeleteVersionAsync_FailureStatusCodeTest()
         {
-            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
+            var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint);
 
             string packageIdentifier = "packageIdentifier";
             string version = "version";
@@ -750,6 +766,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
                     httpClient,
                     packageIdentifier,
                     version,
+                    AzFuncHostKey,
                     this.loggingContext));
 
             mockHttpMessageHandler.Verify();
