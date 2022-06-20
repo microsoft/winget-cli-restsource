@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="RestSourceTriggerFunctionsTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -56,7 +56,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             string packageIdentifier = "packageIdentifier";
             var apiResponse = new ApiResponse<PackageManifest>(new PackageManifest());
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -101,7 +101,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -141,7 +141,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -258,7 +258,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             var packageManifest = new PackageManifest();
             packageManifest.PackageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageManifest.PackageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageManifest.PackageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -297,7 +297,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
 
             var packageManifest = new PackageManifest();
             packageManifest.PackageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageManifest.PackageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageManifest.PackageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -336,7 +336,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -374,7 +374,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packageManifests/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -607,7 +607,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
@@ -645,7 +645,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Helpers
             var restSourceTriggerFunctions = new RestSourceTriggerFunctions(AzFuncRestSourceEndpoint, AzFuncHostKey);
 
             string packageIdentifier = "packageIdentifier";
-            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}");
+            Uri expectedUri = new Uri($"{AzFuncRestSourceEndpoint}packages/{packageIdentifier}/");
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler
