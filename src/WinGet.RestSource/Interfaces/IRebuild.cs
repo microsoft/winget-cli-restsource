@@ -25,6 +25,7 @@ namespace Microsoft.WinGet.RestSource.Interfaces
         /// <param name="type">type of operation performed on the SQLite file.</param>
         /// <param name="restSourceTriggerFunction">IRestSourceTriggerFunction.</param>
         /// <param name="manifestCacheEndpoint">Manifest cache endpoint.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task ProcessRebuildRequestAsync(
@@ -34,6 +35,7 @@ namespace Microsoft.WinGet.RestSource.Interfaces
             ReferenceType type,
             IRestSourceTriggerFunction restSourceTriggerFunction,
             string manifestCacheEndpoint,
+            string azFuncHostKey,
             LoggingContext loggingContext);
     }
 }

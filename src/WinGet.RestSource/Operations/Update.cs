@@ -40,6 +40,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             string sasManifestUrl,
             ReferenceType referenceType,
             IRestSourceTriggerFunction restSourceTriggerFunction,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext}Processing commit {commit} from {operationId} for type {referenceType}");
@@ -57,6 +58,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                     httpClient,
                     manifest,
                     restSourceTriggerFunction,
+                    azFuncHostKey,
                     loggingContext);
             }
             else if (referenceType == ReferenceType.Modify)
@@ -65,6 +67,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                     httpClient,
                     manifest,
                     restSourceTriggerFunction,
+                    azFuncHostKey,
                     loggingContext);
             }
             else if (referenceType == ReferenceType.Delete)
@@ -73,6 +76,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                     httpClient,
                     manifest,
                     restSourceTriggerFunction,
+                    azFuncHostKey,
                     loggingContext);
             }
             else
@@ -87,16 +91,22 @@ namespace Microsoft.WinGet.RestSource.Operations
         /// <param name="httpClient">HttpClient.</param>
         /// <param name="manifest">Manifest.</param>
         /// <param name="restSourceTriggerFunction">Rest source trigger.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         internal async Task ProcessManifestAddAsync(
             HttpClient httpClient,
             Manifest manifest,
             IRestSourceTriggerFunction restSourceTriggerFunction,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             // Check if the package already exists.
-            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(httpClient, manifest.Id, loggingContext);
+            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(
+                httpClient,
+                manifest.Id,
+                azFuncHostKey,
+                loggingContext);
             if (packageManifest == null)
             {
                 Logger.Info($"{loggingContext}Package {manifest.Id} doesn't exists");
@@ -104,7 +114,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                 await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                     async () =>
                     {
-                        await restSourceTriggerFunction.PostPackageManifestAsync(httpClient, packageManifest, loggingContext);
+                        await restSourceTriggerFunction.PostPackageManifestAsync(
+                            httpClient,
+                            packageManifest,
+                            azFuncHostKey,
+                            loggingContext);
                     },
                     manifest.Id,
                     loggingContext,
@@ -125,7 +139,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                 await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                     async () =>
                     {
-                        await restSourceTriggerFunction.PutPackageManifestAsync(httpClient, packageManifest, loggingContext);
+                        await restSourceTriggerFunction.PutPackageManifestAsync(
+                            httpClient,
+                            packageManifest,
+                            azFuncHostKey,
+                            loggingContext);
                     },
                     manifest.Id,
                     loggingContext,
@@ -139,16 +157,22 @@ namespace Microsoft.WinGet.RestSource.Operations
         /// <param name="httpClient">HttpClient.</param>
         /// <param name="manifest">Manifest.</param>
         /// <param name="restSourceTriggerFunction">Rest source trigger.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         internal async Task ProcessManifestModifyAsync(
             HttpClient httpClient,
             Manifest manifest,
             IRestSourceTriggerFunction restSourceTriggerFunction,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             // If this is a modify then it must be already be there.
-            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(httpClient, manifest.Id, loggingContext);
+            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(
+                httpClient,
+                manifest.Id,
+                azFuncHostKey,
+                loggingContext);
             if (packageManifest == null)
             {
                 throw new InvalidOperationException($"Package {manifest.Id} does not exists.");
@@ -166,7 +190,11 @@ namespace Microsoft.WinGet.RestSource.Operations
             await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                 async () =>
                 {
-                    await restSourceTriggerFunction.PutPackageManifestAsync(httpClient, packageManifest, loggingContext);
+                    await restSourceTriggerFunction.PutPackageManifestAsync(
+                        httpClient,
+                        packageManifest,
+                        azFuncHostKey,
+                        loggingContext);
                 },
                 manifest.Id,
                 loggingContext,
@@ -179,16 +207,22 @@ namespace Microsoft.WinGet.RestSource.Operations
         /// <param name="httpClient">HttpClient.</param>
         /// <param name="manifest">Manifest.</param>
         /// <param name="restSourceTriggerFunction">Rest source trigger.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         internal async Task ProcessManifestDeleteAsync(
             HttpClient httpClient,
             Manifest manifest,
             IRestSourceTriggerFunction restSourceTriggerFunction,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             // If this is a delete then it must be already be there.
-            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(httpClient, manifest.Id, loggingContext);
+            var packageManifest = await restSourceTriggerFunction.GetPackageManifestAsync(
+                httpClient,
+                manifest.Id,
+                azFuncHostKey,
+                loggingContext);
             if (packageManifest == null)
             {
                 throw new InvalidOperationException($"Package {manifest.Id} does not exists.");
@@ -205,7 +239,12 @@ namespace Microsoft.WinGet.RestSource.Operations
                 await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                     async () =>
                     {
-                        await restSourceTriggerFunction.DeleteVersionAsync(httpClient, manifest.Id, manifest.Version, loggingContext);
+                        await restSourceTriggerFunction.DeleteVersionAsync(
+                            httpClient,
+                            manifest.Id,
+                            manifest.Version,
+                            azFuncHostKey,
+                            loggingContext);
                     },
                     manifest.Id,
                     loggingContext,
@@ -216,7 +255,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                 await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                     async () =>
                     {
-                        await restSourceTriggerFunction.DeletePackageAsync(httpClient, manifest.Id, loggingContext);
+                        await restSourceTriggerFunction.DeletePackageAsync(
+                            httpClient,
+                            manifest.Id,
+                            azFuncHostKey,
+                            loggingContext);
                     },
                     manifest.Id,
                     loggingContext,

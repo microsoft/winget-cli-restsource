@@ -48,6 +48,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             ReferenceType type,
             IRestSourceTriggerFunction restSourceTriggerFunction,
             string manifestCacheEndpoint,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             // Get packages from sql source.
@@ -57,6 +58,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             // Get packages from rest source.
             var restPackages = await restSourceTriggerFunction.GetAllPackagesAsync(
                     httpClient,
+                    azFuncHostKey,
                     loggingContext);
             var restPackagesSet = new HashSet<string>(restPackages.Select(p => p.PackageIdentifier));
 
@@ -69,6 +71,7 @@ namespace Microsoft.WinGet.RestSource.Operations
                 restPackagesSet,
                 restSourceTriggerFunction,
                 manifestCacheEndpoint,
+                azFuncHostKey,
                 loggingContext);
         }
 
@@ -81,6 +84,7 @@ namespace Microsoft.WinGet.RestSource.Operations
         /// <param name="restPackages">Rest packages.</param>
         /// <param name="restSourceTriggerFunction">IRestSourceTriggerFunction.</param>
         /// <param name="manifestCacheEndpoint">Manifest cache endpoint.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         internal async Task ProcessRebuildRequestInternalAsync(
@@ -90,6 +94,7 @@ namespace Microsoft.WinGet.RestSource.Operations
             HashSet<string> restPackages,
             IRestSourceTriggerFunction restSourceTriggerFunction,
             string manifestCacheEndpoint,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext}Starting to process rebuild request.");
@@ -125,7 +130,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                         await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                             async () =>
                             {
-                                await restSourceTriggerFunction.PutPackageManifestAsync(httpClient, packageManifest, loggingContext);
+                                await restSourceTriggerFunction.PutPackageManifestAsync(
+                                    httpClient,
+                                    packageManifest,
+                                    azFuncHostKey,
+                                    loggingContext);
                             },
                             sqlPackage.Id,
                             loggingContext,
@@ -139,7 +148,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                         await RetryHelper.RunAndRetryWithExceptionAsync<HttpRequestException>(
                             async () =>
                             {
-                                await restSourceTriggerFunction.PostPackageManifestAsync(httpClient, packageManifest, loggingContext);
+                                await restSourceTriggerFunction.PostPackageManifestAsync(
+                                    httpClient,
+                                    packageManifest,
+                                    azFuncHostKey,
+                                    loggingContext);
                             },
                             sqlPackage.Id,
                             loggingContext,
@@ -162,7 +175,11 @@ namespace Microsoft.WinGet.RestSource.Operations
                 await RetryHelper.RunAndRetryWithExceptionAsync<Exception>(
                     async () =>
                     {
-                        await restSourceTriggerFunction.DeletePackageAsync(httpClient, restPackage, loggingContext);
+                        await restSourceTriggerFunction.DeletePackageAsync(
+                            httpClient,
+                            restPackage,
+                            azFuncHostKey,
+                            loggingContext);
                     },
                     restPackage,
                     loggingContext,

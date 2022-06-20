@@ -25,6 +25,7 @@ namespace Microsoft.WinGet.RestSource.Interfaces
         /// <param name="sasManifestUrl">SAS manifest url.</param>
         /// <param name="referenceType">Reference type.</param>
         /// <param name="restSourceTriggerFunction">RestSourceTriggerFunction.</param>
+        /// <param name="azFuncHostKey">Azure function host key.</param>
         /// <param name="loggingContext">Logging context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task ProcessUpdateRequestAsync(
@@ -34,6 +35,7 @@ namespace Microsoft.WinGet.RestSource.Interfaces
             string sasManifestUrl,
             ReferenceType referenceType,
             IRestSourceTriggerFunction restSourceTriggerFunction,
+            string azFuncHostKey,
             LoggingContext loggingContext);
     }
 }

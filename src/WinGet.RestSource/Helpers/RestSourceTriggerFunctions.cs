@@ -41,16 +41,13 @@ namespace Microsoft.WinGet.RestSource.Helpers
 
         private readonly string azFuncVersionsEndpointFormat;
         private readonly string azFuncVersionsSpecificEndpointFormat;
-        private readonly string azFuncHostKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestSourceTriggerFunctions"/> class.
         /// </summary>
         /// <param name="azFuncRestSourceEndpoint">Azure function Rest Source Endpoint.</param>
-        /// <param name="azFuncHostKey">Azure function host key.</param>
         public RestSourceTriggerFunctions(
-            string azFuncRestSourceEndpoint,
-            string azFuncHostKey)
+            string azFuncRestSourceEndpoint)
         {
             this.azFuncPackageManifestsEndpoint = $"{azFuncRestSourceEndpoint}{PackageManifests}";
             this.azFuncPackageManifestsEndpointFormat = this.azFuncPackageManifestsEndpoint + "/{0}";
@@ -60,14 +57,13 @@ namespace Microsoft.WinGet.RestSource.Helpers
 
             this.azFuncVersionsEndpointFormat = this.azFuncPackagesEndpointFormat + $"/{Versions}";
             this.azFuncVersionsSpecificEndpointFormat = this.azFuncVersionsEndpointFormat + "/{1}";
-
-            this.azFuncHostKey = azFuncHostKey;
         }
 
         /// <inheritdoc />
         public async Task<PackageManifest> GetPackageManifestAsync(
             HttpClient httpClient,
             string packageIndetifier,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext} Start Get PackageManifest {packageIndetifier}");
@@ -78,7 +74,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey);
+                azFuncHostKey);
 
             Logger.Info($"{loggingContext} Get PackageManifest {packageIndetifier} response StatusCode '{responseMessage.StatusCode}'");
 
@@ -100,6 +96,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         public async Task PostPackageManifestAsync(
             HttpClient httpClient,
             PackageManifest packageManifest,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             string requestBody = JsonConvert.SerializeObject(packageManifest);
@@ -111,7 +108,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 this.azFuncPackageManifestsEndpoint,
-                this.azFuncHostKey,
+                azFuncHostKey,
                 requestBody);
 
             Logger.Info($"{loggingContext} Post PackageManifest response {packageManifest.PackageIdentifier} StatusCode '{responseMessage.StatusCode}'");
@@ -126,6 +123,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         public async Task PutPackageManifestAsync(
             HttpClient httpClient,
             PackageManifest packageManifest,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             string requestBody = JsonConvert.SerializeObject(packageManifest);
@@ -137,7 +135,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey,
+                azFuncHostKey,
                 requestBody);
 
             Logger.Info($"{loggingContext} Put PackageManifest {packageManifest.PackageIdentifier} response StatusCode '{responseMessage.StatusCode}'");
@@ -152,6 +150,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         public async Task DeletePackageManifestAsync(
             HttpClient httpClient,
             string packageIdentifier,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext} Start Delete PackageManifest {packageIdentifier}");
@@ -162,7 +161,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey);
+                azFuncHostKey);
 
             Logger.Info($"{loggingContext} Delete PackageManifest {packageIdentifier} response StatusCode '{responseMessage.StatusCode}'");
 
@@ -175,6 +174,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         /// <inheritdoc />
         public async Task<IReadOnlyList<Package>> GetAllPackagesAsync(
             HttpClient httpClient,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext} Start Get All Packages");
@@ -186,6 +186,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
             {
                 var pagedPackages = await this.GetPackagesAsync(
                     httpClient,
+                    azFuncHostKey,
                     loggingContext,
                     continuationToken);
 
@@ -206,6 +207,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         /// <inheritdoc />
         public async Task<ApiResponse<List<Package>>> GetPackagesAsync(
             HttpClient httpClient,
+            string azFuncHostKey,
             LoggingContext loggingContext,
             string continuationToken = null)
         {
@@ -226,7 +228,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey,
+                azFuncHostKey,
                 headers: headers);
 
             Logger.Info($"{loggingContext} Get Package response ContinuationToken {continuationToken} StatusCode '{responseMessage.StatusCode}'");
@@ -249,6 +251,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
         public async Task DeletePackageAsync(
             HttpClient httpClient,
             string packageIdentifier,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext} Start Delete Package {packageIdentifier}");
@@ -259,7 +262,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey);
+                azFuncHostKey);
 
             Logger.Info($"{loggingContext} Delete Package {packageIdentifier} response StatusCode '{responseMessage.StatusCode}'");
 
@@ -274,6 +277,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
             HttpClient httpClient,
             string packageIdentifier,
             string version,
+            string azFuncHostKey,
             LoggingContext loggingContext)
         {
             Logger.Info($"{loggingContext} Start Delete Version {packageIdentifier} {version}");
@@ -284,7 +288,7 @@ namespace Microsoft.WinGet.RestSource.Helpers
                 httpClient,
                 httpMethod,
                 endpoint,
-                this.azFuncHostKey);
+                azFuncHostKey);
 
             Logger.Info($"{loggingContext} Delete Version response {packageIdentifier} {version} response StatusCode '{responseMessage.StatusCode}'");
 
