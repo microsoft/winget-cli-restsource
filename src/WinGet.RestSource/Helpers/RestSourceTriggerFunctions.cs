@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="RestSourceTriggerFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -50,12 +50,12 @@ namespace Microsoft.WinGet.RestSource.Helpers
             string azFuncRestSourceEndpoint)
         {
             this.azFuncPackageManifestsEndpoint = $"{azFuncRestSourceEndpoint}{PackageManifests}";
-            this.azFuncPackageManifestsEndpointFormat = this.azFuncPackageManifestsEndpoint + "/{0}";
+            this.azFuncPackageManifestsEndpointFormat = this.azFuncPackageManifestsEndpoint + "/{0}/";
 
             this.azFuncPackagesEndpoint = $"{azFuncRestSourceEndpoint}{Packages}";
-            this.azFuncPackagesEndpointFormat = this.azFuncPackagesEndpoint + "/{0}";
+            this.azFuncPackagesEndpointFormat = this.azFuncPackagesEndpoint + "/{0}/";
 
-            this.azFuncVersionsEndpointFormat = this.azFuncPackagesEndpointFormat + $"/{Versions}";
+            this.azFuncVersionsEndpointFormat = this.azFuncPackagesEndpointFormat + $"{Versions}";
             this.azFuncVersionsSpecificEndpointFormat = this.azFuncVersionsEndpointFormat + "/{1}";
         }
 
