@@ -60,7 +60,7 @@ steps:
 - template: run-unittests.yml
   parameters:
     name: WinGet.RestSource.UnitTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
     dll: Microsoft.WinGet.RestSource.UnitTest.
 
 ## Component Governance
