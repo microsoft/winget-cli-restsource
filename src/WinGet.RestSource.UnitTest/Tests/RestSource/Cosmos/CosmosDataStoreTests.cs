@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="CosmosDataStoreTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -54,7 +54,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
                 .AddJsonFile("Test.runsettings.json", true)
 
                 // But they can be overridden using environment variables
-                .AddEnvironmentVariables()
+               // .AddEnvironmentVariables()
                 .Build();
 
             string endpoint = configuration[CosmosConnectionConstants.CosmosAccountEndpointSetting] ?? throw new ArgumentNullException();
@@ -113,7 +113,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         /// Verifies the various CRUD operations exposed by the CosmosDataStore.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact(Skip ="Tests setup not functioning correctly")]
+        [Fact]
         public async Task CreateUpdateReadDeleteTest()
         {
             var addedManifest = this.allTestManifests.Skip(ManifestCount).First();
@@ -162,7 +162,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         /// Verifies the GetPackage* APIs.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact(Skip = "Tests setup not functioning correctly")]
+        [Fact]
         public async Task GetPackages()
         {
             this.log.WriteLine("Tests that GetPackages returns the expected package.");
@@ -213,7 +213,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         /// Verifies that the CosmosDataStore correctly handles a search using a search query term.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact(Skip = "Tests setup not functioning correctly")]
+        [Fact]
         public async Task SearchUsingQuery()
         {
             this.log.WriteLine("Tests that SearchPackageManifests returns the expected results when using the Query property.");
@@ -245,7 +245,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
         /// Verifies that the CosmosDataStore correctly handles a search using filters.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact(Skip = "Tests setup not functioning correctly")]
+        [Fact]
         public async Task SearchUsingFilter()
         {
             await this.TestSearchFilter(PackageMatchFields.PackageName, "PowerToys", MatchType.Exact, PowerToysPackageIdentifier);
