@@ -223,6 +223,22 @@ function Set-KeyVaultSecret($keyVault, $keyVaultSecretName, $secret, $maxAttempt
     exit 1
 }
 
+function Set-AlternativeKey($keyVault, $keyVaultSecretName, $activeKey, $cosmosDBKeys, $maxAttempts, $secondsToWait) {
+    Write-Host "Executing Set-AlternativeKey"
+    switch($activeKey)
+    {
+        "Primary" { 
+            Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['secondary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
+        }
+        "Secondary" { 
+            Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['primary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
+        }
+        Default { 
+            Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['primary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
+        }
+    }
+}
+
 function Get-ActiveKey($keyvaultKey, $cosmosDBKeys)
 {
     Write-Host "Executing Get-ActiveKey"
@@ -262,18 +278,7 @@ $activeKey = [string]::Empty
 $activeKey = Get-ActiveKey -keyvaultKey $keyvaultKey -cosmosDBKeys $cosmosDBKeys
 
 # Set Alternative Key
-switch($activeKey)
-{
-    "Primary" { 
-        Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['secondary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
-    }
-    "Secondary" { 
-        Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['primary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
-    }
-    Default { 
-        Set-KeyVaultSecret -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -secret $cosmosDBKeys['primary'] -maxAttempts $maxAttempts -secondsToWait $secondsToWait
-    }
-}
+Set-AlternativeKey -keyVault $keyVault -keyVaultSecretName $keyVaultSecretName -activeKey $activeKey -cosmosDBKeys $cosmosDBKeys -maxAttempts $maxAttempts -secondsToWait $secondsToWait
 
 # Rotate Alternative Key
 Regenerate-CosmosKeys -cosmosDB $cosmosDB -resourceGroup $resourceGroup -cosmosDbKeySet $cosmosDbKeySet -activeKey $activeKey -maxAttempts $maxAttempts -secondsToWait $secondsToWait
