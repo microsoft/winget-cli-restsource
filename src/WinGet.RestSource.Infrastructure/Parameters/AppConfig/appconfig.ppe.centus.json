@@ -12,7 +12,6 @@
             "value": [
                 {
                     "id": "GenevaLogging",
-                    "description": "Feature flag to use Geneva Monitoring.",
                     "enabled": "true"
                 }
             ]

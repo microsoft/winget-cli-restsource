@@ -51,7 +51,7 @@
                 "count": "[length(parameters('featureFlags'))]"
             },
             "properties": {
-                "value": "[concat('{\"id\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"description\":\"',parameters('featureFlags')[copyIndex()].description,'\",\"enabled\":',parameters('featureFlags')[copyIndex()].enabled,',\"conditions\":{\"client_filters\":[]}}')]",
+                "value": "[concat('{\"id\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"description\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"enabled\":',parameters('featureFlags')[copyIndex()].enabled,',\"conditions\":{\"client_filters\":[]}}')]",
                 "contentType": "application/vnd.microsoft.appconfig.ff+json;charset=utf-8"
             }
         }
