@@ -15,24 +15,39 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
     public class ApiConstants
     {
         /// <summary>
-        /// Source Identifier.
+        /// AzFuncRestSourceEndpoint environmental variable name.
         /// </summary>
-        public static readonly string SourceIdentifier = ApiConstants.ServerIdentifier;
+        public const string AzFuncRestSourceEndpointEnvName = "AzFuncRestSourceEndpoint";
 
         /// <summary>
-        /// Whether certificate authentication is enabled.
+        /// CertificateAuthenticationRequiredName environmental variable name.
         /// </summary>
-        public static readonly bool CertificateAuthenticationRequired = bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
+        public const string CertificateAuthenticationRequiredEnvName = "CertificateAuthenticationRequired";
 
         /// <summary>
-        /// Subject name of the root/intermediate certificate.
+        /// CertificateAuthenticationSelfSigned environmental variable name.
         /// </summary>
-        public static readonly string CertificateAuthenticationSubjectName = ApiConstants.CertificateAuthenticationSubjectNameEnv;
+        public const string CertificateAuthenticationSelfSignedEnvName = "CertificateAuthenticationSelfSigned";
 
         /// <summary>
-        /// Whether self signed certificates are allowed as the root/intermediate certificate.
+        /// CertificateAuthenticationSubjectName environmental variable name.
         /// </summary>
-        public static readonly bool CertificateAuthenticationSelfSigned = bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
+        public const string CertificateAuthenticationSubjectNameEnvName = "CertificateAuthenticationSubjectName";
+
+        /// <summary>
+        /// FunctionHostKey environmental variable name.
+        /// </summary>
+        public const string FunctionHostKeyEnvName = "FunctionHostKey";
+
+        /// <summary>
+        /// ManifestCacheEndpoint environmental variable name.
+        /// </summary>
+        public const string ManifestCacheEndpointEnvName = "ManifestCacheEndpoint";
+
+        /// <summary>
+        /// ServerIdentifier environmental variable name.
+        /// </summary>
+        public const string ServerIdentifierEnvName = "ServerIdentifier";
 
         /// <summary>
         /// Server Supported Versions.
@@ -42,21 +57,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
             "1.0.0",
             "1.1.0",
         };
-
-        /// <summary>
-        /// Gets manifest cache endpoint.
-        /// </summary>
-        public static readonly string ManifestCacheEndpoint = Environment.GetEnvironmentVariable("ManifestCacheEndpoint");
-
-        /// <summary>
-        /// Functions host key.
-        /// </summary>
-        public static readonly string AzureFunctionHostKey = Environment.GetEnvironmentVariable("FunctionHostKey");
-
-        /// <summary>
-        /// Rest source endpoint.
-        /// </summary>
-        public static readonly string AzFuncRestSourceEndpoint = Environment.GetEnvironmentVariable("AzFuncRestSourceEndpoint");
 
         /// <summary>
         /// Server Supported Versions.
@@ -88,23 +88,53 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static readonly QueryParameters RequiredQueryParameters = new QueryParameters();
 
         /// <summary>
-        /// Gets server Identifier.
+        /// Gets Rest source endpoint.
         /// </summary>
-        public static string ServerIdentifier => Environment.GetEnvironmentVariable("ServerIdentifier");
+        public static string AzFuncRestSourceEndpoint => Environment.GetEnvironmentVariable(AzFuncRestSourceEndpointEnvName);
 
         /// <summary>
         /// Gets whether certificate authentication is enabled.
         /// </summary>
-        public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationRequired");
+        public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationRequiredEnvName);
 
         /// <summary>
-        /// Gets the expected root/intermediate cert subject name.
+        /// Gets a value indicating whether certificate authentication is enabled.
         /// </summary>
-        public static string CertificateAuthenticationSubjectNameEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSubjectName");
+        public static bool CertificateAuthenticationRequired => bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
 
         /// <summary>
         /// Gets whether self signed certificates are allowed.
         /// </summary>
-        public static string CertificateAuthenticationSelfSignedEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSelfSigned");
+        public static string CertificateAuthenticationSelfSignedEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationSelfSignedEnvName);
+
+        /// <summary>
+        /// Gets a value indicating whether self signed certificates are allowed as the root/intermediate certificate.
+        /// </summary>
+        public static bool CertificateAuthenticationSelfSigned => bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
+
+        /// <summary>
+        /// Gets the expected root/intermediate cert subject name.
+        /// </summary>
+        public static string CertificateAuthenticationSubjectNameEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationSubjectNameEnvName);
+
+        /// <summary>
+        /// Gets Subject name of the root/intermediate certificate.
+        /// </summary>
+        public static string CertificateAuthenticationSubjectName => ApiConstants.CertificateAuthenticationSubjectNameEnv;
+
+        /// <summary>
+        /// Gets Functions host key.
+        /// </summary>
+        public static string AzureFunctionHostKey => Environment.GetEnvironmentVariable(FunctionHostKeyEnvName);
+
+        /// <summary>
+        /// Gets manifest cache endpoint.
+        /// </summary>
+        public static string ManifestCacheEndpoint => Environment.GetEnvironmentVariable(ManifestCacheEndpointEnvName);
+
+        /// <summary>
+        /// Gets server Identifier.
+        /// </summary>
+        public static string ServerIdentifier => Environment.GetEnvironmentVariable(ServerIdentifierEnvName);
     }
 }

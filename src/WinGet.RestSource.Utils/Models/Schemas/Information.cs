@@ -21,12 +21,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// </summary>
         public Information()
         {
-            if (string.IsNullOrEmpty(ApiConstants.SourceIdentifier))
+            if (string.IsNullOrEmpty(ApiConstants.ServerIdentifier))
             {
                 throw new System.ArgumentNullException("SourceIdentifier environment variable is not configured and needs to be setup.");
             }
 
-            this.SourceIdentifier = ApiConstants.SourceIdentifier;
+            this.SourceIdentifier = ApiConstants.ServerIdentifier;
             this.ServerSupportedVersions = ApiConstants.ServerSupportedVersions;
 
             this.UnsupportedPackageMatchFields = ApiConstants.UnsupportedPackageMatchFields;
