@@ -45,6 +45,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.Functions.Common
             Dictionary<string, string> environmentVars = new Dictionary<string, string>()
             {
                 [ApiConstants.CertificateAuthenticationRequiredEnvName] = "false",
+                [ApiConstants.CertificateAuthenticationSelfSignedEnvName] = "true",
                 [ApiConstants.CertificateAuthenticationSubjectNameEnvName] = CertSubject,
             };
             this.env = EnvironmentVariables.PrepareEnvironmentVariable(environmentVars);
