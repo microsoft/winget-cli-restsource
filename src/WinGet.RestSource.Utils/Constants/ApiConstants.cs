@@ -20,6 +20,21 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static readonly string SourceIdentifier = ApiConstants.ServerIdentifier;
 
         /// <summary>
+        /// Whether certificate authentication is enabled.
+        /// </summary>
+        public static readonly bool CertificateAuthenticationRequired = bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
+
+        /// <summary>
+        /// Subject name of the root/intermediate certificate.
+        /// </summary>
+        public static readonly string CertificateAuthenticationSubjectName = ApiConstants.CertificateAuthenticationSubjectNameEnv;
+
+        /// <summary>
+        /// Whether self signed certificates are allowed as the root/intermediate certificate.
+        /// </summary>
+        public static readonly bool CertificateAuthenticationSelfSigned = bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
+
+        /// <summary>
         /// Server Supported Versions.
         /// </summary>
         public static readonly ApiVersions ServerSupportedVersions = new ApiVersions()
@@ -76,5 +91,20 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         /// Gets server Identifier.
         /// </summary>
         public static string ServerIdentifier => Environment.GetEnvironmentVariable("ServerIdentifier");
+
+        /// <summary>
+        /// Gets whether certificate authentication is enabled.
+        /// </summary>
+        public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationRequired");
+
+        /// <summary>
+        /// Gets the expected root/intermediate cert subject name.
+        /// </summary>
+        public static string CertificateAuthenticationSubjectNameEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSubjectName");
+
+        /// <summary>
+        /// Gets whether self signed certificates are allowed.
+        /// </summary>
+        public static string CertificateAuthenticationSelfSignedEnv => Environment.GetEnvironmentVariable("CertificateAuthenticationSelfSigned");
     }
 }
