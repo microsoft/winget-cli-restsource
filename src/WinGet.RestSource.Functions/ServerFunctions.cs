@@ -8,15 +8,18 @@ namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography.X509Certificates;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
     using Microsoft.WinGet.RestSource.Utils.Models;
     using Microsoft.WinGet.RestSource.Utils.Models.Errors;
@@ -56,6 +59,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 information = new Information();
