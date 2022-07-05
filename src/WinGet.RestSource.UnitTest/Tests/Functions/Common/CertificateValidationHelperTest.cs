@@ -26,7 +26,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.Functions.Common
     public class CertificateValidationHelperTest : IDisposable
     {
         private const string Payload = "Payload";
-        private const string CertHeader = "X-ARR-ClientCert";
         private const string CertSubject = "devauth";
         private const string Cert = "MIIDKjCCAhKgAwIBAgIQZCpkZ//ETPK6BVAsqAfmhjANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDEwdkZXZhdXRoMB4XDTIyMDcwNTIwNTQwNVoXDTMyMDcwNTIxMDQwNVowEjEQMA4GA1UEAxMHZGV2YXV0aDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANvLHTeBoQya1vMxmJl1xmd1+V1lGKFlUadAy3xGMIIvB5o7fbTMtv1PnZ9VF25DoYNGBNZznZYVck0ZXqX0FsEB5iA2gENg9sk5sOAF8pQnSYNSZx1ABCnLNpQfYYk0U/DziHbHCqc5sVIoI2TzoeRrPh4W5kXLloys4anY15LrR++lEmiDDnpL8WUR2XKia28/UWEG84xMbz4WZ0J0yltmfw2xigWFf+BPqDJVBJ4MTW62BXIKjaJT7XX5EMWGnPZz7BlznrQqcRw845gGFNjDN8bvdKmx9IVOhQeOBfvZmo9jARrk+ODO97o32jQOfYDKyWdNEXOPZrD6AZx4hG0CAwEAAaN8MHowDgYDVR0PAQH/BAQDAgWgMAkGA1UdEwQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB8GA1UdIwQYMBaAFEMiX/5DITRc8rm2HQz63EAqtXPZMB0GA1UdDgQWBBRDIl/+QyE0XPK5th0M+txAKrVz2TANBgkqhkiG9w0BAQsFAAOCAQEA1Xc0Mo1Ex6aXlZHkfJn0yZVa/+6z0QFK95D+9wWZ4K5v4lGvANLNxU28IlJyg3kJ8kV720WR4NYsyCcn6mWxNHYKxivO/xhoDsIgIllsJcvC4GWeUx+67xeNPQuSH20IZuNSqMoqpD5+aedzk24pVkWudIz5sEWE0+TGik4y6DeqWIhNIzSphlUYODaAbMTFn40rI4Afugv6518FkVFyZKYX/mDgD/jn2RarOph2k3ffJY3gclQ0yH4DggAA82vF35j2B5xKzBBnuF5AlojjDM9oHLukVYDtGs5yAfMAebRK7TAtcQjpzIPZv7jseW7LBBdKO5A9cQxKEBAIOa33Dw==";
         private const string UserAgentHeaderTitle = "User-Agent";
@@ -115,7 +114,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.Functions.Common
                 new HeaderDictionary(new Dictionary<string, StringValues>
                 {
                     { UserAgentHeaderTitle, UserAgentHeaderValue },
-                    { CertHeader, Cert },
+                    { HeaderConstants.XARRClientCert, Cert },
                 }));
 
             // Verify Failure

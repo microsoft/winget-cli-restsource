@@ -31,7 +31,7 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
             if (ApiConstants.CertificateAuthenticationRequired)
             {
                 StringValues certHeader;
-                bool headerPresent = req.Headers.TryGetValue("X-ARR-ClientCert", out certHeader);
+                bool headerPresent = req.Headers.TryGetValue(HeaderConstants.XARRClientCert, out certHeader);
 
                 if (!headerPresent || StringValues.IsNullOrEmpty(certHeader))
                 {

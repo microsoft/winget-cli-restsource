@@ -20,5 +20,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         /// Continuation Token.
         /// </summary>
         public const string ContinuationToken = "ContinuationToken";
+
+        /// <summary>
+        /// Continuation Token.
+        /// </summary>
+        public const string XARRClientCert = "X-ARR-ClientCert";
     }
 }
