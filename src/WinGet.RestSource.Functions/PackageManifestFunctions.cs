@@ -64,6 +64,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -119,6 +121,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
@@ -169,6 +173,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -236,6 +242,8 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
+                CertificateValidationHelper.ValidateAuthentication(req, log);
+
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(QueryConstants.ContinuationToken);

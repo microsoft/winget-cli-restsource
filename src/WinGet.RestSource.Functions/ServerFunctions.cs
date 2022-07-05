@@ -19,6 +19,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Exceptions;
     using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
 
     /// <summary>
