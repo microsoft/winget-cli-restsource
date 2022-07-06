@@ -195,7 +195,7 @@
     "variables": {
         "appInsightResourceId": "[resourceId(parameters('appInsightSubscription'), parameters('appInsightResourceGroup'), 'microsoft.insights/components', parameters('appInsightName'))]",
         "appServiceResourceId": "[resourceId(parameters('appServiceSubscription'), parameters('appServiceResourceGroup'), 'Microsoft.Web/serverfarms/', parameters('appServiceName'))]",
-        "certificateAuthenticationEnabled": "[if(parameters('clientCertEnabled'), 'true', 'flase' )]",
+        "certificateAuthenticationEnabled": "[if(parameters('clientCertEnabled'), 'true', 'false' )]",
         "kv_appConfigPrimary_SecretName": "AppConfigPrimary",
         "kv_appConfigSecondary_SecretName": "AppConfigSecondary",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
