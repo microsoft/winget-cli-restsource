@@ -8,8 +8,13 @@
         "location": {
             "value": "westus"
         },
-        "genevaLogging": {
-            "value": true
+        "featureFlags": {
+            "value": [
+                {
+                    "id": "GenevaLogging",
+                    "enabled": "true"
+                }
+            ]
         }
     }
 }
