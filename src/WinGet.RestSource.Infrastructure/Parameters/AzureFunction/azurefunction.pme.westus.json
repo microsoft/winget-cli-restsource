@@ -9,7 +9,7 @@
       "value": "winget-pkgs-intune-rest-pme"
     },
     "manifestCacheEndpoint": {
-      "value": "https://cdn.winget.azureedge.net/cache/"
+      "value": "https://cdn.winget.microsoft.com/cache/"
     },
     "cosmosContainer": {
       "value": "Manifests"
