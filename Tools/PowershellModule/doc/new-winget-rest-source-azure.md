@@ -523,6 +523,7 @@ For more information on Azure Functions, visit their Docs article: [Introduction
 1. Select the drop-down menu below **Role** and select **Reader** from the list of options.
 1. Select the **Save** button.
 
+1. Go back to your Resource Group an click on the Key Vault resource
 1. Select **Access policies** from the left side navigation.
 1. Select the **+ Add Access Policy** link.
 1. Select **Get** and **List** for Key permissions, Secret permissions, and Certificate permissions.
