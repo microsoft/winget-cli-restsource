@@ -72,7 +72,14 @@ Description = 'PowerShell module for interacting with a Windows Package Manager 
 FunctionsToExport = @()
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @()
+CmdletsToExport = @(
+    'Add-WinGetManifest',
+    'Get-WinGetManifest',
+    'Add-WinGetManifestVersion',
+    'Get-WinGetManifestVersion',
+    'Remove-WinGetManifest',
+    'Remove-WinGetManifestVersion'
+)
 
 # Variables to export from this module
 VariablesToExport = '*'
