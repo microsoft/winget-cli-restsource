@@ -21,7 +21,7 @@ namespace Microsoft.WinGet.Source.Commands
     [Cmdlet(
         VerbsCommon.Get,
         Constants.ManifestNoun,
-        DefaultParameterSetName = Constants.ManualSet)]
+        DefaultParameterSetName = Constants.SubscriptionNameSet)]
     [OutputType(typeof(Manifests))]
     public class GetManifestCommand : BaseAzureCommand
     {
