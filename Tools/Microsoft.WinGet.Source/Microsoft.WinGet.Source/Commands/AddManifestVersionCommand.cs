@@ -16,7 +16,7 @@ namespace Microsoft.WinGet.Source.Commands
     [Cmdlet(
         VerbsCommon.Add,
         Constants.ManifestVersionNoun,
-        DefaultParameterSetName = Constants.ManifestNoun)]
+        DefaultParameterSetName = Constants.SubscriptionNameSet)]
     public class AddManifestVersionCommand : BaseManifestsCommand
     {
         /// <inheritdoc />

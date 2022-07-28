@@ -19,7 +19,6 @@ namespace Microsoft.WinGet.Source.Commands
         VerbsCommon.Remove,
         Constants.ManifestVersionNoun,
         DefaultParameterSetName = Constants.SubscriptionNameSet)]
-    [OutputType(typeof(Manifests))]
     public class RemoveManifestVersionCommand : BaseAzureTokenCommand
     {
         /// <summary>
