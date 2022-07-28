@@ -68,5 +68,21 @@ namespace Microsoft.WinGet.Source.Common
 
             return manifests;
         }
+
+        /// <summary>
+        /// Creates a <see cref="ManifestsPayloadVersionItem" /> from a <see cref="Manifests" /> object.
+        /// </summary>
+        /// <param name="manifests">A <see cref="Manifests" /> object.</param>
+        /// <returns>A <see cref="ManifestsPayloadVersionItem" /> object.</returns>
+        public static ManifestsPayloadVersionItem CreateVersionItemFromManifests(Manifests manifests)
+        {
+            return new ManifestsPayloadVersionItem()
+            {
+                PackageVersion = manifests.VersionManifest.PackageVersion,
+                DefaultLocale = manifests.DefaultLocaleManifest,
+                Installers = manifests.InstallerManifest.Installers,
+                Locales = manifests.LocaleManifests,
+            };
+        }
     }
 }

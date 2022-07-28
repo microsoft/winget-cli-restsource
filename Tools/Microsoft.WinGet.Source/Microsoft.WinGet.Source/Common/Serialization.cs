@@ -356,7 +356,10 @@ namespace Microsoft.WinGet.Source.Common
         /// </summary>
         private class MultilineScalarFlowStyleEmitter : ChainedEventEmitter
         {
-            public MultilineScalarFlowStyleEmitter(IEventEmitter nextEmitter) : base(nextEmitter) { }
+            public MultilineScalarFlowStyleEmitter(IEventEmitter nextEmitter)
+                : base(nextEmitter)
+            {
+            }
 
             public override void Emit(ScalarEventInfo eventInfo, IEmitter emitter)
             {
@@ -372,6 +375,7 @@ namespace Microsoft.WinGet.Source.Common
                         }
                     }
                 }
+
                 this.nextEmitter.Emit(eventInfo, emitter);
             }
         }

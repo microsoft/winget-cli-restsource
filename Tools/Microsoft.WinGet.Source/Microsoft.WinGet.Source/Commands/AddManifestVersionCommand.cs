@@ -36,7 +36,7 @@ namespace Microsoft.WinGet.Source.Commands
         private HttpContent MakePayload()
         {
             return new StringContent(
-                RestConverter.CreateManifestsPayload(this.GetManifests()).ToJson(),
+                RestConverter.CreateVersionItemFromManifests(this.GetManifests()).ToJson(),
                 System.Text.Encoding.UTF8,
                 "application/json");
         }
