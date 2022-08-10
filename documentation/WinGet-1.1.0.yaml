@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.1.0
+  version: 1.2.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -707,6 +707,7 @@ components:
                        Either Agreement or AgreementUrl is required.
                        When we show the agreements, we would Bold the AgreementL
           type: string
+          nullable: true
           minLength: 1
           maxLength: 100
         Agreement:
@@ -734,6 +735,36 @@ components:
       minLength: 1
       maxLength: 10000
 
+    InstallationNotes:
+      description: The notes displayed to the user upon completion of a package installation.
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 256
+
+    Documentation:
+      description: One Documentation entry.
+      type: object
+      properties:
+        DocumentLabel:
+          description: The label of the documentation for providing software guides such as manuals and troubleshooting URLs.
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 100
+        DocumentUrl:
+          description: The documentation url.
+          $ref: '#/components/schemas/Url'
+
+    Documentations:
+      description: List of documentations. Documentations are shown in the order of this list.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 256
+      items:
+        $ref: '#/components/schemas/Documentation'
+
     Channel:
       description: This field is not supported by the client yet. The client will set this to null when processing.
       type: string
@@ -760,21 +791,30 @@ components:
       pattern: "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(\\.(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])){0,3}$"
       nullable: true
 
-    InstallerType:
-      description: Enumeration of supported installer types.
+    NestedInstallerType:
+      description: Enumeration of supported nested installer types contained inside an archive file.
       type: string
+      nullable: true
       enum:
         - msix
         - msi
         - appx
         - exe
-        - zip
         - inno
         - nullsoft
         - wix
         - burn
-        - pwa
-        - msstore
+        - portable
+
+    InstallerType:
+      description: Enumeration of supported installer types.
+      allOf:
+        - $ref: '#/components/schemas/NestedInstallerType'
+        - type: string
+          enum:
+          - zip
+          - pwa
+          - msstore
 
     Scope:
       description: Enumeration of Values for Scope
@@ -883,7 +923,7 @@ components:
       maxItems: 16
       items:
         $ref: '#/components/schemas/InstallerReturnCode'
-          
+
     ExpectedReturnCodes:
       description: Installer exit codes for common errors. Should contain unique installer return codes.
       type: array
@@ -892,7 +932,7 @@ components:
       maxItems: 128
       items:
         $ref: '#/components/schemas/ExpectedReturnCode'
-    
+
     ExpectedReturnCodeResponse:
       description: Installer expected return code response.
       type: string
@@ -912,6 +952,7 @@ components:
         - alreadyInstalled
         - downgrade
         - blockedByPolicy
+        - custom
         
     ExpectedReturnCode:
       description: Installer exit code for a common error.
@@ -921,6 +962,9 @@ components:
           $ref: '#/components/schemas/InstallerReturnCode'
         ReturnResponse:
           $ref: '#/components/schemas/ExpectedReturnCodeResponse'
+        ReturnResponseUrl:
+          description: The return response url to provide additional guidance for expected return codes
+          $ref: '#/components/schemas/Url'
       required:
         - InstallerReturnCode
         - ReturnResponse
@@ -952,7 +996,6 @@ components:
       maxItems: 16
       items:
         type: string
-        pattern: "^[a-z][-a-z0-9\\.\\+]*$"
         maxLength: 2048
 
     FileExtensions:
@@ -960,7 +1003,7 @@ components:
       type: array
       nullable: true
       uniqueItems: true
-      maxItems: 256
+      maxItems: 512
       items:
         type: string
         pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
@@ -1141,10 +1184,18 @@ components:
     UnsupportedOSArchitectures:
       description: List of OS architectures the installer does not support.
       type: array
+      nullable: true
       uniqueItems: true
       items:
         $ref: '#/components/schemas/ArchitectureNonNeutral'
-        
+
+    AppsAndFeaturesEntryVersion:
+      description: The DisplayVersion registry value.
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 128
+
     AppsAndFeaturesEntry:
       description: Various key values under installer's ARP entry.
       type: object
@@ -1162,11 +1213,7 @@ components:
           minLength: 1
           maxLength: 256
         DisplayVersion:
-          description: The DisplayVersion registry value.
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 128
+          $ref: '#/components/schemas/AppsAndFeaturesEntryVersion'
         ProductCode:
           $ref: '#/components/schemas/ProductCode'
         UpgradeCode:
@@ -1177,10 +1224,114 @@ components:
     AppsAndFeaturesEntries:
       description: List of ARP entries.
       type: array
+      nullable: true
       uniqueItems: true
       maxItems: 128
       items:
         $ref: '#/components/schemas/AppsAndFeaturesEntry'
+
+    NestedInstallerFile:
+      description: One nested installer file entry inside an archive.
+      type: object
+      properties:
+        RelativeFilePath:
+          description: The relative path to the nested installer file
+          type: string
+          minLength: 1
+          maxLength: 512
+        PortableCommandAlias:
+          description: The command alias to be used for calling the package. Only applies to the nested portable package
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 40
+      required:
+        - RelativeFilePath
+
+    NestedInstallerFiles:
+      description: List nested installer files inside an archive.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 1024
+      items:
+        $ref: '#/components/schemas/NestedInstallerFile'
+
+    DisplayInstallWarnings:
+      description: Indicates whether winget should display a warning message if the install or upgrade is known to interfere with running applications.
+      type: boolean
+      nullable: true
+
+    UnsupportedArgument:
+      description: One winget argument the installer does not support.
+      type: string
+      enum:
+        - log
+        - location
+
+    UnsupportedArguments:
+      description: List of winget arguments the installer does not support.
+      type: array
+      nullable: true
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/UnsupportedArgument'
+
+    InstallationMetadataFile:
+      description: One installed file info.
+      type: object
+      properties:
+        RelativeFilePath:
+          description: The relative path to the installed file.
+          type: string
+          minLength: 1
+          maxLength: 2048
+        FileSha256:
+          description: Optional Sha256 of the installed file.
+          type: string
+          nullable: true
+          pattern: "^[A-Fa-f0-9]{64}$"
+        FileType:
+          description: The optional installed file type. If not specified, the file is treated as other.
+          type: string
+          nullable: true
+          enum:
+            - launch
+            - uninstall
+            - other
+        InvocationParameter:
+          description: Optional parameter for invocable files.
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 2048
+        DisplayName:
+          description: Optional display name for the file.
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+      required:
+        - RelativeFilePath
+
+    InstallationMetadata:
+      description: Details about the installation. Used for deeper installation detection.
+      type: object
+      properties:
+        DefaultInstallLocation:
+          description: Represents the default installed package location. Used for deeper installation detection.
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 2048
+        Files:
+          description: List of installed files.
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 2048
+          items:
+            $ref: '#/components/schemas/InstallationMetadataFile'
 
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
@@ -1297,6 +1448,16 @@ components:
           $ref: '#/components/schemas/AppsAndFeaturesEntries'
         Markets:
           $ref: '#/components/schemas/Markets'
+        NestedInstallerType:
+          $ref: '#/components/schemas/NestedInstallerType'
+        NestedInstallerFiles:
+          $ref: '#/components/schemas/NestedInstallerFiles'
+        DisplayInstallWarnings:
+          $ref: '#/components/schemas/DisplayInstallWarnings'
+        UnsupportedArguments:
+          $ref: '#/components/schemas/UnsupportedArguments'
+        InstallationMetadata:
+          $ref: '#/components/schemas/InstallationMetadata'
       required:
         - Architecture
         - InstallerType
@@ -1415,6 +1576,19 @@ components:
           properties:
             Agreements:
               $ref: '#/components/schemas/Agreements'
+        - type: object
+          properties:
+            PurchaseUrl:
+              description: The purchase url for acquiring entitlement for the package
+              $ref: '#/components/schemas/Url'
+        - type: object
+          properties:
+            InstallationNotes:
+              $ref: '#/components/schemas/InstallationNotes'
+        - type: object
+          properties:
+            Documentations:
+              $ref: '#/components/schemas/Documentations'
       required:
         - PackageLocale
 
@@ -1493,6 +1667,12 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ProductCode'
+        - type: object
+          properties:
+            AppsAndFeaturesEntryVersions:
+              type: array
+              items:
+                $ref: '#/components/schemas/AppsAndFeaturesEntryVersion'
       required:
         - PackageVersion
 
