@@ -11,20 +11,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
     /// <summary>
     /// InstallerTypeValidator.
     /// </summary>
-    public class InstallerTypeValidator : ApiEnumValidator
+    public class InstallerTypeValidator : NestedInstallerTypeValidator
     {
         private const bool Nullable = true;
         private List<string> enumList = new List<string>
         {
-            "msix",
-            "msi",
-            "appx",
-            "exe",
             "zip",
-            "inno",
-            "nullsoft",
-            "wix",
-            "burn",
             "pwa",
             "msstore",
         };
@@ -33,9 +25,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
         /// Initializes a new instance of the <see cref="InstallerTypeValidator"/> class.
         /// </summary>
         public InstallerTypeValidator()
+            : base()
         {
-            this.AllowNull = Nullable;
-            this.Values = this.enumList;
+            this.Values.AddRange(this.enumList);
         }
     }
 }

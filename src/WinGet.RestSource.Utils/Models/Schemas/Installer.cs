@@ -221,6 +221,32 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public Objects.Markets Markets { get; set; }
 
         /// <summary>
+        /// Gets or sets NestedInstallerType.
+        /// </summary>
+        [NestedInstallerTypeValidator]
+        public string NestedInstallerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets NestedInstallerFiles.
+        /// </summary>
+        public NestedInstallerFiles NestedInstallerFiles { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether displayInstallWarnings.
+        /// </summary>
+        public bool DisplayInstallWarnings { get; set; }
+
+        /// <summary>
+        /// Gets or sets unsupportedArguments.
+        /// </summary>
+        public UnsupportedArguments UnsupportedArguments { get; set; }
+
+        /// <summary>
+        /// Gets or sets installationMetadata.
+        /// </summary>
+        public InstallationMetadata InstallationMetadata { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -277,6 +303,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.UnsupportedOSArchitectures = obj.UnsupportedOSArchitectures;
             this.AppsAndFeaturesEntries = obj.AppsAndFeaturesEntries;
             this.Markets = obj.Markets;
+            this.NestedInstallerType = obj.NestedInstallerType;
+            this.NestedInstallerFiles = obj.NestedInstallerFiles;
+            this.DisplayInstallWarnings = obj.DisplayInstallWarnings;
+            this.UnsupportedArguments = obj.UnsupportedArguments;
+            this.InstallationMetadata = obj.InstallationMetadata;
         }
 
         /// <inheritdoc />
@@ -369,6 +400,21 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                 ApiDataValidator.Validate(this.Markets, results);
             }
 
+            if (this.NestedInstallerFiles != null)
+            {
+                ApiDataValidator.Validate(this.NestedInstallerFiles, results);
+            }
+
+            if (this.UnsupportedArguments != null)
+            {
+                ApiDataValidator.Validate(this.UnsupportedArguments, results);
+            }
+
+            if (this.InstallationMetadata != null)
+            {
+                ApiDataValidator.Validate(this.InstallationMetadata, results);
+            }
+
             // Return Results
             return results;
         }
@@ -417,7 +463,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.ElevationRequirement, other.ElevationRequirement)
                    && Equals(this.UnsupportedOSArchitectures, other.UnsupportedOSArchitectures)
                    && Equals(this.AppsAndFeaturesEntries, other.AppsAndFeaturesEntries)
-                   && Equals(this.Markets, other.Markets);
+                   && Equals(this.Markets, other.Markets)
+                   && Equals(this.NestedInstallerType, other.NestedInstallerType)
+                   && Equals(this.NestedInstallerFiles, other.NestedInstallerFiles)
+                   && Equals(this.DisplayInstallWarnings, other.DisplayInstallWarnings)
+                   && Equals(this.UnsupportedArguments, other.UnsupportedArguments)
+                   && Equals(this.InstallationMetadata, other.InstallationMetadata);
         }
 
         /// <inheritdoc />
@@ -462,6 +513,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.UnsupportedOSArchitectures);
             hashCode.Add(this.AppsAndFeaturesEntries);
             hashCode.Add(this.Markets);
+            hashCode.Add(this.NestedInstallerType);
+            hashCode.Add(this.NestedInstallerFiles);
+            hashCode.Add(this.DisplayInstallWarnings);
+            hashCode.Add(this.UnsupportedArguments);
+            hashCode.Add(this.InstallationMetadata);
             return hashCode.ToHashCode();
         }
     }

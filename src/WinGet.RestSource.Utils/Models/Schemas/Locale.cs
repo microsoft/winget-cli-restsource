@@ -146,6 +146,22 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public Tags Tags { get; set; }
 
         /// <summary>
+        /// Gets or sets purchaseUrl.
+        /// </summary>
+        [UrlValidator]
+        public string PurchaseUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets installationNotes.
+        /// </summary>
+        public InstallationNotes InstallationNotes { get; set; }
+
+        /// <summary>
+        /// Gets or sets documentations.
+        /// </summary>
+        public Documentations Documentations { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -188,6 +204,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.ReleaseNotes = obj.ReleaseNotes;
             this.ReleaseNotesUrl = obj.ReleaseNotesUrl;
             this.Agreements = obj.Agreements;
+            this.PurchaseUrl = obj.PurchaseUrl;
+            this.InstallationNotes = obj.InstallationNotes;
+            this.Documentations = obj.Documentations;
         }
 
         /// <inheritdoc />
@@ -204,6 +223,16 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             if (this.Agreements != null)
             {
                 ApiDataValidator.Validate(this.Agreements, results);
+            }
+
+            if (this.InstallationNotes != null)
+            {
+                ApiDataValidator.Validate(this.InstallationNotes, results);
+            }
+
+            if (this.Documentations != null)
+            {
+                ApiDataValidator.Validate(this.Documentations, results);
             }
 
             // Return Results
@@ -240,7 +269,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.Tags, other.Tags)
                    && Equals(this.ReleaseNotes, other.ReleaseNotes)
                    && Equals(this.ReleaseNotesUrl, other.ReleaseNotesUrl)
-                   && Equals(this.Agreements, other.Agreements);
+                   && Equals(this.Agreements, other.Agreements)
+                   && Equals(this.PurchaseUrl, other.PurchaseUrl)
+                   && Equals(this.InstallationNotes, other.InstallationNotes)
+                   && Equals(this.Documentations, other.Documentations);
         }
 
         /// <inheritdoc />
@@ -271,6 +303,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.ReleaseNotes);
             hashCode.Add(this.ReleaseNotesUrl);
             hashCode.Add(this.Agreements);
+            hashCode.Add(this.PurchaseUrl);
+            hashCode.Add(this.InstallationNotes);
+            hashCode.Add(this.Documentations);
             return hashCode.ToHashCode();
         }
     }

@@ -12,6 +12,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators;
+    using Microsoft.WinGet.RestSource.Utils.Validators.StringValidators;
 
     /// <summary>
     /// ExpectedReturnCode.
@@ -46,6 +47,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public string ReturnResponse { get; set; }
 
         /// <summary>
+        /// Gets or sets ReturnResponseUrl.
+        /// </summary>
+        [UrlValidator]
+        public string ReturnResponseUrl { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -75,6 +82,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         {
             this.InstallerReturnCode = expectedReturnCode.InstallerReturnCode;
             this.ReturnResponse = expectedReturnCode.ReturnResponse;
+            this.ReturnResponseUrl = expectedReturnCode.ReturnResponseUrl;
         }
 
         /// <inheritdoc/>
@@ -114,7 +122,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.InstallerReturnCode, this.ReturnResponse).GetHashCode();
+            return (this.InstallerReturnCode, this.ReturnResponse, this.ReturnResponseUrl).GetHashCode();
         }
     }
 }
