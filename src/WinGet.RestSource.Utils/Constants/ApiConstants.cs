@@ -56,6 +56,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         {
             "1.0.0",
             "1.1.0",
+            "1.4.0",
         };
 
         /// <summary>
