@@ -31,6 +31,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
             "alreadyInstalled",
             "downgrade",
             "blockedByPolicy",
+            "custom",
         };
 
         /// <summary>

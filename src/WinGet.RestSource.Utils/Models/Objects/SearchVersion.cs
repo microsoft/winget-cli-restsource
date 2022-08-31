@@ -58,6 +58,16 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public ProductCodes ProductCodes { get; set; }
 
         /// <summary>
+        /// Gets or sets appsAndFeaturesEntryVersions.
+        /// </summary>
+        public AppsAndFeaturesEntryVersions AppsAndFeaturesEntryVersions { get; set; }
+
+        /// <summary>
+        /// Gets or sets UpgradeCodes.
+        /// </summary>
+        public ProductCodes UpgradeCodes { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -86,6 +96,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
             this.Channel = obj.Channel;
             this.PackageFamilyNames = obj.PackageFamilyNames;
             this.ProductCodes = obj.ProductCodes;
+            this.AppsAndFeaturesEntryVersions = obj.AppsAndFeaturesEntryVersions;
+            this.UpgradeCodes = obj.UpgradeCodes;
         }
 
         /// <summary>
@@ -106,6 +118,18 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
                 {
                     this.ProductCodes.AddRange(obj.ProductCodes);
                     this.ProductCodes.MakeDistinct();
+                }
+
+                if (obj.AppsAndFeaturesEntryVersions != null)
+                {
+                    this.AppsAndFeaturesEntryVersions.AddRange(obj.AppsAndFeaturesEntryVersions);
+                    this.AppsAndFeaturesEntryVersions.MakeDistinct();
+                }
+
+                if (obj.UpgradeCodes != null)
+                {
+                    this.UpgradeCodes.AddRange(obj.UpgradeCodes);
+                    this.UpgradeCodes.MakeDistinct();
                 }
             }
         }
@@ -134,14 +158,24 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
                 ApiDataValidator.Validate(this.ProductCodes, results);
             }
 
+            if (this.AppsAndFeaturesEntryVersions != null)
+            {
+                ApiDataValidator.Validate(this.AppsAndFeaturesEntryVersions, results);
+            }
+
+            if (this.UpgradeCodes != null)
+            {
+                ApiDataValidator.Validate(this.UpgradeCodes, results);
+            }
+
             return results;
         }
 
         /// <inheritdoc />
         public bool Equals(SearchVersion other)
         {
-            return (this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes) ==
-                   (other.PackageVersion, other.Channel, other.PackageFamilyNames, other.ProductCodes);
+            return (this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes, this.AppsAndFeaturesEntryVersions, this.UpgradeCodes) ==
+                   (other.PackageVersion, other.Channel, other.PackageFamilyNames, other.ProductCodes, other.AppsAndFeaturesEntryVersions, other.UpgradeCodes);
         }
 
         /// <inheritdoc />
@@ -153,7 +187,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes).GetHashCode();
+            return (this.PackageVersion, this.Channel, this.PackageFamilyNames, this.ProductCodes, this.AppsAndFeaturesEntryVersions, this.UpgradeCodes).GetHashCode();
         }
     }
 }

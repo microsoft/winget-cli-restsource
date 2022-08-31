@@ -212,6 +212,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                 {
                     PackageFamilyNames packageFamilyNames = new PackageFamilyNames();
                     ProductCodes productCodes = new ProductCodes();
+                    ProductCodes upgradeCodes = new ProductCodes();
+                    AppsAndFeaturesEntryVersions appsAndFeaturesEntryVersions = new AppsAndFeaturesEntryVersions();
                     foreach (Installer installer in extended.Installers)
                     {
                         if (!string.IsNullOrEmpty(installer.PackageFamilyName) && !packageFamilyNames.Contains(installer.PackageFamilyName))
@@ -223,6 +225,27 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                         {
                             productCodes.Add(installer.ProductCode);
                         }
+
+                        if (installer.AppsAndFeaturesEntries != null)
+                        {
+                            foreach (AppsAndFeatures appsAndFeatures in installer.AppsAndFeaturesEntries)
+                            {
+                                if (!string.IsNullOrEmpty(appsAndFeatures.DisplayVersion) && !appsAndFeaturesEntryVersions.Contains(appsAndFeatures.DisplayVersion))
+                                {
+                                    appsAndFeaturesEntryVersions.Add(appsAndFeatures.DisplayVersion);
+                                }
+
+                                if (!string.IsNullOrEmpty(appsAndFeatures.ProductCode) && !productCodes.Contains(appsAndFeatures.ProductCode))
+                                {
+                                    productCodes.Add(appsAndFeatures.ProductCode);
+                                }
+
+                                if (!string.IsNullOrEmpty(appsAndFeatures.UpgradeCode) && !upgradeCodes.Contains(appsAndFeatures.UpgradeCode))
+                                {
+                                    upgradeCodes.Add(appsAndFeatures.UpgradeCode);
+                                }
+                            }
+                        }
                     }
 
                     SearchVersion searchVersion = new SearchVersion
@@ -231,6 +254,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                         Channel = extended.Channel,
                         PackageFamilyNames = packageFamilyNames.Count > 0 ? packageFamilyNames : null,
                         ProductCodes = productCodes.Count > 0 ? productCodes : null,
+                        AppsAndFeaturesEntryVersions = appsAndFeaturesEntryVersions.Count > 0 ? appsAndFeaturesEntryVersions : null,
+                        UpgradeCodes = upgradeCodes.Count > 0 ? upgradeCodes : null,
                     };
 
                     response.Add(new ManifestSearchResponse(

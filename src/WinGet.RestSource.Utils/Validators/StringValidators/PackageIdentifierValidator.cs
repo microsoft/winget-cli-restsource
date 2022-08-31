@@ -11,7 +11,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.StringValidators
     /// </summary>
     public class PackageIdentifierValidator : ApiStringValidator
     {
-        private const string Pattern = "^[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}(\\.[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}){1,3}$";
+        private const string Pattern = "^[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}(\\.[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}){1,7}$";
         private const uint Max = 128;
 
         /// <summary>

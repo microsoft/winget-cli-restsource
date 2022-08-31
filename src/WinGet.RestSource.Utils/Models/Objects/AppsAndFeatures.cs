@@ -49,7 +49,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <summary>
         /// Gets or sets DisplayVersion.
         /// </summary>
-        [DisplayVersionValidator]
+        [AppsAndFeaturesEntryVersionValidator]
         public string DisplayVersion { get; set; }
 
         /// <summary>

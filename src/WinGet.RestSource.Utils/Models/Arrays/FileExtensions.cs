@@ -17,7 +17,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Arrays
     {
         private const bool Nullable = true;
         private const bool Unique = true;
-        private const uint Max = 256;
+        private const uint Max = 512;
         private static readonly Type Validator = typeof(FileExtensionsValidator);
 
         /// <summary>
