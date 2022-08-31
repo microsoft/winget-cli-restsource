@@ -235,7 +235,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                                     appsAndFeaturesEntryVersions.Add(appsAndFeatures.DisplayVersion);
                                 }
 
-                                if (!string.IsNullOrEmpty(appsAndFeatures.ProductCode) && !upgradeCodes.Contains(appsAndFeatures.ProductCode))
+                                if (!string.IsNullOrEmpty(appsAndFeatures.ProductCode) && !productCodes.Contains(appsAndFeatures.ProductCode))
                                 {
                                     productCodes.Add(appsAndFeatures.ProductCode);
                                 }
@@ -245,11 +245,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                                     upgradeCodes.Add(appsAndFeatures.UpgradeCode);
                                 }
                             }
-                        }
-
-                        if (!string.IsNullOrEmpty(installer.ProductCode) && !productCodes.Contains(installer.ProductCode))
-                        {
-                            productCodes.Add(installer.ProductCode);
                         }
                     }
 
