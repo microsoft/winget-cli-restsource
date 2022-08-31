@@ -53,7 +53,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets InstallerSha256.
         /// </summary>
-        [InstallerSha256Validator]
+        [Sha256Validator]
         public string InstallerSha256 { get; set; }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets SignatureSha256.
         /// </summary>
-        [SignatureSha256Validator]
+        [Sha256Validator]
         public string SignatureSha256 { get; set; }
 
         /// <summary>

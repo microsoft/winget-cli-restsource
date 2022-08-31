@@ -30,7 +30,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public string RelativeFilePath { get; set; }
 
         /// <summary>
-        /// Gets or sets DocumentUrl.
+        /// Gets or sets PortableCommandAlias.
         /// </summary>
         [PortableCommandAliasValidator]
         public string PortableCommandAlias { get; set; }

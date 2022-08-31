@@ -11,7 +11,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.StringValidators
     /// </summary>
     public class ProtocolsValidator : ApiStringValidator
     {
-        private const string Pattern = "^[a-z][-a-z0-9\\.\\+]*$";
         private const uint Max = 2048;
 
         /// <summary>
@@ -19,7 +18,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.StringValidators
         /// </summary>
         public ProtocolsValidator()
         {
-            this.MatchPattern = Pattern;
             this.MaxLength = Max;
         }
     }

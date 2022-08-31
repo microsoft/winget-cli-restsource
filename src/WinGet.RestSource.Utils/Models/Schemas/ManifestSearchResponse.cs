@@ -212,6 +212,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                 {
                     PackageFamilyNames packageFamilyNames = new PackageFamilyNames();
                     ProductCodes productCodes = new ProductCodes();
+                    ProductCodes upgradeCodes = new ProductCodes();
                     AppsAndFeaturesEntryVersions appsAndFeaturesEntryVersions = new AppsAndFeaturesEntryVersions();
                     foreach (Installer installer in extended.Installers)
                     {
@@ -233,7 +234,22 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                                 {
                                     appsAndFeaturesEntryVersions.Add(appsAndFeatures.DisplayVersion);
                                 }
+
+                                if (!string.IsNullOrEmpty(appsAndFeatures.ProductCode) && !upgradeCodes.Contains(appsAndFeatures.ProductCode))
+                                {
+                                    productCodes.Add(appsAndFeatures.ProductCode);
+                                }
+
+                                if (!string.IsNullOrEmpty(appsAndFeatures.UpgradeCode) && !upgradeCodes.Contains(appsAndFeatures.UpgradeCode))
+                                {
+                                    upgradeCodes.Add(appsAndFeatures.UpgradeCode);
+                                }
                             }
+                        }
+
+                        if (!string.IsNullOrEmpty(installer.ProductCode) && !productCodes.Contains(installer.ProductCode))
+                        {
+                            productCodes.Add(installer.ProductCode);
                         }
                     }
 
@@ -244,6 +260,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                         PackageFamilyNames = packageFamilyNames.Count > 0 ? packageFamilyNames : null,
                         ProductCodes = productCodes.Count > 0 ? productCodes : null,
                         AppsAndFeaturesEntryVersions = appsAndFeaturesEntryVersions.Count > 0 ? appsAndFeaturesEntryVersions : null,
+                        UpgradeCodes = upgradeCodes.Count > 0 ? upgradeCodes : null,
                     };
 
                     response.Add(new ManifestSearchResponse(

@@ -12,7 +12,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.StringValidators
     public class InstallationMetadataFileRelativeFilePathValidator : ApiStringValidator
     {
         private const bool Nullable = false;
-        private const uint Max = 512;
+        private const uint Max = 2048;
         private const uint Min = 1;
 
         /// <summary>

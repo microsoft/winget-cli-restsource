@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="InvocationParameterValidator.cs" company="Microsoft Corporation">
+// <copyright file="Sha256Validator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -7,22 +7,20 @@
 namespace Microsoft.WinGet.RestSource.Utils.Validators.StringValidators
 {
     /// <summary>
-    /// InvocationParameterValidator.
+    /// SignatureSha256Validator.
     /// </summary>
-    public class InvocationParameterValidator : ApiStringValidator
+    public class Sha256Validator : ApiStringValidator
     {
         private const bool Nullable = true;
-        private const uint Max = 2048;
-        private const uint Min = 1;
+        private const string Pattern = "^[A-Fa-f0-9]{64}$";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvocationParameterValidator"/> class.
+        /// Initializes a new instance of the <see cref="Sha256Validator"/> class.
         /// </summary>
-        public InvocationParameterValidator()
+        public Sha256Validator()
         {
             this.AllowNull = Nullable;
-            this.MaxLength = Max;
-            this.MinLength = Min;
+            this.MatchPattern = Pattern;
         }
     }
 }

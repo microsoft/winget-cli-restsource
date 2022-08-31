@@ -31,9 +31,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public string RelativeFilePath { get; set; }
 
         /// <summary>
-        /// Gets or sets DocumentUrl.
+        /// Gets or sets FileSha256.
         /// </summary>
-        [SignatureSha256Validator]
+        [Sha256Validator]
         public string FileSha256 { get; set; }
 
         /// <summary>

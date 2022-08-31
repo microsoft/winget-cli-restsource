@@ -94,7 +94,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (FileSha256: this.DefaultInstallLocation, this.InstallationMetadataFiles).GetHashCode();
+            return (this.DefaultInstallLocation, this.InstallationMetadataFiles).GetHashCode();
         }
 
         /// <inheritdoc/>
