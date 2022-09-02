@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ExpectedReturnCodeResponseValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -17,6 +17,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
         private List<string> enumList = new List<string>
         {
             "packageInUse",
+            "packageInUseByApplication",
             "installInProgress",
             "fileInUse",
             "missingDependency",
