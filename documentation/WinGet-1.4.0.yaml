@@ -938,6 +938,7 @@ components:
       type: string
       enum:
         - packageInUse
+        - packageInUseByApplication
         - installInProgress
         - fileInUse
         - missingDependency
