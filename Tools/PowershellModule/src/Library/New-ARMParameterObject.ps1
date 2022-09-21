@@ -138,8 +138,85 @@ Function New-ARMParameterObject
     }
     PROCESS
     {   
+        Write-Verbose -Message "Validating that the inputs for the AppInsights template are not null." 
+        if(!($AppInsightsName -and $ParameterAppInsightsPath -and $TemplateAppInsightsPath -and $JSONSchema -and $JSONContentVersion))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
         Write-Verbose -Message "Validating that the inputs for the Keyvault template are not null." 
         if(!($KeyVaultName -and $ParameterKeyVaultPath -and $TemplateAppInsightsPath -and $JSONSchema -and $JSONContentVersion -and $KeyVaultName -and $KeyVaultSKU -and $AzObjectID -and $AzTenantID))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the StorageAccount template are not null." 
+        if(!($StorageAccountName -and $ParameterStorageAccountPath -and $TemplateStorageAccountPath -and $JSONSchema -and $JSONContentVersion -and $Region -and $StorageAccountName -and $StorageAccountPerformance))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the asp template are not null." 
+        if(!($aspName -and $ParameterASPPath -and $TemplateASPPath -and $JSONSchema -and $JSONContentVersion -and $aspName -and $Region -and $ASPSKU))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBAccount template are not null." 
+        if(!($CDBAccountName -and $ParameterCDBAccountPath -and $TemplateCDBAccountPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CosmosDBAEnableFreeTier -and $PrimaryRegionName -and $SecondaryRegionName))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBDatabase template are not null." 
+        if(!($CDBDatabaseName -and $ParameterCDBPath -and $TemplateCDBPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CDBDatabaseName))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBContainer template are not null." 
+        if(!($CDBContainerName -and $ParameterCDBContainerPath -and $TemplateCDBContainerPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CDBDatabaseName -and $CDBContainerName))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
+        Write-Verbose -Message "Validating that the inputs for the Function template are not null." 
+        if(!($FunctionName -and $ParameterFunctionPath -and $TemplateFunctionPath -and $JSONSchema -and $JSONContentVersion -and $AzKVStorageSecretName -and $Region -and $CDBDatabaseName -and $CDBContainerName -and $aspName -and $FunctionName -and $KeyVaultName -and $AppInsightsName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
