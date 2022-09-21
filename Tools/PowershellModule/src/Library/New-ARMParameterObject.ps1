@@ -123,12 +123,13 @@ Function New-ARMParameterObject
 
         if ($AzContext.Account.type -eq "User")
         {
-            $AzObjectID = $(Get-AzADUser -UserPrincipalName $AzContext.Account.ID).Id
+            $AzObjectID = $(Get-AzADUser -SignedIn).Id
         }
         else
         {
             $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         }
+
         Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
         
         ## This is specific to the JSON file creation
@@ -136,7 +137,18 @@ Function New-ARMParameterObject
         $JSONSchema         = "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
     }
     PROCESS
-    {    
+    {   
+        Write-Verbose -Message "Validating that the inputs for the Keyvault template are not null." 
+        if(!($KeyVaultName -and $ParameterKeyVaultPath -and $TemplateAppInsightsPath -and $JSONSchema -and $JSONContentVersion -and $KeyVaultName -and $KeyVaultSKU -and $AzObjectID -and $AzTenantID))
+        {
+            Write-Verbose -Message "    Required values are null"
+            Write-Error -Message "    Required values are null..."
+        }
+        else 
+        {
+            Write-Verbose -Message "    inputs are not null."
+        }
+
         ## Creates a PowerShell object array to contain the details of the Parameter files.
         $ARMObjects = @(
             @{  ObjectType = "AppInsight"
