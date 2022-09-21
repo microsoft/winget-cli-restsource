@@ -183,7 +183,7 @@ Function New-ARMParameterObject
         }
 
         Write-Verbose -Message "Validating that the inputs for the CosmosDBAccount template are not null." 
-        if(!($CDBAccountName -and $ParameterCDBAccountPath -and $TemplateCDBAccountPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CosmosDBAEnableFreeTier -and $PrimaryRegionName -and $SecondaryRegionName))
+        if(!($CDBAccountName -and $ParameterCDBAccountPath -and $TemplateCDBAccountPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $null -ne $CosmosDBAEnableFreeTier -and $PrimaryRegionName -and $SecondaryRegionName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
