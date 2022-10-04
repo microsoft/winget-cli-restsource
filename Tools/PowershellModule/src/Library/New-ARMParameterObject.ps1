@@ -7,8 +7,8 @@ Function New-ARMParameterObject
     Creates the parameter files, and an object which points to both the created parameter and template files.
 
     .DESCRIPTION
-    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once created it'll 
-    output the parameter files into a *.json file that can be used in combination with with template files to build Azure 
+    Creates a new PowerShell object that contains the Azure Resource type, name, and parameter values. Once created it'll
+    output the parameter files into a *.json file that can be used in combination with with template files to build Azure
     resources required for hosting a Windows Package Manager REST source. Returns the PowerShell object.
 
     .PARAMETER ParameterFolderPath
@@ -16,9 +16,6 @@ Function New-ARMParameterObject
 
     .PARAMETER TemplateFolderPath
     Path to the directory containing the Template files.
-
-    .PARAMETER Index
-    [Optional] The suffix that will be added to each name and file names.
 
     .PARAMETER Name
     The name of the objects to be created.
@@ -53,11 +50,11 @@ Function New-ARMParameterObject
         $FunctionName       = $Name
         $FrontDoorName      = $Name
 
-        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled 
+        ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled
         ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
-        
+
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
@@ -91,7 +88,7 @@ Function New-ARMParameterObject
                 ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
                 $CosmosDBACapabilities     = "[]"
             }
-            "Basic" { 
+            "Basic" {
                 $KeyVaultSKU  = "Standard"
                 $StorageAccountPerformance = "Standard_GRS"
                 $ASPSKU = "S1"
@@ -111,10 +108,10 @@ Function New-ARMParameterObject
         $PrimaryRegionName   = $(Get-AzLocation).Where({$_.Location -eq $Region}).DisplayName
         $SecondaryRegion     = Get-PairedAzureRegion -Region $Region
         $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $SecondaryRegion}).DisplayName
-        
+
         ## The name of the Secret that will be created in the Azure Keyvault - Do not change
         $AzKVStorageSecretName = "AzStorageAccountKey"
-        
+
         ## This is the Azure Key Vault Key used to store the Connection String to the Storage Account
         Write-Verbose -Message "Retrieving the Azure Tenant and User Id Information"
         $AzContext = $(Get-AzContext)
@@ -131,97 +128,97 @@ Function New-ARMParameterObject
         }
 
         Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
-        
+
         ## This is specific to the JSON file creation
         $JSONContentVersion = "1.0.0.0"
         $JSONSchema         = "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
     }
     PROCESS
-    {   
-        Write-Verbose -Message "Validating that the inputs for the AppInsights template are not null." 
+    {
+        Write-Verbose -Message "Validating that the inputs for the AppInsights template are not null."
         if(!($AppInsightsName -and $ParameterAppInsightsPath -and $TemplateAppInsightsPath -and $JSONSchema -and $JSONContentVersion))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the Keyvault template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the Keyvault template are not null."
         if(!($KeyVaultName -and $ParameterKeyVaultPath -and $TemplateAppInsightsPath -and $JSONSchema -and $JSONContentVersion -and $KeyVaultName -and $KeyVaultSKU -and $AzObjectID -and $AzTenantID))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the StorageAccount template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the StorageAccount template are not null."
         if(!($StorageAccountName -and $ParameterStorageAccountPath -and $TemplateStorageAccountPath -and $JSONSchema -and $JSONContentVersion -and $Region -and $StorageAccountName -and $StorageAccountPerformance))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the asp template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the asp template are not null."
         if(!($aspName -and $ParameterASPPath -and $TemplateASPPath -and $JSONSchema -and $JSONContentVersion -and $aspName -and $Region -and $ASPSKU))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the CosmosDBAccount template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBAccount template are not null."
         if(!($CDBAccountName -and $ParameterCDBAccountPath -and $TemplateCDBAccountPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $null -ne $CosmosDBAEnableFreeTier -and $PrimaryRegionName -and $SecondaryRegionName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the CosmosDBDatabase template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBDatabase template are not null."
         if(!($CDBDatabaseName -and $ParameterCDBPath -and $TemplateCDBPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CDBDatabaseName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the CosmosDBContainer template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the CosmosDBContainer template are not null."
         if(!($CDBContainerName -and $ParameterCDBContainerPath -and $TemplateCDBContainerPath -and $JSONSchema -and $JSONContentVersion -and $CDBAccountName -and $CDBDatabaseName -and $CDBContainerName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
 
-        Write-Verbose -Message "Validating that the inputs for the Function template are not null." 
+        Write-Verbose -Message "Validating that the inputs for the Function template are not null."
         if(!($FunctionName -and $ParameterFunctionPath -and $TemplateFunctionPath -and $JSONSchema -and $JSONContentVersion -and $AzKVStorageSecretName -and $Region -and $CDBDatabaseName -and $CDBContainerName -and $aspName -and $FunctionName -and $KeyVaultName -and $AppInsightsName))
         {
             Write-Verbose -Message "    Required values are null"
             Write-Error -Message "    Required values are null..."
         }
-        else 
+        else
         {
             Write-Verbose -Message "    inputs are not null."
         }
@@ -250,7 +247,7 @@ Function New-ARMParameterObject
                     '$Schema' = $JSONSchema
                     contentVersion = $JSONContentVersion
                     Parameters = @{
-                        name            = @{ 
+                        name            = @{
                             value = $KeyVaultName
                             type  = "string"
                         }
@@ -313,11 +310,11 @@ Function New-ARMParameterObject
                     Parameters = @{
                         name = @{ value = $CDBAccountName }
                         enableFreeTier = @{ value = $CosmosDBAEnableFreeTier }
-                        tags = @{ 
+                        tags = @{
                             value = @{
                                 defaultExperience = "Core (SQL)"
                                 CosmosAccountType = "Production"
-                            } 
+                            }
                         }
                         consistencyPolicy = @{
                             value = @{
@@ -459,7 +456,7 @@ Function New-ARMParameterObject
             #     ObjectName = $FrontDoorName
             #     ParameterPath  = "$ParameterFrontDoorPath"
             #     TemplatePath   = "$TemplateFrontDoorPath"
-            #     Error      = "" 
+            #     Error      = ""
             #     Parameters = @{
             #         '$Schema' = $JSONSchema
             #         contentVersion = $JSONContentVersion
@@ -539,7 +536,7 @@ Function New-ARMParameterObject
             #                             forwardingProtocol  = "HttpsOnly"
             #                             backendPoolName     = "api"
             #                         }
-            #                     }    
+            #                     }
             #                 )
             #             }
             #             backendPoolsSettings = @{

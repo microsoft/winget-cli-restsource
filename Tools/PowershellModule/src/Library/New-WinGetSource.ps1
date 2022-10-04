@@ -18,11 +18,8 @@ Function New-WinGetSource
     .PARAMETER Name
     The name of the objects that will be created
 
-    .PARAMETER Index
-    [Optional] The suffix that will be added to each name and file names.
-
     .PARAMETER ResourceGroup
-    [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure 
+    [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure
     resources will be created in in this Resource Group (Default: WinGetRestsource)
 
     .PARAMETER SubscriptionName
@@ -44,7 +41,7 @@ Function New-WinGetSource
     | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager REST source. Uses free-tier options when available. |
     | Basic      | Specifies a basic functioning Windows Package Manager REST source.                                                      |
     | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
-    
+
     (Default: Basic)
 
     .PARAMETER ShowConnectionInstructions
@@ -53,14 +50,14 @@ Function New-WinGetSource
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource"
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
     Azure with the basic level performance.
 
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-    Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command 
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
+    Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command
     to connect the WinGet client to the new REST source after the REST source has been created.
 
     #>
@@ -81,11 +78,11 @@ Function New-WinGetSource
             $WarningMessage = "`n The ""Demo"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
             Write-Warning -Message $WarningMessage
         }
-        
+
         ## Paths to the Parameter and Template folders and the location of the Function Zip
         $ParameterFolderPath = "$ParameterOutput\Parameters"
         $TemplateFolderPath  = "$PSScriptRoot\ARMTemplate"
-        
+
         ## Outlines the Azure Modules that are required for this Function to work.
         $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
@@ -106,14 +103,14 @@ Function New-WinGetSource
         ## Create Folders for the Parameter folder paths
         $ResultParameter = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
 
-        if($ResultParameter) { 
-            Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($ResultParameter.FullName))." 
+        if($ResultParameter) {
+            Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($ResultParameter.FullName))."
         }
-        
+
         ###############################
         ## Connects to Azure, if not already connected.
         Write-Verbose -Message "Testing connection to Azure."
-        
+
         $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
         if(!($Result)) {
             throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
@@ -124,10 +121,10 @@ Function New-WinGetSource
         $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
 
         ###############################
-        ## Create Resource Group 
+        ## Create Resource Group
         Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager REST source."
         Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
-        
+
         #### Verifies ARM Parameters are correct ####
         $Result = Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup -ErrorAction SilentlyContinue -ErrorVariable err
 
@@ -137,7 +134,7 @@ Function New-WinGetSource
                 ResourceGroup = $ResourceGroup
                 Result        = $Result
             }
-            
+
             Write-Error -Message "Testing found an error with the ARM template or parameter files." -TargetObject $ErrReturnObject
         }
 

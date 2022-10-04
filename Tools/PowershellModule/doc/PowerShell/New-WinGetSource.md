@@ -13,7 +13,7 @@ Creates a Windows Package Manager REST source in Azure for storage of Windows Pa
 ## SYNTAX
 
 ```
-New-WinGetSource [-Name] <String> [[-Index] <String>] [[-ResourceGroup] <String>]
+New-WinGetSource [-Name] <String> [[-ResourceGroup] <String>]
  [[-SubscriptionName] <String>] [[-Region] <String>] [[-ParameterOutput] <String>]
  [[-RestSourcePath] <String>] [[-ImplementationPerformance] <String>] [-ShowConnectionInstructions]
  [<CommonParameters>]
@@ -57,21 +57,6 @@ Aliases:
 
 Required: True
 Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Index
-\[Optional\] The suffix that will be added to each name and file names.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

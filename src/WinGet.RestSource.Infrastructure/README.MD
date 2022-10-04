@@ -12,7 +12,6 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | Required | Parameter                  | Description                                                                                                                                |
 |----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | Yes      | Name                       | A string of letters which will be prefixed to your newly created Azure resources.                                                          |
-| Yes      | Index                      | A string of letters or numbers which will be suffix to your newly created Azure resources.                                                 |
 | Yes      | ResourceGroup              | The Resource Group that will be used to contain the Azure resources.                                                                       |
 | No       | SubscriptionName           | The name of the Azure Subscription that will be used to pay for the Azure resources.                                                       |
 | No       | Region                     | The Azure location where the Azure resources will be created. (Default: westus)                                                            |
