@@ -994,7 +994,7 @@ components:
       type: array
       nullable: true
       uniqueItems: true
-      maxItems: 16
+      maxItems: 64
       items:
         type: string
         maxLength: 2048
