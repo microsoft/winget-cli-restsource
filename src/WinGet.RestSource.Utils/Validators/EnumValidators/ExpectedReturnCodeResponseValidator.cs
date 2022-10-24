@@ -23,6 +23,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
             "missingDependency",
             "diskFull",
             "insufficientMemory",
+            "invalidParameter",
             "noNetwork",
             "contactSupport",
             "rebootRequiredToFinish",
@@ -32,6 +33,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
             "alreadyInstalled",
             "downgrade",
             "blockedByPolicy",
+            "systemNotSupported",
             "custom",
         };
 

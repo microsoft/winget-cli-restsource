@@ -944,6 +944,7 @@ components:
         - missingDependency
         - diskFull
         - insufficientMemory
+        - invalidParameter
         - noNetwork
         - contactSupport
         - rebootRequiredToFinish
@@ -953,6 +954,7 @@ components:
         - alreadyInstalled
         - downgrade
         - blockedByPolicy
+        - systemNotSupported
         - custom
         
     ExpectedReturnCode:
