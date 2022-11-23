@@ -213,7 +213,7 @@ paths:
           $ref: '#/components/responses/GenericError'
 
   # Locale API Calls
-  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale:
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locales:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
@@ -256,7 +256,7 @@ paths:
         default:
           $ref: '#/components/responses/GenericError'
 
-  /packages/{PackageIdentifier}/versions/{PackageVersion}/locale/{PackageLocale}:
+  /packages/{PackageIdentifier}/versions/{PackageVersion}/locales/{PackageLocale}:
     parameters:
       - $ref: '#/components/parameters/APIVersion'
       - $ref: '#/components/parameters/PackageIdentifier'
