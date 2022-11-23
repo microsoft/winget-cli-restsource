@@ -22,6 +22,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
     {
         private const bool Nullable = true;
         private const bool Unique = true;
+        private const uint Max = 1024;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Installers"/> class.
@@ -130,6 +131,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.APIArrayName = nameof(Installers);
             this.AllowNull = Nullable;
             this.UniqueItems = Unique;
+            this.MaxItems = Max;
         }
 
         private bool InstallerExists(string installerIdentifier)
