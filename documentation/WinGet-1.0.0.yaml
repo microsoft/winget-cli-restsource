@@ -1191,6 +1191,7 @@ components:
                         type: array
                         items:
                           $ref: '#/components/schemas/InstallerSchema'
+                        maxItems: 1024
 
     # Manifest Search Version Response Schema
     ManifestSearchVersionSchema:
@@ -1343,6 +1344,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/InstallerSchema'
+              maxItems: 1024
 
     InstallerSingleResponseSchema:
       description: Installer Response Schema
