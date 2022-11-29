@@ -61,7 +61,6 @@
     <ProjectReference Include="..\Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj" />
     <ProjectReference Include="..\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj" />
     <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
