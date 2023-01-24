@@ -14,16 +14,8 @@ $WinGetDesktopAppInstallerLibLoaded = $false
 
 ## Loads the binaries from the Desktop App Installer Library - Only if running PowerShell at a specified version
 if ($WinGetModulePsVersion -ge $WinGetLibMinVersionPS51) {
-        if([intPtr]::size -eq 4){
-                ## PowerShell window is in x86 architecture.
-                Add-Type -Path "$PSScriptRoot\Library\HelperLib\x86\Microsoft.Winget.PowershellSupport.dll"
-                $WinGetDesktopAppInstallerLibLoaded = $true
-        }
-        else{
-                ## PowerShell window is in x64 architecture.
-                Add-Type -Path "$PSScriptRoot\Library\HelperLib\x64\Microsoft.Winget.PowershellSupport.dll"
-                $WinGetDesktopAppInstallerLibLoaded = $true
-        }
+        Add-Type -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\Microsoft.Winget.PowershellSupport.dll"
+        $WinGetDesktopAppInstallerLibLoaded = $true
 }
 else {
         throw "Unable to load required binaries. Verify your PowerShell version is greater than $($WinGetLibMinVersionPS51.ToString())."
