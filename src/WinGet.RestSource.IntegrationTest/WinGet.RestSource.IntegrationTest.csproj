@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <AssemblyName>Microsoft.WinGet.RestSource.IntegrationTest</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.IntegrationTest</RootNamespace>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
