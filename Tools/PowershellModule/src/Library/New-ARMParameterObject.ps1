@@ -299,6 +299,21 @@ Function New-ARMParameterObject
                     }
                 }
             },
+            @{  ObjectType = "AppConfig"
+                ObjectName = $FunctionName
+                ParameterPath  = "$ParameterAppConfigPath"
+                TemplatePath   = "$TemplateAppConfigPath"
+                Error      = ""
+                Parameters = @{
+                    '$Schema' = $JSONSchema
+                    contentVersion = $JSONContentVersion
+                    Parameters = @{
+                        appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
+                        location             = @{ value = $Region               }   # Azure hosting location
+                        #featureFlags         = @{ value = $appConfigFeatureFlag }   # Feature Flag
+                    }
+                }
+            },
             @{  ObjectType = "StorageAccount"
                 ObjectName = $StorageAccountName
                 ParameterPath  = "$ParameterStorageAccountPath"
@@ -484,21 +499,6 @@ Function New-ARMParameterObject
                         monitoringTenant         = @{ value = $monitoringTenant         }   # unknown
                         monitoringRole           = @{ value = $monitoringRole           }   # unknown
                         monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
-                    }
-                }
-            },
-            @{  ObjectType = "AppConfig"
-                ObjectName = $FunctionName
-                ParameterPath  = "$ParameterAppConfigPath"
-                TemplatePath   = "$TemplateAppConfigPath"
-                Error      = ""
-                Parameters = @{
-                    '$Schema' = $JSONSchema
-                    contentVersion = $JSONContentVersion
-                    Parameters = @{
-                        appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
-                        location             = @{ value = $Region               }   # Azure hosting location
-                        #featureFlags         = @{ value = $appConfigFeatureFlag }   # Feature Flag
                     }
                 }
             }#,
