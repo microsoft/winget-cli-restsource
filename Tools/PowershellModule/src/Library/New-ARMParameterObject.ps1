@@ -49,6 +49,8 @@ Function New-ARMParameterObject
         $CDBAccountName     = $Name
         $FunctionName       = $Name
         $FrontDoorName      = $Name
+        $appConfigName      = $Name
+        $aspGenevaName      = $Name
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled
         ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
@@ -60,6 +62,25 @@ Function New-ARMParameterObject
         $monitoringTenant           = ""
         $monitoringRole             = ""
         $monitoringMetricsAccount   = ""
+
+        ## The values required for the Azure App Config ARM Template
+        $appConfigFeatureFlag   = ""
+
+        ## The values required for the Azure ASP Geneva ARM Template
+        $ASPGenevaSKU                       = ""
+        $ASPGenevaNumOfWorkers              = ""
+        $ASPGenevaKVSubscription            = ""
+        $ASPGenevaKVResourceGroup           = ""
+        $ASPGenevaKVName                    = ""
+        $ASPGenevaCertName                  = ""
+        $ASPGenevaMonitoringTenant          = ""
+        $ASPGenevaMonitoringRole            = ""
+        $ASPGenevaMonitoringMetricsAccount  = ""
+        $ASPGenevaMonitoringGcsEnv          = ""
+        $ASPGenevaMonitoringGcsAccount      = ""
+        $ASPGenevaMonitoringGcsNamespace    = ""
+        $ASPGenevaMonitoringGcsAuthID       = ""
+        $ASPGenevaMonitoringConfigVer       = ""
 
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
@@ -463,6 +484,50 @@ Function New-ARMParameterObject
                         monitoringTenant         = @{ value = $monitoringTenant         }   # unknown
                         monitoringRole           = @{ value = $monitoringRole           }   # unknown
                         monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
+                    }
+                }
+            },
+            @{  ObjectType = "AppConfig"
+                ObjectName = $FunctionName
+                ParameterPath  = "$ParameterAppConfigPath"
+                TemplatePath   = "$TemplateAppConfigPath"
+                Error      = ""
+                Parameters = @{
+                    '$Schema' = $JSONSchema
+                    contentVersion = $JSONContentVersion
+                    Parameters = @{
+                        appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
+                        location             = @{ value = $Region               }   # Azure hosting location
+                        featureFlags         = @{ value = $appConfigFeatureFlag }   # Cosmos Database Name
+                    }
+                }
+            },
+            @{  ObjectType = "ASP_Geneva"
+                ObjectName = $FunctionName
+                ParameterPath  = "$ParameterASPGenevaPath"
+                TemplatePath   = "$TemplateASPGenevaPath"
+                Error      = ""
+                Parameters = @{
+                    '$Schema' = $JSONSchema
+                    contentVersion = $JSONContentVersion
+                    Parameters = @{
+                        aspName                  = @{ value = $AzKVStorageSecretName                }   # Name used to contain the Storage Account connection string in the Key Value
+                        genevaName               = @{ value = $ASPGenevaGenevaName                  }
+                        location                 = @{ value = $Region                               }   # Azure hosting location
+                        skuCode                  = @{ value = $ASPGenevaSKU                         }   # 
+                        numberOfWorkers          = @{ value = $ASPGenevaNumOfWorkers                }
+                        keyVaultSubscription     = @{ value = $ASPGenevaKVSubscription              }
+                        keyVaultResourceGroup    = @{ value = $ASPGenevaKVResourceGroup             }
+                        keyVaultName             = @{ value = $ASPGenevaKVName                      }
+                        genevaCertificateName    = @{ value = $ASPGenevaCertName                    }
+                        monitoringTenant         = @{ value = $ASPGenevaMonitoringTenant            }
+                        monitoringRole           = @{ value = $ASPGenevaMonitoringRole              }
+                        monitoringMetricsAccount = @{ value = $ASPGenevaMonitoringMetricsAccount    }
+                        monitoringGcsEnvironment = @{ value = $ASPGenevaMonitoringGcsEnv            }
+                        monitoringGcsAccount     = @{ value = $ASPGenevaMonitoringGcsAccount        }
+                        monitoringGcsNamespace   = @{ value = $ASPGenevaMonitoringGcsNamespace      }
+                        monitoringGcsAuthID      = @{ value = $ASPGenevaMonitoringGcsAuthID         }
+                        monitoringConfigVersion  = @{ value = $ASPGenevaMonitoringConfigVer         }
                     }
                 }
             }

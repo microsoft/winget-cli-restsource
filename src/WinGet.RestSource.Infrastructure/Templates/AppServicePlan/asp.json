@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "aspName": {
+            "type": "string",
+            "defaultValue": "[concat('asp', uniquestring(resourceGroup().id))]",
+            "metadata": {
+                "description": "App Service Name"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "App Service Deployment Location."
+            }
+        },
+        "skucode": {
+            "type": "string",
+            "defaultValue": "P1V2",
+            "metadata": {
+                "description": "Sku Code for ASP"
+            }
+        },
+        "numberOfWorkers": {
+            "type": "string",
+            "defaultValue": "1",
+            "metadata": {
+                "description": "Number of Workers"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('aspName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('aspName')]",
+                "numberOfWorkers": "[parameters('numberOfWorkers')]",
+                "reserved": false
+            },
+            "sku": {
+                "Name": "[parameters('skuCode')]"
+            }
+        }
+    ],
+    "outputs": {
+        "aspName": {
+            "type": "string",
+            "value": "[parameters('aspName')]"
+        },
+        "aspResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+        }
+    }
+}
