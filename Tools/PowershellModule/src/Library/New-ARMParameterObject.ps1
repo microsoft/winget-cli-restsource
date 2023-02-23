@@ -64,49 +64,49 @@ Function New-ARMParameterObject
         $monitoringMetricsAccount   = ""
 
         ## The values required for the Azure App Config ARM Template
-        $appConfigFeatureFlag   = ""
+        #$appConfigFeatureFlag   = ""
 
         ## The values required for the Azure ASP Geneva ARM Template
-        $ASPGenevaSKU                       = ""
-        $ASPGenevaNumOfWorkers              = ""
-        $ASPGenevaKVSubscription            = ""
-        $ASPGenevaKVResourceGroup           = ""
-        $ASPGenevaKVName                    = ""
-        $ASPGenevaCertName                  = ""
-        $ASPGenevaMonitoringTenant          = ""
-        $ASPGenevaMonitoringRole            = ""
-        $ASPGenevaMonitoringMetricsAccount  = ""
-        $ASPGenevaMonitoringGcsEnv          = ""
-        $ASPGenevaMonitoringGcsAccount      = ""
-        $ASPGenevaMonitoringGcsNamespace    = ""
-        $ASPGenevaMonitoringGcsAuthID       = ""
-        $ASPGenevaMonitoringConfigVer       = ""
+        #$ASPGenevaSKU                       = ""
+        #$ASPGenevaNumOfWorkers              = ""
+        #$ASPGenevaKVSubscription            = ""
+        #$ASPGenevaKVResourceGroup           = ""
+        #$ASPGenevaKVName                    = ""
+        #$ASPGenevaCertName                  = ""
+        #$ASPGenevaMonitoringTenant          = ""
+        #$ASPGenevaMonitoringRole            = ""
+        #$ASPGenevaMonitoringMetricsAccount  = ""
+        #$ASPGenevaMonitoringGcsEnv          = ""
+        #$ASPGenevaMonitoringGcsAccount      = ""
+        #$ASPGenevaMonitoringGcsNamespace    = ""
+        #$ASPGenevaMonitoringGcsAuthID       = ""
+        #$ASPGenevaMonitoringConfigVer       = ""
 
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
         $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
         $TemplateStorageAccountPath = "$TemplateFolderPath\storageaccount.json"
-        #$TemplateASPPath            = "$TemplateFolderPath\asp.json"
+        $TemplateASPPath            = "$TemplateFolderPath\asp.json"
         $TemplateCDBAccountPath     = "$TemplateFolderPath\cosmosdb.json"
         $TemplateCDBPath            = "$TemplateFolderPath\cosmosdb-sql.json"
         $TemplateCDBContainerPath   = "$TemplateFolderPath\cosmosdb-sql-container.json"
         $TemplateFunctionPath       = "$TemplateFolderPath\azurefunction.json"
         $TemplateFrontDoorPath      = "$TemplateFolderPath\frontdoor.json"
         $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
-        $TemplateASPGenevaPath      = "$TemplateFolderPath\asp_geneva.json"
+        #$TemplateASPGenevaPath      = "$TemplateFolderPath\asp_geneva.json"
 
         $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
         $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
         $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount.json"
-        #$ParameterASPPath            = "$ParameterFolderPath\asp.json"
+        $ParameterASPPath            = "$ParameterFolderPath\asp.json"
         $ParameterCDBAccountPath     = "$ParameterFolderPath\cosmosdb.json"
         $ParameterCDBPath            = "$ParameterFolderPath\cosmosdb-sql.json"
         $ParameterCDBContainerPath   = "$ParameterFolderPath\cosmosdb-sql-container.json"
         $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction.json"
         $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor.json"
         $ParameterAppConfigPath      = "$ParameterFolderPath\appconfig.json"
-        $ParameterASPGenevaPath      = "$ParameterFolderPath\aspgeneva.json"
+        #$ParameterASPGenevaPath      = "$ParameterFolderPath\aspgeneva.json"
 
         Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
@@ -498,39 +498,39 @@ Function New-ARMParameterObject
                     Parameters = @{
                         appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
                         location             = @{ value = $Region               }   # Azure hosting location
-                        featureFlags         = @{ value = $appConfigFeatureFlag }   # Cosmos Database Name
+                        #featureFlags         = @{ value = $appConfigFeatureFlag }   # Feature Flag
                     }
                 }
-            },
-            @{  ObjectType = "ASP_Geneva"
-                ObjectName = $FunctionName
-                ParameterPath  = "$ParameterASPGenevaPath"
-                TemplatePath   = "$TemplateASPGenevaPath"
-                Error      = ""
-                Parameters = @{
-                    '$Schema' = $JSONSchema
-                    contentVersion = $JSONContentVersion
-                    Parameters = @{
-                        aspName                  = @{ value = $AzKVStorageSecretName                }   # Name used to contain the Storage Account connection string in the Key Value
-                        genevaName               = @{ value = $ASPGenevaGenevaName                  }
-                        location                 = @{ value = $Region                               }   # Azure hosting location
-                        skuCode                  = @{ value = $ASPGenevaSKU                         }   # 
-                        numberOfWorkers          = @{ value = $ASPGenevaNumOfWorkers                }
-                        keyVaultSubscription     = @{ value = $ASPGenevaKVSubscription              }
-                        keyVaultResourceGroup    = @{ value = $ASPGenevaKVResourceGroup             }
-                        keyVaultName             = @{ value = $ASPGenevaKVName                      }
-                        genevaCertificateName    = @{ value = $ASPGenevaCertName                    }
-                        monitoringTenant         = @{ value = $ASPGenevaMonitoringTenant            }
-                        monitoringRole           = @{ value = $ASPGenevaMonitoringRole              }
-                        monitoringMetricsAccount = @{ value = $ASPGenevaMonitoringMetricsAccount    }
-                        monitoringGcsEnvironment = @{ value = $ASPGenevaMonitoringGcsEnv            }
-                        monitoringGcsAccount     = @{ value = $ASPGenevaMonitoringGcsAccount        }
-                        monitoringGcsNamespace   = @{ value = $ASPGenevaMonitoringGcsNamespace      }
-                        monitoringGcsAuthID      = @{ value = $ASPGenevaMonitoringGcsAuthID         }
-                        monitoringConfigVersion  = @{ value = $ASPGenevaMonitoringConfigVer         }
-                    }
-                }
-            }
+            }#,
+            #@{  ObjectType = "ASP_Geneva"
+            #    ObjectName = $FunctionName
+            #    ParameterPath  = "$ParameterASPGenevaPath"
+            #    TemplatePath   = "$TemplateASPGenevaPath"
+            #    Error      = ""
+            #    Parameters = @{
+            #        '$Schema' = $JSONSchema
+            #        contentVersion = $JSONContentVersion
+            #        Parameters = @{
+            #            aspName                  = @{ value = $AzKVStorageSecretName                }   # Name used to contain the Storage Account connection string in the Key Value
+            #            genevaName               = @{ value = $ASPGenevaGenevaName                  }
+            #            location                 = @{ value = $Region                               }   # Azure hosting location
+            #            skuCode                  = @{ value = $ASPGenevaSKU                         }   # 
+            #            numberOfWorkers          = @{ value = $ASPGenevaNumOfWorkers                }
+            #            keyVaultSubscription     = @{ value = $ASPGenevaKVSubscription              }
+            #            keyVaultResourceGroup    = @{ value = $ASPGenevaKVResourceGroup             }
+            #            keyVaultName             = @{ value = $ASPGenevaKVName                      }
+            #            genevaCertificateName    = @{ value = $ASPGenevaCertName                    }
+            #            monitoringTenant         = @{ value = $ASPGenevaMonitoringTenant            }
+            #            monitoringRole           = @{ value = $ASPGenevaMonitoringRole              }
+            #            monitoringMetricsAccount = @{ value = $ASPGenevaMonitoringMetricsAccount    }
+            #            monitoringGcsEnvironment = @{ value = $ASPGenevaMonitoringGcsEnv            }
+            #            monitoringGcsAccount     = @{ value = $ASPGenevaMonitoringGcsAccount        }
+            #            monitoringGcsNamespace   = @{ value = $ASPGenevaMonitoringGcsNamespace      }
+            #            monitoringGcsAuthID      = @{ value = $ASPGenevaMonitoringGcsAuthID         }
+            #            monitoringConfigVersion  = @{ value = $ASPGenevaMonitoringConfigVer         }
+            #        }
+            #    }
+            #}
         )
 
         ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.
