@@ -1,7 +1,7 @@
 # Template helper to copy PowerShell scripts and all dependencies
 parameters:
  helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netcoreapp3.1'
- templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+ templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
 
 steps:
 - task: CopyFiles@2
