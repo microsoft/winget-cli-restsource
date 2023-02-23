@@ -55,6 +55,12 @@ Function New-ARMParameterObject
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
 
+        ## The values required for Function ARM Template
+        $manifestCacheEndpoint      = ""
+        $monitoringTenant           = ""
+        $monitoringRole             = ""
+        $monitoringMetricsAccount   = ""
+
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
@@ -440,15 +446,19 @@ Function New-ARMParameterObject
                     '$Schema' = $JSONSchema
                     contentVersion = $JSONContentVersion
                     Parameters = @{
-                        storageSecretName = @{ value = $AzKVStorageSecretName }     # Name used to contain the Storage Account connection string in the Key Value
-                        location          = @{ value = $Region                }     # Azure hosting location
-                        cosmosDatabase    = @{ value = $CDBDatabaseName       }     # Cosmos Database Name
-                        cosmosContainer   = @{ value = $CDBContainerName      }     # Cosmos Container Name
-                        serverIdentifier  = @{ value = $aspName               }     # Azure Function Name
-                        functionName      = @{ value = $FunctionName          }     # Azure Function Name
-                        appServiceName    = @{ value = $aspName               }     # Azure App Service Name
-                        keyVaultName      = @{ value = $KeyVaultName          }     # Azure Keyvault Name
-                        appInsightName    = @{ value = $AppInsightsName       }     # Azure App Insights Name
+                        storageSecretName        = @{ value = $AzKVStorageSecretName    }   # Name used to contain the Storage Account connection string in the Key Value
+                        location                 = @{ value = $Region                   }   # Azure hosting location
+                        cosmosDatabase           = @{ value = $CDBDatabaseName          }   # Cosmos Database Name
+                        cosmosContainer          = @{ value = $CDBContainerName         }   # Cosmos Container Name
+                        serverIdentifier         = @{ value = $aspName                  }   # Azure Function Name
+                        functionName             = @{ value = $FunctionName             }   # Azure Function Name
+                        appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
+                        keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
+                        appInsightName           = @{ value = $AppInsightsName          }   # Azure App Insights Name
+                        manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # unknown
+                        monitoringTenant         = @{ value = $monitoringTenant         }   # unknown
+                        monitoringRole           = @{ value = $monitoringRole           }   # unknown
+                        monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
                     }
                 }
             }#,
