@@ -98,6 +98,11 @@ Function New-WinGetSource
         if(!$Result) {
             throw "Unable to run script, missing required PowerShell modules"
         }
+        if(!$(Test-Path -Path $RestSourcePath))
+        {
+            throw "REST Source Function Code is missing in specified path ($RestSourcePath)"
+        }
+
 
         ###############################
         ## Create Folders for the Parameter folder paths
@@ -136,6 +141,7 @@ Function New-WinGetSource
             }
 
             Write-Error -Message "Testing found an error with the ARM template or parameter files." -TargetObject $ErrReturnObject
+            Write-Host $Err[0]
         }
 
 
