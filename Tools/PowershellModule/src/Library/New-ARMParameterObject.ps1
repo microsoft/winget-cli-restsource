@@ -66,22 +66,26 @@ Function New-ARMParameterObject
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
         $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
         $TemplateStorageAccountPath = "$TemplateFolderPath\storageaccount.json"
-        $TemplateASPPath            = "$TemplateFolderPath\asp.json"
+        #$TemplateASPPath            = "$TemplateFolderPath\asp.json"
         $TemplateCDBAccountPath     = "$TemplateFolderPath\cosmosdb.json"
         $TemplateCDBPath            = "$TemplateFolderPath\cosmosdb-sql.json"
         $TemplateCDBContainerPath   = "$TemplateFolderPath\cosmosdb-sql-container.json"
         $TemplateFunctionPath       = "$TemplateFolderPath\azurefunction.json"
         $TemplateFrontDoorPath      = "$TemplateFolderPath\frontdoor.json"
+        $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
+        $TemplateASPGenevaPath      = "$TemplateFolderPath\asp_geneva.json"
 
-        $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights$NameEntryIndex.json"
-        $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault$NameEntryIndex.json"
-        $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount$NameEntryIndex.json"
-        $ParameterASPPath            = "$ParameterFolderPath\asp$NameEntryIndex.json"
-        $ParameterCDBAccountPath     = "$ParameterFolderPath\cosmosdb$NameEntryIndex.json"
-        $ParameterCDBPath            = "$ParameterFolderPath\cosmosdb-sql$NameEntryIndex.json"
-        $ParameterCDBContainerPath   = "$ParameterFolderPath\cosmosdb-sql-container$NameEntryIndex.json"
-        $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction$NameEntryIndex.json"
-        $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor$NameEntryIndex.json"
+        $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
+        $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
+        $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount.json"
+        #$ParameterASPPath            = "$ParameterFolderPath\asp.json"
+        $ParameterCDBAccountPath     = "$ParameterFolderPath\cosmosdb.json"
+        $ParameterCDBPath            = "$ParameterFolderPath\cosmosdb-sql.json"
+        $ParameterCDBContainerPath   = "$ParameterFolderPath\cosmosdb-sql-container.json"
+        $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction.json"
+        $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor.json"
+        $ParameterAppConfigPath      = "$ParameterFolderPath\appconfig.json"
+        $ParameterASPGenevaPath      = "$ParameterFolderPath\aspgeneva.json"
 
         Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
@@ -461,106 +465,7 @@ Function New-ARMParameterObject
                         monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
                     }
                 }
-            }#,
-            # @{  ObjectType = "FrontDoor"      ## Requires a CName entry be created for the frontend endpoint.
-            #     ObjectName = $FrontDoorName
-            #     ParameterPath  = "$ParameterFrontDoorPath"
-            #     TemplatePath   = "$TemplateFrontDoorPath"
-            #     Error      = ""
-            #     Parameters = @{
-            #         '$Schema' = $JSONSchema
-            #         contentVersion = $JSONContentVersion
-            #         Parameters = @{
-            #             name              = @{ value = $FrontDoorName }
-            #             frontendEndpoints = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "$($Name + "azurefd")"
-            #                         properties = @{
-            #                             hostName = "$($Name + "azurefd").azurefd.net"
-            #                             sessionAffinityEnabledState = "Disabled"
-            #                             sessionAffinityTtlSeconds   = 0
-            #                             resourceState               = "Enabled"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             healthProbeSettings = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "healthProbe-fiveSecond"
-            #                         properties = @{
-            #                             intervalInSeconds   = 5
-            #                             path                = "/"
-            #                             protocol            = "Https"
-            #                             resourceState       = "Enabled"
-            #                             enabledState        = "Enabled"
-            #                             healthProbeMethod   = "Head"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             loadBalancingSettings = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "loadBalancing-tenSample"
-            #                         properties = @{
-            #                             additionalLatencyMilliseconds = 1000
-            #                             sampleSize                    = 10
-            #                             successfulSamplesRequired     = 5
-            #                             resourceState                 = "Enabled"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             backendPools = @{
-            #                 value = @(
-            #                     @{
-            #                         name     = "api"
-            #                         backEnds = @(
-            #                             @{
-            #                                 address           = "$FunctionName.azurewebsites.net"
-            #                                 httpPort          = 80
-            #                                 httpsPort         = 443
-            #                                 priority          = 1
-            #                                 weight            = 50
-            #                                 backendHostHeader = "$FunctionName.azurewebsites.net"
-            #                                 enabledState      = "Enabled"
-            #                             }
-            #                         )
-            #                         HealthProbeSettingsName   = "healthProbe-fiveSecond"
-            #                         loadBalancingSettingsName = "loadBalancing-tenSample"
-            #                     }
-            #                 )
-            #             }
-            #             routingRules = @{
-            #                 value = @(
-            #                     @{
-            #                         name                = "api-rule"
-            #                         frontendEndpoint    = "$($Name + "azurefd")"
-            #                         acceptedProtocols   = @( "Https" )
-            #                         patternsToMatch     = @( "/api/*" )
-            #                         enabledState        = "Enabled"
-            #                         routeConfiguration  = @{
-            #                             odataType           = "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration"
-            #                             forwardingProtocol  = "HttpsOnly"
-            #                             backendPoolName     = "api"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             backendPoolsSettings = @{
-            #                 value = @{
-            #                     enforceCertificateNameCheck = "Enabled"
-            #                     sendRecvTimeoutSeconds      = 30
-            #                 }
-            #             }
-            #             enabledState = @{
-            #                 value = "Enabled"
-            #             }
-            #         }
-            #     }
-            # }
+            }
         )
 
         ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.
