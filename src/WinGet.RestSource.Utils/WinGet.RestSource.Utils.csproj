@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
