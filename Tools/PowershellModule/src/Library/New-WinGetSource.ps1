@@ -170,6 +170,8 @@ Function New-WinGetSource
             #### Instructions on how to add the REST source to your Windows Package Manager Client
             Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:"
             Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
+            Write-Verbose -Message "Use the following command to register the new REST source with your Windows Package Manager Client:"
+            Write-Verbose -Message "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
 
             #### For more information about how to use the solution, visit the aka.ms link.
             Write-Information -MessageData "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"
