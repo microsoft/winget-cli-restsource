@@ -92,7 +92,7 @@ Function New-WinGetSource
         ## Validates that the Azure Modules are installed
         Write-Verbose -Message "Testing required PowerShell modules are installed."
 
-        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions", "Az.Storage")
         $Result = Test-PowerShellModuleExist -Modules $RequiredModules
 
         if(!$Result) {

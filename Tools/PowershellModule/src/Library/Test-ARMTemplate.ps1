@@ -32,6 +32,7 @@ Function Test-ARMTemplate
     BEGIN
     {
         Write-Information -MessageData "Verifying the ARM Resource Templates and Parameters are valid:"
+        Write-Verbose -Message "Verifying the ARM Resource Templates and Parameters are valid:"
         $Return = @()
     }
     PROCESS
