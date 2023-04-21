@@ -128,6 +128,11 @@ Function New-WinGetSource
         #### Verifies ARM Parameters are correct ####
         $Result = Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup -ErrorAction SilentlyContinue -ErrorVariable err
 
+        Write-Output $Result
+        Write-Output "---ERROR---"
+        Write-Output $err
+        Write-Output "-----------"
+
         if($err){
             $ErrReturnObject = @{
                 ARMObjects    = $ARMObjects
