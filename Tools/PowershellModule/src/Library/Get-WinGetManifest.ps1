@@ -277,10 +277,18 @@ Function Get-WinGetManifest
                         if($WinGetDesktopAppInstallerLibLoaded) {
                             Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
                             if($Json){
+                                Write-Verbose "JSON"
                                 $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
                             }
                             else{
-                                $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                                Write-Verbose "Other"
+                                try {
+                                    $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                                }
+                                catch {
+                                    Write-Verbose "Attempt to convert YAML to JSON failed."
+                                }
+                                
                             }
 
                             Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
