@@ -36,7 +36,7 @@ jobs:
   displayName: 'Static Analysis'
   timeoutInMinutes: 60
   pool:
-    vmImage: windows-2019
+    vmImage: windows-latest
     demands:
     - msbuild
     - visualstudio
