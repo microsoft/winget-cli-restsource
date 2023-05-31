@@ -14,6 +14,10 @@ pr:
     - pipelines/*
     - src/*
 
+variables:
+- name: DisablePipelineConfigDetector
+  value: true
+
 jobs:
 - job: 'BuildPublishTest'
   displayName: 'Build Publish & Tests'
