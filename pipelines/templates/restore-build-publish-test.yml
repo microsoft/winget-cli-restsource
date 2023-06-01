@@ -23,7 +23,6 @@ steps:
     solution: '**\*.sln'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
-    vsVersion: 17.0
     clean: true
 
 ## Publish
