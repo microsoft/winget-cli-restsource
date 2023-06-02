@@ -44,6 +44,7 @@ jobs:
   displayName: 'Static Analysis'
   timeoutInMinutes: 60
   pool:
+    name: 'Azure Pipelines'
     vmImage: windows-latest
     demands:
     - msbuild
