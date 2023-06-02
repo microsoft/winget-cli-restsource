@@ -73,8 +73,8 @@ jobs:
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-semmle.Semmle@0
     displayName: 'Run Semmle'
     inputs:
-      cleanupBuildCommands: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln /t:Clean'
-      buildCommands: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln'
+      cleanupBuildCommands: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln /t:Clean'
+      buildCommands: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\msbuild.exe" $(Build.SourcesDirectory)\src\WinGet.RestSource.sln'
 
   # Publish SDT Logs
   - template: templates/copy-and-publish.yml
