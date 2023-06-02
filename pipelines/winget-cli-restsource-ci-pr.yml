@@ -14,11 +14,19 @@ pr:
     - pipelines/*
     - src/*
 
+# TODO: The forked pr builds need to have the same permission as non-forked ones to access
+#       project's internal nuget feed. Remove DisablePipelineConfigDetector variable when
+#       a long term fix is available.
+variables:
+- name: DisablePipelineConfigDetector
+  value: true
+
 jobs:
 - job: 'BuildPublishTest'
   displayName: 'Build Publish & Tests'
   timeoutInMinutes: 60
   pool:
+    name: 'Azure Pipelines'
     vmImage: windows-latest
     demands:
     - msbuild
@@ -36,7 +44,8 @@ jobs:
   displayName: 'Static Analysis'
   timeoutInMinutes: 60
   pool:
-    vmImage: windows-2019
+    name: 'Azure Pipelines'
+    vmImage: windows-latest
     demands:
     - msbuild
     - visualstudio
