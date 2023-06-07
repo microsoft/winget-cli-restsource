@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.4.0
+  version: 1.5.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -681,6 +681,12 @@ components:
       pattern: "^([Hh][Tt][Tt][Pp][Ss]?)://"
       maxLength: 2048
 
+    RequiredUrl:
+      description: URL type. Non null.
+      type: string
+      pattern: "^([Hh][Tt][Tt][Pp][Ss]?)://"
+      maxLength: 2048
+
     Tag:
       description: Package moniker or tag
       type: string
@@ -764,6 +770,67 @@ components:
       maxItems: 256
       items:
         $ref: '#/components/schemas/Documentation'
+
+    Icon:
+      description: One Icon entry.
+      type: object
+      properties:
+        IconUrl:
+          description: The icon url.
+          $ref: '#/components/schemas/RequiredUrl'
+        IconFileType:
+          description: The icon file type.
+          type: string
+          enum:
+            - png
+            - jpeg
+            - ico
+        IconResolution:
+          description: The optional icon resolution.
+          type: string
+          nullable: true
+          enum:
+            - custom
+            - 16x16
+            - 20x20
+            - 24x24
+            - 30x30
+            - 32x32
+            - 36x36
+            - 40x40
+            - 48x48
+            - 60x60
+            - 64x64
+            - 72x72
+            - 80x80
+            - 96x96
+            - 256x256
+        IconTheme:
+          description: The optional icon theme.
+          type: string
+          nullable: true
+          enum:
+            - default
+            - light
+            - dark
+            - highContrast
+        IconSha256:
+          description: The optional Sha256 of the icon.
+          type: string
+          nullable: true
+          pattern: "^[A-Fa-f0-9]{64}$"
+      required:
+        - IconUrl
+        - IconFileType
+
+    Icons:
+      description: List of icons.
+      type: array
+      nullable: true
+      uniqueItems: true
+      maxItems: 1024
+      items:
+        $ref: '#/components/schemas/Icon'
 
     Channel:
       description: This field is not supported by the client yet. The client will set this to null when processing.
@@ -1592,6 +1659,10 @@ components:
           properties:
             Documentations:
               $ref: '#/components/schemas/Documentations'
+        - type: object
+          properties:
+            Icons:
+              $ref: '#/components/schemas/Icons'
       required:
         - PackageLocale
 
