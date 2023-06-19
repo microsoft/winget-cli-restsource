@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Locale.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -162,6 +162,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public Documentations Documentations { get; set; }
 
         /// <summary>
+        /// Gets or sets icons.
+        /// </summary>
+        public Icons Icons { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -207,6 +212,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.PurchaseUrl = obj.PurchaseUrl;
             this.InstallationNotes = obj.InstallationNotes;
             this.Documentations = obj.Documentations;
+            this.Icons = obj.Icons;
         }
 
         /// <inheritdoc />
@@ -233,6 +239,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             if (this.Documentations != null)
             {
                 ApiDataValidator.Validate(this.Documentations, results);
+            }
+
+            if (this.Icons != null)
+            {
+                ApiDataValidator.Validate(this.Icons, results);
             }
 
             // Return Results
@@ -272,7 +283,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.Agreements, other.Agreements)
                    && Equals(this.PurchaseUrl, other.PurchaseUrl)
                    && Equals(this.InstallationNotes, other.InstallationNotes)
-                   && Equals(this.Documentations, other.Documentations);
+                   && Equals(this.Documentations, other.Documentations)
+                   && Equals(this.Icons, other.Icons);
         }
 
         /// <inheritdoc />
@@ -306,6 +318,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.PurchaseUrl);
             hashCode.Add(this.InstallationNotes);
             hashCode.Add(this.Documentations);
+            hashCode.Add(this.Icons);
             return hashCode.ToHashCode();
         }
     }

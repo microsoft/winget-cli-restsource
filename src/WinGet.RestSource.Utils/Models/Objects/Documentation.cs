@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Documentation.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -60,7 +60,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <summary>
         /// This updates the current Documentation to match the other Documentation.
         /// </summary>
-        /// <param name="documentation">Package Dependency.</param>
+        /// <param name="documentation">Documentation.</param>
         public void Update(Documentation documentation)
         {
             this.DocumentLabel = documentation.DocumentLabel;
