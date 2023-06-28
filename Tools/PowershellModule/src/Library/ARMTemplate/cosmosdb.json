@@ -1,0 +1,181 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String",
+            "metadata": {
+                "description": "Name."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location."
+            }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata":{
+                "description": "Tags."
+            }
+        },
+        "kind": {
+            "type": "string",
+            "defaultValue": "GlobalDocumentDB",
+            "metadata": {
+                "description": "Kind."
+            }
+        },
+        "identity": {
+            "type": "object",
+            "defaultValue": {
+                "type": "None"
+            },
+            "metadata":{
+                "description": "Tags."
+            }
+        },
+        "publicNetworkAccess": {
+            "type": "string",
+            "defaultValue": "Enabled",
+            "metadata": {
+                "description": "Public Network Access."
+            }
+        },
+        "enableAutomaticFailover": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable Automatic Failover."
+            }
+        },
+        "enableMultipleWriteLocations": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable Multiple Write Locations."
+            }
+        },
+        "isVirtualNetworkFilterEnabled": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Is Virtual Network Filter Enabled."
+            }
+        },
+        "virtualNetworkRules": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata":{
+                "description": "Virtual Network Rules."
+            }
+        },
+        "disableKeyBasedMetadataWriteAccess": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Disable Key Based Metadata Write Access."
+            }
+        },
+        "enableFreeTier": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Free Tier."
+            }
+        },
+        "enableAnalyticalStorage": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Analytical Storage."
+            }
+        },
+        "createMode": {
+            "type": "string",
+            "defaultValue": "Default",
+            "metadata": {
+                "description": "Create Mode."
+            }
+        },
+        "databaseAccountOfferType": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "metadata": {
+                "description": "Database Account Offer Type."
+            }
+        },
+        "consistencyPolicy": {
+            "type": "object",
+            "metadata": {
+                "description": "Consistency Policy."
+            }
+        },
+        "locations": {
+            "type": "array",
+            "metadata": {
+                "description": "Consistency Policy."
+            }
+        },
+        "cors": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata":{
+                "description": "CORS."
+            }
+        },
+        "capabilities": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata":{
+                "description": "Capabilities."
+            }
+        },
+        "ipRules": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata":{
+                "description": "IP Rules."
+            }
+        },
+        "backupPolicy": {
+            "type": "object",
+            "metadata":{
+                "description": "Backup Policy."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2021-01-15",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "kind": "[parameters('kind')]",
+            "identity": "[parameters('identity')]",
+            "properties": {
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "enableAutomaticFailover": "[parameters('enableAutomaticFailover')]",
+                "enableMultipleWriteLocations": "[parameters('enableMultipleWriteLocations')]",
+                "isVirtualNetworkFilterEnabled": "[parameters('isVirtualNetworkFilterEnabled')]",
+                "virtualNetworkRules": "[parameters('virtualNetworkRules')]",
+                "disableKeyBasedMetadataWriteAccess": "[parameters('disableKeyBasedMetadataWriteAccess')]",
+                "enableFreeTier": "[parameters('enableFreeTier')]",
+                "enableAnalyticalStorage": "[parameters('enableAnalyticalStorage')]",
+                "createMode": "[parameters('createMode')]",
+                "databaseAccountOfferType": "[parameters('databaseAccountOfferType')]",
+                "consistencyPolicy": "[parameters('consistencyPolicy')]",
+                "locations": "[parameters('locations')]",
+                "cors": "[parameters('cors')]",
+                "capabilities": "[parameters('capabilities')]",
+                "ipRules": "[parameters('ipRules')]",
+                "backupPolicy": "[parameters('backupPolicy')]"
+            }
+        }
+    ]
+}

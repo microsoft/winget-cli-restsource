@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="TestCollateralHelper.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -48,8 +48,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Common
         /// <returns>Test collateral path.</returns>
         public static string GetTestCollateralPath(TestCollateral testCollateral)
         {
-            Uri codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-            string codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
+            string codeBasePath = Assembly.GetExecutingAssembly().Location;
             return Path.Combine(
                 Path.GetDirectoryName(codeBasePath),
                 "TestCollateral",

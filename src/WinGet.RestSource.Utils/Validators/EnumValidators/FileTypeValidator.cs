@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="FileTypeValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
     /// <summary>
     /// InstallationMetadataFileFileTypeValidator.
     /// </summary>
-    public class FileTypeValidator : NestedInstallerTypeValidator
+    public class FileTypeValidator : ApiEnumValidator
     {
         private const bool Nullable = true;
         private List<string> enumList = new List<string>
@@ -25,9 +25,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
         /// Initializes a new instance of the <see cref="FileTypeValidator"/> class.
         /// </summary>
         public FileTypeValidator()
-            : base()
         {
-            this.Values.AddRange(this.enumList);
+            this.AllowNull = Nullable;
+            this.Values = this.enumList;
         }
     }
 }
