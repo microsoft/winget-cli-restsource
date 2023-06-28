@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32428.217
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource", "WinGet.RestSource\WinGet.RestSource.csproj", "{15E4BE9B-2891-410A-A042-47FE838B1AEC}"
 EndProject
@@ -8,10 +8,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Functions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{145CC9B9-A93E-46C1-90F7-DFB81233B39F}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
 		..\.gitignore = ..\.gitignore
 		NuGet.config = NuGet.config
 		stylecop.json = stylecop.json
-		..\.editorconfig = ..\.editorconfig
 	EndProjectSection
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "WinGet.RestSource.Infrastructure", "WinGet.RestSource.Infrastructure\WinGet.RestSource.Infrastructure.deployproj", "{0F98E939-EC64-40DA-9630-336A40807BBE}"
@@ -98,7 +98,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.Integrati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsPackageManager.Rest", "Microsoft.WindowsPackageManager.Rest\Microsoft.WindowsPackageManager.Rest.csproj", "{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinGet.RestSource.AppConfig", "WinGet.RestSource.AppConfig\WinGet.RestSource.AppConfig.csproj", "{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.AppConfig", "WinGet.RestSource.AppConfig\WinGet.RestSource.AppConfig.csproj", "{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

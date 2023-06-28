@@ -20,6 +20,7 @@ steps:
 - task: VSBuild@1
   displayName: Build
   inputs:
+    solution: '**\*.sln'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
     clean: true
@@ -60,7 +61,7 @@ steps:
 - template: run-unittests.yml
   parameters:
     name: WinGet.RestSource.UnitTest
-    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net6.0'
     dll: Microsoft.WinGet.RestSource.UnitTest.
 
 ## Component Governance
