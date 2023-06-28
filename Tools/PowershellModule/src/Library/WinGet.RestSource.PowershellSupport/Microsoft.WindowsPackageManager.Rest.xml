@@ -1,0 +1,543 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.WindowsPackageManager.Rest</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger">
+            <summary>
+            Log provider wrapper that logs to Geneva.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger"/> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger.Log(Microsoft.Msix.Utils.Logger.ILogMessage)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="logMessage">log message.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger.DeinitLog">
+            <summary>
+            Deinitialize logger.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger.Log(Microsoft.Cloud.InstrumentationFramework.IfxTracingLevel,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Logs a DiagnosticEvent with a level, message and dictionary of key-value properties.
+            These events will be pushed to our geneva warm path. IfxTracingLevel.Verbose logs will not be uploaded to geneva.
+            </summary>
+            <param name="level">Logging level.</param>
+            <param name="message">Event name.</param>
+            <param name="memberName">Calling member name.</param>
+            <param name="sourceFilePath">Calling source file.</param>
+            <param name="sourceLineNumber">Calling source file line number.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AppServiceGenevaTraceLogger.Trace(Microsoft.Cloud.InstrumentationFramework.IfxTracingLevel,System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            IfxTrace logging requires writing logs to disk on vm's. Disabling this for now
+            and pushing all logs to the warm path as a diagnostic event.
+            Writes a log message with a list of key-value properties.
+            Note: Only the first eight key-value pairs are logged.
+            </summary>
+            <param name="level">Logging level.</param>
+            <param name="tag">Tag descriptor.</param>
+            <param name="keyValues">List of properties.</param>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.AzureFunctionLogger">
+            <summary>
+            Log provider wrapper that logs to Azure App Insights using Azure function ILogger.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AzureFunctionLogger.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.AzureFunctionLogger"/> class.
+            </summary>
+            <param name="logger">Microsoft extensions ILogger object.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AzureFunctionLogger.Log(Microsoft.Msix.Utils.Logger.ILogMessage)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="logMessage">log message.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.AzureFunctionLogger.DeinitLog">
+            <summary>
+            Deinitialize logger.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.CommonEventProperties">
+            <summary>
+            Class to store common values for the telemetry events derived from AppServiceBaseEvent.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.CommonEventProperties.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.CommonEventProperties"/> class.
+            </summary>
+            <param name="appServiceEnvironment">Environment for the events during this runtime.</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.CommonEventProperties.AppServiceEnvironment">
+            <summary>
+            Gets an app service environment.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper">
+            <summary>
+            A singleton class containing properties and helpers related to diagnostics and logging.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.sfactory">
+            <summary>
+            Factory for singleton instance creation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.Instance">
+            <summary>
+            Gets the singleton instance of DiagnosticsHelper.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.SetupAzureFunctionLoggerAndGenevaTelemetry(Microsoft.Extensions.Logging.ILogger,System.Boolean,System.Boolean,System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            Sets up logging.
+            </summary>
+            <param name="logger">Logger from Microsoft.Extensions.Logging.</param>
+            <param name="verboseConsoleLogging">Whether to print verbose logs to console. True by default.</param>
+            <param name="setupGenevaTelemetry">Whether to setup geneva telemetry. True by default.</param>
+            <param name="setupConsoleLogger">Whether to setup console logger.</param>
+            <param name="monitorRole">variable for role for setup geneva telemetry.</param>
+            <param name="monitorTenant">variable for tenant for setup geneva telemetry.</param>
+            <param name="appServiceEnvironment">variable for app service environment for setup geneva telemetry.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.SetupFileLogger(System.String)">
+            <summary>
+            Sets up file logger.
+            </summary>
+            <param name="logFilePath">Log file path.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.GetLoggingContextForCommand(System.String,System.String)">
+            <summary>
+            Method to create the logging context.
+            </summary>
+            <param name="command">Command.</param>
+            <param name="operationId">Operation id.</param>
+            <returns>A LoggingContext with context information.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.DiagnosticsHelper.GetLoggingContext(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Method to create the logging context for azure functions.
+            </summary>
+            <param name="functionName">Azure function name.</param>
+            <param name="invocationId">Azure function invocation id.</param>
+            <param name="operationId">Operation id.</param>
+            <param name="manifestId">Optional Manifest id tag.</param>
+            <param name="installerId">Optional Installer id tag.</param>
+            <returns>A LoggingContext with context information.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext">
+            <summary>
+            Logging context information to uniquely identify a run.
+            It is a wrapper of a simple string to provide type safeness over the source code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext"/> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.#ctor(Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext"/> class.
+            </summary>
+            <param name="other">Other logging context.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext"/> class.
+            </summary>
+            <param name="loggingContext">Logging context string.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext"/> class.
+            </summary>
+            <param name="tag">Tag.</param>
+            <param name="value">Value.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.#ctor(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext"/> class.
+            </summary>
+            <param name="tags">Tags.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.Append(System.String,System.String)">
+            <summary>
+            Appends tags to the logging context.
+            </summary>
+            <param name="tag">Tag.</param>
+            <param name="value">Value.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.Append(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Appends tags to the logging context.
+            </summary>
+            <param name="tags">Tags.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext.ToString">
+            <summary>
+            Overrides ToString. Returns the inner string. Useful for string interpolations.
+            </summary>
+            <returns>Logging context string.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager">
+            <summary>
+            Class that contains Metrics manager functionality.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager"/> class.
+            </summary>
+            <param name="monitoringAccount">Monitoring account(Should be linked to Geneva logging account by this).</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager.MonitoringAccount">
+            <summary>
+            Gets monitoring account.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager.EmitMetricForOperationId(System.String,System.String,System.Int64,System.String,System.String,Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext)">
+            <summary>
+            Forward call to EmitMetric creating a one dimension with the operation id.
+            </summary>
+            <param name="metricNameSpace">Metric namespace.</param>
+            <param name="metricName">Metric name.</param>
+            <param name="metricValue">Metric value.</param>
+            <param name="operationId">OperationId.</param>
+            <param name="error">Error.</param>
+            <param name="loggingContext">Logging Context.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.MetricsManager.EmitMetric(System.String,System.String,System.Int64,System.Collections.Generic.Dictionary{System.String,System.String},Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext)">
+            <summary>
+            Method that creates MeasureMetric.
+            </summary>
+            <param name="metricNameSpace">Metric namespace.</param>
+            <param name="metricName">Metric name.</param>
+            <param name="metricValue">Metric value.</param>
+            <param name="dimensions">Dimensions.</param>
+            <param name="loggingContext">Logging Context.</param>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata">
+            <summary>
+            Class that contains telemetry metadata read on function startup.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata"/> class.
+            </summary>
+            <param name="telemetryRole">Role with which to configure telemetry.</param>
+            <param name="telemetryTenant">Tenant with which to configure telemetry.</param>
+            <param name="appServiceEnvironment">App service environment with which to configure telemetry.</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata.TelemetryRole">
+            <summary>
+            Gets a value indicating the role.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata.TelemetryTenant">
+            <summary>
+            Gets a value indicating the tenant.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryMetadata.AppServiceEnvironment">
+            <summary>
+            Gets a value indicating the app service environment.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryOperation">
+            <summary>
+            Class that contains telemetry operation functionality.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryOperation.IfxInitialized">
+            <summary>
+            Gets a value indicating whether Ifx is initialized.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryOperation.Initialize(System.String,System.String,System.String)">
+            <summary>
+            Initialize method which should be called from the Main method in Program.cs of the service.
+            </summary>
+            <param name="monitorRole">variable that holds information about the role.</param>
+            <param name="monitorTenant">variable that holds information about the tenant.</param>
+            <param name="appServiceEnvironment">variable that holds information about the app service environment.</param>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Diagnostics.TelemetryOperation.SetCommonPartC``1(``0)">
+            <summary>
+            Set common part method.
+            </summary>
+            <typeparam name="T">Type of AppService Ifx event.</typeparam>
+            <param name="appServiceIfxEvent">AppService Ifx event.</param>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Interfaces.IFunctionInput">
+            <summary>
+            Generic function input interface.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Interfaces.IFunctionInput.Validate">
+            <summary>
+            Validates all required properties are set.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput">
+            <summary>
+            Class that contains context and reference elements for Azure function input.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput.#ctor(System.String,System.String,System.String,Microsoft.WindowsPackageManager.Rest.Models.ReferenceType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput"/> class.
+            </summary>
+            <param name="operationId">Operation id of the VALIDATION pipeline.</param>
+            <param name="sasReference">sasReference to the content to be processed.</param>
+            <param name="commit">Commit.</param>
+            <param name="referenceType">Type of operation being performed on the reference package.</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput.Commit">
+            <summary>
+            Gets a value indicating the operation id of the VALIDATION pipeline that validated this content.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput.Validate">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.CommitContextAndReferenceInput.ToString">
+            <summary>
+            ToString override.
+            </summary>
+            <returns>String with properties and values.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput">
+            <summary>
+            Class that contains context and reference elements for Azure function input.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.#ctor(System.String,System.String,Microsoft.WindowsPackageManager.Rest.Models.ReferenceType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput"/> class.
+            </summary>
+            <param name="operationId">Operation id of the VALIDATION pipeline that validated this commit.</param>
+            <param name="sasReference">sasReference to the content to be processed.</param>
+            <param name="referenceType">Type of operation being performed on the reference package.</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.OperationId">
+            <summary>
+            Gets a value indicating the operation id of the VALIDATION pipeline that validated this content.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.SASReference">
+            <summary>
+            Gets a value indicating a sasReference to the content to be processed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.ReferenceType">
+            <summary>
+            Gets a value indicating the reference type of the sasReference.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.Validate">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.ContextAndReferenceInput.ToString">
+            <summary>
+            ToString override.
+            </summary>
+            <returns>String with properties and values.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Models.ReferenceType">
+            <summary>
+            Type of reference provided.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.ReferenceType.Add">
+            <summary>
+            The reference is being added.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.ReferenceType.Modify">
+            <summary>
+            The reference is being modified.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.ReferenceType.Delete">
+            <summary>
+            The reference is being deleted.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Models.SourceResultOutputHelper">
+            <summary>
+            Class that contains the overall source result.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.SourceResultOutputHelper.#ctor(Microsoft.WindowsPackageManager.Rest.Models.SourceResultType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.WindowsPackageManager.Rest.Models.SourceResultOutputHelper"/> class.
+            </summary>
+            <param name="overallResult">Overall result for this source operation.</param>
+        </member>
+        <member name="P:Microsoft.WindowsPackageManager.Rest.Models.SourceResultOutputHelper.OverallResult">
+            <summary>
+            Gets a value indicating the overall result of this source operation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Models.SourceResultOutputHelper.ToString">
+            <summary>
+            ToString override.
+            </summary>
+            <returns>String with properties and values.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Models.SourceResultType">
+            <summary>
+            Type of source results.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.SourceResultType.Success">
+            <summary>
+            The source operation was a success.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.SourceResultType.Error">
+            <summary>
+            The source operation resulted in an error.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.SourceResultType.Failure">
+            <summary>
+            The source operation failed and should not be retried.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Models.SourceResultType.FailureCanRetry">
+            <summary>
+            The source operation was a failure and can be retried. Generally an Azure error or any network issue.
+            </summary>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Utils.AzureFunctionHelper">
+            <summary>
+            Class that contains helper functions for azure functions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.AzureFunctionHelper.TriggerAzureFunctionAsync(System.Net.Http.HttpClient,System.Net.Http.HttpMethod,System.String,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Helper method to manually trigger an http function.
+            </summary>
+            <param name="httpClient">HttpClient.</param>
+            <param name="httpMethod">HttpMethod.</param>
+            <param name="azureFunctionURL">Azure function endpoint.</param>
+            <param name="functionKey">Azure function key to access endpoint.</param>
+            <param name="postRequestBody">Request body.</param>
+            <param name="headers">Headers.</param>
+            <returns>Http response message.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Utils.JsonHelper">
+            <summary>
+            Helper class for json serialization.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.JsonHelper.SerializeObjectToIndentedJson``1(``0)">
+            <summary>
+            Serializes an object to an indented json string.
+            </summary>
+            <typeparam name="T">Type must be an object that can be serialized as json.</typeparam>
+            <param name="obj">Generic object that can be serialized as json.</param>
+            <returns>A formated json String.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.JsonHelper.SerializeObject``1(``0)">
+            <summary>
+            Serialize an object to a json string.
+            </summary>
+            <typeparam name="T">Type must be an object that can be serialized as JSON.</typeparam>
+            <param name="obj">Generic object that can be serialized as JSON.</param>
+            <returns>A formated JSON String.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.JsonHelper.DeserializeJsonFileToObject``1(System.String)">
+            <summary>
+            Deserialize a json file to an object.
+            </summary>
+            <typeparam name="T">Type must be an object that can be deserialized.</typeparam>
+            <param name="fileName">Json file path.</param>
+            <returns>Object corresponding to the json file.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Utils.RequestBodyHelper">
+            <summary>
+            Class that contains parsing helpers for an input helper request body.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.RequestBodyHelper.GetRequestDataFromBody``1(System.IO.Stream,System.Boolean)">
+            <summary>
+            Method to get the context, reference, and repo request data from http request body.
+            </summary>
+            <param name="httpRequestBody">This is an http POST request body.</param>
+            <param name="leaveStreamOpen">Bool indicating if the stream should be left open.</param>
+            <typeparam name="TInputHelper">Type of input we are parsing from the Http Request.</typeparam>
+            <returns>Pipeline data.</returns>
+        </member>
+        <member name="T:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper">
+            <summary>
+            Class to deal with retries.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper.MaxRetries">
+            <summary>
+            Maximum allowed retries.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper.WaitTime">
+            <summary>
+            Wait time between retries in milliseconds.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper.RunAndRetryWithExceptionAsync``2(System.Func{System.Threading.Tasks.Task{``0}},System.String,``1,Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext,System.Int32,System.Int32)">
+            <summary>
+            Runs the specified async lambda that returns a value with retry.
+            </summary>
+            <typeparam name="TReturn">Task return type.</typeparam>
+            <typeparam name="TException">Exception for retry.</typeparam>
+            <param name="func">Function to run.</param>
+            <param name="name">Name for logging.</param>
+            <param name="exp">Exception. This is a hack to make the compiler figure out TReturn
+            without us knowing it :). </param>
+            <param name="loggingContext">Logging context.</param>
+            <param name="maxRetries">Max retries.</param>
+            <param name="waitTime">Wait time in milliseconds.</param>
+            <returns>TReturn.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper.RunAndRetryWithExceptionAsync``1(System.Func{System.Threading.Tasks.Task},System.String,Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext,System.Int32,System.Int32)">
+            <summary>
+            Runs the specified lambda with retry.
+            </summary>
+            <typeparam name="TException">Exception for retry.</typeparam>
+            <param name="func">Function to run.</param>
+            <param name="name">Name for logging.</param>
+            <param name="loggingContext">Logging context.</param>
+            <param name="maxRetries">Max retries.</param>
+            <param name="waitTime">Wait time in milliseconds.</param>
+            <returns>TReturn.</returns>
+        </member>
+        <member name="M:Microsoft.WindowsPackageManager.Rest.Utils.RetryHelper.RunAndRetryWithValueAsync``1(System.Func{System.Threading.Tasks.Task{``0}},System.String,``0,Microsoft.WindowsPackageManager.Rest.Diagnostics.LoggingContext,System.Int32,System.Int32)">
+            <summary>
+            Retry when the function returns a specific value.
+            </summary>
+            <typeparam name="TReturn">Return type.</typeparam>
+            <param name="func">Function to call.</param>
+            <param name="name">Name of the function for logging.</param>
+            <param name="retryValue">If obtain do the retry.</param>
+            <param name="loggingContext">Logging Context.</param>
+            <param name="maxRetries">Max retries to do.</param>
+            <param name="waitTime">Waiting time in milliseconds.</param>
+            <returns>TReturn. If the retries expired, then return the retry value.</returns>
+        </member>
+    </members>
+</doc>

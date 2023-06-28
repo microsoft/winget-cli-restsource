@@ -1,0 +1,118 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the Front Door"
+            }
+        },
+        "frontendEndpoints": {
+            "type": "array"
+        },
+        "healthProbeSettings": {
+            "type": "array"
+        },
+        "backendPools": {
+            "type": "array"
+        },
+        "loadBalancingSettings": {
+            "type": "array"
+        },
+        "routingRules": {
+            "type": "array"
+        },
+        "backendPoolsSettings": {
+            "type": "object"
+        },
+        "enabledState": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/frontdoors",
+            "apiVersion": "2020-01-01",
+            "name": "[parameters('name')]",
+            "location": "Global",
+            "properties": {
+                "copy": [
+                    {
+                        "name": "backendPools",
+                        "count": "[length(parameters('backendPools'))]",
+                        "input": {
+                            "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/BackendPools/', parameters('backendPools')[copyIndex('backendPools')].name)]",
+                            "name": "[parameters('backendPools')[copyIndex('backendPools')].name]",
+                            "properties": {
+                                "backends": "[parameters('backendPools')[copyIndex('backendPools')].backEnds]",
+                                "healthProbeSettings": {
+                                    "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/HealthProbeSettings/', parameters('backendPools')[copyIndex('backendPools')].HealthProbeSettingsName)]"
+                                },
+                                "loadBalancingSettings": {
+                                    "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/LoadBalancingSettings/', parameters('backendPools')[copyIndex('backendPools')].LoadBalancingSettingsName)]"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "healthProbeSettings",
+                        "count": "[length(parameters('healthProbeSettings'))]",
+                        "input": {
+                            "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/HealthProbeSettings/', parameters('healthProbeSettings')[copyIndex('healthProbeSettings')].name)]",
+                            "name": "[parameters('healthProbeSettings')[copyIndex('healthProbeSettings')].name]",
+                            "properties": "[parameters('healthProbeSettings')[copyIndex('healthProbeSettings')].properties]"
+                        }
+                    },
+                    {
+                        "name": "frontendEndpoints",
+                        "count": "[length(parameters('frontendEndpoints'))]",
+                        "input": {
+                            "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/FrontendEndpoints/', parameters('healthProbeSettings')[copyIndex('frontendEndpoints')].name)]",
+                            "name": "[parameters('frontendEndpoints')[copyIndex('frontendEndpoints')].name]",
+                            "properties": "[parameters('frontendEndpoints')[copyIndex('frontendEndpoints')].properties]"
+                        }
+                    },
+                    {
+                        "name": "loadBalancingSettings",
+                        "count": "[length(parameters('loadBalancingSettings'))]",
+                        "input": {
+                            "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/LoadBalancingSettings/', parameters('healthProbeSettings')[copyIndex('loadBalancingSettings')].name)]",
+                            "name": "[parameters('loadBalancingSettings')[copyIndex('loadBalancingSettings')].name]",
+                            "properties": "[parameters('loadBalancingSettings')[copyIndex('loadBalancingSettings')].properties]"
+                        }
+                    },
+                    {
+                        "name": "routingRules",
+                        "count": "[length(parameters('routingRules'))]",
+                        "input": {
+                            "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/RoutingRules/', parameters('routingRules')[copyIndex('routingRules')].name)]",
+                            "name": "[parameters('routingRules')[copyIndex('routingRules')].name]",
+                            "properties": {
+                                "frontendEndpoints": [
+                                    {
+                                        "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), concat('/FrontendEndpoints/', parameters('routingRules')[copyIndex('routingRules')].frontendEndpoint))]"
+                                    }
+                                ],
+                                "acceptedProtocols": "[parameters('routingRules')[copyIndex('routingRules')].acceptedProtocols]",
+                                "patternsToMatch": "[parameters('routingRules')[copyIndex('routingRules')].patternsToMatch]",
+                                "enabledState": "[parameters('routingRules')[copyIndex('routingRules')].enabledState]",
+                                "routeConfiguration": {
+                                    "@odata.type": "[parameters('routingRules')[copyIndex('routingRules')].routeConfiguration.odataType]",
+                                    "forwardingProtocol": "[parameters('routingRules')[copyIndex('routingRules')].routeConfiguration.forwardingProtocol]",
+                                    "backendPool": {
+                                        "id": "[concat(resourceId('Microsoft.Network/frontdoors', parameters('name')), '/BackendPools/', parameters('routingRules')[copyIndex('routingRules')].routeConfiguration.backendPoolName)]"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "backendPoolsSettings": "[parameters('backendPoolsSettings')]",
+                "enabledState": "[parameters('enabledState')]",
+                "friendlyName": "[parameters('name')]"
+            }
+        }
+    ]
+}
