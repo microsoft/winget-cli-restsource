@@ -117,6 +117,9 @@ Function New-ARMObjects
                 ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
                 Start-Sleep -Seconds 10
             }
+
+            ## Sets an additional sleep of 10 seconds, to account for delays in availability
+            Start-Sleep -Seconds 10
     
             ## Verifies that no error occured when creating the Azure resource
             if($objerror -or $Result.Error) {
