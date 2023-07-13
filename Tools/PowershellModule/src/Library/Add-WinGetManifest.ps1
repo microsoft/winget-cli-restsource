@@ -93,6 +93,7 @@ Function Add-WinGetManifest
         Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."
         $ApplicationManifest = Get-WinGetManifest -Path $Path
         if(!$ApplicationManifest) {
+            Write-Verbose "$ApplicationManifest`n`n`n"
             throw "Failed to retrieve a proper manifest. Verify and try again."
         }
 
