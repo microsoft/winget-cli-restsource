@@ -32,9 +32,10 @@ bld/
 [Ll]ogs/
 
 # These are the PowerShell helper libraries used to run. Added to artifact as automated task
-Tools/PowershellModule/src/Library/ARMTemplate/
-Tools/PowershellModule/src/Library/RestAPI/
-Tools/PowershellModule/src/Library/WinGet.RestSource.PowerShellSupport/
+Tools/PowershellModule/src/Library/ARMTemplate
+Tools/PowershellModule/src/Library/RestAPI
+Tools/PowershellModule/src/Library/WinGet.RestSource.PowerShellSupport
+Tools\PowershellModule\src\Library\WinGet.RestSource.PowershellSupport
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
