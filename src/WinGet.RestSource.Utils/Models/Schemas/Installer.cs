@@ -247,6 +247,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public InstallationMetadata InstallationMetadata { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the installer is prohibited from being downloaded for offline installation.
+        /// </summary>
+        public bool DownloadCommandProhibited { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -308,6 +313,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.DisplayInstallWarnings = obj.DisplayInstallWarnings;
             this.UnsupportedArguments = obj.UnsupportedArguments;
             this.InstallationMetadata = obj.InstallationMetadata;
+            this.DownloadCommandProhibited = obj.DownloadCommandProhibited;
         }
 
         /// <inheritdoc />
@@ -468,7 +474,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.NestedInstallerFiles, other.NestedInstallerFiles)
                    && Equals(this.DisplayInstallWarnings, other.DisplayInstallWarnings)
                    && Equals(this.UnsupportedArguments, other.UnsupportedArguments)
-                   && Equals(this.InstallationMetadata, other.InstallationMetadata);
+                   && Equals(this.InstallationMetadata, other.InstallationMetadata)
+                   && Equals(this.DownloadCommandProhibited, other.DownloadCommandProhibited);
         }
 
         /// <inheritdoc />
@@ -518,6 +525,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.DisplayInstallWarnings);
             hashCode.Add(this.UnsupportedArguments);
             hashCode.Add(this.InstallationMetadata);
+            hashCode.Add(this.DownloadCommandProhibited);
             return hashCode.ToHashCode();
         }
     }

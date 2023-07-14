@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.5.0
+  version: 1.6.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -1403,6 +1403,10 @@ components:
           items:
             $ref: '#/components/schemas/InstallationMetadataFile'
 
+    DownloadCommandProhibited:
+      description: Indicates whether the installer is prohibited from being downloaded for offline installation.
+      type: boolean
+
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
       type: string
@@ -1528,6 +1532,8 @@ components:
           $ref: '#/components/schemas/UnsupportedArguments'
         InstallationMetadata:
           $ref: '#/components/schemas/InstallationMetadata'
+        DownloadCommandProhibited:
+          $ref: '#/components/schemas/DownloadCommandProhibited'
       required:
         - Architecture
         - InstallerType
