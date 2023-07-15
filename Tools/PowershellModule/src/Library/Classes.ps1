@@ -155,6 +155,7 @@ class WinGetInstaller
     $UnsupportedOSArchitectures
     $AppsAndFeaturesEntries
     $Markets
+    $DownloadCommandProhibited
 
     WinGetInstaller ([string] $a)
     {
@@ -192,6 +193,7 @@ class WinGetInstaller
         $this.UnsupportedOSArchitectures= $Converted.UnsupportedOSArchitectures
         $this.AppsAndFeaturesEntries    = $Converted.AppsAndFeaturesEntries
         $this.Markets                   = $Converted.Markets
+        $this.DownloadCommandProhibited = $Converted.DownloadCommandProhibited
     }
     WinGetInstaller ([WinGetInstaller] $a)
     {
@@ -227,6 +229,7 @@ class WinGetInstaller
         $this.UnsupportedOSArchitectures= $a.UnsupportedOSArchitectures
         $this.AppsAndFeaturesEntries    = $a.AppsAndFeaturesEntries
         $this.Markets                   = $a.Markets
+        $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
     }
     WinGetInstaller ([psobject] $a) {
         $this.InstallerIdentifier       = $a.InstallerIdentifier
@@ -261,6 +264,7 @@ class WinGetInstaller
         $this.UnsupportedOSArchitectures= $a.UnsupportedOSArchitectures
         $this.AppsAndFeaturesEntries    = $a.AppsAndFeaturesEntries
         $this.Markets                   = $a.Markets
+        $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
     }
     
     [WinGetInstaller[]] Add ([WinGetInstaller] $a)
