@@ -1046,6 +1046,7 @@ components:
       enum:
         - install
         - uninstallPrevious
+        - deny
 
     Commands:
       description: List of commands or aliases to run the package
