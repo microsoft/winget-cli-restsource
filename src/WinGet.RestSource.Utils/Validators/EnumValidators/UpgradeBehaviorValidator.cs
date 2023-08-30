@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="UpgradeBehaviorValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -18,6 +18,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
         {
             "install",
             "uninstallPrevious",
+            "deny",
         };
 
         /// <summary>
