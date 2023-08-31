@@ -114,7 +114,7 @@
         },
         "functionExtensionVersion": {
             "type": "string",
-            "defaultValue": "~3",
+            "defaultValue": "~4",
             "metadata": {
                 "description": "Function Extension Version"
             }
