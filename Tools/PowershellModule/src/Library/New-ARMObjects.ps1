@@ -146,6 +146,8 @@ Function New-ARMObjects
                 ## Verifies the presence of the "WinGet.RestSource.Functions.zip" file.
                 Write-Verbose -Message "    Confirming Compiled Azure Functions is present"
                 if(Test-Path $RestSourcePath) {
+                    Start-Sleep -Seconds 10
+                    
                     ## The "WinGet.RestSource.Functions.zip" was found in the working directory
                     Write-Verbose -Message "      File Path Found: $RestSourcePath"
 
