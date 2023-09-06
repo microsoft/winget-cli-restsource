@@ -66,23 +66,6 @@ Function New-ARMParameterObject
         ## The values required for the Azure App Config ARM Template
         #$appConfigFeatureFlag   = ""
 
-        ## The values required for the Azure ASP Geneva ARM Template
-        #$ASPGenevaSKU                       = ""
-        #$ASPGenevaNumOfWorkers              = ""
-        #$ASPGenevaKVSubscription            = ""
-        #$ASPGenevaKVResourceGroup           = ""
-        #$ASPGenevaKVName                    = ""
-        #$ASPGenevaCertName                  = ""
-        #$ASPGenevaMonitoringTenant          = ""
-        #$ASPGenevaMonitoringRole            = ""
-        #$ASPGenevaMonitoringMetricsAccount  = ""
-        #$ASPGenevaMonitoringGcsEnv          = ""
-        #$ASPGenevaMonitoringGcsAccount      = ""
-        #$ASPGenevaMonitoringGcsNamespace    = ""
-        #$ASPGenevaMonitoringGcsAuthID       = ""
-        #$ASPGenevaMonitoringConfigVer       = ""
-
-
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
         $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
@@ -94,7 +77,6 @@ Function New-ARMParameterObject
         $TemplateFunctionPath       = "$TemplateFolderPath\azurefunction.json"
         $TemplateFrontDoorPath      = "$TemplateFolderPath\frontdoor.json"
         $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
-        #$TemplateASPGenevaPath      = "$TemplateFolderPath\asp_geneva.json"
 
         $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
         $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
@@ -106,7 +88,6 @@ Function New-ARMParameterObject
         $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction.json"
         $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor.json"
         $ParameterAppConfigPath      = "$ParameterFolderPath\appconfig.json"
-        #$ParameterASPGenevaPath      = "$ParameterFolderPath\aspgeneva.json"
 
         Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
@@ -501,36 +482,7 @@ Function New-ARMParameterObject
                         monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
                     }
                 }
-            }#,
-            #@{  ObjectType = "ASP_Geneva"
-            #    ObjectName = $FunctionName
-            #    ParameterPath  = "$ParameterASPGenevaPath"
-            #    TemplatePath   = "$TemplateASPGenevaPath"
-            #    Error      = ""
-            #    Parameters = @{
-            #        '$Schema' = $JSONSchema
-            #        contentVersion = $JSONContentVersion
-            #        Parameters = @{
-            #            aspName                  = @{ value = $AzKVStorageSecretName                }   # Name used to contain the Storage Account connection string in the Key Value
-            #            genevaName               = @{ value = $ASPGenevaGenevaName                  }
-            #            location                 = @{ value = $Region                               }   # Azure hosting location
-            #            skuCode                  = @{ value = $ASPGenevaSKU                         }   # 
-            #            numberOfWorkers          = @{ value = $ASPGenevaNumOfWorkers                }
-            #            keyVaultSubscription     = @{ value = $ASPGenevaKVSubscription              }
-            #            keyVaultResourceGroup    = @{ value = $ASPGenevaKVResourceGroup             }
-            #            keyVaultName             = @{ value = $ASPGenevaKVName                      }
-            #            genevaCertificateName    = @{ value = $ASPGenevaCertName                    }
-            #            monitoringTenant         = @{ value = $ASPGenevaMonitoringTenant            }
-            #            monitoringRole           = @{ value = $ASPGenevaMonitoringRole              }
-            #            monitoringMetricsAccount = @{ value = $ASPGenevaMonitoringMetricsAccount    }
-            #            monitoringGcsEnvironment = @{ value = $ASPGenevaMonitoringGcsEnv            }
-            #            monitoringGcsAccount     = @{ value = $ASPGenevaMonitoringGcsAccount        }
-            #            monitoringGcsNamespace   = @{ value = $ASPGenevaMonitoringGcsNamespace      }
-            #            monitoringGcsAuthID      = @{ value = $ASPGenevaMonitoringGcsAuthID         }
-            #            monitoringConfigVersion  = @{ value = $ASPGenevaMonitoringConfigVer         }
-            #        }
-            #    }
-            #}
+            }    
         )
 
         ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.
