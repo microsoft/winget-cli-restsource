@@ -1,7 +1,7 @@
 # Template helper to copy PowerShell scripts and all dependencies
 parameters:
  helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netcoreapp3.1'
- templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+ templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
 
 steps:
 - task: CopyFiles@2
@@ -25,17 +25,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Files: Arm Templates'
   inputs:
-    Contents: |
-     ${{ parameters.templatesPath }}\**\applicationinsights.json
-     ${{ parameters.templatesPath }}\**\asp.json
-     ${{ parameters.templatesPath }}\**\azurefunction.json
-     ${{ parameters.templatesPath }}\**\applicationinsights.json
-     ${{ parameters.templatesPath }}\**\cosmosdb.json
-     ${{ parameters.templatesPath }}\**\cosmosdb-sql.json
-     ${{ parameters.templatesPath }}\**\cosmosdb-sql-container.json
-     ${{ parameters.templatesPath }}\**\frontdoor.json
-     ${{ parameters.templatesPath }}\**\keyvault.json
-     ${{ parameters.templatesPath }}\**\storageaccount.json
+    Contents: ${{ parameters.templatesPath }}\**\*.json
     TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\ARMTemplate'
     OverWrite: true
     flattenFolders: true

@@ -14,6 +14,7 @@ Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $
 if ($PSEdition -eq $WinGetPSEdition) {
         try {
                 Add-Type -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\Microsoft.Winget.PowershellSupport.dll"
+                $WinGetDesktopAppInstallerLibLoaded=$true 
         }
         catch [System.Reflection.ReflectionTypeLoadException] {
                 Write-Host "Message: $($_.Exception.Message)"

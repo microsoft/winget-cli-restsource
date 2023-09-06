@@ -49,12 +49,22 @@ Function New-ARMParameterObject
         $CDBAccountName     = $Name
         $FunctionName       = $Name
         $FrontDoorName      = $Name
+        $appConfigName      = $Name
+        $aspGenevaName      = $Name
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled
         ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
 
+        ## The values required for Function ARM Template
+        $manifestCacheEndpoint      = ""
+        $monitoringTenant           = ""
+        $monitoringRole             = ""
+        $monitoringMetricsAccount   = ""
+
+        ## The values required for the Azure App Config ARM Template
+        #$appConfigFeatureFlag   = ""
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
@@ -66,16 +76,18 @@ Function New-ARMParameterObject
         $TemplateCDBContainerPath   = "$TemplateFolderPath\cosmosdb-sql-container.json"
         $TemplateFunctionPath       = "$TemplateFolderPath\azurefunction.json"
         $TemplateFrontDoorPath      = "$TemplateFolderPath\frontdoor.json"
+        $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
 
-        $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights$NameEntryIndex.json"
-        $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault$NameEntryIndex.json"
-        $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount$NameEntryIndex.json"
-        $ParameterASPPath            = "$ParameterFolderPath\asp$NameEntryIndex.json"
-        $ParameterCDBAccountPath     = "$ParameterFolderPath\cosmosdb$NameEntryIndex.json"
-        $ParameterCDBPath            = "$ParameterFolderPath\cosmosdb-sql$NameEntryIndex.json"
-        $ParameterCDBContainerPath   = "$ParameterFolderPath\cosmosdb-sql-container$NameEntryIndex.json"
-        $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction$NameEntryIndex.json"
-        $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor$NameEntryIndex.json"
+        $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
+        $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
+        $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount.json"
+        $ParameterASPPath            = "$ParameterFolderPath\asp.json"
+        $ParameterCDBAccountPath     = "$ParameterFolderPath\cosmosdb.json"
+        $ParameterCDBPath            = "$ParameterFolderPath\cosmosdb-sql.json"
+        $ParameterCDBContainerPath   = "$ParameterFolderPath\cosmosdb-sql-container.json"
+        $ParameterFunctionPath       = "$ParameterFolderPath\azurefunction.json"
+        $ParameterFrontDoorPath      = "$ParameterFolderPath\frontdoor.json"
+        $ParameterAppConfigPath      = "$ParameterFolderPath\appconfig.json"
 
         Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
@@ -268,6 +280,21 @@ Function New-ARMParameterObject
                     }
                 }
             },
+            @{  ObjectType = "AppConfig"
+                ObjectName = $FunctionName
+                ParameterPath  = "$ParameterAppConfigPath"
+                TemplatePath   = "$TemplateAppConfigPath"
+                Error      = ""
+                Parameters = @{
+                    '$Schema' = $JSONSchema
+                    contentVersion = $JSONContentVersion
+                    Parameters = @{
+                        appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
+                        location             = @{ value = $Region               }   # Azure hosting location
+                        #featureFlags         = @{ value = $appConfigFeatureFlag }   # Feature Flag
+                    }
+                }
+            },
             @{  ObjectType = "StorageAccount"
                 ObjectName = $StorageAccountName
                 ParameterPath  = "$ParameterStorageAccountPath"
@@ -440,117 +467,22 @@ Function New-ARMParameterObject
                     '$Schema' = $JSONSchema
                     contentVersion = $JSONContentVersion
                     Parameters = @{
-                        storageSecretName = @{ value = $AzKVStorageSecretName }     # Name used to contain the Storage Account connection string in the Key Value
-                        location          = @{ value = $Region                }     # Azure hosting location
-                        cosmosDatabase    = @{ value = $CDBDatabaseName       }     # Cosmos Database Name
-                        cosmosContainer   = @{ value = $CDBContainerName      }     # Cosmos Container Name
-                        serverIdentifier  = @{ value = $aspName               }     # Azure Function Name
-                        functionName      = @{ value = $FunctionName          }     # Azure Function Name
-                        appServiceName    = @{ value = $aspName               }     # Azure App Service Name
-                        keyVaultName      = @{ value = $KeyVaultName          }     # Azure Keyvault Name
-                        appInsightName    = @{ value = $AppInsightsName       }     # Azure App Insights Name
+                        storageSecretName        = @{ value = $AzKVStorageSecretName    }   # Name used to contain the Storage Account connection string in the Key Value
+                        location                 = @{ value = $Region                   }   # Azure hosting location
+                        cosmosDatabase           = @{ value = $CDBDatabaseName          }   # Cosmos Database Name
+                        cosmosContainer          = @{ value = $CDBContainerName         }   # Cosmos Container Name
+                        serverIdentifier         = @{ value = $aspName                  }   # Azure Function Name
+                        functionName             = @{ value = $FunctionName             }   # Azure Function Name
+                        appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
+                        keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
+                        appInsightName           = @{ value = $AppInsightsName          }   # Azure App Insights Name
+                        manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # unknown
+                        monitoringTenant         = @{ value = $monitoringTenant         }   # unknown
+                        monitoringRole           = @{ value = $monitoringRole           }   # unknown
+                        monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
                     }
                 }
-            }#,
-            # @{  ObjectType = "FrontDoor"      ## Requires a CName entry be created for the frontend endpoint.
-            #     ObjectName = $FrontDoorName
-            #     ParameterPath  = "$ParameterFrontDoorPath"
-            #     TemplatePath   = "$TemplateFrontDoorPath"
-            #     Error      = ""
-            #     Parameters = @{
-            #         '$Schema' = $JSONSchema
-            #         contentVersion = $JSONContentVersion
-            #         Parameters = @{
-            #             name              = @{ value = $FrontDoorName }
-            #             frontendEndpoints = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "$($Name + "azurefd")"
-            #                         properties = @{
-            #                             hostName = "$($Name + "azurefd").azurefd.net"
-            #                             sessionAffinityEnabledState = "Disabled"
-            #                             sessionAffinityTtlSeconds   = 0
-            #                             resourceState               = "Enabled"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             healthProbeSettings = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "healthProbe-fiveSecond"
-            #                         properties = @{
-            #                             intervalInSeconds   = 5
-            #                             path                = "/"
-            #                             protocol            = "Https"
-            #                             resourceState       = "Enabled"
-            #                             enabledState        = "Enabled"
-            #                             healthProbeMethod   = "Head"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             loadBalancingSettings = @{
-            #                 value = @(
-            #                     @{
-            #                         name = "loadBalancing-tenSample"
-            #                         properties = @{
-            #                             additionalLatencyMilliseconds = 1000
-            #                             sampleSize                    = 10
-            #                             successfulSamplesRequired     = 5
-            #                             resourceState                 = "Enabled"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             backendPools = @{
-            #                 value = @(
-            #                     @{
-            #                         name     = "api"
-            #                         backEnds = @(
-            #                             @{
-            #                                 address           = "$FunctionName.azurewebsites.net"
-            #                                 httpPort          = 80
-            #                                 httpsPort         = 443
-            #                                 priority          = 1
-            #                                 weight            = 50
-            #                                 backendHostHeader = "$FunctionName.azurewebsites.net"
-            #                                 enabledState      = "Enabled"
-            #                             }
-            #                         )
-            #                         HealthProbeSettingsName   = "healthProbe-fiveSecond"
-            #                         loadBalancingSettingsName = "loadBalancing-tenSample"
-            #                     }
-            #                 )
-            #             }
-            #             routingRules = @{
-            #                 value = @(
-            #                     @{
-            #                         name                = "api-rule"
-            #                         frontendEndpoint    = "$($Name + "azurefd")"
-            #                         acceptedProtocols   = @( "Https" )
-            #                         patternsToMatch     = @( "/api/*" )
-            #                         enabledState        = "Enabled"
-            #                         routeConfiguration  = @{
-            #                             odataType           = "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration"
-            #                             forwardingProtocol  = "HttpsOnly"
-            #                             backendPoolName     = "api"
-            #                         }
-            #                     }
-            #                 )
-            #             }
-            #             backendPoolsSettings = @{
-            #                 value = @{
-            #                     enforceCertificateNameCheck = "Enabled"
-            #                     sendRecvTimeoutSeconds      = 30
-            #                 }
-            #             }
-            #             enabledState = @{
-            #                 value = "Enabled"
-            #             }
-            #         }
-            #     }
-            # }
+            }    
         )
 
         ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.

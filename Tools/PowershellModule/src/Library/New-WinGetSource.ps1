@@ -92,12 +92,17 @@ Function New-WinGetSource
         ## Validates that the Azure Modules are installed
         Write-Verbose -Message "Testing required PowerShell modules are installed."
 
-        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions", "Az.Storage")
         $Result = Test-PowerShellModuleExist -Modules $RequiredModules
 
         if(!$Result) {
             throw "Unable to run script, missing required PowerShell modules"
         }
+        if(!$(Test-Path -Path $RestSourcePath))
+        {
+            throw "REST Source Function Code is missing in specified path ($RestSourcePath)"
+        }
+
 
         ###############################
         ## Create Folders for the Parameter folder paths
@@ -136,6 +141,7 @@ Function New-WinGetSource
             }
 
             Write-Error -Message "Testing found an error with the ARM template or parameter files." -TargetObject $ErrReturnObject
+            Write-Host $Err[0]
         }
 
 
@@ -164,6 +170,8 @@ Function New-WinGetSource
             #### Instructions on how to add the REST source to your Windows Package Manager Client
             Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:"
             Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
+            Write-Verbose -Message "Use the following command to register the new REST source with your Windows Package Manager Client:"
+            Write-Verbose -Message "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
 
             #### For more information about how to use the solution, visit the aka.ms link.
             Write-Information -MessageData "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"

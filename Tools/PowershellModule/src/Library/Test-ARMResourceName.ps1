@@ -37,7 +37,7 @@ Function Test-ARMResourceName
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Targetted")]
-        [ValidateSet("AppInsight", "KeyVault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor")][String] $ResourceType,
+        [ValidateSet("AppInsight", "KeyVault", "StorageAccount", "asp", "CosmosDBAccount", "CosmosDBDatabase", "CosmosDBContainer", "Function", "FrontDoor", "AppConfig")][String] $ResourceType,
         [Parameter(Position=1, Mandatory=$true, ParameterSetName="Targetted")][String] $ResourceName,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="SingleObject")] $ARMObject
     )
@@ -170,11 +170,12 @@ Function Test-ARMResourceName
 
                 ## Outputs the tests to the screen and their status
                 Write-Information -MessageData $("    Testing the ""$ResourceName"" name meets the requirements:")
-                Write-Verbose -Message $("  Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar) + $NameLengthInRange)
-                Write-Verbose -Message $("  No Special Chars:  ".PadRight($TextPaddingRight, $TextPaddingRightChar) + !$NameContainsSpecialChar)
                 Write-Information -MessageData $("-".PadRight($TextPaddingRight+6, "-"))
                 Write-Information -MessageData $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
                 Write-Information -MessageData $("")
+                Write-Verbose -Message $("    Testing the ""$ResourceName"" name meets the requirements:")
+                Write-Verbose -Message $("  Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar) + $NameLengthInRange)
+                Write-Verbose -Message $("  No Special Chars:  ".PadRight($TextPaddingRight, $TextPaddingRightChar) + !$NameContainsSpecialChar)
             }
             "FrontDoor" {
                 ## Alphanumerics and hyphens. Start and end with alphanumeric. Length: 5-64
@@ -188,11 +189,14 @@ Function Test-ARMResourceName
 
                 ## Outputs the tests to the screen and their status
                 Write-Information -MessageData $("    Testing the ""$ResourceName"" name meets the requirements:")
+                Write-Information -MessageData $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
+                Write-Information -MessageData $("")
+                Write-Verbose -Message $("    Testing the ""$ResourceName"" name meets the requirements:")
                 Write-Verbose -Message $("  Name within Length:".PadRight($TextPaddingRight, $TextPaddingRightChar) + $NameLengthInRange)
                 Write-Verbose -Message $("  No Special Chars:  ".PadRight($TextPaddingRight, $TextPaddingRightChar) + !$NameContainsSpecialChar)
                 Write-Verbose -Message $("-".PadRight($TextPaddingRight+6, "-"))
-                Write-Information -MessageData $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
-                Write-Information -MessageData $("")
+                Write-Verbose -Message $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
+                Write-Verbose -Message $("")
             }
             Default {
                 $Result = $true
@@ -200,6 +204,9 @@ Function Test-ARMResourceName
                 Write-Information -MessageData $("    Testing the ""$ResourceName"" name meets the requirements:")
                 Write-Information -MessageData $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
                 Write-Information -MessageData $("")
+                Write-Verbose -Message $("    Testing the ""$ResourceName"" name meets the requirements:")
+                Write-Verbose -Message $("      Validation Result: ".PadRight($TextPaddingRight, $TextPaddingRightChar) + $Result)
+                Write-Verbose -Message $("")
             }
         }
     }

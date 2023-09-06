@@ -117,6 +117,9 @@ Function New-ARMObjects
                 ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
                 Start-Sleep -Seconds 10
             }
+
+            ## Sets an additional sleep of 10 seconds, to account for delays in availability
+            Start-Sleep -Seconds 10
     
             ## Verifies that no error occured when creating the Azure resource
             if($objerror -or $Result.Error) {
@@ -143,6 +146,8 @@ Function New-ARMObjects
                 ## Verifies the presence of the "WinGet.RestSource.Functions.zip" file.
                 Write-Verbose -Message "    Confirming Compiled Azure Functions is present"
                 if(Test-Path $RestSourcePath) {
+                    Start-Sleep -Seconds 10
+                    
                     ## The "WinGet.RestSource.Functions.zip" was found in the working directory
                     Write-Verbose -Message "      File Path Found: $RestSourcePath"
 
