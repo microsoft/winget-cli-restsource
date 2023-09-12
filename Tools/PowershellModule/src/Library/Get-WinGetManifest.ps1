@@ -292,6 +292,7 @@ Function Get-WinGetManifest
                             }
 
                             Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
+                            Write-Verbose -Message "Returned Manifest from YAML file: $($Return) `n`n$Path`n`n$JSON"
                         }
                         else {
                             Write-Error -Message "Unable to process YAML files. Re-import the module to reload the required dependencies." -Category ResourceUnavailable
@@ -307,7 +308,6 @@ Function Get-WinGetManifest
                                 ManifestFile        = $ManifestFile
                                 $ManifestFileType   = $ManifestFileType
                             }
-
                             Write-Error -Message $ErrorMessage -Category InvalidType -TargetObject $ErrReturnObject
                         }
                     }
