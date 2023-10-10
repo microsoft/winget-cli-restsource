@@ -1,0 +1,13 @@
+# Template helper to copy files to artifact staging directory
+parameters:
+  name: ''
+  source: ''
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: ${{ parameters.name }}'
+  inputs:
+    SourceFolder: ${{ parameters.source }}
+    TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
+    CleanTargetFolder: true
+    OverWrite: true

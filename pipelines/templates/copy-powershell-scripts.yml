@@ -1,0 +1,44 @@
+# Template helper to copy PowerShell scripts and all dependencies
+parameters:
+ helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netcoreapp3.1'
+ templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: Powershell Module'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\Tools\PowershellModule\src'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
+    CleanTargetFolder: true
+    OverWrite: true
+
+# Publish Helper Libs - win-x86
+- task: DotNetCoreCLI@2
+  displayName: 'Package Helper Libs: Portable'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library --no-restore'
+    zipAfterPublish: false
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: Arm Templates'
+  inputs:
+    Contents: ${{ parameters.templatesPath }}\**\*.json
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\ARMTemplate'
+    OverWrite: true
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: azure function'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\RestAPI'
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
+    ArtifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
