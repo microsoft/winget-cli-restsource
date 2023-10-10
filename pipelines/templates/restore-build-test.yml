@@ -1,0 +1,67 @@
+# Template helper to restore, build, and publish
+
+steps:
+
+# Checkout repo with lfs enabled
+- task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+  inputs:
+    repository: self
+    lfs: "true"
+
+## Restore
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGet.config'
+    restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
+
+## Build
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    solution: '**\*.sln'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+    clean: true
+
+## Copy
+# Copy ARM Templates
+- template: pipelines/templates/copy-artifacts.yml@self
+  parameters:
+    name: WinGet.Restsource.Infrastructure
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
+
+# Copy scripts
+- template: pipelines/templates/copy-artifacts.yml@self
+  parameters:
+    name: ReleaseScripts
+    source: '$(Build.SourcesDirectory)\scripts\Release'
+
+# Copy Rest Function App
+- template: pipelines/templates/package-and-publish.yml@self
+  parameters:
+    name: WinGet.RestSource.Functions
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
+    buildconfig: '$(BuildConfiguration)'
+    zipAfterPublish: True
+
+# Copy Rest Function App
+- template: pipelines/templates/package-and-publish.yml@self
+  parameters:
+    name: WinGet.RestSource.IntegrationTest
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\WinGet.RestSource.IntegrationTest.csproj'
+    buildconfig: '$(BuildConfiguration)'
+    zipAfterPublish: False
+
+# Copy powershell
+- template: pipelines/templates/copy-powershell-scripts.yml@self
+
+## Run Unit Tests
+- template: pipelines/templates/run-unittests.yml@self
+  parameters:
+    name: WinGet.RestSource.UnitTest
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net6.0'
+    dll: Microsoft.WinGet.RestSource.UnitTest.
