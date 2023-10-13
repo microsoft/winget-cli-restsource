@@ -2,8 +2,7 @@
 # CI pipeline for winget-cli-restsource
 
 # Standard Triggers
-trigger:
-  enabled: false
+trigger: none
 
 # PR triggers
 pr:
