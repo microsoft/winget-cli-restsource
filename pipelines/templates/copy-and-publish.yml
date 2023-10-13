@@ -11,9 +11,3 @@ steps:
     TargetFolder:  '$(build.artifactstagingdirectory)\${{ parameters.name }}'
     CleanTargetFolder: true
     OverWrite: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: WinGet.RestSource-${{ parameters.name }}'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.name }}'
-    ArtifactName: 'WinGet.RestSource-${{ parameters.name }}'

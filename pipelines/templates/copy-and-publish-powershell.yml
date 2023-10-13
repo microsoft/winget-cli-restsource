@@ -36,9 +36,3 @@ steps:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
     TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\RestAPI'
     OverWrite: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
-    ArtifactName: 'WinGet.RestSource-Winget.PowerShell.Source'

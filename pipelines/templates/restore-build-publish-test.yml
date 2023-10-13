@@ -3,8 +3,10 @@
 steps:
 
 # Checkout repo with lfs enabled
-- checkout: self
-  lfs: "true"
+- task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+  inputs:
+    repository: self
+    lfs: "true"
 
 ## Restore
 - task: DotNetCoreCLI@2
@@ -27,19 +29,19 @@ steps:
 
 ## Publish
 # Publish ARM Templates
-- template: copy-and-publish.yml
+- template: copy-and-publish.yml@self
   parameters:
     name: WinGet.Restsource.Infrastructure
     source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
 
 # Publish scripts
-- template: copy-and-publish.yml
+- template: copy-and-publish.yml@self
   parameters:
     name: ReleaseScripts
     source: '$(Build.SourcesDirectory)\scripts\Release'
 
 # Publish Rest Function App
-- template: package-and-publish.yml
+- template: package-and-publish.yml@self
   parameters:
     name: WinGet.RestSource.Functions
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
@@ -47,7 +49,7 @@ steps:
     zipAfterPublish: True
 
 # Publish Rest Function App
-- template: package-and-publish.yml
+- template: package-and-publish.yml@self
   parameters:
     name: WinGet.RestSource.IntegrationTest
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\WinGet.RestSource.IntegrationTest.csproj'
@@ -55,20 +57,11 @@ steps:
     zipAfterPublish: False
 
 # Publish powershell
-- template: copy-and-publish-powershell.yml
+- template: copy-and-publish-powershell.yml@self
 
 ## Run Unit Tests
-- template: run-unittests.yml
+- template: run-unittests.yml@self
   parameters:
     name: WinGet.RestSource.UnitTest
     testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net6.0'
     dll: Microsoft.WinGet.RestSource.UnitTest.
-
-## Component Governance
-- task: ComponentGovernanceComponentDetection@0
-  displayName: Component Governance
-  inputs:
-    scanType: 'Register'
-    verbosity: 'Verbose'
-    alertWarningLevel: 'High'
-    failOnAlert: true
