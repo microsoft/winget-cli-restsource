@@ -6,6 +6,7 @@ parameters:
   dll: ''
   testDirectory: ''
 
+steps:
 - task: PowerShell@2
   displayName: "Setup test pre-requisites"
   inputs:
