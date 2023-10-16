@@ -1,20 +1,20 @@
 class Locale
 {
-    [System.Collections.ArrayList]$Moniker  = @()
-    [string]$PackageLocale              = ""
-    [string]$Publisher                  = ""
-    [string]$PublisherUrl               = ""
-    [string]$PublisherSupportUrl        = ""
-    [string]$PrivacyUrl                 = ""
-    [string]$Author                     = ""
-    [string]$PackageName                = ""
-    [string]$PackageUrl                 = ""
-    [string]$License                    = ""
-    [string]$LicenseUrl                 = ""
-    [string]$Copyright                  = ""
-    [string]$CopyrightUrl               = ""
-    [string]$ShortDescription           = ""
-    [string]$Description                = ""
+    [string]$Moniker                    = $null
+    [string]$PackageLocale              = $null
+    [string]$Publisher                  = $null
+    [string]$PublisherUrl               = $null
+    [string]$PublisherSupportUrl        = $null
+    [string]$PrivacyUrl                 = $null
+    [string]$Author                     = $null
+    [string]$PackageName                = $null
+    [string]$PackageUrl                 = $null
+    [string]$License                    = $null
+    [string]$LicenseUrl                 = $null
+    [string]$Copyright                  = $null
+    [string]$CopyrightUrl               = $null
+    [string]$ShortDescription           = $null
+    [string]$Description                = $null
     [System.Collections.ArrayList]$Tags = @()
 
     Locale ()
@@ -25,6 +25,7 @@ class Locale
     }
     Locale ($a)
     {
+        $this.Moniker               = $a.Moniker
         $this.PackageLocale         = $a.PackageLocale
         $this.Publisher             = $a.Publisher
         $this.PublisherUrl          = $a.PublisherUrl
@@ -42,9 +43,6 @@ class Locale
         
         foreach ($Tag in $a.Tags){
             $this.Tags.add([string]::new($Tag))
-        }
-        foreach ($Moniker in $a.Moniker){
-            $this.Moniker.Add([string]::new($Moniker))
         }
     }
 }
@@ -95,26 +93,26 @@ class Dependencies
 
 class Installer
 {
-    [string]$Architecture                                   = ""
-    [string]$InstallerIdentifier                            = ""
-    [string]$InstallerSha256                                = ""
-    [string]$InstallerUrl                                   = ""
-    [string]$InstallerLocale                                = ""
+    $Architecture                                           = $null
+    $InstallerIdentifier                                    = $null
+    $InstallerSha256                                        = $null
+    $InstallerUrl                                           = $null
+    $InstallerLocale                                        = $null
     [System.Collections.ArrayList]$Platform                 = @()
-    [string]$MinimumOsVersion                               = ""
-    [string]$InstallerType                                  = ""
-    [string]$Scope                                          = ""
-    [string]$SignatureSha256                                = ""
+    $MinimumOsVersion                                       = $null
+    $InstallerType                                          = $null
+    $Scope                                                  = $null
+    $SignatureSha256                                        = $null
     [System.Collections.ArrayList]$InstallModes             = @()
-    [System.Object]$InstallerSwitches                       = ""   #Silent, SilentWithProgress, Interactive, InstallLocation, Log, Upgrade, Custom
+    [System.Object]$InstallerSwitches                       = $null   #Silent, SilentWithProgress, Interactive, InstallLocation, Log, Upgrade, Custom
     [System.Collections.ArrayList]$InstallerSuccessCodes    = @()
-    [string]$UpgradeBehavior                                = "install"
+    $UpgradeBehavior                                        = "install"
     [System.Collections.ArrayList]$Commands                 = @()
     [System.Collections.ArrayList]$Protocols                = @()
     [System.Collections.ArrayList]$FileExtensions           = @()
     [System.Collections.ArrayList]$Dependencies             = @()
-    [string]$PackageFamilyName                              = ""
-    [string]$ProductCode                                    = ""
+    $PackageFamilyName                                      = $null
+    $ProductCode                                            = $null
     [System.Collections.ArrayList]$Capabilities             = @()
     [System.Collections.ArrayList]$RestrictedCapabilities   = @()
     [Boolean]$InstallerAbortsTerminal                       = $false
@@ -160,30 +158,22 @@ class Installer
     }
 }
 
-class Version
+class WingetVersion
 {
     [string] $PackageVersion
     [Locale] $DefaultLocale
     [System.Collections.ArrayList]$Locales              = @()
     [System.Collections.ArrayList]$Installers           = @()
 
-    Version ()
+    WingetVersion ()
     {}
-    Version ([Version] $a)
+    WingetVersion ([WingetVersion] $a)
     {
         $this = $a
     }
-    Version ($a)
+    WingetVersion ($a)
     {
         $this.PackageVersion = $a.PackageVersion
-        #$this.DefaultLocale  = [Locale]::new($a.DefaultLocale)
-
-        #foreach ($Locale in $a.Locales){
-        #    $this.Locales.Add($Locale)
-        #}
-        #foreach ($Installer in $a.Installers){
-        #    $this.Installers.Add([Installer]::New($Installer))
-        #}
     }
     AddInstaller ($a)
     {
@@ -196,6 +186,7 @@ class Version
             $this.Installers[$i].InstallerURL              = $Installer.InstallerURL
             $this.Installers[$i].InstallerSha256           = $Installer.InstallerSha256
             $this.Installers[$i].Architecture              = $Installer.Architecture
+            $this.Installers[$i].InstallerIdentifier       = "$($Installer.Architecture)-$($Installer.Scope)"
         }
     }
     AddLocale ($a)
@@ -235,11 +226,12 @@ class PackageManifest
     }
     AddVersion ($a)
     {
-        $this.Versions.Add([Version]::new($a))
+        $this.Versions.Add([WingetVersion]::new($a))
     }
     AddVersion ($a, $b, $c)
     {
-        $this.Versions.Add([Version]::new($a))
+        Write-Host $a
+        $this.Versions.Add([WingetVersion]::new($a))
         $i = $this.Versions.Count -1
 
         foreach ($installer in $b){
@@ -277,6 +269,6 @@ class PackageManifest
         }
         
         $this.PackageIdentifier = $YAMLVersions[0].PackageIdentifier
-        $this.AddVersion($YAMLVersions, $YAMLInstallers, $YAMLLocales)
+        $this.AddVersion($YAMLVersions[0], $YAMLInstallers, $YAMLLocales)
     }
 }
