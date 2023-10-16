@@ -4,25 +4,16 @@ Function Convert-YamlToJson
 {
     <#
     .SYNOPSIS
-    #
+    Converts the YAML files in a specific directory to a PowerShell Object that can be exported to a JSON file.
     
     .DESCRIPTION
-    #
+    Converts the YAML files in a specific directory to a PowerShell Object that can be exported to a JSON file.
         
-    .PARAMETER SubscriptionName
-    #
-
-    .PARAMETER SubscriptionId
-    #
+    .PARAMETER Path
+    Path to the directory containing YAML files.
 
     .EXAMPLE
-    #
-
-    .EXAMPLE
-    #
-
-    .EXAMPLE
-    #
+    Convert-YamlToJson -Path "C:\Folder\""
 
     #>
     
