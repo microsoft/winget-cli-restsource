@@ -28,7 +28,7 @@ else {
 }
 
 ## Validates that the required Azure Modules are present when the script is imported.
-[string[]]$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
+[string[]]$RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions", "powershell-yaml")
 
 ## Verifies that the Azure Modules were previously installed.
 [Boolean] $TestResult = Test-PowerShellModuleExist -Modules $RequiredModules
