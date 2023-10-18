@@ -11,7 +11,7 @@ steps:
   displayName: "Setup test pre-requisites"
   inputs:
     targetType: inline
-    script: >
+    script: |
       # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
       copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
 
