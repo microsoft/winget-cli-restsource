@@ -40,7 +40,7 @@ extends:
     - ES365AIMigrationTooling
 
     stages:
-    - stage: Build Publish Test & Guardian Checks
+    - stage: Build_Publish_Test_And_GuardianChecks
       jobs:
       - job: 'BuildPublishTest'
         displayName: 'Build Publish & Tests'

@@ -30,7 +30,7 @@ extends:
         enabled: true
 
     stages:
-    - stage: Build Publish Test & Guardian Checks
+    - stage: Build_Publish_Test_And_GuardianChecks
       jobs:
       - job: 'BuildTestPublish'
         displayName: 'Build Test & Publish'
