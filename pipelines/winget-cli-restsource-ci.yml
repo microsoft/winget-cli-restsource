@@ -22,7 +22,7 @@ extends:
       image: windows-2022
       os: windows
     customBuildTags:
-    # This is added my 1ES migration tool and it is okay to remove in the future.
+    # This is added by 1ES migration tool and it is okay to remove in the future.
     - ES365AIMigrationTooling
 
     sdl:
@@ -30,7 +30,7 @@ extends:
         enabled: true
 
     stages:
-    - stage: Build_Publish_Test_And_GuardianChecks
+    - stage: Build_Publish_Test
       jobs:
       - job: 'BuildTestPublish'
         displayName: 'Build Test & Publish'

@@ -1,4 +1,4 @@
-# Template helper to copy files and publish them as an artifact
+# Template helper to copy files to an artifact publish path
 parameters:
   name: ''
   source: ''

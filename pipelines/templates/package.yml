@@ -1,4 +1,4 @@
-# Template helper to package projects (using DotNetCoreCLI Publish Command) and publish them as an artifact
+# Template helper to package projects (using DotNetCoreCLI Publish Command)
 parameters:
   name: ''
   projects: ''
