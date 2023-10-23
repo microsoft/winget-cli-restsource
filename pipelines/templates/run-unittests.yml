@@ -7,14 +7,17 @@ parameters:
   testDirectory: ''
 
 steps:
-- powershell: |
-    # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
-    copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
-
-    # Launch Cosmos DB emulator
-    Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
-    Start-CosmosDbEmulator
+- task: PowerShell@2
   displayName: "Setup test pre-requisites"
+  inputs:
+    targetType: inline
+    script: |
+      # Copy and rename Test.runsettings.template.json to Test.runsettings.json to be used as test config
+      copy "$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\Test.runsettings.template.json" "${{ parameters.testDirectory }}\Test.runsettings.json"
+
+      # Launch Cosmos DB emulator
+      Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
+      Start-CosmosDbEmulator
 
 - task: DotNetCoreCLI@2
   displayName: 'Run tests: ${{ parameters.name }}'
