@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\..\src\stylecop.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.6.0" />
+    <PackageReference Include="Azure.ResourceManager.AppService" Version="1.0.0-beta.3" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.3.2">
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.11.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.261">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
+    <PackageReference Include="YamlDotNet" Version="11.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SchemaFiles Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\content\schemas\JSON\manifests\v1.2.0\manifest.defaultLocale.1.2.0.json" ModelName="DefaultLocale" />
+    <SchemaFiles Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\content\schemas\JSON\manifests\v1.2.0\manifest.installer.1.2.0.json" ModelName="Installer" />
+    <SchemaFiles Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\content\schemas\JSON\manifests\v1.2.0\manifest.locale.1.2.0.json" ModelName="Locale" />
+    <SchemaFiles Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\content\schemas\JSON\manifests\v1.2.0\manifest.version.1.2.0.json" ModelName="Version" />
+    <SchemaFiles Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\content\schemas\JSON\manifests\v1.2.0\manifest.singleton.1.2.0.json" ModelName="Singleton" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Inputs="@(SchemaFiles)" Outputs="@(SchemaFiles -> '$(ProjectDir)Models\%(ModelName)ManifestModels.cs')">
+    <Exec Command="$(NSwagExe) jsonschema2csclient /name:%(ModelName)Manifest /namespace:Microsoft.WinGet.Source.Models.%(SchemaFiles.ModelName) /input:%(FullPath) /output:$(ProjectDir)Models\%(ModelName)ManifestModels.cs /InlineNamedArrays:true /RequiredPropertiesMustBeDefined:false /ArrayType:System.Collections.Generic.List /ArrayInstanceType:System.Collections.Generic.List" />
+  </Target>
+
+</Project>
