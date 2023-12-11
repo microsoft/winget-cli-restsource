@@ -35,6 +35,7 @@
 
   <!-- StyleCop Item Group. -->
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Exporter.Geneva" Version="1.6.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -47,7 +48,6 @@
     <PackageReference Include="Microsoft.Msix.Utils" Version="*" />
     <PackageReference Include="Microsoft.Cloud.InstrumentationFramework.NetStd" Version="1.2.1011530001" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.11" />
-    <PackageReference Include="Bond.CSharp" Version="11.0.0" />
   </ItemGroup>
 
   <!-- Component Governance fix Item Group. -->
