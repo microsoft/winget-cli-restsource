@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Metrics.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -87,13 +87,13 @@ namespace Microsoft.WinGet.RestSource.Functions.Geneva
         {
             log.LogError($"Emitting metric '{errorMetric}'");
 
-            MetricsManager metricsManager = new MetricsManager(AzureFunctionEnvironment.MonitoringAccount);
+            GenevaMetrics genevaMetrics = new GenevaMetrics(AzureFunctionEnvironment.MonitoringAccount);
 
             AddTenant(ref icmDimensions, log);
             AddRole(ref icmDimensions, log);
 
             log.LogError(JsonHelper.SerializeObject(icmDimensions));
-            metricsManager.EmitMetric(
+            genevaMetrics.EmitMetric(
                 metricNamespaces.ToString(),
                 errorMetric.ToString(),
                 metricValue,
