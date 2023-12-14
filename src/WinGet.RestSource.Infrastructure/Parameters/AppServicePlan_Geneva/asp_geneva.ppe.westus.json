@@ -42,7 +42,7 @@
             "value": "ppe.geneva.keyvault.pmrest.onmicrosoft.com"
         },
         "monitoringConfigVersion": {
-            "value": "1.12"
+            "value": "2.0"
         }
     }
 }
