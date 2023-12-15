@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="DiagnosticsHelper.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -8,10 +8,8 @@ namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
     using Microsoft.Extensions.Logging;
     using Microsoft.Msix.Utils.Logger;
-    using Microsoft.WindowsPackageManager.Rest.Diagnostics;
 
     /// <summary>
     /// A singleton class containing properties and helpers related to diagnostics and logging.
@@ -77,21 +75,13 @@ namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 
             if (setupGenevaTelemetry)
             {
-                // Initialize Ifx tracing for logging to Geneva Monitoring
-                TelemetryOperation.Initialize(
-                    monitorRole,
-                    monitorTenant,
-                    appServiceEnvironment);
-
-                // Setup Ifx trace logger.
-                AppServiceGenevaTraceLogger packageManagerGenevaTraceLogger = new AppServiceGenevaTraceLogger()
+                GenevaLogger genevaLogger = new GenevaLogger()
                 {
                     LogLevels = consoleLogLevel,
                     LogDecorations = Logger.LogDecorations.All,
                 };
 
-                // Register the logger wrapper that logs to Geneva.
-                Logger.AddLogProvider(packageManagerGenevaTraceLogger);
+                Logger.AddLogProvider(genevaLogger);
             }
         }
 
