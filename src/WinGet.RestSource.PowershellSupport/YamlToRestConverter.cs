@@ -40,12 +40,13 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
                             Path.GetRandomFileName() + ".yaml");
             if (packageFiles.Length > 1)
             {
+                // Create merged manifest from multifile manifests.
                 var factory = new WinGetFactory();
-                using var manifestResult = factory.CreateManifest(directory, mergedManifestFilePath, WinGetCreateManifestOption.SchemaAndSemanticValidation);
+                using var manifestResult = factory.CreateManifest(directory, mergedManifestFilePath, WinGetCreateManifestOption.NoValidation);
 
                 if (!manifestResult.IsValid)
                 {
-                    throw new Exception("Unable to validate manifest");
+                    throw new Exception("Unable to create merged manifest from multifile manifests.");
                 }
             }
             else
