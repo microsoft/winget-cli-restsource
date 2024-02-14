@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="InstallerSwitches.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -76,6 +76,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public string Custom { get; set; }
 
         /// <summary>
+        /// Gets or sets Repair.
+        /// </summary>
+        [SwitchValidator]
+        public string Repair { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -107,6 +113,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
             this.Log = obj.Log;
             this.Upgrade = obj.Upgrade;
             this.Custom = obj.Custom;
+            this.Repair = obj.Repair;
         }
 
         /// <inheritdoc />
@@ -134,7 +141,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
                    Equals(this.InstallLocation, other.InstallLocation) &&
                    Equals(this.Log, other.Log) &&
                    Equals(this.Upgrade, other.Upgrade) &&
-                   Equals(this.Custom, other.Custom);
+                   Equals(this.Custom, other.Custom) &&
+                   Equals(this.Repair, other.Repair);
         }
 
         /// <inheritdoc />
@@ -146,7 +154,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.Silent, this.SilentWithProgress, this.Interactive, this.InstallLocation, this.Log, this.Upgrade, this.Custom).GetHashCode();
+            return (this.Silent, this.SilentWithProgress, this.Interactive, this.InstallLocation, this.Log, this.Upgrade, this.Custom, this.Repair).GetHashCode();
         }
     }
 }
