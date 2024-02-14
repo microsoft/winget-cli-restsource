@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.6.0
+  version: 1.7.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -974,6 +974,13 @@ components:
           minLength: 1
           maxLength: 2048
 
+        Repair:
+          description: The Repair value will be passed to the installer, ModifyPath ARP command, or uninstaller ARP command when the user opts for a repair
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+
     InstallerReturnCode:
       description: An exit code that can be returned by the installer after execution
       type: integer
@@ -1408,6 +1415,15 @@ components:
       description: Indicates whether the installer is prohibited from being downloaded for offline installation.
       type: boolean
 
+    RepairBehavior:
+      description: The repair method
+      type: string
+      nullable: true
+      enum:
+        - modify
+        - uninstaller
+        - installer
+
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
       type: string
@@ -1454,6 +1470,36 @@ components:
           - Version
           - Channel
           - Market
+
+    Authentication:
+      description: The authentication requirement from the server. Information endpoint should not require authentication.
+      type: object
+      properties:
+        AuthenticationType:
+          description: The authentication type required by the server.
+          type: string
+          enum:
+            - none
+            - microsoftEntraId
+        MicrosoftEntraIdAuthenticationInfo:
+          description: The Microsoft Entra Id authentication requirement from the server if applicable.
+          type: object
+          properties:
+            Resource:
+              description: The resource value for Microsoft Entra Id authentication.
+              type: string
+              minLength: 1
+              maxLength: 512
+            Scope:
+              description: The optional scope value for Microsoft Entra Id authentication.
+              type: string
+              nullable: true
+              minLength: 1
+              maxLength: 512
+          required:
+            - Resource
+      required:
+        - AuthenticationType
 
     Installer:
       description: Installer. If InstallerType is msstore, MSStoreProductIdentifier is required. In other cases, InstallerUrl and InstallerSha256 are required.
@@ -1821,6 +1867,10 @@ components:
           properties:
             RequiredQueryParameters:
               $ref: '#/components/schemas/QueryParameterArray'
+        - type: object
+          properties:
+            Authentication:
+              $ref: '#/components/schemas/Authentication'
       required:
         - SourceIdentifier
         - ServerSupportedVersions
