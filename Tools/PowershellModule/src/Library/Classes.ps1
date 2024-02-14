@@ -156,6 +156,7 @@ class WinGetInstaller
     $AppsAndFeaturesEntries
     $Markets
     $DownloadCommandProhibited
+    $RepairBehavior
 
     WinGetInstaller ([string] $a)
     {
@@ -194,6 +195,7 @@ class WinGetInstaller
         $this.AppsAndFeaturesEntries    = $Converted.AppsAndFeaturesEntries
         $this.Markets                   = $Converted.Markets
         $this.DownloadCommandProhibited = $Converted.DownloadCommandProhibited
+        $this.RepairBehavior            = $Converted.RepairBehavior
     }
     WinGetInstaller ([WinGetInstaller] $a)
     {
@@ -230,6 +232,7 @@ class WinGetInstaller
         $this.AppsAndFeaturesEntries    = $a.AppsAndFeaturesEntries
         $this.Markets                   = $a.Markets
         $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
+        $this.RepairBehavior            = $a.RepairBehavior
     }
     WinGetInstaller ([psobject] $a) {
         $this.InstallerIdentifier       = $a.InstallerIdentifier
@@ -265,6 +268,7 @@ class WinGetInstaller
         $this.AppsAndFeaturesEntries    = $a.AppsAndFeaturesEntries
         $this.Markets                   = $a.Markets
         $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
+        $this.RepairBehavior            = $a.RepairBehavior
     }
     
     [WinGetInstaller[]] Add ([WinGetInstaller] $a)

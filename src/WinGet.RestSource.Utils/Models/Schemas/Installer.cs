@@ -252,6 +252,12 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public bool DownloadCommandProhibited { get; set; }
 
         /// <summary>
+        /// Gets or sets RepairBehavior.
+        /// </summary>
+        [RepairBehaviorValidator]
+        public string RepairBehavior { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -314,6 +320,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.UnsupportedArguments = obj.UnsupportedArguments;
             this.InstallationMetadata = obj.InstallationMetadata;
             this.DownloadCommandProhibited = obj.DownloadCommandProhibited;
+            this.RepairBehavior = obj.RepairBehavior;
         }
 
         /// <inheritdoc />
@@ -475,7 +482,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.DisplayInstallWarnings, other.DisplayInstallWarnings)
                    && Equals(this.UnsupportedArguments, other.UnsupportedArguments)
                    && Equals(this.InstallationMetadata, other.InstallationMetadata)
-                   && Equals(this.DownloadCommandProhibited, other.DownloadCommandProhibited);
+                   && Equals(this.DownloadCommandProhibited, other.DownloadCommandProhibited)
+                   && Equals(this.RepairBehavior, other.RepairBehavior);
         }
 
         /// <inheritdoc />
@@ -526,6 +534,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.UnsupportedArguments);
             hashCode.Add(this.InstallationMetadata);
             hashCode.Add(this.DownloadCommandProhibited);
+            hashCode.Add(this.RepairBehavior);
             return hashCode.ToHashCode();
         }
     }

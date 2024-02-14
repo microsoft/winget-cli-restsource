@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PackageManifestUtils.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -118,6 +118,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             //           Log
             //           Upgrade
             //           Custom
+            //           Repair
             //      InstallerSuccessCodes
             //          Array of ints
             //      UpgradeBehavior
@@ -144,6 +145,9 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             //          Array of strings
             //      RestrictedCapabilities
             //          Array of strings
+            //      DownloadCommandProhibited
+            //          bool
+            //      RepairBehavior
             VersionExtended versionExtended = new VersionExtended();
             versionExtended.PackageVersion = manifest.Version;
             versionExtended.Channel = manifest.Channel;
@@ -223,6 +227,8 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
                     newInstaller.ProductCode = installer.ProductCode ?? manifest.ProductCode;
                     newInstaller.Capabilities = installer.Capabilities.ToApiArray<Capabilities>() ?? manifest.Capabilities.ToApiArray<Capabilities>();
                     newInstaller.RestrictedCapabilities = installer.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>() ?? manifest.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>();
+                    newInstaller.DownloadCommandProhibited = installer.DownloadCommandProhibited;
+                    newInstaller.RepairBehavior = installer.RepairBehavior ?? manifest.RepairBehavior;
 
                     newInstaller.InstallerIdentifier = string.Join("_", newInstaller.Architecture, newInstaller.InstallerLocale, newInstaller.Scope, Guid.NewGuid());
                     versionExtended.AddInstaller(newInstaller);
@@ -260,6 +266,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
                     Log = string.IsNullOrWhiteSpace(sourceSwitches.Log) ? null : sourceSwitches.Log,
                     Upgrade = string.IsNullOrWhiteSpace(sourceSwitches.Upgrade) ? null : sourceSwitches.Upgrade,
                     Custom = string.IsNullOrWhiteSpace(sourceSwitches.Custom) ? null : sourceSwitches.Custom,
+                    Repair = string.IsNullOrWhiteSpace(sourceSwitches.Repair) ? null : sourceSwitches.Repair,
                 };
             }
 
