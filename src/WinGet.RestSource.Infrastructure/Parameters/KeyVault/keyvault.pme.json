@@ -9,42 +9,6 @@
       "value": [
         {
           "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "ad2e78a3-296a-4eab-a9f9-88506c927053",
-          "permissions": {
-            "keys": [
-              "List"
-            ],
-            "secrets": [
-              "List"
-            ],
-            "certificates": [
-              "List"
-            ]
-          },
-          "metadata": {
-            "description": "This is the object for the Package Manager Team Group (TM-MSPKG-SERVICE)."
-          }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "9d2ad22f-6354-40ca-aa46-ce0a4754e500",
-          "permissions": {
-            "keys": [
-              "List"
-            ],
-            "secrets": [
-              "List"
-            ],
-            "certificates": [
-              "List"
-            ]
-          },
-          "metadata": {
-            "description": "This is the object for the Package Manager Admin Group (AD-MSPKG-SERVICE)."
-          }
-        },
-        {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
           "objectId": "6a695a50-74b4-4fe0-a4be-5051d94c810e",
           "permissions": {
             "keys": [
