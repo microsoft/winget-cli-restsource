@@ -1,0 +1,599 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apiManagementServiceName": {
+            "type": "string",
+            "defaultValue": "[format('apiservice{0}', uniqueString(resourceGroup().id))]",
+            "metadata": {
+                "description": "The name of the API Management service instance"
+            }
+        },
+        "publisherEmail": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The email address of the owner of the service"
+            }
+        },
+        "publisherName": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The name of the owner of the service"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "Developer",
+            "allowedValues": [
+                "Consumption",
+                "Developer",
+                "Basic",
+                "Basicv2",
+                "Standard",
+                "Standardv2",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The pricing tier of this API Management service"
+            }
+        },
+        "skuCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                0,
+                1,
+                2
+            ],
+            "metadata": {
+                "description": "The instance size of this API Management service."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "serviceUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "Absolute URL of the backend service implementing this API."
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "Tenant ID or URL (for example, 'contoso.onmicrosoft.com') of the Azure Active Directory service."
+            }
+        },
+        "clientId": {
+            "type": "string",
+            "metadata": {
+                "description": "Client application ID from Azure Active Directory."
+            }
+        },
+        "audience": {
+            "type": "string",
+            "metadata": {
+                "description": "The acceptable audience claim that can be present on the token."
+            }
+        },
+        "userScope": {
+            "type": "string",
+            "metadata": {
+                "description": "Matching scope string for user permission."
+            }
+        },
+        "adminScope": {
+            "type": "string",
+            "metadata": {
+                "description": "Matching scope string for admin permission."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[parameters('apiManagementServiceName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]",
+                "capacity": "[parameters('skuCount')]"
+            },
+            "properties": {
+                "publisherEmail": "[parameters('publisherEmail')]",
+                "publisherName": "[parameters('publisherName')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "displayName": "WinGetRest",
+                "apiRevision": "1",
+                "subscriptionRequired": true,
+                "path": "WinGetRest",
+                "serviceUrl": "[parameters('serviceUrl')]",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/GetPackageManifests')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "displayName": "Get Package Manifests",
+                "method": "GET",
+                "urlTemplate": "/packageManifests/{PackageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "PackageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "request": {
+                    "headers": [
+                        {
+                            "name": "Version",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Windows-Package-Manager",
+                            "type": "string"
+                        }
+                    ],
+                    "queryParameters": [
+                        {
+                            "name": "Version",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Channel",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "examples": {
+                                    "default": {
+                                        "value": {
+                                            "Data": {
+                                                "PackageIdentifier": "~yy.yz~~{}~~{~z}}{yyyyz{~zy}{y~.y{zy~{~yzz}{{}.}y}.y~yz~.~zy}~z~~~{z~{~~zzzyz~zz}~z{~{",
+                                                "Versions": [
+                                                    {
+                                                        "PackageVersion": "}{{yz{zz}zzz{}y}y~~~~~z}~y~{zyyzz}yz~~~y}~{}~y}~y}}{~~~y{z}~~}z~~}yyy{z~z~{zyyyzzy}}}y{zy~{",
+                                                        "DefaultLocale": {
+                                                            "PackageLocale": "Iu-viOJiZjA",
+                                                            "Publisher": "string",
+                                                            "PublisherUrl": "Https://",
+                                                            "PublisherSupportUrl": "httP://",
+                                                            "PrivacyUrl": "HttP://",
+                                                            "Author": "string",
+                                                            "PackageName": "string",
+                                                            "PackageUrl": "HTtps://",
+                                                            "License": "string",
+                                                            "LicenseUrl": "htTps://",
+                                                            "Copyright": "string",
+                                                            "CopyrightUrl": "HtTPS://",
+                                                            "ShortDescription": "string",
+                                                            "Description": "string",
+                                                            "Tags": [
+                                                                ";&(OQ0drek!}FMwXN+}.R,cpy,]uxmfcn@-:Xu.T"
+                                                            ],
+                                                            "ReleaseNotes": "string",
+                                                            "ReleaseNotesUrl": "HtTPS://",
+                                                            "Agreements": [
+                                                                {
+                                                                    "AgreementLabel": "string",
+                                                                    "Agreement": "string",
+                                                                    "AgreementUrl": "HTtps://"
+                                                                }
+                                                            ],
+                                                            "PurchaseUrl": "HttPs://",
+                                                            "InstallationNotes": "string",
+                                                            "Documentations": [
+                                                                {
+                                                                    "DocumentLabel": "string",
+                                                                    "DocumentUrl": "HTTP://"
+                                                                }
+                                                            ],
+                                                            "Icons": [
+                                                                {
+                                                                    "IconUrl": "htTps://",
+                                                                    "IconFileType": "png",
+                                                                    "IconResolution": "custom",
+                                                                    "IconTheme": "default",
+                                                                    "IconSha256": "67EBc41D4285A9Bfe27EeA03DFF5cFf4FFbB6B342dC0E9a837B5fEb4EbAb00fe"
+                                                                }
+                                                            ],
+                                                            "Moniker": "2C5+AK6c+brjts:^EW\\7k:ve\\;[%1;]Sao.0'JTY"
+                                                        },
+                                                        "Channel": "string",
+                                                        "Locales": [
+                                                            {
+                                                                "PackageLocale": "pq-bh-Kk-JDFtor-kp-r",
+                                                                "Publisher": "string",
+                                                                "PublisherUrl": "HTtP://",
+                                                                "PublisherSupportUrl": "Http://",
+                                                                "PrivacyUrl": "httpS://",
+                                                                "Author": "string",
+                                                                "PackageName": "string",
+                                                                "PackageUrl": "hTtpS://",
+                                                                "License": "string",
+                                                                "LicenseUrl": "httP://",
+                                                                "Copyright": "string",
+                                                                "CopyrightUrl": "htTP://",
+                                                                "ShortDescription": "string",
+                                                                "Description": "string",
+                                                                "Tags": [
+                                                                    "G..RusUk7OnXw[(S71P<9)iuGD=P#}@@("
+                                                                ],
+                                                                "ReleaseNotes": "string",
+                                                                "ReleaseNotesUrl": "htTP://",
+                                                                "Agreements": [
+                                                                    {
+                                                                        "AgreementLabel": "string",
+                                                                        "Agreement": "string",
+                                                                        "AgreementUrl": "HttPS://"
+                                                                    }
+                                                                ],
+                                                                "PurchaseUrl": "HTtPS://",
+                                                                "InstallationNotes": "string",
+                                                                "Documentations": [
+                                                                    {
+                                                                        "DocumentLabel": "string",
+                                                                        "DocumentUrl": "hTtpS://"
+                                                                    }
+                                                                ],
+                                                                "Icons": [
+                                                                    {
+                                                                        "IconUrl": "HTTP://",
+                                                                        "IconFileType": "png",
+                                                                        "IconResolution": "custom",
+                                                                        "IconTheme": "default",
+                                                                        "IconSha256": "0BDe3ead6ee2Cc8da0814BA6dDf0d0AcffB9aAb8a65F9a0cf2CeAC9D3fA9dAbD"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "Installers": [
+                                                            {
+                                                                "InstallerIdentifier": "string",
+                                                                "InstallerSha256": "0a0BfF7d0A96B97beDDfEDe6fbec4C3Bc04A2A06eD14AC7Ea2F1b5dfcEfaB6D0",
+                                                                "InstallerUrl": "HTTp://",
+                                                                "Architecture": "x86",
+                                                                "InstallerLocale": "BR-MQ-DcOakP-jsb-n-U",
+                                                                "Platform": [
+                                                                    "Windows.Desktop"
+                                                                ],
+                                                                "MinimumOSVersion": "65212.13242.273.65532",
+                                                                "InstallerType": "msix",
+                                                                "Scope": "user",
+                                                                "SignatureSha256": "Af45DAA1533A4c2B8D9A8D7bE7Fc0eFE52F123f88bbBf7d2Dd4099cfe1F87cBa",
+                                                                "InstallModes": [
+                                                                    "interactive"
+                                                                ],
+                                                                "InstallerSwitches": {
+                                                                    "Silent": "string",
+                                                                    "SilentWithProgress": "string",
+                                                                    "Interactive": "string",
+                                                                    "InstallLocation": "string",
+                                                                    "Log": "string",
+                                                                    "Upgrade": "string",
+                                                                    "Custom": "string",
+                                                                    "Repair": "string"
+                                                                },
+                                                                "InstallerSuccessCodes": [
+                                                                    4294967295
+                                                                ],
+                                                                "ExpectedReturnCodes": [
+                                                                    {
+                                                                        "InstallerReturnCode": 4294967295,
+                                                                        "ReturnResponse": "packageInUse",
+                                                                        "ReturnResponseUrl": "httPS://"
+                                                                    }
+                                                                ],
+                                                                "UpgradeBehavior": "install",
+                                                                "Commands": [
+                                                                    "string"
+                                                                ],
+                                                                "Protocols": [
+                                                                    "string"
+                                                                ],
+                                                                "FileExtensions": [
+                                                                    "yy~yy}}~}y~{~}}~y}z}}~{z~{}~y}{z{yy~{z{y~z~}{~y~{}z{{{}{"
+                                                                ],
+                                                                "Dependencies": {
+                                                                    "WindowsFeatures": [
+                                                                        "string"
+                                                                    ],
+                                                                    "WindowsLibraries": [
+                                                                        "string"
+                                                                    ],
+                                                                    "PackageDependencies": [
+                                                                        {
+                                                                            "PackageIdentifier": "{y~z{~yy}~.{~}y~{{zz}}y}}{~{yzzz}~.y~zz}y}y}~{~~{}yyzzy{}.y{z{}}~yy~~yy~{}~yy}yzz}~}{}~yz{.{~~yzyy{}.}~zyyz~yz{}yy~}z{}y~{~yy~{y",
+                                                                            "MinimumVersion": "}y"
+                                                                        }
+                                                                    ],
+                                                                    "ExternalDependencies": [
+                                                                        "string"
+                                                                    ]
+                                                                },
+                                                                "PackageFamilyName": "GFp.4payNII-Bx80nsvaVgzaYO_iHUj6GLBnX3D4",
+                                                                "ProductCode": "string",
+                                                                "Capabilities": [
+                                                                    "string"
+                                                                ],
+                                                                "RestrictedCapabilities": [
+                                                                    "string"
+                                                                ],
+                                                                "MSStoreProductIdentifier": "SOw3LAwOTypH",
+                                                                "InstallerAbortsTerminal": true,
+                                                                "ReleaseDate": "2024-06-11",
+                                                                "InstallLocationRequired": true,
+                                                                "RequireExplicitUpgrade": true,
+                                                                "ElevationRequirement": "elevationRequired",
+                                                                "UnsupportedOSArchitectures": [
+                                                                    "x86"
+                                                                ],
+                                                                "AppsAndFeaturesEntries": [
+                                                                    {
+                                                                        "DisplayName": "string",
+                                                                        "Publisher": "string",
+                                                                        "DisplayVersion": "string",
+                                                                        "ProductCode": "string",
+                                                                        "UpgradeCode": "string",
+                                                                        "InstallerType": "msix"
+                                                                    }
+                                                                ],
+                                                                "Markets": {
+                                                                    "AllowedMarkets": [
+                                                                        "TY"
+                                                                    ]
+                                                                },
+                                                                "NestedInstallerType": "msix",
+                                                                "NestedInstallerFiles": [
+                                                                    {
+                                                                        "RelativeFilePath": "string",
+                                                                        "PortableCommandAlias": "string"
+                                                                    }
+                                                                ],
+                                                                "DisplayInstallWarnings": true,
+                                                                "UnsupportedArguments": [
+                                                                    "log"
+                                                                ],
+                                                                "InstallationMetadata": {
+                                                                    "DefaultInstallLocation": "string",
+                                                                    "Files": [
+                                                                        {
+                                                                            "RelativeFilePath": "string",
+                                                                            "FileSha256": "ba2b85dF6f981B8Ef4AAe44716dE7cb18Ab7fA8adc4C6AD3DB49a13a6Dab687D",
+                                                                            "FileType": "launch",
+                                                                            "InvocationParameter": "string",
+                                                                            "DisplayName": "string"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "DownloadCommandProhibited": true
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "ContinuationToken": "string",
+                                            "UnsupportedQueryParameters": [
+                                                "Version"
+                                            ],
+                                            "RequiredQueryParameters": [
+                                                "Version"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "statusCode": 404,
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "examples": {
+                                    "default": {
+                                        "value": {
+                                            "ErrorCode": 0,
+                                            "ErrorMessage": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/SearchManifests')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "displayName": "Search Package Manifests",
+                "method": "POST",
+                "urlTemplate": "/manifestSearch",
+                "request": {
+                    "headers": [
+                        {
+                            "name": "Version",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Windows-Package-Manager",
+                            "type": "string"
+                        },
+                        {
+                            "name": "ContinuationToken",
+                            "type": "string"
+                        }
+                    ],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "examples": {
+                                "default": {
+                                    "MaximumResults": 0,
+                                    "FetchAllManifests": true,
+                                    "Query": {
+                                        "KeyWord": "string",
+                                        "MatchType": "Exact"
+                                    },
+                                    "Inclusions": [
+                                        {
+                                            "PackageMatchField": "PackageIdentifier",
+                                            "RequestMatch": {
+                                                "KeyWord": "string",
+                                                "MatchType": "Exact"
+                                            }
+                                        }
+                                    ],
+                                    "Filters": [
+                                        {
+                                            "PackageMatchField": "PackageIdentifier",
+                                            "RequestMatch": {
+                                                "KeyWord": "string",
+                                                "MatchType": "Exact"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "examples": {
+                                    "default": {
+                                        "value": {
+                                            "Data": [
+                                                {
+                                                    "PackageIdentifier": "}}zyzz~yyzy~~}~yzyy.y{}yzyz{yzz}z}.yz{~}}{{y~z}}z.{{{{}~~z}y}z~}z{z{}z~z}~{z~}{~~.{z}}.~yyz}{{{}}~zy",
+                                                    "PackageName": "string",
+                                                    "Publisher": "string",
+                                                    "Versions": [
+                                                        {
+                                                            "PackageVersion": "~",
+                                                            "Channel": "string",
+                                                            "PackageFamilyNames": [
+                                                                "u27z3XbnP9yvZgnym2vQhLCfYnoE6rpDS.n8_6oVyx9BKYFKH2"
+                                                            ],
+                                                            "ProductCodes": [
+                                                                "string"
+                                                            ],
+                                                            "AppsAndFeaturesEntryVersions": [
+                                                                "string"
+                                                            ],
+                                                            "UpgradeCodes": [
+                                                                "string"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "ContinuationToken": "string",
+                                            "RequiredPackageMatchFields": [
+                                                "PackageIdentifier"
+                                            ],
+                                            "UnsupportedPackageMatchFields": [
+                                                "PackageIdentifier"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "statusCode": 204,
+                        "description": "No results were found."
+                    },
+                    {
+                        "statusCode": 400,
+                        "description": "Request contains something thats perceived as client error.",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "examples": {
+                                    "default": {
+                                        "value": {
+                                            "ErrorCode": 0,
+                                            "ErrorMessage": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/GetPackageManifests/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementServiceName'), 'WinGetRest', 'GetPackageManifests')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <validate-azure-ad-token tenant-id=[parameters('tenantId')]] header-name=\"authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User is not authorized.\">\r\n      <client-application-ids>\r\n        <application-id>[parameters('clientId')]</application-id>\r\n      </client-application-ids>\r\n    </validate-azure-ad-token>\r\n    <validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User does not have permission to access api.\">\r\n      <audiences>\r\n        <audience>[parameters('audience')]</audience>\r\n      </audiences>\r\n      <required-claims>\r\n        <claim name=\"scp\" match=\"all\">\r\n          <value>[parameters('userScope')]]</value>\r\n        </claim>\r\n      </required-claims>\r\n    </validate-jwt>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/SearchManifests/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementServiceName'), 'WinGetRest', 'SearchManifests')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <validate-azure-ad-token tenant-id=[parameters('tenantId')]] header-name=\"authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User is not authorized.\">\r\n      <client-application-ids>\r\n        <application-id>[parameters('clientId')]</application-id>\r\n      </client-application-ids>\r\n    </validate-azure-ad-token>\r\n    <validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User does not have permission to access api.\">\r\n      <audiences>\r\n        <audience>[parameters('audience')]</audience>\r\n      </audiences>\r\n      <required-claims>\r\n        <claim name=\"scp\" match=\"all\">\r\n          <value>[parameters('adminScope')]]</value>\r\n        </claim>\r\n      </required-claims>\r\n    </validate-jwt>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        }
+    ]
+}
