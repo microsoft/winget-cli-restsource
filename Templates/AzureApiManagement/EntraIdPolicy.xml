@@ -1,0 +1,18 @@
+<policies>
+    <inbound>
+        <base />
+        <validate-azure-ad-token tenant-id="tenant-Id" header-name="authorization" failed-validation-httpcode="401" failed-validation-error-message="User does not have permission to access APIs">
+            <client-application-ids>
+                <application-id>client-application-id</application-id>
+            </client-application-ids>
+            <audiences>
+                <audience>audience-id</audience>
+            </audiences>
+            <required-claims>
+                <claim name="scp" match="all">
+                    <value>scope</value>
+                </claim>
+            </required-claims>
+        </validate-azure-ad-token>
+    </inbound>
+</policies>

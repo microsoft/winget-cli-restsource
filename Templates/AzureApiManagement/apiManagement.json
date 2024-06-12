@@ -63,36 +63,6 @@
             "metadata": {
                 "description": "Absolute URL of the backend service implementing this API."
             }
-        },
-        "tenantId": {
-            "type": "string",
-            "metadata": {
-                "description": "Tenant ID or URL (for example, 'contoso.onmicrosoft.com') of the Azure Active Directory service."
-            }
-        },
-        "clientId": {
-            "type": "string",
-            "metadata": {
-                "description": "Client application ID from Azure Active Directory."
-            }
-        },
-        "audience": {
-            "type": "string",
-            "metadata": {
-                "description": "The acceptable audience claim that can be present on the token."
-            }
-        },
-        "userScope": {
-            "type": "string",
-            "metadata": {
-                "description": "Matching scope string for user permission."
-            }
-        },
-        "adminScope": {
-            "type": "string",
-            "metadata": {
-                "description": "Matching scope string for admin permission."
-            }
         }
     },
     "resources": [
@@ -120,13 +90,59 @@
             "properties": {
                 "displayName": "WinGetRest",
                 "apiRevision": "1",
-                "subscriptionRequired": true,
+                "subscriptionRequired": false,
                 "path": "WinGetRest",
                 "serviceUrl": "[parameters('serviceUrl')]",
                 "protocols": [
                     "https"
                 ],
                 "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/information')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+            ],
+            "properties": {
+                "displayName": "Information",
+                "method": "GET",
+                "urlTemplate": "/information",
+                "templateParameters": [],
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "SourceInformation",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "examples": {
+                                    "default": {
+                                        "value": {
+                                            "Data": {
+                                                "SourceIdentifier": "TestSource",
+                                                "ServerSupportedVersions": [
+                                                    "1.7.0"
+                                                ],
+                                                "Authentication": {
+                                                    "AuthenticationType": "microsoftEntraId",
+                                                    "MicrosoftEntraIdAuthenticationInfo": {
+                                                        "Resource": "resourceId",
+                                                        "Scope": "scope"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "headers": []
+                    }
+                ]
             }
         },
         {
@@ -565,34 +581,6 @@
                         ]
                     }
                 ]
-            }
-        },
-        {
-            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
-            "apiVersion": "2023-05-01-preview",
-            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/GetPackageManifests/policy')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementServiceName'), 'WinGetRest', 'GetPackageManifests')]",
-                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
-                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
-            ],
-            "properties": {
-                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <validate-azure-ad-token tenant-id=[parameters('tenantId')]] header-name=\"authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User is not authorized.\">\r\n      <client-application-ids>\r\n        <application-id>[parameters('clientId')]</application-id>\r\n      </client-application-ids>\r\n    </validate-azure-ad-token>\r\n    <validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User does not have permission to access api.\">\r\n      <audiences>\r\n        <audience>[parameters('audience')]</audience>\r\n      </audiences>\r\n      <required-claims>\r\n        <claim name=\"scp\" match=\"all\">\r\n          <value>[parameters('userScope')]]</value>\r\n        </claim>\r\n      </required-claims>\r\n    </validate-jwt>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
-                "format": "xml"
-            }
-        },
-        {
-            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
-            "apiVersion": "2023-05-01-preview",
-            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/SearchManifests/policy')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementServiceName'), 'WinGetRest', 'SearchManifests')]",
-                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementServiceName'), 'WinGetRest')]",
-                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
-            ],
-            "properties": {
-                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <validate-azure-ad-token tenant-id=[parameters('tenantId')]] header-name=\"authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User is not authorized.\">\r\n      <client-application-ids>\r\n        <application-id>[parameters('clientId')]</application-id>\r\n      </client-application-ids>\r\n    </validate-azure-ad-token>\r\n    <validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"User does not have permission to access api.\">\r\n      <audiences>\r\n        <audience>[parameters('audience')]</audience>\r\n      </audiences>\r\n      <required-claims>\r\n        <claim name=\"scp\" match=\"all\">\r\n          <value>[parameters('adminScope')]]</value>\r\n        </claim>\r\n      </required-claims>\r\n    </validate-jwt>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
-                "format": "xml"
             }
         }
     ]
