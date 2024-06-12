@@ -31,6 +31,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+!scripts/Release/
+
 # These are the PowerShell helper libraries used to run. Added to artifact as automated task
 Tools/PowershellModule/src/Library/ARMTemplate
 Tools/PowershellModule/src/Library/RestAPI
