@@ -5,7 +5,7 @@
             "name": "stwgrestwestuspme",
             "servicePrincipals": [
                 {
-                    "displayName": "azfun-wgrest-api-centus-pme",
+                    "displayName": "azfun-wgrest-api-westus-pme",
                     "roles": [
                         "Storage Account Contributor",
                         "Storage Blob Data Owner",
@@ -22,7 +22,7 @@
             "name": "stwgrestcentuspme",
             "servicePrincipals": [
                 {
-                    "displayName": "azfun-wgrest-api-westus-pme",
+                    "displayName": "azfun-wgrest-api-centus-pme",
                     "roles": [
                         "Storage Account Contributor",
                         "Storage Blob Data Owner",
