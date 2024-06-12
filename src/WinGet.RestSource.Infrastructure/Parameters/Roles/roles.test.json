@@ -1,0 +1,21 @@
+{
+    "storageAccounts": [
+        {
+            "description": "This is the storage account for the west azure function",
+            "name": "stwgrestwestustest",
+            "servicePrincipals": [
+                {
+                    "displayName": "azfun-wgrest-api-westus-test",
+                    "roles": [
+                        "Storage Account Contributor",
+                        "Storage Blob Data Owner",
+                        "Storage Table Data Contributor",
+                        "Storage Queue Data Contributor",
+                        "Storage Queue Data Message Sender",
+                        "Storage Queue Data Message Processor"
+                    ]
+                }
+            ]
+        }
+    ]
+}

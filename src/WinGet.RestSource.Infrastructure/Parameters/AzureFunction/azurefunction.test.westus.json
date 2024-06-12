@@ -40,6 +40,9 @@
     },
     "monitoringMetricsAccount": {
       "value": "MsPkgMgrMetrics"
+    },
+    "azFuncStorageName": {
+      "value": "stwgrestwestustest"
     }
   }
 }

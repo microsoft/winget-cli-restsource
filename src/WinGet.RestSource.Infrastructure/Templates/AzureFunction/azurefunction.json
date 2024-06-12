@@ -68,7 +68,13 @@
         "storageSecretName": {
             "type": "string",
             "metadata": {
-                "description": "Storage Secret Name"
+                "description": "Storage Secret Name. TODO: delete this once WEBSITE_CONTENTAZUREFILECONNECTIONSTRING managed identity support is enabled"
+            }
+        },
+        "azFuncStorageName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the storage account used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
             }
         },
         "appInsightSubscription": {
@@ -245,7 +251,7 @@
                     "properties": {
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
                         "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
-                        "AzureWebJobsStorage": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
+                        "AzureWebJobsStorage__accountName": "[parameters('azFuncStorageName')]",
                         "CertificateAuthenticationRequired": "[variables('certificateAuthenticationEnabled')]",
                         "CertificateAuthenticationSelfSigned": "[parameters('certificateAuthenticationAllowSelfSigned')]",
                         "CertificateAuthenticationSubjectName": "[parameters('certificateAuthenticationSubjectName')]",

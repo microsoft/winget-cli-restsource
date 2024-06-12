@@ -1,0 +1,38 @@
+{
+    "storageAccounts": [
+        {
+            "description": "This is the storage account for the west azure function",
+            "name": "stwgrestwestusint",
+            "servicePrincipals": [
+                {
+                    "displayName": "azfun-wgrest-api-westus-int",
+                    "roles": [
+                        "Storage Account Contributor",
+                        "Storage Blob Data Owner",
+                        "Storage Table Data Contributor",
+                        "Storage Queue Data Contributor",
+                        "Storage Queue Data Message Sender",
+                        "Storage Queue Data Message Processor"
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "This is the storage account for the central us azure function",
+            "name": "stwgrestcentusint",
+            "servicePrincipals": [
+                {
+                    "displayName": "azfun-wgrest-api-centus-int",
+                    "roles": [
+                        "Storage Account Contributor",
+                        "Storage Blob Data Owner",
+                        "Storage Table Data Contributor",
+                        "Storage Queue Data Contributor",
+                        "Storage Queue Data Message Sender",
+                        "Storage Queue Data Message Processor"
+                    ]
+                }
+            ]
+        }
+    ]
+}
