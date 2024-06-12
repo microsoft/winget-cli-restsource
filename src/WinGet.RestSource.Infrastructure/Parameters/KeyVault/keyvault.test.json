@@ -31,7 +31,7 @@
         },
         {
           "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "94068ac3-3b3c-4ce5-8f6d-b0ec26875e07",
+          "objectId": "789c9442-e61d-48ea-84e1-02892ef4651f",
           "permissions": {
             "keys": [
               "Get",
@@ -51,7 +51,7 @@
             ]
           },
           "metadata": {
-            "description": "This is the object for DEP-APT-WinGetService-Test (winget-cli-restsource)."
+            "description": "This is the object for winget-cli-restsource Test."
           }
         },
         {
