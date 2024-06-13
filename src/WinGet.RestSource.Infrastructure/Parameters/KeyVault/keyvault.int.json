@@ -30,7 +30,7 @@
         },
         {
           "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "3aec9770-cb67-4244-8a11-fb86b4bc4988",
+          "objectId": "4d43284b-69df-4fda-938c-9636be4248bc",
           "permissions": {
             "keys": [
               "Get",
@@ -50,7 +50,7 @@
             ]
           },
           "metadata": {
-            "description": "This is the object for DEP-APT-WinGetService-Internal (winget-cli-restsource)."
+            "description": "This is the object for winget-cli-restsource Int."
           }
         },
         {

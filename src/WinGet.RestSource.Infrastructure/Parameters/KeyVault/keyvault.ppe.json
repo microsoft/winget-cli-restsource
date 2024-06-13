@@ -30,7 +30,7 @@
         },
         {
           "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "f9c437e7-f49e-4226-81eb-0944531afa02",
+          "objectId": "a2db5783-1f5a-4db7-a228-f86910ed981a",
           "permissions": {
             "keys": [
               "Get",
@@ -50,7 +50,7 @@
             ]
           },
           "metadata": {
-            "description": "This is the object for DEP-APT-WinGetService-PPE (winget-cli-restsource)."
+            "description": "This is the object for winget-cli-restsource PPE."
           }
         },
         {

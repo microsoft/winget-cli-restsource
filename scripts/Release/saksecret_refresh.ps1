@@ -5,6 +5,8 @@
     The storage account connection strings in the keyvault need to be updated after the keys are autorotated
     by keyvault. This script fetches the current active key from managed storage account and updates the corresponding
     keyvault secrets. It doesn't update the secrets if they are the same.
+    NOTE: Key Vault Managed Storage Account Keys is supported as-is with no more updates planned, so in the
+    future we might not be able to do this.
 #>
 
 Param(
@@ -29,67 +31,53 @@ Param(
     $azureKeyVaultSecret
 )
 
-# Write Parameters to Host
-Write-Host "*********************************************************************"
-Write-Host "Running KeyVault managed Storage Account Key secret refresh:"
-Write-Host "*********************************************************************"
-
-Write-Host "subscriptionId: $subscriptionId"
-Write-Host "resourceGroup: $resourceGroup"
-Write-Host "storageAccountName: $storageAccountName"
-Write-Host "keyVaultName: $keyVaultName"
-Write-Host "azureKeyVaultSecret: $azureKeyVaultSecret"
-
-# Get the active key
-# NOTE: After the key is regenerated at the specified time interval, it take some time to reflect the new active key using the below command (atlease 10 mins from observation).
-# So, this script for updating the key vault secret should run atleast after an hour of key regeneration to be on the safer side.
-Write-Host "---------------------------------------------------------"
-Write-Host "Fetching active key"
-Write-Host "---------------------------------------------------------"
-
-$activeKeyName = az keyvault storage show -n $storageAccountName --subscription $subscriptionId --vault-name $keyVaultName --query "activeKeyName" --output tsv
+# Get keys
+Write-Host "Getting storage keys"
+$keys = & az storage account keys list --account-name $storageAccountName -g $resourceGroup --subscription $subscriptionId
 if (!$?)
 {
-    Write-Host "Error occurred while retrieving the current active key. Ensure the storage account is set as a managed account under keyvault"
+    Write-Error "Error occurred while retrieving the storage account keys."
     return
 }
+$keys = $keys | ConvertFrom-Json
 
-Write-Host "Active key is $activeKeyName"
-
-# Get the storage account key corresponding to the active key
-$activeKey = "primary"
-
-if ($activeKeyName -eq "key2")
+# 'az storage account keys list' used to tell us which one is the active key
+# but they like making things harder. Figure out which one is newer and set that as the secret.
+# This allow us to be functional if the Az func takes a while to pick up the new key vault secret.
+$newKey = $keys[0]
+if ($keys[0].creationTime -lt $keys[1].creationTime)
 {
-    $activeKey = "secondary"
+    $newKey = $keys[1]
 }
 
-Write-Host "---------------------------------------------------------"
-Write-Host "Retrieving connection string corresponding to active key"
-Write-Host "---------------------------------------------------------"
+Write-Host "$($newKey.keyName) is newer"
 
-$storageAccountConnectionString = az storage account show-connection-string -g $resourceGroup -n $storageAccountName --key $activeKey --output tsv
+Write-Host "Getting storage $($newKey.keyName) connection string"
+$cstr = & az storage account show-connection-string -g $resourceGroup -n $storageAccountName --key $newKey.keyName --subscription $subscriptionId
 if (!$?)
 {
-    Write-Host "Error occurred while retrieving the active key connection string."
+    Write-Error "Error occurred while retrieving the $($newKey.keyName) connection string."
     return
 }
+$cstr = $cstr | ConvertFrom-Json
 
-# Add the rotated key to KeyVault if its value is not the same as the secret's current value
-Write-Host "---------------------------------------------------------"
-Write-Host "Verifying if keyvault secret $azureKeyVaultSecret exists"
-Write-Host "---------------------------------------------------------"
-$currentSecretValue = az keyvault secret show --vault-name $keyVaultName --name $azureKeyVaultSecret --query 'value' --output tsv
+Write-Host "Getting secret in key vault"
+$currentSecret = & az keyvault secret show --vault-name $keyVaultName --name $azureKeyVaultSecret --subscription $subscriptionId
+if (!$?)
+{
+    Write-Error "$azureKeyVaultSecret in $keyVaultName doesn't exist."
+    return
+}
+$currentSecret = $currentSecret | ConvertFrom-Json
 
-# If the secret doesn't exists or is not the same as the rotated new key, update it
-if (!$? -or $currentSecretValue -cne $storageAccountConnectionString)
+# If not the same update it.
+if ($currentSecret.value -cne $cstr.connectionString)
 {
     Write-Host "Adding keyvault secret to contain the new connection string"
-
-    $_ = az keyvault secret set --vault-name $keyVaultName --name $azureKeyVaultSecret --value $storageAccountConnectionString
+    & az keyvault secret set --vault-name $keyVaultName --name $azureKeyVaultSecret --value $cstr.connectionString | Out-Null
     if (!$?)
     {
-        Write-Host "Error occurred while updating the keyvault secret."
+        Write-Error "Error occurred while updating the keyvault secret."
         return
     }
 
