@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="WinGetAppConfig.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -10,6 +10,7 @@ namespace Microsoft.WinGet.RestSource.AppConfig
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::Azure.Data.AppConfiguration;
+    using global::Azure.Identity;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Configuration.AzureAppConfiguration;
     using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,8 @@ namespace Microsoft.WinGet.RestSource.AppConfig
 
         private static readonly Lazy<WinGetAppConfig> LazyInstance = new Lazy<WinGetAppConfig>(() => new WinGetAppConfig());
 
-        private readonly string appConfigurationPrimary = Environment.GetEnvironmentVariable("WinGetRest:AppConfig:Primary");
-        private readonly string appConfigurationSecondary = Environment.GetEnvironmentVariable("WinGetRest:AppConfig:Secondary");
+        private readonly string appConfigPrimaryEndpoint = Environment.GetEnvironmentVariable("WinGet:AppConfig:PrimaryEndpoint");
+        private readonly string appConfigSecondaryEndpoint = Environment.GetEnvironmentVariable("WinGet:AppConfig:SecondaryEndpoint");
 
         private readonly Dictionary<FeatureFlag, bool> defaultValue = new Dictionary<FeatureFlag, bool>();
         private readonly string failedReason;
@@ -39,8 +40,8 @@ namespace Microsoft.WinGet.RestSource.AppConfig
 
         private WinGetAppConfig()
         {
-            if (!string.IsNullOrWhiteSpace(this.appConfigurationPrimary) ||
-                !string.IsNullOrWhiteSpace(this.appConfigurationSecondary))
+            if (!string.IsNullOrWhiteSpace(this.appConfigPrimaryEndpoint) ||
+                !string.IsNullOrWhiteSpace(this.appConfigSecondaryEndpoint))
             {
                 try
                 {
@@ -55,23 +56,23 @@ namespace Microsoft.WinGet.RestSource.AppConfig
                     var builder = new ConfigurationBuilder();
 
                     // Secondary
-                    if (!string.IsNullOrWhiteSpace(this.appConfigurationSecondary))
+                    if (!string.IsNullOrWhiteSpace(this.appConfigSecondaryEndpoint))
                     {
                         builder.AddAzureAppConfiguration(
                             options =>
                             {
-                                this.Load(options, this.appConfigurationSecondary);
+                                this.Load(options, this.appConfigSecondaryEndpoint);
                             },
                             true);
                     }
 
                     // Primary
-                    if (!string.IsNullOrWhiteSpace(this.appConfigurationPrimary))
+                    if (!string.IsNullOrWhiteSpace(this.appConfigPrimaryEndpoint))
                     {
                         builder.AddAzureAppConfiguration(
                             options =>
                             {
-                                this.Load(options, this.appConfigurationPrimary);
+                                this.Load(options, this.appConfigPrimaryEndpoint);
                             },
                             true);
                     }
@@ -185,11 +186,11 @@ namespace Microsoft.WinGet.RestSource.AppConfig
             return this.IsEnabledAsync(flag, loggingContext).Result;
         }
 
-        private void Load(AzureAppConfigurationOptions options, string connectionString)
+        private void Load(AzureAppConfigurationOptions options, string endpoint)
         {
             try
             {
-                options.Connect(connectionString)
+                options.Connect(new Uri(endpoint), new DefaultAzureCredential())
                     .UseFeatureFlags()
                     .ConfigureRefresh(refresh =>
                     {

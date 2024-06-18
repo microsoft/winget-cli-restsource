@@ -7,6 +7,12 @@
         },
         "frontDoorName": {
             "value": "pkgmgr-wgrest-int"
+        },
+        "appConfigPrimary": {
+            "value": "appconfig-wgrest-centus-int"
+        },
+        "appConfigSecondary": {
+            "value": "appconfig-wgrest-westus-int"
         }
     }
 }

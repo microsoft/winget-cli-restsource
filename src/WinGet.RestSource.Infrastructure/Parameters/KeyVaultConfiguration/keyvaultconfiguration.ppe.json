@@ -7,6 +7,12 @@
         },
         "frontDoorName": {
             "value": "pkgmgr-wgrest-ppe"
+        },
+        "appConfigPrimary": {
+            "value": "appconfig-wgrest-centus-ppe"
+        },
+        "appConfigSecondary": {
+            "value": "appconfig-wgrest-westus-ppe"
         }
     }
 }

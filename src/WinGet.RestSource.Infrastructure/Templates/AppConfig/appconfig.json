@@ -37,6 +37,9 @@
             "location": "[parameters('location')]",
             "sku": {
                 "name": "standard"
+            },
+            "properties": {
+                "disableLocalAuth": true
             }
         },
         {

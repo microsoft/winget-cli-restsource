@@ -34,5 +34,55 @@
                 }
             ]
         }
+    ],
+    "appConfigs": [
+        {
+            "description": "This is the primary app config.",
+            "name": "appconfig-wgrest-centus-pme",
+            "servicePrincipals": [
+                {
+                    "displayName": "WDX-APT-WPMService (winget-cli-restsource)",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-pme",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-pme",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "This is the secondary app config.",
+            "name": "appconfig-wgrest-westus-pme",
+            "servicePrincipals": [
+                {
+                    "displayName": "WDX-APT-WPMService (winget-cli-restsource)",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-pme",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-pme",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        }
     ]
 }
