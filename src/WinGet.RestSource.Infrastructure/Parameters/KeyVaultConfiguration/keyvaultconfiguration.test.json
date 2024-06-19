@@ -7,6 +7,12 @@
         },
         "frontDoorName": {
             "value": "pkgmgr-wgrest-test"
+        },
+        "appConfigPrimary": {
+            "value": "appconfig-wgrest-westus-test"
+        },
+        "appConfigSecondary": {
+            "value": "appconfig-wgrest-westus-test"
         }
     }
 }

@@ -34,5 +34,55 @@
                 }
             ]
         }
+    ],
+    "appConfigs": [
+        {
+            "description": "This is the primary app config.",
+            "name": "appconfig-wgrest-centus-int",
+            "servicePrincipals": [
+                {
+                    "displayName": "winget-cli-restsource Int",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-int",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-int",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "This is the secondary app config.",
+            "name": "appconfig-wgrest-westus-int",
+            "servicePrincipals": [
+                {
+                    "displayName": "winget-cli-restsource Int",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-int",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-int",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        }
     ]
 }
