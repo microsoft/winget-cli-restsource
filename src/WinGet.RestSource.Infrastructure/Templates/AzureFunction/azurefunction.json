@@ -258,8 +258,6 @@
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
                         "CosmosContainer": "[parameters('cosmosContainer')]",
                         "CosmosDatabase": "[parameters('cosmosDatabase')]",
-                        "CosmosReadOnlyKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountReadKey_secretName'), '/)')]",
-                        "CosmosReadWriteKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountWriteKey_secretName'), '/)')]",
                         "FunctionHostKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_functionHostKey_SecretName'), '/)')]",
                         "FunctionName": "[parameters('functionName')]",
                         "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",

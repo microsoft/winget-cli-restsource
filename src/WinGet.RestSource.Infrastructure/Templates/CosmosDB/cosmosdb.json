@@ -152,7 +152,7 @@
     "resources": [
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
-            "apiVersion": "2021-01-15",
+            "apiVersion": "2021-06-15",
             "name": "[parameters('name')]",
             "location": "[parameters('location')]",
             "tags": "[parameters('tags')]",
@@ -174,7 +174,8 @@
                 "cors": "[parameters('cors')]",
                 "capabilities": "[parameters('capabilities')]",
                 "ipRules": "[parameters('ipRules')]",
-                "backupPolicy": "[parameters('backupPolicy')]"
+                "backupPolicy": "[parameters('backupPolicy')]",
+                "disableLocalAuth": true
             }
         }
     ]

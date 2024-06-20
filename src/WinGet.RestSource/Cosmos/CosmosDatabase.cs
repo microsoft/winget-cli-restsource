@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="CosmosDatabase.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -9,6 +9,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using global::Azure.Identity;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.WinGet.RestSource.Interfaces;
@@ -45,11 +46,21 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             this.databaseId = databaseId;
             this.containerId = containerId;
 
-            var readOnlyClient = new CosmosClient(serviceEndpoint, readOnlyKey);
-            this.readOnlyContainer = readOnlyClient.GetContainer(databaseId, containerId);
+            if (!string.IsNullOrEmpty(readWriteKey) && !string.IsNullOrEmpty(readOnlyKey))
+            {
+                var readOnlyClient = new CosmosClient(serviceEndpoint, readOnlyKey);
+                this.readOnlyContainer = readOnlyClient.GetContainer(databaseId, containerId);
 
-            this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
-            this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
+                this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
+                this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
+            }
+            else
+            {
+                // The azure function will have read and write roles. It doesn't make a lot of sense
+                // to have to user managed identity just to split it if the same resource have both roles.
+                this.readWriteClient = new CosmosClient(serviceEndpoint, new DefaultAzureCredential());
+                this.readOnlyContainer = this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
+            }
         }
 
         /// <inheritdoc />
