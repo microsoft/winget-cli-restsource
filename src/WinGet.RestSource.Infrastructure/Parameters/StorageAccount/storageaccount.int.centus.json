@@ -7,6 +7,14 @@
         },
         "storageAccountName": {
             "value": "stwgrestcentusint"
+        },
+        "containerNames": {
+            "value": [
+                {
+                    "name": "deployments",
+                    "publicAccess": "None"
+                }
+            ]
         }
     }
 }
