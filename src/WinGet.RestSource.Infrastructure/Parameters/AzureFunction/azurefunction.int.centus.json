@@ -20,9 +20,6 @@
     "functionName": {
       "value": "azfun-wgrest-api-centus-int"
     },
-    "storageSecretName": {
-      "value": "stwgrestcentusintConnectionString"
-    },
     "appServiceName": {
       "value": "asp-wgrest-centus-int"
     },

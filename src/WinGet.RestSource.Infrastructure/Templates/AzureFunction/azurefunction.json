@@ -65,12 +65,6 @@
                 "description": "Key Vault Name"
             }
         },
-        "storageSecretName": {
-            "type": "string",
-            "metadata": {
-                "description": "Storage Secret Name. TODO: delete this once WEBSITE_CONTENTAZUREFILECONNECTIONSTRING managed identity support is enabled"
-            }
-        },
         "azFuncStorageName": {
             "type": "string",
             "metadata": {
@@ -196,6 +190,12 @@
             "metadata": {
                 "description": "Monitoring Role"
             }
+        },
+        "runFromPackageUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "The url of the zip package of this azure function. The az function must have at least Storage Blob Data Reader role to the storage account."
+            }
         }
     },
     "variables": {
@@ -264,8 +264,6 @@
                         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
                         "ManifestCacheEndpoint": "[parameters('manifestCacheEndpoint')]",
                         "ServerIdentifier": "[parameters('serverIdentifier')]",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
-                        "WEBSITE_CONTENTSHARE": "[toLower(parameters('functionName'))]",
                         "WEBSITE_FIRST_PARTY_ID": "AntMDS",
                         "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
                         "WinGet:AppConfig:PrimaryEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_appConfigPrimary_SecretName'), '/)')]",

@@ -20,9 +20,6 @@
     "functionName": {
       "value": "azfun-wgrest-api-westus-test"
     },
-    "storageSecretName": {
-      "value": "stwgrestwestustestConnectionString"
-    },
     "appServiceName": {
       "value": "asp-wgrest-westus-test"
     },
