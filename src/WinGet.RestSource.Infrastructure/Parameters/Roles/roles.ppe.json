@@ -53,7 +53,7 @@
             "name": "appconfig-wgrest-centus-ppe",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource PPE",
+                    "displayName": "mi-wgrest-deployment-ppe",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
@@ -77,7 +77,7 @@
             "name": "appconfig-wgrest-westus-ppe",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource PPE",
+                    "displayName": "mi-wgrest-deployment-ppe",
                     "roles": [
                         "App Configuration Data Owner"
                     ]

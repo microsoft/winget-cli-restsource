@@ -30,7 +30,7 @@
             "name": "appconfig-wgrest-westus-test",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Test",
+                    "displayName": "mi-wgrest-deployment-test",
                     "roles": [
                         "App Configuration Data Owner"
                     ]

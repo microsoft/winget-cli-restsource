@@ -53,7 +53,7 @@
             "name": "appconfig-wgrest-centus-int",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Int",
+                    "displayName": "mi-wgrest-deployment-int",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
@@ -77,7 +77,7 @@
             "name": "appconfig-wgrest-westus-int",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Int",
+                    "displayName": "mi-wgrest-deployment-int",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
