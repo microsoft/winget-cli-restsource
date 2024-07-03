@@ -20,9 +20,6 @@
     "functionName": {
       "value": "azfun-wgrest-api-centus-pme"
     },
-    "storageSecretName": {
-      "value": "stwgrestcentuspmeConnectionString"
-    },
     "appServiceName": {
       "value": "asp-wgrest-centus-pme"
     },

@@ -5,6 +5,12 @@
             "name": "stwgrestwestusint",
             "servicePrincipals": [
                 {
+                    "displayName": "mi-wgrest-deployment-int",
+                    "roles": [
+                        "Storage Blob Data Contributor"
+                    ]
+                },
+                {
                     "displayName": "azfun-wgrest-api-westus-int",
                     "roles": [
                         "Storage Account Contributor",
@@ -21,6 +27,12 @@
             "description": "This is the storage account for the central us azure function",
             "name": "stwgrestcentusint",
             "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-int",
+                    "roles": [
+                        "Storage Blob Data Contributor"
+                    ]
+                },
                 {
                     "displayName": "azfun-wgrest-api-centus-int",
                     "roles": [
@@ -41,7 +53,7 @@
             "name": "appconfig-wgrest-centus-int",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Int",
+                    "displayName": "mi-wgrest-deployment-int",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
@@ -65,7 +77,7 @@
             "name": "appconfig-wgrest-westus-int",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Int",
+                    "displayName": "mi-wgrest-deployment-int",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
@@ -80,6 +92,20 @@
                     "displayName": "azfun-wgrest-api-westus-int",
                     "roles": [
                         "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        }
+    ],
+    "subscription" : [
+        {
+            "description": "Roles at subscription level",
+            "name": "subscription",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-int",
+                    "roles": [
+                        "Reader"
                     ]
                 }
             ]

@@ -7,6 +7,14 @@
         },
         "storageAccountName": {
             "value": "stwgrestwestusppe"
+        },
+        "containerNames": {
+            "value": [
+                {
+                    "name": "deployments",
+                    "publicAccess": "None"
+                }
+            ]
         }
     }
 }

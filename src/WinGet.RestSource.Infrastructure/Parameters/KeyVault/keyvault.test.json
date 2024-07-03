@@ -31,27 +31,21 @@
         },
         {
           "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "789c9442-e61d-48ea-84e1-02892ef4651f",
+          "objectId": "b403b8bc-5f45-410d-9a87-e71bb4b11f81",
           "permissions": {
             "keys": [
-              "Get",
-              "List"
             ],
             "secrets": [
               "Get",
-              "List",
-              "Set"
-            ],
-            "certificates": [
-              "Get",
               "List"
             ],
+            "certificates": [
+            ],
             "storage": [
-              "Get"
             ]
           },
           "metadata": {
-            "description": "This is the object for winget-cli-restsource Test."
+            "description": "This is the object for mi-wgrest-deployment-test. Used for E2E."
           }
         },
         {

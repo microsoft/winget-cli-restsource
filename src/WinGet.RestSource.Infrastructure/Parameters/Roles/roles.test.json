@@ -5,6 +5,12 @@
             "name": "stwgrestwestustest",
             "servicePrincipals": [
                 {
+                    "displayName": "mi-wgrest-deployment-test",
+                    "roles": [
+                        "Storage Blob Data Contributor"
+                    ]
+                },
+                {
                     "displayName": "azfun-wgrest-api-westus-test",
                     "roles": [
                         "Storage Account Contributor",
@@ -24,7 +30,7 @@
             "name": "appconfig-wgrest-westus-test",
             "servicePrincipals": [
                 {
-                    "displayName": "winget-cli-restsource Test",
+                    "displayName": "mi-wgrest-deployment-test",
                     "roles": [
                         "App Configuration Data Owner"
                     ]
@@ -33,6 +39,20 @@
                     "displayName": "azfun-wgrest-api-westus-test",
                     "roles": [
                         "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        }
+    ],
+    "subscription" : [
+        {
+            "description": "Roles at subscription level",
+            "name": "subscription",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-test",
+                    "roles": [
+                        "Reader"
                     ]
                 }
             ]

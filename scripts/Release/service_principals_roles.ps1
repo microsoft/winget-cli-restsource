@@ -2,7 +2,7 @@
 .SYNOPSIS
     Sets roles to a different azure resources.
 .DESCRIPTION
-    Sets the roles for different service principal for different resources.
+    Sets the roles for different identities for different resources.
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -45,22 +45,24 @@ function GetScope {
     {
         return "/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$resourceName"
     }
+    elseif ($resourceType -eq [ResourceType]::Cdn)
+    {
+        return "/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Cdn/profiles/$resourceName"
+    }
     else
     {
         throw "Not supported"
     }
 }
 
-function AssignRoles {
+function AssignRolesServicePrincipals {
     param (
         [Parameter(Mandatory=$true)]
-        [ResourceType]
-        $resourceType,
+        [PSCustomObject]$resource,
         [Parameter(Mandatory=$true)]
-        [PSCustomObject]$resource
+        [string]
+        $scope
     )
-
-    $private:scope = GetScope $resourceType $($resource.name)
 
     foreach ($sp in $resource.servicePrincipals)
     {
@@ -92,15 +94,30 @@ function AssignRoles {
     }
 }
 
+function AssignResourceRoles {
+    param (
+        [Parameter(Mandatory=$true)]
+        [ResourceType]
+        $resourceType,
+        [Parameter(Mandatory=$true)]
+        [PSCustomObject]$resource
+    )
+
+    $private:scope = GetScope $resourceType $($resource.name)
+    AssignRolesServicePrincipals $resource $scope
+}
+
 Set-AzContext -SubscriptionId $subscriptionId | Out-Null
 $local:data = Get-Content $rolesFile -Raw | ConvertFrom-Json
 
 foreach ($storageAccount in $data.storageAccounts)
 {
-    AssignRoles StorageAccount $storageAccount
+    AssignResourceRoles StorageAccount $storageAccount
 }
 
 foreach ($appConfig in $data.appConfigs)
 {
-    AssignRoles AppConfig $appConfig
+    AssignResourceRoles AppConfig $appConfig
 }
+
+AssignRolesServicePrincipals $data.subscription "/subscriptions/$subscriptionId"
