@@ -190,6 +190,12 @@
             "metadata": {
                 "description": "Monitoring Role"
             }
+        },
+        "frontDoorId": {
+            "type": "string",
+            "metadata": {
+                "description": "Restricts requests to only allow requests from provided FrontDoor id"
+            }
         }
     },
     "variables": {
@@ -284,6 +290,38 @@
                     }
                 }
             ]
+        },
+        {
+            "apiVersion": "2023-12-01",
+            "name": "AzureFunctionAccessRestrictionRules",
+            "type": "Microsoft.Web/sites/config",
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/', parameters('functionName'))]"
+            ],
+            "properties": {
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "AzureFrontDoor.Backend",
+                        "action": "Allow",
+                        "tag": "ServiceTag",
+                        "priority": 300,
+                        "name": "FrontDoorAccessPolicy",
+                        "description": "Restricts usage to only access through front door.",
+                        "headers": {
+                            "x-azure-fdid": [
+                                "[parameters('frontDoorId')]"
+                            ]
+                        }
+                    },
+                    {
+                        "ipAddress": "Any",
+                        "action": "Deny",
+                        "priority": 2147483647,
+                        "name": "Deny all",
+                        "description": "Deny all access"
+                    }
+                ]
+            }
         },
         {
             "apiVersion": "2019-05-01",

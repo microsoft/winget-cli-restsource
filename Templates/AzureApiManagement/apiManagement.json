@@ -63,7 +63,28 @@
             "metadata": {
                 "description": "Absolute URL of the backend service implementing this API."
             }
+        },
+        "clientId": {
+            "type": "string",
+            "metadata": {
+                "description": "The application client id."
+            }
+        },
+        "tenantIds": {
+            "type": "array",
+            "metadata": {
+                "description": "An array of allowed tenant id(s)."
+            }
+        },
+        "frontdoorId": {
+            "type": "string",
+            "metadata": {
+                "description": "The front door instance id."
+            }
         }
+    },
+    "variables":{
+        "tenantIdsXml": "[concat('<issuers>', join('', map(parameters('tenantIds'), function(tenantId, idx) { return concat('<issuer>', tenantId, '</issuer>'); })), '</issuers>')]"
     },
     "resources": [
         {
@@ -110,39 +131,7 @@
             "properties": {
                 "displayName": "Information",
                 "method": "GET",
-                "urlTemplate": "/information",
-                "templateParameters": [],
-                "responses": [
-                    {
-                        "statusCode": 200,
-                        "description": "SourceInformation",
-                        "representations": [
-                            {
-                                "contentType": "application/json",
-                                "examples": {
-                                    "default": {
-                                        "value": {
-                                            "Data": {
-                                                "SourceIdentifier": "TestSource",
-                                                "ServerSupportedVersions": [
-                                                    "1.7.0"
-                                                ],
-                                                "Authentication": {
-                                                    "AuthenticationType": "microsoftEntraId",
-                                                    "MicrosoftEntraIdAuthenticationInfo": {
-                                                        "Resource": "resourceId",
-                                                        "Scope": "scope"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        ],
-                        "headers": []
-                    }
-                ]
+                "urlTemplate": "/information"
             }
         },
         {
@@ -185,270 +174,7 @@
                             "type": "string"
                         }
                     ]
-                },
-                "responses": [
-                    {
-                        "statusCode": 200,
-                        "representations": [
-                            {
-                                "contentType": "application/json",
-                                "examples": {
-                                    "default": {
-                                        "value": {
-                                            "Data": {
-                                                "PackageIdentifier": "~yy.yz~~{}~~{~z}}{yyyyz{~zy}{y~.y{zy~{~yzz}{{}.}y}.y~yz~.~zy}~z~~~{z~{~~zzzyz~zz}~z{~{",
-                                                "Versions": [
-                                                    {
-                                                        "PackageVersion": "}{{yz{zz}zzz{}y}y~~~~~z}~y~{zyyzz}yz~~~y}~{}~y}~y}}{~~~y{z}~~}z~~}yyy{z~z~{zyyyzzy}}}y{zy~{",
-                                                        "DefaultLocale": {
-                                                            "PackageLocale": "Iu-viOJiZjA",
-                                                            "Publisher": "string",
-                                                            "PublisherUrl": "Https://",
-                                                            "PublisherSupportUrl": "httP://",
-                                                            "PrivacyUrl": "HttP://",
-                                                            "Author": "string",
-                                                            "PackageName": "string",
-                                                            "PackageUrl": "HTtps://",
-                                                            "License": "string",
-                                                            "LicenseUrl": "htTps://",
-                                                            "Copyright": "string",
-                                                            "CopyrightUrl": "HtTPS://",
-                                                            "ShortDescription": "string",
-                                                            "Description": "string",
-                                                            "Tags": [
-                                                                ";&(OQ0drek!}FMwXN+}.R,cpy,]uxmfcn@-:Xu.T"
-                                                            ],
-                                                            "ReleaseNotes": "string",
-                                                            "ReleaseNotesUrl": "HtTPS://",
-                                                            "Agreements": [
-                                                                {
-                                                                    "AgreementLabel": "string",
-                                                                    "Agreement": "string",
-                                                                    "AgreementUrl": "HTtps://"
-                                                                }
-                                                            ],
-                                                            "PurchaseUrl": "HttPs://",
-                                                            "InstallationNotes": "string",
-                                                            "Documentations": [
-                                                                {
-                                                                    "DocumentLabel": "string",
-                                                                    "DocumentUrl": "HTTP://"
-                                                                }
-                                                            ],
-                                                            "Icons": [
-                                                                {
-                                                                    "IconUrl": "htTps://",
-                                                                    "IconFileType": "png",
-                                                                    "IconResolution": "custom",
-                                                                    "IconTheme": "default",
-                                                                    "IconSha256": "67EBc41D4285A9Bfe27EeA03DFF5cFf4FFbB6B342dC0E9a837B5fEb4EbAb00fe"
-                                                                }
-                                                            ],
-                                                            "Moniker": "2C5+AK6c+brjts:^EW\\7k:ve\\;[%1;]Sao.0'JTY"
-                                                        },
-                                                        "Channel": "string",
-                                                        "Locales": [
-                                                            {
-                                                                "PackageLocale": "pq-bh-Kk-JDFtor-kp-r",
-                                                                "Publisher": "string",
-                                                                "PublisherUrl": "HTtP://",
-                                                                "PublisherSupportUrl": "Http://",
-                                                                "PrivacyUrl": "httpS://",
-                                                                "Author": "string",
-                                                                "PackageName": "string",
-                                                                "PackageUrl": "hTtpS://",
-                                                                "License": "string",
-                                                                "LicenseUrl": "httP://",
-                                                                "Copyright": "string",
-                                                                "CopyrightUrl": "htTP://",
-                                                                "ShortDescription": "string",
-                                                                "Description": "string",
-                                                                "Tags": [
-                                                                    "G..RusUk7OnXw[(S71P<9)iuGD=P#}@@("
-                                                                ],
-                                                                "ReleaseNotes": "string",
-                                                                "ReleaseNotesUrl": "htTP://",
-                                                                "Agreements": [
-                                                                    {
-                                                                        "AgreementLabel": "string",
-                                                                        "Agreement": "string",
-                                                                        "AgreementUrl": "HttPS://"
-                                                                    }
-                                                                ],
-                                                                "PurchaseUrl": "HTtPS://",
-                                                                "InstallationNotes": "string",
-                                                                "Documentations": [
-                                                                    {
-                                                                        "DocumentLabel": "string",
-                                                                        "DocumentUrl": "hTtpS://"
-                                                                    }
-                                                                ],
-                                                                "Icons": [
-                                                                    {
-                                                                        "IconUrl": "HTTP://",
-                                                                        "IconFileType": "png",
-                                                                        "IconResolution": "custom",
-                                                                        "IconTheme": "default",
-                                                                        "IconSha256": "0BDe3ead6ee2Cc8da0814BA6dDf0d0AcffB9aAb8a65F9a0cf2CeAC9D3fA9dAbD"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ],
-                                                        "Installers": [
-                                                            {
-                                                                "InstallerIdentifier": "string",
-                                                                "InstallerSha256": "0a0BfF7d0A96B97beDDfEDe6fbec4C3Bc04A2A06eD14AC7Ea2F1b5dfcEfaB6D0",
-                                                                "InstallerUrl": "HTTp://",
-                                                                "Architecture": "x86",
-                                                                "InstallerLocale": "BR-MQ-DcOakP-jsb-n-U",
-                                                                "Platform": [
-                                                                    "Windows.Desktop"
-                                                                ],
-                                                                "MinimumOSVersion": "65212.13242.273.65532",
-                                                                "InstallerType": "msix",
-                                                                "Scope": "user",
-                                                                "SignatureSha256": "Af45DAA1533A4c2B8D9A8D7bE7Fc0eFE52F123f88bbBf7d2Dd4099cfe1F87cBa",
-                                                                "InstallModes": [
-                                                                    "interactive"
-                                                                ],
-                                                                "InstallerSwitches": {
-                                                                    "Silent": "string",
-                                                                    "SilentWithProgress": "string",
-                                                                    "Interactive": "string",
-                                                                    "InstallLocation": "string",
-                                                                    "Log": "string",
-                                                                    "Upgrade": "string",
-                                                                    "Custom": "string",
-                                                                    "Repair": "string"
-                                                                },
-                                                                "InstallerSuccessCodes": [
-                                                                    4294967295
-                                                                ],
-                                                                "ExpectedReturnCodes": [
-                                                                    {
-                                                                        "InstallerReturnCode": 4294967295,
-                                                                        "ReturnResponse": "packageInUse",
-                                                                        "ReturnResponseUrl": "httPS://"
-                                                                    }
-                                                                ],
-                                                                "UpgradeBehavior": "install",
-                                                                "Commands": [
-                                                                    "string"
-                                                                ],
-                                                                "Protocols": [
-                                                                    "string"
-                                                                ],
-                                                                "FileExtensions": [
-                                                                    "yy~yy}}~}y~{~}}~y}z}}~{z~{}~y}{z{yy~{z{y~z~}{~y~{}z{{{}{"
-                                                                ],
-                                                                "Dependencies": {
-                                                                    "WindowsFeatures": [
-                                                                        "string"
-                                                                    ],
-                                                                    "WindowsLibraries": [
-                                                                        "string"
-                                                                    ],
-                                                                    "PackageDependencies": [
-                                                                        {
-                                                                            "PackageIdentifier": "{y~z{~yy}~.{~}y~{{zz}}y}}{~{yzzz}~.y~zz}y}y}~{~~{}yyzzy{}.y{z{}}~yy~~yy~{}~yy}yzz}~}{}~yz{.{~~yzyy{}.}~zyyz~yz{}yy~}z{}y~{~yy~{y",
-                                                                            "MinimumVersion": "}y"
-                                                                        }
-                                                                    ],
-                                                                    "ExternalDependencies": [
-                                                                        "string"
-                                                                    ]
-                                                                },
-                                                                "PackageFamilyName": "GFp.4payNII-Bx80nsvaVgzaYO_iHUj6GLBnX3D4",
-                                                                "ProductCode": "string",
-                                                                "Capabilities": [
-                                                                    "string"
-                                                                ],
-                                                                "RestrictedCapabilities": [
-                                                                    "string"
-                                                                ],
-                                                                "MSStoreProductIdentifier": "SOw3LAwOTypH",
-                                                                "InstallerAbortsTerminal": true,
-                                                                "ReleaseDate": "2024-06-11",
-                                                                "InstallLocationRequired": true,
-                                                                "RequireExplicitUpgrade": true,
-                                                                "ElevationRequirement": "elevationRequired",
-                                                                "UnsupportedOSArchitectures": [
-                                                                    "x86"
-                                                                ],
-                                                                "AppsAndFeaturesEntries": [
-                                                                    {
-                                                                        "DisplayName": "string",
-                                                                        "Publisher": "string",
-                                                                        "DisplayVersion": "string",
-                                                                        "ProductCode": "string",
-                                                                        "UpgradeCode": "string",
-                                                                        "InstallerType": "msix"
-                                                                    }
-                                                                ],
-                                                                "Markets": {
-                                                                    "AllowedMarkets": [
-                                                                        "TY"
-                                                                    ]
-                                                                },
-                                                                "NestedInstallerType": "msix",
-                                                                "NestedInstallerFiles": [
-                                                                    {
-                                                                        "RelativeFilePath": "string",
-                                                                        "PortableCommandAlias": "string"
-                                                                    }
-                                                                ],
-                                                                "DisplayInstallWarnings": true,
-                                                                "UnsupportedArguments": [
-                                                                    "log"
-                                                                ],
-                                                                "InstallationMetadata": {
-                                                                    "DefaultInstallLocation": "string",
-                                                                    "Files": [
-                                                                        {
-                                                                            "RelativeFilePath": "string",
-                                                                            "FileSha256": "ba2b85dF6f981B8Ef4AAe44716dE7cb18Ab7fA8adc4C6AD3DB49a13a6Dab687D",
-                                                                            "FileType": "launch",
-                                                                            "InvocationParameter": "string",
-                                                                            "DisplayName": "string"
-                                                                        }
-                                                                    ]
-                                                                },
-                                                                "DownloadCommandProhibited": true
-                                                            }
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            "ContinuationToken": "string",
-                                            "UnsupportedQueryParameters": [
-                                                "Version"
-                                            ],
-                                            "RequiredQueryParameters": [
-                                                "Version"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "statusCode": 404,
-                        "representations": [
-                            {
-                                "contentType": "application/json",
-                                "examples": {
-                                    "default": {
-                                        "value": {
-                                            "ErrorCode": 0,
-                                            "ErrorMessage": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ]
+                }
             }
         },
         {
@@ -477,87 +203,11 @@
                             "name": "ContinuationToken",
                             "type": "string"
                         }
-                    ],
-                    "representations": [
-                        {
-                            "contentType": "application/json",
-                            "examples": {
-                                "default": {
-                                    "MaximumResults": 0,
-                                    "FetchAllManifests": true,
-                                    "Query": {
-                                        "KeyWord": "string",
-                                        "MatchType": "Exact"
-                                    },
-                                    "Inclusions": [
-                                        {
-                                            "PackageMatchField": "PackageIdentifier",
-                                            "RequestMatch": {
-                                                "KeyWord": "string",
-                                                "MatchType": "Exact"
-                                            }
-                                        }
-                                    ],
-                                    "Filters": [
-                                        {
-                                            "PackageMatchField": "PackageIdentifier",
-                                            "RequestMatch": {
-                                                "KeyWord": "string",
-                                                "MatchType": "Exact"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
                     ]
                 },
                 "responses": [
                     {
-                        "statusCode": 200,
-                        "representations": [
-                            {
-                                "contentType": "application/json",
-                                "examples": {
-                                    "default": {
-                                        "value": {
-                                            "Data": [
-                                                {
-                                                    "PackageIdentifier": "}}zyzz~yyzy~~}~yzyy.y{}yzyz{yzz}z}.yz{~}}{{y~z}}z.{{{{}~~z}y}z~}z{z{}z~z}~{z~}{~~.{z}}.~yyz}{{{}}~zy",
-                                                    "PackageName": "string",
-                                                    "Publisher": "string",
-                                                    "Versions": [
-                                                        {
-                                                            "PackageVersion": "~",
-                                                            "Channel": "string",
-                                                            "PackageFamilyNames": [
-                                                                "u27z3XbnP9yvZgnym2vQhLCfYnoE6rpDS.n8_6oVyx9BKYFKH2"
-                                                            ],
-                                                            "ProductCodes": [
-                                                                "string"
-                                                            ],
-                                                            "AppsAndFeaturesEntryVersions": [
-                                                                "string"
-                                                            ],
-                                                            "UpgradeCodes": [
-                                                                "string"
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "ContinuationToken": "string",
-                                            "RequiredPackageMatchFields": [
-                                                "PackageIdentifier"
-                                            ],
-                                            "UnsupportedPackageMatchFields": [
-                                                "PackageIdentifier"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        ]
+                        "statusCode": 200
                     },
                     {
                         "statusCode": 204,
@@ -565,23 +215,45 @@
                     },
                     {
                         "statusCode": 400,
-                        "description": "Request contains something thats perceived as client error.",
-                        "representations": [
-                            {
-                                "contentType": "application/json",
-                                "examples": {
-                                    "default": {
-                                        "value": {
-                                            "ErrorCode": 0,
-                                            "ErrorMessage": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        ]
+                        "description": "Request contains something thats perceived as client error."
                     }
                 ]
             }
-        }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/policies",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), '/WinGetRest/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis',parameters('apiManagementServiceName'), 'WinGetRest')]"
+            ],
+            "properties": {
+            "value": "[concat('<policies><inbound><base /><validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"Unauthorized. Invalid token\"><audiences> <audience>\"', parameters('clientId'), '\"</audience> </audiences>', variables('tenantIdsXml'), '</validate-jwt><check-header name=\"X-Azure-FDID\" failed-check-httpcode=\"403\" failed-check-error-message=\"Invalid front door header\" ignore-case=\"false\"><value>\"', parameters('frontdoorId'), '\"</value></check-header></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>')]",
+            "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2023-05-01-preview",
+            "name": "[concat(parameters('apiManagementServiceName'), 'backendPool')]",
+            "properties": {
+              "description": "Load balancer for api management backend",
+              "type": "Pool",
+              "pool": {
+                "services": [
+                  {
+                    "id": "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.ApiManagement/service/<APIManagementName>/backends/backend-1",
+                    "priority": "1", 
+                    "weight": "3" 
+                  },
+                  {
+                    "id": "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.ApiManagement/service/<APIManagementName>/backends/backend-2",
+                    "priority": "1",
+                    "weight": "1"    
+                  }
+                ]
+              }
+            }
+          }
     ]
 }
