@@ -83,6 +83,7 @@ extends:
       - job: 'Fuzzing'
         displayName: Submit Fuzzing Artifacts
         timeoutInMinutes: 30
+        dependsOn: 'BuildPublishTest'
 
         steps:
         - task: onefuzz-task@0
