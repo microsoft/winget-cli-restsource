@@ -90,10 +90,11 @@ extends:
           displayName: 'Download Fuzzing Artifacts'
           inputs:
             artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing
+            targetPath: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
 
         - task: onefuzz-task@0
           inputs:
             onefuzzOSes: 'Windows'
           env:
-            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing\'
+            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
