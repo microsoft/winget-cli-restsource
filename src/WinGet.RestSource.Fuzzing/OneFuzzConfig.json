@@ -1,0 +1,38 @@
+{
+    "configVersion": 3,
+    "entries": [
+        {
+            "libfuzzerDotnet": {
+                "dll": "WinGet.RestSource.Fuzzing.dll",
+                "class": "WinGet.RestSource.Fuzzing.Fuzzer",
+                "method": "FuzzTest"
+            },
+            "adoTemplate": {
+                "org": "microsoft",
+                "project": "OS",
+                "AssignedTo": "ryfu@microsoft.com",
+                "AreaPath": "OS\\Windows Client and Services\\ADEPT\\E4D-Engineered for Developers\\InstaDev",
+                "IterationPath": "OS"
+            },
+            "jobNotificationEmail": "peetdev@microsoft.com",
+            "skip": false,
+            "rebootAfterSetup": false,
+            "oneFuzzJobs": [
+                {
+                    "projectName": "winget-restsource-fuzzing",
+                    "targetName": "fuzzer"
+                }
+            ],
+            "jobDependencies": [
+                "Microsoft.WinGet.RestSource.*.dll",
+                "Microsoft.WinGet.RestSource.*.pdb",
+                "Microsoft.WindowsPackageManager.Rest.dll",
+                "Microsoft.WindowsPackageManager.Rest.pdb",
+                "Microsoft.WinGet.RestSource.Fuzzing.*",
+                "Microsoft.WinGet.RestSource.Utils.*",
+                "Cosmos.CRTCompat.dll",
+                "Microsoft.Azure.Cosmos.ServiceInterop.dll"
+            ]
+        }
+    ]
+}

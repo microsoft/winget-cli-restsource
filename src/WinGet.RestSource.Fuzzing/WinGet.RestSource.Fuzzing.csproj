@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
+    <AssemblyName>Microsoft.WinGet.RestSource.Fuzzing</AssemblyName>
+    <RootNamespace>Microsoft.WinGet.RestSource.Fuzzing</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+      <Content Include="OneFuzzConfig.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+  </ItemGroup>
+</Project>

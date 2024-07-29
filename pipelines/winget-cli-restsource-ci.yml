@@ -76,3 +76,9 @@ extends:
             displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
             targetPath: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
             artifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
+
+          # Publish Fuzzing Artifacts
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-FuzzingBinaries'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing
+            artifactName: WinGet.RestSource-WinGet.RestSource.Fuzzing
