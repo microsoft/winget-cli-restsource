@@ -14,7 +14,7 @@
                 "AreaPath": "OS\\Windows Client and Services\\ADEPT\\E4D-Engineered for Developers\\InstaDev",
                 "IterationPath": "OS"
             },
-            "jobNotificationEmail": "peetdev@microsoft.com",
+            "jobNotificationEmail": "ryfu@microsoft.com",
             "skip": false,
             "rebootAfterSetup": false,
             "oneFuzzJobs": [
