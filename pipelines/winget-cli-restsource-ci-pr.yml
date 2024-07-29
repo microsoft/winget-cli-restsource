@@ -28,15 +28,15 @@ extends:
 
     stages:
     - stage: Build_Publish_Test
+      jobs:
+      - job: 'BuildPublishTest'
+        displayName: 'Build Publish & Tests'
+        timeoutInMinutes: 60
         variables:
         - name: BuildConfiguration
           value: 'release'
         - name: BuildPlatform
           value: 'Any CPU'    
-      jobs:
-      - job: 'BuildPublishTest'
-        displayName: 'Build Publish & Tests'
-        timeoutInMinutes: 60
 
         steps:
         # Restore and Build
