@@ -86,9 +86,14 @@ extends:
         dependsOn: 'BuildPublishTest'
 
         steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Fuzzing Artifacts'
+          inputs:
+            artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing
+
         - task: onefuzz-task@0
           inputs:
             onefuzzOSes: 'Windows'
           env:
-            onefuzzDropDirectory: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing'
+            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing\'
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
