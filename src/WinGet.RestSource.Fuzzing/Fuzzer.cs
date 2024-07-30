@@ -10,13 +10,20 @@ namespace Microsoft.WinGet.RestSource.Fuzzing
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Fuzzer class.
+    /// </summary>
     public static class Fuzzer
     {
+        /// <summary>
+        /// Target fuzzing method.
+        /// </summary>
+        /// <param name="input">Fuzz test inputs.</param>
         public static void FuzzTest(ReadOnlySpan<byte> input)
         {
             try
             {
-                if (input.Length == 0)
+                if (input.Length < 4)
                 {
                     return;
                 }
@@ -24,11 +31,14 @@ namespace Microsoft.WinGet.RestSource.Fuzzing
                 using var ms = new MemoryStream(input.ToArray());
                 var result = Task.Run(() => Parser.StreamParser<PackageManifest>(ms)).Result;
             }
-            catch (JsonException)
+            catch (AggregateException ae)
             {
-                // Possible Json exceptions include JsonReaderException, JsonWriterException, or JsonSerializationException;
-                // Ignore expected exceptions as these are normal failures if the input cannot be deserialized.
-                return;
+                // Getting the result of a Task can throw an Aggregate Exception.
+                // Handle json parsing exceptions as these are expected.
+                ae.Handle(ex =>
+                {
+                    return ex is JsonReaderException || ex is JsonWriterException || ex is JsonSerializationException;
+                });
             }
         }
     }

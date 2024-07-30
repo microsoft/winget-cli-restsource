@@ -5,18 +5,28 @@
     <Authors>Microsoft</Authors>
     <AssemblyName>Microsoft.WinGet.RestSource.Fuzzing</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.Fuzzing</RootNamespace>
+    <OutputType>Library</OutputType>
+    <LangVersion>10.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <!-- StyleCop Item Group. -->
   <ItemGroup>
-    <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+  
   <ItemGroup>
       <Content Include="OneFuzzConfig.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
   </ItemGroup>
 </Project>
