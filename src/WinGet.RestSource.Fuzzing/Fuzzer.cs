@@ -16,8 +16,13 @@ namespace Microsoft.WinGet.RestSource.Fuzzing
         {
             try
             {
+                if (input.Length == 0)
+                {
+                    return;
+                }
+
                 using var ms = new MemoryStream(input.ToArray());
-                var result = Parser.StreamParser<PackageManifest>(ms).GetAwaiter().GetResult();
+                var result = Task.Run(() => Parser.StreamParser<PackageManifest>(ms)).Result;
             }
             catch (JsonException)
             {
