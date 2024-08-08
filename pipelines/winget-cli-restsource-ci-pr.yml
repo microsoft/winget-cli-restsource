@@ -1,12 +1,11 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
 # CI pipeline for winget-cli-restsource
 
-# TODO: The forked pr builds need to have the same permission as non-forked ones to access
-#       project's internal nuget feed. Remove DisablePipelineConfigDetector variable when
-#       a long term fix is available.
-variables:
-- name: DisablePipelineConfigDetector
-  value: true
+# PR triggers
+pr:
+  branches:
+    include:
+    - master
 
 resources:
   repositories:
