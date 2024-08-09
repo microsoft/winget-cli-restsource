@@ -6,6 +6,10 @@ pr:
   branches:
     include:
     - main
+  paths:
+    include:
+    - pipelines/*
+    - src/*
 
 resources:
   repositories:
