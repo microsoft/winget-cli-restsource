@@ -6,10 +6,6 @@ pr:
   branches:
     include:
     - main
-  paths:
-    include:
-    - pipelines/*
-    - src/*
 
 resources:
   repositories:
@@ -25,9 +21,6 @@ extends:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: windows-2022
       os: windows
-    customBuildTags:
-    # This is added by 1ES migration tool and it is okay to remove in the future.
-    - ES365AIMigrationTooling
 
     stages:
     - stage: Build_Publish_Test
