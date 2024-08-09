@@ -13,7 +13,7 @@ Param(
 
     [Parameter(Mandatory=$true)]
     [String[]]
-    $webAppName,
+    $webAppNames,
 
     [Parameter(Mandatory=$true)]
     [String]
@@ -21,198 +21,66 @@ Param(
 
     [Parameter(Mandatory=$true)]
     [hashtable]
-    $azureKeyVaultSecretPair,
-
-    [Parameter(Mandatory=$false)]
-    [String]
-    $functionName,
-
-    [Parameter(Mandatory=$false)]
-    [ValidateRange(1, [int]::MaxValue)]
-    [Int]
-    $keyLength = 64,
-
-    [Parameter(Mandatory=$false)]
-    [ValidateRange(1, [int]::MaxValue)]
-    [Int]
-    $maxAttempts = 15,
-
-    [Parameter(Mandatory=$false)]
-    [ValidateRange(1, [int]::MaxValue)]
-    [Int]
-    $secondsToWait = 15
+    $azureKeyVaultSecretPair
 )
 
 # Function to Create Random Strings
-function Get-RandomCharacters($length, $characters) { 
-    $random = 1..$length | ForEach-Object { Get-Random -Maximum $characters.length } 
-    $private:ofs="" 
-    return [String]$characters[$random]
+function Create-AppKey()
+{
+    $private:characters = 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
+    $private:randomChars = 1..64 | ForEach-Object { Get-Random -Maximum $characters.length }
+
+    # Set the output field separator to empty instead of space
+    $private:ofs=""
+    return [String]$characters[$randomChars]
 }
 
-# Function to Wait
-function CheckAndWait($value, $threshold, $message, $waitTime) {
-    if($value -gt $threshold)
+$local:newAltKeyValue = ""
+
+Write-Host "Verifying keys of web apps"
+foreach ($webApp in $webAppNames)
+{
+    Write-Host "Getting keys of" $webApp
+    $private:keysJson = az functionapp keys list -g $resourceGroup -n $webApp
+    $private:keys = $keysJson | ConvertFrom-Json -AsHashtable
+
+    if ($keys.functionKeys.ContainsKey($webAppKeyName))
     {
-        Write-Host $message
-        Start-Sleep -s $waitTime
+        if ([string]::IsNullOrEmpty($newAltKeyValue))
+        {
+            $newAltKeyValue = $keys.functionKeys[$webAppKeyName]
+        }
+        elseif ($newAltKeyValue -ne $keys.functionKeys[$webAppKeyName])
+        {
+            # Maybe eventually have a switch to overwrite, but for now let the dev figure it out manually.
+            throw "The value of $webAppKeyName is not the same in all web apps."
+        }
     }
 }
 
-# Function to set Resource Strings
-function SetResourceStrings($subscriptionId, $resourceGroup, $webAppName, $webAppKeyName, $functionName)
+Write-Host "Creating new app key"
+$local:newKeyValue = Create-AppKey
+
+if ([string]::IsNullOrEmpty($newAltKeyValue))
 {
-    [hashtable] $ResourceStrings = @{}
-
-    # Set Parameters
-    $ResourceStrings += @{subscriptionId = $subscriptionId}
-    $ResourceStrings += @{resourceGroup = $resourceGroup}
-    $ResourceStrings += @{webAppName = $webAppName}
-    $ResourceStrings += @{webAppKeyName = $webAppKeyName}
-    $ResourceStrings += @{functionName = $functionName}
-
-    # Set Azure Function Resource String, and Alternate Key Name
-    $ResourceStrings += @{resourceString = "https://management.azure.com/subscriptions/$($ResourceStrings['subscriptionId'])/resourceGroups/$($ResourceStrings['resourceGroup'])/providers/Microsoft.Web/sites/$($ResourceStrings['webAppName'])"}
-    $ResourceStrings += @{webAppKeyNameAlt = $webAppKeyName + "Alt"}
-
-    # Set Azure Function Resource String, and Alternate Key Name
-    if([string]::IsNullOrEmpty($($ResourceStrings['functionName']))){
-        # Set URIs
-        $ResourceStrings += @{primaryUri = "$($ResourceStrings['resourceString'])/host/default/functionkeys/$($($ResourceStrings['webAppKeyName']))?api-version=2018-11-01"}
-        $ResourceStrings += @{secondaryUri = "$($ResourceStrings['resourceString'])/host/default/functionkeys/$($($ResourceStrings['webAppKeyNameAlt']))?api-version=2018-11-01"}
-        $ResourceStrings += @{keyRequestUri = "$($ResourceStrings['resourceString'])/host/default/listKeys?api-version=2018-11-01"}
-    } else {
-        # Set URIs
-        $ResourceStrings += @{primaryUri = "$($ResourceStrings['resourceString'])/functions/$($ResourceStrings['functionName'])/keys/$($($ResourceStrings['webAppKeyName']))?api-version=2018-11-01"}
-        $ResourceStrings += @{secondaryUri = "$($ResourceStrings['resourceString'])/functions/$($ResourceStrings['functionName'])/keys/$($($ResourceStrings['webAppKeyNameAlt']))?api-version=2018-11-01"}
-        $ResourceStrings += @{keyRequestUri = "$($ResourceStrings['resourceString'])/functions/$($ResourceStrings['functionName'])/listKeys?api-version=2018-02-01"}
-    }
-
-    return $ResourceStrings
+    Write-Warning "$webAppKeyName doesn't exist in any of the web apps."
+    $newAltKeyValue = Create-AppKey
 }
 
-Function PrintHeader($message)
+$local:webAppKeyNameAlt = $webAppKeyName + "Alt"
+
+foreach ($webApp in $webAppNames)
 {
-    Write-Host
-    Write-Host
-    Write-Host "*******************************************************"
-    Write-Host $message
-    Write-Host "*******************************************************"
+    Write-Host "Setting keys for" $webApp
+
+    # Always do alt first.
+    az functionapp keys set --key-name $webAppKeyNameAlt --key-type functionKeys -n $webApp -g $resourceGroup --key-value $newAltKeyValue | Out-Null
+    az functionapp keys set --key-name $webAppKeyName --key-type functionKeys -n $webApp -g $resourceGroup --key-value $newKeyValue | Out-Null
 }
 
-# Write Parameters to Host
-PrintHeader -message "Rotating Keys for following Parameters"
-Write-Host "subscriptionId: $subscriptionId"
-Write-Host "resourceGroup: $resourceGroup"
-Write-Host "webAppName: $webAppName"
-Write-Host "webAppKeyName: $webAppKeyName"
-Write-Host "azureKeyVaultSecretPair: " + ($azureKeyVaultSecretPair | Out-String)
-Write-Host "functionName: $functionName"
-Write-Host "keyLength: $keyLength"
-Write-Host "maxAttempts: $maxAttempts"
-Write-Host "secondsToWait: $secondsToWait"
-
-# Fetch Token and Set Headers
-PrintHeader -message "Fetching Access Token"
-$token=$(az account get-access-token --query accessToken --output tsv)
-if(!$?) {
-    Write-Host "Failed to get access token."
-    exit 1
+Write-Host "Setting new app key in keyvaults"
+foreach ($keyVaultName in $azureKeyVaultSecretPair.keys)
+{
+    Write-Host "Setting new app key value to $($azureKeyVaultSecretPair[$keyVaultName]) in $keyVaultName"
+    az keyvault secret set --vault-name $keyVaultName --name $azureKeyVaultSecretPair[$keyVaultName] --value $newKeyValue | Out-Null
 }
-Write-Host "Creating Headers"
-$header = @{Authorization = "Bearer " + $token; Accept = 'application/json'}
-
-# Create Initial Resource Strings
-[hashtable] $ResourceStrings = @{}
-$ResourceStrings = SetResourceStrings -subscriptionId $subscriptionId -resourceGroup $resourceGroup -webAppName $webAppName[0] -webAppKeyName $webAppKeyName -functionName $functionName
-
-# Read current key
-PrintHeader -message "Reading Keys from First App: $($ResourceStrings['webAppName'])"
-$attempt = 0
-do {
-    CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
-    $attempt++
-    Write-Host "Attempting to read current key:" $attempt
-    $secondaryKeyResponse = Invoke-WebRequest -Method Post -Uri $ResourceStrings['keyRequestUri'] -Headers $header
-    Start-Sleep -s 5
-} while($secondaryKeyResponse.StatusCode -ne 200 -or !$? -and $attempt -lt $maxAttempts)
-
-# Fail if we failed to read key
-if($secondaryKeyResponse.StatusCode -ne 200) {
-    Write-Host "Failed to fetch current key."
-    exit 1
-}
-
-# Parse Key
-$secondaryKeyParse = $secondaryKeyResponse.Content | ConvertFrom-Json
-if([string]::IsNullOrEmpty($ResourceStrings['functionName'])){
-    $secondaryKey = $secondaryKeyParse.functionKeys."$webAppKeyName"
-} else {
-    $secondaryKey =$secondaryKeyParse."$webAppKeyName"
-}
-
-# Create new Function Keys
-$primaryKey = Get-RandomCharacters -length $keyLength -characters 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
-if([string]::IsNullOrEmpty($secondaryKey)){
-    $secondaryKey = Get-RandomCharacters -length $keyLength -characters 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
-}
-
-
-# Process all Functions
-foreach ($app in $webAppName)  
-{ 
-    $ResourceStrings = SetResourceStrings -subscriptionId $subscriptionId -resourceGroup $resourceGroup -webAppName $app -webAppKeyName $webAppKeyName -functionName $functionName
-    PrintHeader -message "Processing: $($ResourceStrings['webAppName'])"
-
-    # Create Function Key Payloads
-    $primaryPayload = (@{ properties=@{ name=$($ResourceStrings['webAppKeyName']); value=$primaryKey } } | ConvertTo-Json -Compress)
-    $secondaryPayload = (@{ properties=@{ name=$($ResourceStrings['$webAppKeyNameAlt']); value=$secondaryKey } } | ConvertTo-Json -Compress)
-
-    ## Rotate Keys
-    # Set Alternate Key First
-    $attempt = 0
-    do {
-        CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
-        $attempt++
-        Write-Host "Attempting to set alternate key:" $attempt
-        $alternateKeyResponse = Invoke-WebRequest -Method Put -Uri $ResourceStrings['secondaryUri'] -Body "$secondaryPayload" -Headers $header -ContentType "application/json"
-    } while ($alternateKeyResponse.StatusCode -ne 200 -or !$? -and $attempt -lt $maxAttempts)
-    if($alternateKeyResponse.StatusCode -ne 200) {
-        Write-Host "Failed to set alternate key."
-        exit 1
-    }
-    
-    # Set Primary Key
-    $attempt = 0
-    do {
-        CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
-        $attempt++
-        Write-Host "Attempting to set primary key:" $attempt
-        $primaryKeyResponse = Invoke-WebRequest -Method Put -Uri $ResourceStrings['primaryUri'] -Body "$primaryPayload" -Headers $header -ContentType "application/json"
-    } while ($primaryKeyResponse.StatusCode -ne 200 -or !$? -and $attempt -lt $maxAttempts)
-    if($primaryKeyResponse.StatusCode -ne 200) {
-        Write-Host "Failed to set primary key."
-        exit 1
-    }
-}
-
-$azureKeyVaultSecretPair.GetEnumerator() | ForEach-Object {
-    $azureKeyVault = $_.Key
-    $azureKeyVaultSecret = $_.Value
-
-    # Update Key Vault
-    PrintHeader -message "Updating Key-Vault: $azureKeyVault"
-    $attempt = 0
-    do {
-        CheckAndWait -value $attempt -threshold 0 -message "Waiting before next attempt...." -waitTime $secondsToWait
-        $attempt++
-        Write-Host "Attempting to update key-vault:" $attempt
-        $_ = az keyvault secret set --vault-name $azureKeyVault --name $azureKeyVaultSecret --value $primaryKey
-    } while(!$? -and $attempt -lt $maxAttempts)
-    if(!$?) {
-        Write-Host "Failed to update keyvault."
-        exit 1
-    }
-}
-
-PrintHeader -message "Keys Updated"
