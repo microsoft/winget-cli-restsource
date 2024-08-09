@@ -22,6 +22,10 @@ extends:
       image: windows-2022
       os: windows
 
+    settings:
+      # Builds from forked repos do not have permissions to set tags
+      skipBuildTagsForGitHubPullRequests: true
+
     stages:
     - stage: Build_Publish_Test
       jobs:
