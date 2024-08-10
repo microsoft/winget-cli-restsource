@@ -1,12 +1,11 @@
 # Copyright (c) Microsoft Corporation. All rights reserved
 # CI pipeline for winget-cli-restsource
 
-# TODO: The forked pr builds need to have the same permission as non-forked ones to access
-#       project's internal nuget feed. Remove DisablePipelineConfigDetector variable when
-#       a long term fix is available.
-variables:
-- name: DisablePipelineConfigDetector
-  value: true
+# PR triggers
+pr:
+  branches:
+    include:
+    - main
 
 resources:
   repositories:
@@ -22,9 +21,10 @@ extends:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: windows-2022
       os: windows
-    customBuildTags:
-    # This is added by 1ES migration tool and it is okay to remove in the future.
-    - ES365AIMigrationTooling
+
+    settings:
+      # Builds from forked repos do not have permissions to set tags
+      skipBuildTagsForGitHubPullRequests: true
 
     stages:
     - stage: Build_Publish_Test
