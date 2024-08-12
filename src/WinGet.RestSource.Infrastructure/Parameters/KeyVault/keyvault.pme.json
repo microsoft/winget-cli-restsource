@@ -8,12 +8,10 @@
     "accessPolicies": {
       "value": [
         {
-          "tenantId": "975f013f-7f24-47e8-a7d3-abc4752bf346",
-          "objectId": "6a695a50-74b4-4fe0-a4be-5051d94c810e",
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "objectId": "2c6c9eac-c1b3-4ad6-aba3-261f0dd4c2fe",
           "permissions": {
             "keys": [
-              "Get",
-              "List"
             ],
             "secrets": [
               "Get",
@@ -21,15 +19,12 @@
               "Set"
             ],
             "certificates": [
-              "Get",
-              "List"
             ],
             "storage": [
-              "Get"
             ]
           },
           "metadata": {
-            "description": "This is the object for the deployment agent (WDX-APT-WPMService-Deployment(winget-cli-restsource))."
+            "description": "This is the object for mi-wgrest-deployment-pme."
           }
         },
         {
