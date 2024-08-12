@@ -30,11 +30,9 @@
         },
         {
           "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
-          "objectId": "a2db5783-1f5a-4db7-a228-f86910ed981a",
+          "objectId": "2b7e6ba1-111c-4bc3-ab49-92264daf7c1f",
           "permissions": {
             "keys": [
-              "Get",
-              "List"
             ],
             "secrets": [
               "Get",
@@ -42,15 +40,12 @@
               "Set"
             ],
             "certificates": [
-              "Get",
-              "List"
             ],
             "storage": [
-              "Get"
             ]
           },
           "metadata": {
-            "description": "This is the object for winget-cli-restsource PPE."
+            "description": "This is the object for mi-wgrest-deployment-ppe."
           }
         },
         {

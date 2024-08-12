@@ -37,7 +37,8 @@
             ],
             "secrets": [
               "Get",
-              "List"
+              "List",
+              "Set"
             ],
             "certificates": [
             ],
@@ -45,7 +46,7 @@
             ]
           },
           "metadata": {
-            "description": "This is the object for mi-wgrest-deployment-test. Used for E2E."
+            "description": "This is the object for mi-wgrest-deployment-test."
           }
         },
         {
