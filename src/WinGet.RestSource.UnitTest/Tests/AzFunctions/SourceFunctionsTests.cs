@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="SourceFunctionsTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -51,7 +51,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
             this.telemetryConfiguration = new TelemetryConfiguration
             {
                 TelemetryChannel = this.mockTelemetryChannel.Object,
-                InstrumentationKey = Guid.NewGuid().ToString(),
+                ConnectionString = Guid.NewGuid().ToString(),
             };
 
             this.mockHttpClientFactory.Setup(

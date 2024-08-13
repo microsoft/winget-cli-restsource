@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="SourceFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -311,8 +311,6 @@ namespace Microsoft.WinGet.RestSource.Functions
                 customDimensions.Add("FunctionName", executionContext.FunctionName);
                 customDimensions.Add("OperationId", inputHelper.OperationId);
 
-                this.telemetryClient.TrackEvent("ExecutionStart", customDimensions);
-
                 durableContext.LogInfo($"{loggingContext}{orchestrationFunction} executed at: {durableContext.CurrentUtcDateTime}." +
                     $" Calling {activityFunction} activity function.");
 
@@ -326,10 +324,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 durableContext.LogError($"{loggingContext}Error occurred in SourceOrchestratorHelperAsync {e}");
-
-                this.telemetryClient.TrackException(e, customDimensions);
                 customDimensions.Add("Exception", e.GetType().FullName);
-
                 Metrics.EmitMetric(errorMetric, customDimensions, logger);
             }
             finally
@@ -339,7 +334,6 @@ namespace Microsoft.WinGet.RestSource.Functions
                     durableContext.LogInfo($"{loggingContext}Task result: {sourceResultOutput}");
                 }
 
-                this.telemetryClient.TrackEvent("ExecutionCompleted", customDimensions);
                 customDimensions.Add("Result", sourceResultOutput.ToString());
             }
 

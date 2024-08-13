@@ -25,6 +25,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
+    using YamlDotNet.Core.Tokens;
 
     /// <summary>
     /// Azure function startup class.
@@ -66,12 +67,14 @@ namespace Microsoft.WinGet.RestSource.Functions
             builder.Services.AddSingleton<TelemetryConfiguration>(sp =>
             {
                 var key = AzureFunctionEnvironment.AppInsightsInstrumentationKey;
+                var telemetryConfiguration = new TelemetryConfiguration();
+
                 if (!string.IsNullOrWhiteSpace(key))
                 {
-                    return new TelemetryConfiguration(key);
+                    telemetryConfiguration.ConnectionString = key;
                 }
 
-                return new TelemetryConfiguration();
+                return telemetryConfiguration;
             });
         }
     }
