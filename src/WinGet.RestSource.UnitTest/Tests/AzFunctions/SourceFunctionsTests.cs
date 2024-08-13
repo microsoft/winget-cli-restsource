@@ -51,7 +51,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
             this.telemetryConfiguration = new TelemetryConfiguration
             {
                 TelemetryChannel = this.mockTelemetryChannel.Object,
-                ConnectionString = Guid.NewGuid().ToString(),
+                ConnectionString = "key1=value1",
             };
 
             this.mockHttpClientFactory.Setup(
