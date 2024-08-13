@@ -71,7 +71,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 
                 if (!string.IsNullOrWhiteSpace(key))
                 {
-                    telemetryConfiguration.ConnectionString = key;
+                    telemetryConfiguration.ConnectionString = $"InstrumentationKey={key}";
                 }
 
                 return telemetryConfiguration;
