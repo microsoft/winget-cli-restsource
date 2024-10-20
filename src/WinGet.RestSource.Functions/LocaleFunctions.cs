@@ -249,7 +249,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.LocaleGet)]
         public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
-                AuthorizationLevel.Anonymous,
+                AuthorizationLevel.Function,
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,

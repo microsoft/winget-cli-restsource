@@ -232,7 +232,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.PackageGet)]
         public async Task<IActionResult> PackagesGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packages/{packageIdentifier?}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packages/{packageIdentifier?}")]
             HttpRequest req,
             string packageIdentifier,
             ILogger log)

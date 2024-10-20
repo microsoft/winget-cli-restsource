@@ -117,14 +117,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static bool CertificateAuthenticationSelfSigned => bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
 
         /// <summary>
-        /// Gets the expected root/intermediate cert subject name.
-        /// </summary>
-        public static string CertificateAuthenticationSubjectNameEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationSubjectNameEnvName);
-
-        /// <summary>
         /// Gets Subject name of the root/intermediate certificate.
         /// </summary>
-        public static string CertificateAuthenticationSubjectName => ApiConstants.CertificateAuthenticationSubjectNameEnv;
+        public static string CertificateAuthenticationSubjectName => Environment.GetEnvironmentVariable(CertificateAuthenticationSubjectNameEnvName);
 
         /// <summary>
         /// Gets Functions host key.

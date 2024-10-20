@@ -12,6 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
@@ -251,7 +252,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.InstallerGet)]
         public async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(
-                AuthorizationLevel.Anonymous,
+                AuthorizationLevel.Function,
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier?}")]
             HttpRequest req,

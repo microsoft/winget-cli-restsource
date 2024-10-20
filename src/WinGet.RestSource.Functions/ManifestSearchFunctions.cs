@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ManifestSearchFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -53,7 +53,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestSearchPost)]
         public async Task<IActionResult> ManifestSearchPostAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionPost, Route = "manifestSearch")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "manifestSearch")]
             HttpRequest req,
             ILogger log)
         {

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="AzureFunctionHelper.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -38,7 +38,7 @@ namespace Microsoft.WindowsPackageManager.Rest.Utils
             string postRequestBody = null,
             Dictionary<string, string> headers = null)
         {
-            // Create Post Request.
+            // Create Request.
             HttpRequestMessage requestMessage = new HttpRequestMessage(httpMethod, azureFunctionURL);
             requestMessage.Headers.Add(FunctionKeyHeader, functionKey);
 
