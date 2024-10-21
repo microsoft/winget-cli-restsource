@@ -20,21 +20,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public const string AzFuncRestSourceEndpointEnvName = "AzFuncRestSourceEndpoint";
 
         /// <summary>
-        /// CertificateAuthenticationRequiredName environmental variable name.
-        /// </summary>
-        public const string CertificateAuthenticationRequiredEnvName = "CertificateAuthenticationRequired";
-
-        /// <summary>
-        /// CertificateAuthenticationSelfSigned environmental variable name.
-        /// </summary>
-        public const string CertificateAuthenticationSelfSignedEnvName = "CertificateAuthenticationSelfSigned";
-
-        /// <summary>
-        /// CertificateAuthenticationSubjectName environmental variable name.
-        /// </summary>
-        public const string CertificateAuthenticationSubjectNameEnvName = "CertificateAuthenticationSubjectName";
-
-        /// <summary>
         /// FunctionHostKey environmental variable name.
         /// </summary>
         public const string FunctionHostKeyEnvName = "FunctionHostKey";
@@ -50,6 +35,21 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public const string ServerIdentifierEnvName = "ServerIdentifier";
 
         /// <summary>
+        /// ServerAuthenticationType environmental variable name.
+        /// </summary>
+        public const string ServerAuthenticationTypeEnvName = "ServerAuthenticationType";
+
+        /// <summary>
+        /// MicrosoftEntraIdResource environmental variable name.
+        /// </summary>
+        public const string MicrosoftEntraIdResourceEnvName = "MicrosoftEntraIdResource";
+
+        /// <summary>
+        /// MicrosoftEntraIdResourceScope environmental variable name.
+        /// </summary>
+        public const string MicrosoftEntraIdResourceScopeEnvName = "MicrosoftEntraIdResourceScope";
+
+        /// <summary>
         /// Server Supported Versions.
         /// </summary>
         public static readonly ApiVersions ServerSupportedVersions = new ApiVersions()
@@ -63,7 +63,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         };
 
         /// <summary>
-        /// Server Supported Versions.
+        /// Min version for Microsoft Entra Id support.
+        /// </summary>
+        public static readonly string MinVersionForMicrosoftEntraId = "1.7.0";
+
+        /// <summary>
         /// Unsupported package match fields.
         /// TODO: NormalizedPackageNameAndPublisher field support is currently not implemented.
         /// GitHub Issue: https://github.com/microsoft/winget-cli-restsource/issues/59.
@@ -97,31 +101,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static string AzFuncRestSourceEndpoint => Environment.GetEnvironmentVariable(AzFuncRestSourceEndpointEnvName);
 
         /// <summary>
-        /// Gets whether certificate authentication is enabled.
-        /// </summary>
-        public static string CertificateAuthenticationRequiredEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationRequiredEnvName);
-
-        /// <summary>
-        /// Gets a value indicating whether certificate authentication is enabled.
-        /// </summary>
-        public static bool CertificateAuthenticationRequired => bool.Parse(ApiConstants.CertificateAuthenticationRequiredEnv);
-
-        /// <summary>
-        /// Gets whether self signed certificates are allowed.
-        /// </summary>
-        public static string CertificateAuthenticationSelfSignedEnv => Environment.GetEnvironmentVariable(CertificateAuthenticationSelfSignedEnvName);
-
-        /// <summary>
-        /// Gets a value indicating whether self signed certificates are allowed as the root/intermediate certificate.
-        /// </summary>
-        public static bool CertificateAuthenticationSelfSigned => bool.Parse(ApiConstants.CertificateAuthenticationSelfSignedEnv);
-
-        /// <summary>
-        /// Gets Subject name of the root/intermediate certificate.
-        /// </summary>
-        public static string CertificateAuthenticationSubjectName => Environment.GetEnvironmentVariable(CertificateAuthenticationSubjectNameEnvName);
-
-        /// <summary>
         /// Gets Functions host key.
         /// </summary>
         public static string AzureFunctionHostKey => Environment.GetEnvironmentVariable(FunctionHostKeyEnvName);
@@ -132,8 +111,23 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public static string ManifestCacheEndpoint => Environment.GetEnvironmentVariable(ManifestCacheEndpointEnvName);
 
         /// <summary>
-        /// Gets server Identifier.
+        /// Gets server identifier.
         /// </summary>
         public static string ServerIdentifier => Environment.GetEnvironmentVariable(ServerIdentifierEnvName);
+
+        /// <summary>
+        /// Gets Microsoft Entra Id resource.
+        /// </summary>
+        public static string ServerAuthenticationType => Environment.GetEnvironmentVariable(ServerAuthenticationTypeEnvName);
+
+        /// <summary>
+        /// Gets Microsoft Entra Id resource.
+        /// </summary>
+        public static string MicrosoftEntraIdResource => Environment.GetEnvironmentVariable(MicrosoftEntraIdResourceEnvName);
+
+        /// <summary>
+        /// Gets optional Microsoft Entra Id resource scope.
+        /// </summary>
+        public static string MicrosoftEntraIdResourceScope => Environment.GetEnvironmentVariable(MicrosoftEntraIdResourceScopeEnvName);
     }
 }

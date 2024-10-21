@@ -6,7 +6,7 @@
       "value": "westus"
     },
     "serverIdentifier": {
-      "value": "winget-pkgs-intune-rest-ppe"
+      "value": "winget-pkgs-rest-ppe"
     },
     "manifestCacheEndpoint": {
       "value": "https://winget-ppe.azureedge.net/cache/"

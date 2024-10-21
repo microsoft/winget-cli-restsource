@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions
+namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions
     using Flurl.Http;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers;
-    using Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Functions.TestData;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;

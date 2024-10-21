@@ -65,8 +65,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);

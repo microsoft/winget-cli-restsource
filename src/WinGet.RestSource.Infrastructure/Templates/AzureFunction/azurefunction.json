@@ -126,39 +126,6 @@
                 "description": "This is the thumbprint loading Certs."
             }
         },
-        "clientCertEnabled": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Enable Client Cert Authentication for the Function App."
-            }
-        },
-        "clientCertMode": {
-            "type": "string",
-            "defaultValue": "Required",
-            "allowedValues": [
-                "Required",
-                "OptionalInteractiveUser",
-                "Optional"
-            ],
-            "metadata": {
-                "description": "Client Cert Authentication Mode. Is only active if clientCertEnabled is set to true."
-            }
-        },
-        "certificateAuthenticationAllowSelfSigned": {
-            "type": "string",
-            "defaultValue": "false",
-            "metadata": {
-                "description": "Whether self signed certificates are allowed as the server root/intermediate certificate."
-            }
-        },
-        "certificateAuthenticationSubjectName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subject name of the server root/intermediate certificate. The key vault of this rest souce must be provisioned manually with the appropriate root/intermediate certificate for client certificate validation."
-            }
-        },
         "cors": {
             "type": "object",
             "defaultValue": {
@@ -201,7 +168,6 @@
     "variables": {
         "appInsightResourceId": "[resourceId(parameters('appInsightSubscription'), parameters('appInsightResourceGroup'), 'microsoft.insights/components', parameters('appInsightName'))]",
         "appServiceResourceId": "[resourceId(parameters('appServiceSubscription'), parameters('appServiceResourceGroup'), 'Microsoft.Web/serverfarms/', parameters('appServiceName'))]",
-        "certificateAuthenticationEnabled": "[if(parameters('clientCertEnabled'), 'true', 'false' )]",
         "kv_appConfigPrimary_SecretName": "AppConfigPrimaryEndpoint",
         "kv_appConfigSecondary_SecretName": "AppConfigSecondaryEndpoint",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
@@ -235,9 +201,7 @@
                         "value": "[parameters('functionExtensionVersion')]"
                     }
                 ],
-                "httpsOnly": true,
-                "clientCertEnabled": "[parameters('clientCertEnabled')]",
-                "clientCertMode": "[parameters('clientCertMode')]"
+                "httpsOnly": true
             },
             "resources": [
                 {
@@ -252,9 +216,6 @@
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
                         "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
                         "AzureWebJobsStorage__accountName": "[parameters('azFuncStorageName')]",
-                        "CertificateAuthenticationRequired": "[variables('certificateAuthenticationEnabled')]",
-                        "CertificateAuthenticationSelfSigned": "[parameters('certificateAuthenticationAllowSelfSigned')]",
-                        "CertificateAuthenticationSubjectName": "[parameters('certificateAuthenticationSubjectName')]",
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
                         "CosmosContainer": "[parameters('cosmosContainer')]",
                         "CosmosDatabase": "[parameters('cosmosDatabase')]",

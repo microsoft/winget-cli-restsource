@@ -6,7 +6,7 @@
       "value": "westus"
     },
     "serverIdentifier": {
-      "value": "winget-pkgs-intune-rest-int"
+      "value": "winget-pkgs-rest-int"
     },
     "manifestCacheEndpoint": {
       "value": "https://winget-int.azureedge.net/cache/"

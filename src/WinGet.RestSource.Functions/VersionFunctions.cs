@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="VersionFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -65,8 +65,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -125,8 +123,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteVersion(packageIdentifier, packageVersion);
@@ -179,8 +175,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -248,8 +242,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
