@@ -70,7 +70,7 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             this.log.WriteLine($"{CosmosConnectionConstants.ContainerNameSetting}: {containerId}");
 
             var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<CosmosDataStore>();
-            this.cosmosDataStore = new CosmosDataStore(logger, endpoint, readWriteKey, readOnlyKey, databaseId, containerId);
+            this.cosmosDataStore = new CosmosDataStore(logger, endpoint, databaseId, containerId, readOnlyKey, readWriteKey);
         }
 
         /// <inheritdoc/>
