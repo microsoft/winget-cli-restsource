@@ -51,6 +51,9 @@
     },
     "azFuncStorageName": {
       "value": "stwgrestcentusppe"
+    },
+    "serverAuthenticationType": {
+        "value": "none"
     }
   }
 }

@@ -40,6 +40,9 @@
     },
     "azFuncStorageName": {
       "value": "stwgrestwestustest"
+    },
+    "serverAuthenticationType": {
+        "value": "none"
     }
   }
 }
