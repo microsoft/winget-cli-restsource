@@ -109,8 +109,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
 
             if (!string.IsNullOrEmpty(minVersion))
             {
-                var targetMinVersion = new System.Version(minVersion);
-                result = (ApiVersions)result.Where<string>(v => new System.Version(v) >= targetMinVersion);
+                result = new ApiVersions();
+                result.AddRange(ApiConstants.ServerSupportedVersions.Where<string>(v => new System.Version(v) >= new System.Version(minVersion)));
             }
 
             return result;

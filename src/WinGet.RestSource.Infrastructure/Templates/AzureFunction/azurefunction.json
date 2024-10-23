@@ -167,15 +167,19 @@
         "serverAuthenticationType": {
             "type": "string",
             "defaultValue": "none",
+            "allowedValues": [
+                "none",
+                "microsoftEntraId"
+            ],
             "metadata": {
-                "description": "This describes authentication type to query the server. Supported values are: none, microsoftEntraId."
+                "description": "The authentication type to query the server."
             }
         },
         "microsoftEntraIdResource": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Required if server authentication type is microsoftEntraId. The Microsoft EntraId target resource."
+                "description": "Required if serverAuthenticationType is microsoftEntraId. The Microsoft EntraId target resource."
             }
         },
         "microsoftEntraIdResourceScope": {
