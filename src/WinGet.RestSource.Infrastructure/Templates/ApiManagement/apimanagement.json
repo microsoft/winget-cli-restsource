@@ -81,22 +81,45 @@
             "metadata": {
                 "description": "String array containing backend urls"
             }
+        },
+        "queryApiValidationEnabled": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether all GET apis and manifestSearch api should perform request validation."
+            }
+        },
+        "queryApiValidationPolicy": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Api validation policy for source query apis (all GET apis and manifestSearch POST api). If queryApiValidationEnabled is true and this parameter is empty, a default validate-azure-ad-token policy is used."
+            }
+        },
+        "manageApiValidationPolicy": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Api validation policy for source management apis. If this parameter is empty, a default validate-azure-ad-token policy is used."
+            }
         }
     },
     "variables": {
-        "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]",
+        "kv_secreturi_path": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
         "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
-        "backendPoolName": "[format('{0}-backend-pool', parameters('apiName'))]",
+        "backendPoolName": "[concat(parameters('apiName'), '-backend-pool')]",
+        "queryApiValidation": "[if(parameters('queryApiValidationEnabled'), if(empty(parameters('queryApiValidationPolicy')), concat('<validate-azure-ad-token tenant-id=\"', tenant().tenantId, '\" header-name=\"authorization\" failed-validation-httpcode=\"403\" failed-validation-error-message=\"Unauthorized\"/>'), parameters('queryApiValidationPolicy')), '')]",
+        "manageApiValidation": "[if(empty(parameters('manageApiValidationPolicy')), concat('<validate-azure-ad-token tenant-id=\"', tenant().tenantId, '\" header-name=\"authorization\" failed-validation-httpcode=\"403\" failed-validation-error-message=\"Unauthorized\"></validate-azure-ad-token>'), parameters('manageApiValidationPolicy'))]",
         "publicApiPolicy": {
-            "value": "<policies><inbound><base/><set-backend-service id=\"query-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "value": "[concat('<policies><inbound><base/><set-backend-service id=\"public-api-policy\" backend-id=\"', variables('backendPoolName'), '\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>')]",
             "format": "xml"
         },
         "queryApiPolicy": {
-            "value": "<policies><inbound><base/><set-backend-service id=\"query-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "value": "[concat('<policies><inbound><base/>', variables('queryApiValidation'), '<set-backend-service id=\"query-api-policy\" backend-id=\"', variables('backendPoolName'), '\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>')]",
             "format": "xml"
         },
         "manageApiPolicy": {
-            "value": "<policies><inbound><base/><set-backend-service id=\"manage-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "value": "[concat('<policies><inbound><base/>', variables('manageApiValidation'), '<set-backend-service id=\"manage-api-policy\" backend-id=\"', variables('backendPoolName'), '\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>')]",
             "format": "xml"
         }
     },
@@ -237,7 +260,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-installerdelete/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-installerdelete')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-installerdelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -276,7 +300,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-localedelete/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-localedelete')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-localedelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -305,7 +330,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-manifestdelete/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-manifestdelete')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-manifestdelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -334,7 +360,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-packagedelete/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-packagedelete')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-packagedelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -368,7 +395,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-versiondelete/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-versiondelete')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-versiondelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -390,7 +418,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-informationget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-informationget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-informationget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('publicApiPolicy')]"
         },
@@ -428,7 +457,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-installerget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-installerget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-installerget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -466,7 +496,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-localeget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-localeget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-localeget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -495,7 +526,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-manifestget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-manifestget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-manifestget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -523,7 +555,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-packageget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-packageget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-packageget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -556,7 +589,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-versionget/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-versionget')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-versionget')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -590,7 +624,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-installerpost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-installerpost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-installerpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -624,7 +659,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-localepost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-localepost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-localepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -646,7 +682,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestpost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestpost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -668,7 +705,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestsearchpost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestsearchpost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestsearchpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('queryApiPolicy')]"
         },
@@ -690,7 +728,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-packagepost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-packagepost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-packagepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -712,7 +751,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-rebuildpost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-rebuildpost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-rebuildpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -734,7 +774,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-updatepost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-updatepost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-updatepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -756,7 +797,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-versionpost/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-versionpost')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-versionpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -795,7 +837,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-installerput/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-installerput')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-installerput')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -834,7 +877,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-localeput/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-localeput')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-localeput')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -863,7 +907,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-manifestput/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-manifestput')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-manifestput')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -892,7 +937,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-packageput/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-packageput')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-packageput')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         },
@@ -926,7 +972,8 @@
             "apiVersion": "2023-09-01-preview",
             "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-versionput/policy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-versionput')]"
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-versionput')]",
+                "[resourceId('Microsoft.ApiManagement/service/backends', parameters('serviceName'), variables('backendPoolName'))]"
             ],
             "properties": "[variables('manageApiPolicy')]"
         }
