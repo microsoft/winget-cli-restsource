@@ -1,0 +1,1011 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the API Management service instance"
+            }
+        },
+        "publisherEmail": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The email address of the owner of the service"
+            }
+        },
+        "publisherName": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The name of the owner of the service"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+                "Consumption",
+                "Developer",
+                "Basic",
+                "Basicv2",
+                "Standard",
+                "Standardv2",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The pricing tier of this API Management service"
+            }
+        },
+        "skuCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                0,
+                1,
+                2
+            ],
+            "metadata": {
+                "description": "The instance size of this API Management service."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "apiName": {
+            "type": "string",
+            "defaultValue": "winget",
+            "metadata": {
+                "description": "The API name for the winget rest source."
+            }
+        },
+        "subscriptionRequired": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Whether an API or Product subscription is required for accessing the API."
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "Key Vault Name"
+            }
+        },
+        "backendUrls": {
+            "type": "array",
+            "metadata": {
+                "description": "String array containing backend urls"
+            }
+        }
+    },
+    "variables": {
+        "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]",
+        "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
+        "backendPoolName": "[format('{0}/{1}/pool', parameters('serviceName'), parameters('apiName'))]",
+        "publicApiPolicy": {
+            "value": "<policies><inbound><base/><set-backend-service id=\"query-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "format": "xml"
+        },
+        "queryApiPolicy": {
+            "value": "<policies><inbound><base/><set-backend-service id=\"query-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "format": "xml"
+        },
+        "manageApiPolicy": {
+            "value": "<policies><inbound><base/><set-backend-service id=\"manage-api-policy\" backend-id=\"yaotestrest3\"/></inbound><backend><base/></backend><outbound><base/></outbound><on-error><base/></on-error></policies>",
+            "format": "xml"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[parameters('serviceName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Developer",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publisherEmail": "[parameters('publisherEmail')]",
+                "publisherName": "[parameters('publisherName')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "winget rest source api",
+                "description": "winget rest source api",
+                "subscriptionRequired": "parameters('subscriptionRequired')",
+                "path": "parameters('apiName')",
+                "protocols": [
+                    "https"
+                ],
+                "subscriptionKeyParameterNames": {
+                    "header": "Ocp-Apim-Subscription-Key",
+                    "query": "subscription-key"
+                },
+                "isCurrent": true
+            }
+        },
+        {
+            "copy": {
+                "name": "backendcopy",
+                "count": "[length(parameters('backendUrls'))]"
+            },
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[format('{0}/{1}/backend{2}', parameters('serviceName'), parameters('apiName'), copyIndex())]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "description": "winget rest source backend function",
+                "url": "parameters('backendUrls')[copyIndex()]",
+                "protocol": "http",
+                "credentials": {
+                    "header": {
+                        "x-functions-key": [
+                            "{{functions-access-key}}"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[variables('backendPoolName')]",
+            "dependsOn": [
+                "backendcopy",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "description": "winget rest source backend function pool",
+                "type": "pool",
+                "pool": {
+                    "copy": [
+                        {
+                            "name": "services",
+                            "count": "[length(parameters('backendUrls'))]",
+                            "input": {
+                                "id": "[format('/nackends/{0}/{1}/backend{2}', parameters('serviceName'), parameters('apiName'), copyIndex('services'))]"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/namedValues",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '-key')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "functions-access-key",
+                "keyVault": {
+                    "secretIdentifier": "[concat(variables('kv_secreturi_path'), variables('kv_functionHostKey_SecretName'))]"
+                },
+                "tags": [
+                    "key",
+                    "function"
+                ],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-installerdelete')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "InstallerDelete",
+                "method": "DELETE",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "installerIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-installerdelete/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-installerdelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-localedelete')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "LocaleDelete",
+                "method": "DELETE",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageLocale",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-localedelete/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-localedelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-manifestdelete')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "ManifestDelete",
+                "method": "DELETE",
+                "urlTemplate": "/packageManifests/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "[parameters('operations_delete_manifestdelete_type')]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-manifestdelete/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-manifestdelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-packagedelete')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "PackageDelete",
+                "method": "DELETE",
+                "urlTemplate": "/packages/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "[parameters('operations_delete_packagedelete_type')]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-packagedelete/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-packagedelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-versiondelete')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "VersionDelete",
+                "method": "DELETE",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/delete-versiondelete/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'delete-versiondelete')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-informationget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "InformationGet",
+                "method": "GET",
+                "urlTemplate": "/information"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-informationget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-informationget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('publicApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-installerget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "InstallerGet",
+                "method": "GET",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "installerIdentifier",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-installerget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-installerget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-localeget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "LocaleGet",
+                "method": "GET",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageLocale",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-localeget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-localeget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-manifestget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "ManifestGet",
+                "method": "GET",
+                "urlTemplate": "/packageManifests/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-manifestget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-manifestget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-packageget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "PackageGet",
+                "method": "GET",
+                "urlTemplate": "/packages/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-packageget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-packageget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-versionget')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "VersionGet",
+                "method": "GET",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/get-versionget/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'get-versionget')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-installerpost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "InstallerPost",
+                "method": "POST",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/installers",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-installerpost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-installerpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-localepost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "LocalePost",
+                "method": "POST",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/locales",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-localepost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-localepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestpost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "ManifestPost",
+                "method": "POST",
+                "urlTemplate": "/packageManifests"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestpost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestsearchpost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "ManifestSearchPost",
+                "method": "POST",
+                "urlTemplate": "/manifestSearch"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-manifestsearchpost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-manifestsearchpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('queryApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-packagepost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "PackagePost",
+                "method": "POST",
+                "urlTemplate": "/packages"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-packagepost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-packagepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-rebuildpost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "RebuildPost",
+                "method": "POST",
+                "urlTemplate": "/rebuild"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-rebuildpost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-rebuildpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-updatepost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "UpdatePost",
+                "method": "POST",
+                "urlTemplate": "/update"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-updatepost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-updatepost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-versionpost')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "VersionPost",
+                "method": "POST",
+                "urlTemplate": "/packages/"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/post-versionpost/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'post-versionpost')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-installerput')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "InstallerPut",
+                "method": "PUT",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "installerIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-installerput/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-installerput')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-localeput')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "LocalePut",
+                "method": "PUT",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageLocale",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-localeput/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-localeput')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-manifestput')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "ManifestPut",
+                "method": "PUT",
+                "urlTemplate": "/packageManifests/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-manifestput/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-manifestput')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-packageput')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "PackagePut",
+                "method": "PUT",
+                "urlTemplate": "/packages/{packageIdentifier}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-packageput/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-packageput')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-versionput')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": {
+                "displayName": "VersionPut",
+                "method": "PUT",
+                "urlTemplate": "/packages/{packageIdentifier}/versions/{packageVersion}",
+                "templateParameters": [
+                    {
+                        "name": "packageIdentifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "packageVersion",
+                        "required": true,
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(parameters('serviceName'), '/', parameters('apiName'), '/put-versionput/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('serviceName'), parameters('apiName'), 'put-versionput')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('serviceName'), parameters('apiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('serviceName'))]"
+            ],
+            "properties": "[variables('manageApiPolicy')]"
+        }
+    ]
+}
