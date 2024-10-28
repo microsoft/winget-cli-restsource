@@ -6,8 +6,10 @@
 
 namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Validators;
     using Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators;
@@ -77,8 +79,19 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc/>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            // No custom validation
-            return new List<ValidationResult>();
+            var results = new List<ValidationResult>();
+
+            if (Constants.Enumerations.AuthenticationType.MicrosoftEntraId.Equals(this.AuthenticationType, StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.MicrosoftEntraIdAuthenticationInfo == null)
+                {
+                    results.Add(new ValidationResult($"{nameof(this.MicrosoftEntraIdAuthenticationInfo)} cannot be null if {nameof(this.AuthenticationType)} is microsoftEntraId"));
+                }
+
+                ApiDataValidator.Validate(this.MicrosoftEntraIdAuthenticationInfo, results);
+            }
+
+            return results;
         }
 
         /// <inheritdoc />
