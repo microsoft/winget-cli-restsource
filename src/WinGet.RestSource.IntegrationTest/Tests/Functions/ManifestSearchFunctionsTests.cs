@@ -1,10 +1,10 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ManifestSearchFunctionsTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions
+namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions
 {
     using System;
     using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions
     using Microsoft.WinGet.RestSource.IntegrationTest.Common;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common.Fixtures;
     using Microsoft.WinGet.RestSource.IntegrationTest.Common.Helpers;
-    using Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData;
+    using Microsoft.WinGet.RestSource.IntegrationTest.Functions.TestData;
     using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Constants;
     using Microsoft.WinGet.RestSource.Utils.Constants.Enumerations;

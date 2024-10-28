@@ -50,7 +50,7 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
                 case ErrorConstants.ValidationFailureErrorCode:
                 case ErrorConstants.HeadersAreNullErrorCode:
                 case ErrorConstants.ServerVersionNotSupportedErrorCode:
-                case ErrorConstants.ToManyContinuationTokensErrorCode:
+                case ErrorConstants.TooManyContinuationTokensErrorCode:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.BadRequest);
 
                 case ErrorConstants.ForbiddenErrorCode:

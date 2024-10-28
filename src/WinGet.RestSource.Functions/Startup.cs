@@ -38,8 +38,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             builder.Services.AddHttpClient();
 
             string endpoint = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosAccountEndpointSetting) ?? throw new InvalidDataException();
-            string readOnlyKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting);
-            string readWriteKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting);
             string databaseId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting) ?? throw new InvalidDataException();
             string containerId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting) ?? throw new InvalidDataException();
 
@@ -49,8 +47,6 @@ namespace Microsoft.WinGet.RestSource.Functions
                 sp => new CosmosDataStore(
                     sp.GetRequiredService<ILogger<CosmosDataStore>>(),
                     endpoint,
-                    readWriteKey,
-                    readOnlyKey,
                     databaseId,
                     containerId));
 

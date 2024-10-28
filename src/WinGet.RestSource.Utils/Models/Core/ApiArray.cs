@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ApiArray.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -69,7 +69,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Core
         protected uint MaxItems { get; set; }
 
         /// <summary>
-        /// Gets or sets MaxItems.
+        /// Gets or sets MemberValidator.
         /// </summary>
         protected Type MemberValidator { get; set; }
 

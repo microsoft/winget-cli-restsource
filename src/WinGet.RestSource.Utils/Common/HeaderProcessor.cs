@@ -79,7 +79,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Common
             {
                 throw new InvalidArgumentException(
                     new InternalRestError(
-                        ErrorConstants.ToManyContinuationTokensErrorCode,
+                        ErrorConstants.TooManyContinuationTokensErrorCode,
                         ErrorConstants.ToManyContinuationTokensErrorMessage));
             }
 

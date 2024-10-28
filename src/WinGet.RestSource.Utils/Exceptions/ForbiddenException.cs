@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ForbiddenException.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -10,7 +10,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Exceptions
     using Microsoft.WinGet.RestSource.Utils.Models.Errors;
 
     /// <summary>
-    /// This is for exceptions that occur when validating client certificates.
+    /// This is for exceptions that occur when validating client identities.
     /// </summary>
     public class ForbiddenException : DefaultException
     {

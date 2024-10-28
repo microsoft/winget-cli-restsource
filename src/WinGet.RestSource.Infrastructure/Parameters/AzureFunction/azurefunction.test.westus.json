@@ -6,7 +6,7 @@
       "value": "westus"
     },
     "serverIdentifier": {
-      "value": "winget-pkgs-intune-rest-test"
+      "value": "winget-pkgs-rest-test"
     },
     "manifestCacheEndpoint": {
       "value": "https://winget-test.azureedge.net/cache/"
@@ -40,6 +40,9 @@
     },
     "azFuncStorageName": {
       "value": "stwgrestwestustest"
+    },
+    "serverAuthenticationType": {
+        "value": "none"
     }
   }
 }

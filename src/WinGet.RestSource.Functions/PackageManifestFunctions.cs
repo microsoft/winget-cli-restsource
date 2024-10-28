@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PackageManifestFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -64,8 +64,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -121,8 +119,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
@@ -173,8 +169,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -230,7 +224,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier?}")]
+            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier?}")]
             HttpRequest req,
             string packageIdentifier,
             ILogger log)
@@ -242,8 +236,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 string continuationToken = headers.GetValueOrDefault(QueryConstants.ContinuationToken);

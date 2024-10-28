@@ -6,7 +6,7 @@
       "value": "centralus"
     },
     "serverIdentifier": {
-      "value": "winget-pkgs-intune-rest-pme"
+      "value": "winget-pkgs-rest-pme"
     },
     "manifestCacheEndpoint": {
       "value": "https://cdn.winget.microsoft.com/cache/"
@@ -51,6 +51,9 @@
     },
     "azFuncStorageName": {
       "value": "stwgrestcentuspme"
+    },
+    "serverAuthenticationType": {
+        "value": "none"
     }
   }
 }

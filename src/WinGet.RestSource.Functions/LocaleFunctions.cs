@@ -67,8 +67,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -131,8 +129,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
                 await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
@@ -190,8 +186,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
@@ -249,7 +243,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.LocaleGet)]
         public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
-                AuthorizationLevel.Anonymous,
+                AuthorizationLevel.Function,
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,
@@ -263,8 +257,6 @@ namespace Microsoft.WinGet.RestSource.Functions
 
             try
             {
-                CertificateValidationHelper.ValidateAuthentication(req, log);
-
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 

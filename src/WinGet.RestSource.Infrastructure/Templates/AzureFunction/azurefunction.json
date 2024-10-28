@@ -126,39 +126,6 @@
                 "description": "This is the thumbprint loading Certs."
             }
         },
-        "clientCertEnabled": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Enable Client Cert Authentication for the Function App."
-            }
-        },
-        "clientCertMode": {
-            "type": "string",
-            "defaultValue": "Required",
-            "allowedValues": [
-                "Required",
-                "OptionalInteractiveUser",
-                "Optional"
-            ],
-            "metadata": {
-                "description": "Client Cert Authentication Mode. Is only active if clientCertEnabled is set to true."
-            }
-        },
-        "certificateAuthenticationAllowSelfSigned": {
-            "type": "string",
-            "defaultValue": "false",
-            "metadata": {
-                "description": "Whether self signed certificates are allowed as the server root/intermediate certificate."
-            }
-        },
-        "certificateAuthenticationSubjectName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subject name of the server root/intermediate certificate. The key vault of this rest souce must be provisioned manually with the appropriate root/intermediate certificate for client certificate validation."
-            }
-        },
         "cors": {
             "type": "object",
             "defaultValue": {
@@ -196,17 +163,39 @@
             "metadata": {
                 "description": "The url of the zip package of this azure function. The az function must have at least Storage Blob Data Reader role to the storage account."
             }
+        },
+        "serverAuthenticationType": {
+            "type": "string",
+            "defaultValue": "none",
+            "allowedValues": [
+                "none",
+                "microsoftEntraId"
+            ],
+            "metadata": {
+                "description": "The authentication type to query the server."
+            }
+        },
+        "microsoftEntraIdResource": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Required if serverAuthenticationType is microsoftEntraId. The Microsoft EntraId target resource."
+            }
+        },
+        "microsoftEntraIdResourceScope": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. The Microsoft EntraId target resource scope."
+            }
         }
     },
     "variables": {
         "appInsightResourceId": "[resourceId(parameters('appInsightSubscription'), parameters('appInsightResourceGroup'), 'microsoft.insights/components', parameters('appInsightName'))]",
         "appServiceResourceId": "[resourceId(parameters('appServiceSubscription'), parameters('appServiceResourceGroup'), 'Microsoft.Web/serverfarms/', parameters('appServiceName'))]",
-        "certificateAuthenticationEnabled": "[if(parameters('clientCertEnabled'), 'true', 'false' )]",
         "kv_appConfigPrimary_SecretName": "AppConfigPrimaryEndpoint",
         "kv_appConfigSecondary_SecretName": "AppConfigSecondaryEndpoint",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
-        "kv_cosmosAccountReadKey_secretName": "CosmosReadOnlyKey",
-        "kv_cosmosAccountWriteKey_secretName": "CosmosReadWriteKey",
         "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
         "kv_restSourceApiEndpoint_SecretName": "AzFuncRestSourceEndpoint",
         "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]"
@@ -235,9 +224,7 @@
                         "value": "[parameters('functionExtensionVersion')]"
                     }
                 ],
-                "httpsOnly": true,
-                "clientCertEnabled": "[parameters('clientCertEnabled')]",
-                "clientCertMode": "[parameters('clientCertMode')]"
+                "httpsOnly": true
             },
             "resources": [
                 {
@@ -252,9 +239,6 @@
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
                         "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
                         "AzureWebJobsStorage__accountName": "[parameters('azFuncStorageName')]",
-                        "CertificateAuthenticationRequired": "[variables('certificateAuthenticationEnabled')]",
-                        "CertificateAuthenticationSelfSigned": "[parameters('certificateAuthenticationAllowSelfSigned')]",
-                        "CertificateAuthenticationSubjectName": "[parameters('certificateAuthenticationSubjectName')]",
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
                         "CosmosContainer": "[parameters('cosmosContainer')]",
                         "CosmosDatabase": "[parameters('cosmosDatabase')]",
@@ -271,7 +255,10 @@
                         "WinGetRest::SubscriptionId": "[parameters('appServiceSubscription')]",
                         "WinGetRest:Telemetry:Metrics": "[parameters('monitoringMetricsAccount')]",
                         "WinGetRest:Telemetry:Role": "[parameters('monitoringRole')]",
-                        "WinGetRest:Telemetry:Tenant": "[parameters('monitoringTenant')]"
+                        "WinGetRest:Telemetry:Tenant": "[parameters('monitoringTenant')]",
+                        "ServerAuthenticationType": "[parameters('serverAuthenticationType')]",
+                        "MicrosoftEntraIdResource": "[parameters('microsoftEntraIdResource')]",
+                        "MicrosoftEntraIdResourceScope": "[parameters('microsoftEntraIdResourceScope')]"
                     }
                 },
                 {

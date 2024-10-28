@@ -196,7 +196,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         /// <summary>
         /// This is the code for when to many continuation tokens are provided.
         /// </summary>
-        public const int ToManyContinuationTokensErrorCode = 19;
+        public const int TooManyContinuationTokensErrorCode = 19;
 
         /// <summary>
         /// This is the message for when to many continuation tokens are provided.
@@ -204,15 +204,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants
         public const string ToManyContinuationTokensErrorMessage = "To many continuations were provided to the server.";
 
         /// <summary>
-        /// This is the code for an invalid certificate.
+        /// This is the code for forbidden.
         /// </summary>
         public const int ForbiddenErrorCode = 403;
-
-        /// <summary>
-        /// This is the message for a invalid certificate.
-        /// </summary>
-        public const string ForbiddenErrorMessage =
-            "The client must provide a trusted certificate for {0}";
 
         /// <summary>
         /// This is the code for a resource not found.

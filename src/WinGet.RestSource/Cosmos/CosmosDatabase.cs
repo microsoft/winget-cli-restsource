@@ -34,33 +34,40 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         private readonly Container readOnlyContainer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CosmosDatabase"/> class.
+        /// Initializes a new instance of the <see cref="CosmosDatabase"/> class with default credentials.
         /// </summary>
         /// <param name="serviceEndpoint">Service Endpoint.</param>
-        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
-        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
         /// <param name="databaseId">Database.</param>
         /// <param name="containerId">Database container.</param>
-        public CosmosDatabase(string serviceEndpoint, string readWriteKey, string readOnlyKey, string databaseId, string containerId)
+        public CosmosDatabase(string serviceEndpoint, string databaseId, string containerId)
         {
             this.databaseId = databaseId;
             this.containerId = containerId;
 
-            if (!string.IsNullOrEmpty(readWriteKey) && !string.IsNullOrEmpty(readOnlyKey))
-            {
-                var readOnlyClient = new CosmosClient(serviceEndpoint, readOnlyKey);
-                this.readOnlyContainer = readOnlyClient.GetContainer(databaseId, containerId);
+            // The azure function will have read and write roles. It doesn't make a lot of sense
+            // to have to user managed identity just to split it if the same resource have both roles.
+            this.readWriteClient = new CosmosClient(serviceEndpoint, new DefaultAzureCredential());
+            this.readOnlyContainer = this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
+        }
 
-                this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
-                this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
-            }
-            else
-            {
-                // The azure function will have read and write roles. It doesn't make a lot of sense
-                // to have to user managed identity just to split it if the same resource have both roles.
-                this.readWriteClient = new CosmosClient(serviceEndpoint, new DefaultAzureCredential());
-                this.readOnlyContainer = this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
-            }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDatabase"/> class.
+        /// </summary>
+        /// <param name="serviceEndpoint">Service Endpoint.</param>
+        /// <param name="databaseId">Database.</param>
+        /// <param name="containerId">Database container.</param>
+        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
+        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
+        public CosmosDatabase(string serviceEndpoint, string databaseId, string containerId, string readOnlyKey, string readWriteKey)
+        {
+            this.databaseId = databaseId;
+            this.containerId = containerId;
+
+            var readOnlyClient = new CosmosClient(serviceEndpoint, readOnlyKey);
+            this.readOnlyContainer = readOnlyClient.GetContainer(databaseId, containerId);
+
+            this.readWriteClient = new CosmosClient(serviceEndpoint, readWriteKey);
+            this.readWriteContainer = this.readWriteClient.GetContainer(databaseId, containerId);
         }
 
         /// <inheritdoc />

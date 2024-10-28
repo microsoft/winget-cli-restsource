@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.IntegrationTest.Tests.Functions.TestData
+namespace Microsoft.WinGet.RestSource.IntegrationTest.Functions.TestData
 {
     using System;
     using System.Collections.Generic;

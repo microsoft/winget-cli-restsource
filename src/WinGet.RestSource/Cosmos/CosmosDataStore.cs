@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="CosmosDataStore.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -52,17 +52,30 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         };
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDataStore"/> class with default credentials.
+        /// </summary>
+        /// <param name="log">Log.</param>
+        /// <param name="serviceEndpoint">Service Endpoint.</param>
+        /// <param name="databaseId">Database.</param>
+        /// <param name="containerId">Database container.</param>
+        public CosmosDataStore(ILogger<CosmosDataStore> log, string serviceEndpoint, string databaseId, string containerId)
+        {
+            this.cosmosDatabase = new CosmosDatabase(serviceEndpoint, databaseId, containerId);
+            this.log = log;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDataStore"/> class.
         /// </summary>
         /// <param name="log">Log.</param>
         /// <param name="serviceEndpoint">Service Endpoint.</param>
-        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
-        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
         /// <param name="databaseId">Database.</param>
         /// <param name="containerId">Database container.</param>
-        public CosmosDataStore(ILogger<CosmosDataStore> log, string serviceEndpoint, string readWriteKey, string readOnlyKey, string databaseId, string containerId)
+        /// <param name="readOnlyKey">Authorization Key with read-only permissions.</param>
+        /// <param name="readWriteKey">Authorization Key with read-write permissions.</param>
+        public CosmosDataStore(ILogger<CosmosDataStore> log, string serviceEndpoint, string databaseId, string containerId, string readOnlyKey, string readWriteKey)
         {
-            this.cosmosDatabase = new CosmosDatabase(serviceEndpoint, readWriteKey, readOnlyKey, databaseId, containerId);
+            this.cosmosDatabase = new CosmosDatabase(serviceEndpoint, databaseId, containerId, readOnlyKey, readWriteKey);
             this.log = log;
         }
 
