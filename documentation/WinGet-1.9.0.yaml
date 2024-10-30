@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.7.0
+  version: 1.9.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -1424,6 +1424,10 @@ components:
         - uninstaller
         - installer
 
+    ArchiveBinariesDependOnPath:
+      description: Indicates whether the install location should be added directly to the PATH environment variable. Only applies to an archive containing portable packages.
+      type: boolean
+
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
       type: string
@@ -1581,6 +1585,10 @@ components:
           $ref: '#/components/schemas/InstallationMetadata'
         DownloadCommandProhibited:
           $ref: '#/components/schemas/DownloadCommandProhibited'
+        RepairBehavior:
+          $ref: '#/components/schemas/RepairBehavior'
+        ArchiveBinariesDependOnPath:
+          $ref: '#/components/schemas/ArchiveBinariesDependOnPath'
       required:
         - Architecture
         - InstallerType

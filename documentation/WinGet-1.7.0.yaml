@@ -1581,6 +1581,8 @@ components:
           $ref: '#/components/schemas/InstallationMetadata'
         DownloadCommandProhibited:
           $ref: '#/components/schemas/DownloadCommandProhibited'
+        RepairBehavior:
+          $ref: '#/components/schemas/RepairBehavior'
       required:
         - Architecture
         - InstallerType
