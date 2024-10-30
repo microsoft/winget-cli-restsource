@@ -44,7 +44,7 @@
 
   <ItemGroup>
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
-    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.9.25180" GeneratePathProperty="true" />
   </ItemGroup>
 
   <!-- Component Governance fix Item Group. -->
