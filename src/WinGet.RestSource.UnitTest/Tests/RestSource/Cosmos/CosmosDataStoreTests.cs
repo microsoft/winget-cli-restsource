@@ -255,6 +255,42 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Cosmos
             await this.TestSearchFilter(PackageMatchFields.PackageName, "nonexistentpackage", MatchType.Substring);
         }
 
+        /// <summary>
+        /// Verifies that the CosmosDataStore correctly handles a search using HasInstallerType.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task SearchUsingHasInstallerTypeFilter()
+        {
+            this.log.WriteLine("Search powertoys with installer type supported.");
+            {
+                var manifestSearchRequest = new ManifestSearchRequest();
+                manifestSearchRequest.Query = new Objects.SearchRequestMatch();
+                manifestSearchRequest.Query.KeyWord = "powertoys";
+                manifestSearchRequest.Query.MatchType = MatchType.CaseInsensitive;
+                manifestSearchRequest.Filters = new Arrays.SearchRequestPackageMatchFilter
+                {
+                    new Objects.SearchRequestPackageMatchFilter { PackageMatchField = PackageMatchFields.HasInstallerType, RequestMatch = new Objects.SearchRequestMatch { KeyWord = "msi", MatchType = MatchType.CaseInsensitive } },
+                };
+                var results = await this.cosmosDataStore.SearchPackageManifests(manifestSearchRequest, null);
+                VerifyResult(results, PowerToysPackageIdentifier);
+            }
+
+            this.log.WriteLine("Search powertoys with installer type not supported.");
+            {
+                var manifestSearchRequest = new ManifestSearchRequest();
+                manifestSearchRequest.Query = new Objects.SearchRequestMatch();
+                manifestSearchRequest.Query.KeyWord = "powertoys";
+                manifestSearchRequest.Query.MatchType = MatchType.CaseInsensitive;
+                manifestSearchRequest.Filters = new Arrays.SearchRequestPackageMatchFilter
+                {
+                    new Objects.SearchRequestPackageMatchFilter { PackageMatchField = PackageMatchFields.HasInstallerType, RequestMatch = new Objects.SearchRequestMatch { KeyWord = "inno", MatchType = MatchType.CaseInsensitive } },
+                };
+                var results = await this.cosmosDataStore.SearchPackageManifests(manifestSearchRequest, null);
+                VerifyResult(results);
+            }
+        }
+
         private static void VerifyResult(ApiDataPage<ManifestSearchResponse> results, params string[] expectedPackageIdentifiers)
         {
             Assert.Equal(expectedPackageIdentifiers.Length, results.Items.Count);

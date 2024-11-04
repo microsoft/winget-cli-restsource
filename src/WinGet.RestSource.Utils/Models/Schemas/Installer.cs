@@ -258,6 +258,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public string RepairBehavior { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the install location should be added directly to the PATH environment variable. Only applies to an archive containing portable packages.
+        /// </summary>
+        public bool ArchiveBinariesDependOnPath { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -321,6 +326,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.InstallationMetadata = obj.InstallationMetadata;
             this.DownloadCommandProhibited = obj.DownloadCommandProhibited;
             this.RepairBehavior = obj.RepairBehavior;
+            this.ArchiveBinariesDependOnPath = obj.ArchiveBinariesDependOnPath;
         }
 
         /// <inheritdoc />
@@ -483,7 +489,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.UnsupportedArguments, other.UnsupportedArguments)
                    && Equals(this.InstallationMetadata, other.InstallationMetadata)
                    && Equals(this.DownloadCommandProhibited, other.DownloadCommandProhibited)
-                   && Equals(this.RepairBehavior, other.RepairBehavior);
+                   && Equals(this.RepairBehavior, other.RepairBehavior)
+                   && Equals(this.ArchiveBinariesDependOnPath, other.ArchiveBinariesDependOnPath);
         }
 
         /// <inheritdoc />
@@ -535,6 +542,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.InstallationMetadata);
             hashCode.Add(this.DownloadCommandProhibited);
             hashCode.Add(this.RepairBehavior);
+            hashCode.Add(this.ArchiveBinariesDependOnPath);
             return hashCode.ToHashCode();
         }
     }

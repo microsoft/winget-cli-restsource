@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PackageMatchFieldValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -24,8 +24,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
             PackageMatchFields.Tag,
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
+            PackageMatchFields.UpgradeCode,
             PackageMatchFields.NormalizedPackageNameAndPublisher,
             PackageMatchFields.Market,
+            PackageMatchFields.HasInstallerType,
         };
 
         /// <summary>

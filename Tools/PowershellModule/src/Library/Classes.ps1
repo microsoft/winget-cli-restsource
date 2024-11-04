@@ -157,6 +157,7 @@ class WinGetInstaller
     $Markets
     $DownloadCommandProhibited
     $RepairBehavior
+    $ArchiveBinariesDependOnPath
 
     WinGetInstaller ([string] $a)
     {
@@ -196,6 +197,7 @@ class WinGetInstaller
         $this.Markets                   = $Converted.Markets
         $this.DownloadCommandProhibited = $Converted.DownloadCommandProhibited
         $this.RepairBehavior            = $Converted.RepairBehavior
+        $this.ArchiveBinariesDependOnPath = $Converted.ArchiveBinariesDependOnPath
     }
     WinGetInstaller ([WinGetInstaller] $a)
     {
@@ -233,6 +235,7 @@ class WinGetInstaller
         $this.Markets                   = $a.Markets
         $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
         $this.RepairBehavior            = $a.RepairBehavior
+        $this.ArchiveBinariesDependOnPath = $a.ArchiveBinariesDependOnPath
     }
     WinGetInstaller ([psobject] $a) {
         $this.InstallerIdentifier       = $a.InstallerIdentifier
@@ -269,6 +272,7 @@ class WinGetInstaller
         $this.Markets                   = $a.Markets
         $this.DownloadCommandProhibited = $a.DownloadCommandProhibited
         $this.RepairBehavior            = $a.RepairBehavior
+        $this.ArchiveBinariesDependOnPath = $a.ArchiveBinariesDependOnPath
     }
     
     [WinGetInstaller[]] Add ([WinGetInstaller] $a)

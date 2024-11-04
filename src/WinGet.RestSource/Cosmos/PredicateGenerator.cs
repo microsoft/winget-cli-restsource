@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PredicateGenerator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -93,10 +93,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             return matchType switch
             {
-                MatchType.Exact => (field, keyword) => field.Equals(keyword),
-                MatchType.CaseInsensitive => (field, keyword) => field.Equals(keyword, StringComparison.OrdinalIgnoreCase),
-                MatchType.StartsWith => (field, keyword) => field.StartsWith(keyword),
-                MatchType.Substring => (field, keyword) => field.Contains(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.Exact => (field, keyword) => field != null && field.Equals(keyword),
+                MatchType.CaseInsensitive => (field, keyword) => field != null && field.Equals(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.StartsWith => (field, keyword) => field != null && field.StartsWith(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.Substring => (field, keyword) => field != null && field.Contains(keyword, StringComparison.OrdinalIgnoreCase),
                 _ => null,
             };
         }
@@ -123,7 +123,6 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 PackageMatchFields.PackageName => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.PackageName, keyword),
                 PackageMatchFields.Publisher => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.Publisher, keyword),
                 PackageMatchFields.Moniker => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.Moniker, keyword),
-                PackageMatchFields.ShortDescription => v => LinqKit.Extensions.Invoke(op, v.DefaultLocale.ShortDescription, keyword),
                 PackageMatchFields.Tag => v => v.DefaultLocale.Tags.Any(t => LinqKit.Extensions.Invoke(op, t, keyword)),
                 _ => null,
             };
@@ -138,8 +137,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             clause = filter.PackageMatchField switch
             {
                 PackageMatchFields.PackageFamilyName => i => LinqKit.Extensions.Invoke(op, i.PackageFamilyName, keyword),
-                PackageMatchFields.ProductCode => i => LinqKit.Extensions.Invoke(op, i.ProductCode, keyword),
+                PackageMatchFields.ProductCode => i => LinqKit.Extensions.Invoke(op, i.ProductCode, keyword) || i.AppsAndFeaturesEntries.Any(e => LinqKit.Extensions.Invoke(op, e.ProductCode, keyword)),
                 PackageMatchFields.Command => i => i.Commands.Any(c => LinqKit.Extensions.Invoke(op, c, keyword)),
+                PackageMatchFields.UpgradeCode => i => i.AppsAndFeaturesEntries.Any(e => LinqKit.Extensions.Invoke(op, e.UpgradeCode, keyword)),
+                PackageMatchFields.HasInstallerType => i => LinqKit.Extensions.Invoke(op, i.InstallerType, keyword) || LinqKit.Extensions.Invoke(op, i.NestedInstallerType, keyword),
                 _ => null,
             };
 

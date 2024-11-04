@@ -148,6 +148,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
             //      DownloadCommandProhibited
             //          bool
             //      RepairBehavior
+            //      ArchiveBinariesDependOnPath
             VersionExtended versionExtended = new VersionExtended();
             versionExtended.PackageVersion = manifest.Version;
             versionExtended.Channel = manifest.Channel;
@@ -229,6 +230,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
                     newInstaller.RestrictedCapabilities = installer.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>() ?? manifest.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>();
                     newInstaller.DownloadCommandProhibited = installer.DownloadCommandProhibited;
                     newInstaller.RepairBehavior = installer.RepairBehavior ?? manifest.RepairBehavior;
+                    newInstaller.ArchiveBinariesDependOnPath = installer.ArchiveBinariesDependOnPath;
 
                     newInstaller.InstallerIdentifier = string.Join("_", newInstaller.Architecture, newInstaller.InstallerLocale, newInstaller.Scope, Guid.NewGuid());
                     versionExtended.AddInstaller(newInstaller);

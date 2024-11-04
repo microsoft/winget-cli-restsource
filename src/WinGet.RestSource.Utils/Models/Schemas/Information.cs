@@ -65,7 +65,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets sourceIdentifier.
         /// </summary>
-        [SourceIdentifierValidator]
         public string SourceIdentifier { get; }
 
         /// <summary>

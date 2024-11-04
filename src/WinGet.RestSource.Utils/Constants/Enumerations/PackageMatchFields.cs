@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PackageMatchFields.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -52,9 +52,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         public const string ProductCode = "ProductCode";
 
         /// <summary>
-        /// ShortDescription.
+        /// UpgradeCode.
         /// </summary>
-        public const string ShortDescription = "ShortDescription";
+        public const string UpgradeCode = "UpgradeCode";
 
         /// <summary>
         /// NormalizedPackageNameAndPublisher.
@@ -65,5 +65,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         /// Market.
         /// </summary>
         public const string Market = "Market";
+
+        /// <summary>
+        /// HasInstallerType.
+        /// </summary>
+        public const string HasInstallerType = "HasInstallerType";
     }
 }
