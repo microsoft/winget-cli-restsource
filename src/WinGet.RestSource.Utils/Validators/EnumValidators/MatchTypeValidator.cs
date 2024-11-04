@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="MatchTypeValidator.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Validators.EnumValidators
     /// </summary>
     public class MatchTypeValidator : ApiEnumValidator
     {
-        private const bool Nullable = true;
+        private const bool Nullable = false;
         private List<string> enumList = new List<string>
         {
             MatchType.Exact,

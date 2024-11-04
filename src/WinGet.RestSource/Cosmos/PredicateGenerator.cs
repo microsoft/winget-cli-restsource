@@ -93,10 +93,10 @@ namespace Microsoft.WinGet.RestSource.Cosmos
         {
             return matchType switch
             {
-                MatchType.Exact => (field, keyword) => field.Equals(keyword),
-                MatchType.CaseInsensitive => (field, keyword) => field.Equals(keyword, StringComparison.OrdinalIgnoreCase),
-                MatchType.StartsWith => (field, keyword) => field.StartsWith(keyword),
-                MatchType.Substring => (field, keyword) => field.Contains(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.Exact => (field, keyword) => field != null && field.Equals(keyword),
+                MatchType.CaseInsensitive => (field, keyword) => field != null && field.Equals(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.StartsWith => (field, keyword) => field != null && field.StartsWith(keyword, StringComparison.OrdinalIgnoreCase),
+                MatchType.Substring => (field, keyword) => field != null && field.Contains(keyword, StringComparison.OrdinalIgnoreCase),
                 _ => null,
             };
         }
