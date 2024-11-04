@@ -2053,8 +2053,10 @@ components:
         - Tag
         - PackageFamilyName
         - ProductCode
+        - UpgradeCode
         - NormalizedPackageNameAndPublisher
         - Market
+        - HasInstallerType
 
     KeyWord:
       description: Search Keyword.

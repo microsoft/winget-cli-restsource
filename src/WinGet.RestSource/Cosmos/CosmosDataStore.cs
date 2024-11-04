@@ -42,7 +42,7 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             PackageMatchFields.Tag,
             PackageMatchFields.PackageFamilyName,
             PackageMatchFields.ProductCode,
-            PackageMatchFields.ShortDescription,
+            PackageMatchFields.UpgradeCode,
 
             /*********************************
              * These are currently unsupported
@@ -605,10 +605,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
                 case PackageMatchFields.Publisher:
                 case PackageMatchFields.PackageFamilyName:
                 case PackageMatchFields.ProductCode:
+                case PackageMatchFields.UpgradeCode:
                 case PackageMatchFields.Tag:
                 case PackageMatchFields.Command:
                 case PackageMatchFields.Moniker:
-                case PackageMatchFields.Market:
+                case PackageMatchFields.HasInstallerType:
                     isPackageMatchFieldSupported = true;
                     break;
             }
