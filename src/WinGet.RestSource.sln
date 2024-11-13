@@ -53,7 +53,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowershellModule", "Powersh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{954044E2-C2B4-4F62-BE4B-D9FAF66B05C2}"
 	ProjectSection(SolutionItems) = preProject
-		..\Tools\PowershellModule\doc\new-winget-rest-source-azure.md = ..\Tools\PowershellModule\doc\new-winget-rest-source-azure.md
+		..\Tools\PowershellModule\doc\WingetRestSource.md = ..\Tools\PowershellModule\doc\WingetRestSource.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C510F11-3A5B-4E30-8189-05E87B7DE1F0}"

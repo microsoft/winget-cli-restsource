@@ -52,21 +52,12 @@ Function Test-PowerShellModuleExist
                     ## Specifies that a module is missing
                     if(!($Result)) {
                         $ValidationStatus = $false
+                        Write-Error "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module $RequiredModule"
                     }
-                }
-
-                if(!($ValidationStatus)) {
-                    ## Module Validation failed
-                    $ErrorMessage = "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module Az"
-                    $ErrReturnObject = @{
-                        TestResults = $TestResult
-                    }
-                    
-                    Write-Error -Message $ErrorMessage -Category NotInstalled -TargetObject $ErrReturnObject
                 }
             }
             "Single" { 
-                ## Determines if the PowerShell Module is missing, If missing false if missing
+                ## Determines if the PowerShell Module is installed
                 if(!$(Get-Module -ListAvailable -Name $RequiredModule) ) {
                     $ValidationStatus = $false
                 } 
