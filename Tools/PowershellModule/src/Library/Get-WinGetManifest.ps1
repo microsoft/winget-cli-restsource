@@ -5,7 +5,7 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
+    Connects to the specified source REST API, or local file system path to retrieve the package manifests, returning 
     the manifest found. Allows for retrieving results based on the package identifier when targetting the REST APIs.
 
     .DESCRIPTION
@@ -25,7 +25,7 @@ Function Get-WinGetManifest
     the same package manifest.
 
     .PARAMETER JSON
-    A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed files. This is
+    A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed .yaml files. This is
     used by the script infrastructure internally and is not expected to be useful to an end user using this command.
 
     .PARAMETER URL
@@ -83,19 +83,8 @@ Function Get-WinGetManifest
         switch ($PsCmdlet.ParameterSetName) {
             "Azure"  {
                 ###############################
-                ## Validates that the Azure Modules are installed
-                Write-Verbose -Message "Testing required PowerShell modules are installed."
-                
-                $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-                $Result = Test-PowerShellModuleExist -Modules $RequiredModules
-
-                if(!$Result) {
-                    throw "Unable to run script, missing required PowerShell modules"
-                }
-
-                ###############################
                 ## Connects to Azure, if not already connected.
-                Write-Verbose -Message "Testing connection to Azure."
+                Write-Verbose "Testing connection to Azure."
                 
                 $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
                 if(!($Result)) {
@@ -109,14 +98,14 @@ Function Get-WinGetManifest
                 $AzureResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $FunctionName}).ResourceGroupName
 
                 if($AzureResourceGroupName) {
-                    $Result = Test-AzureResource -FunctionName $FunctionName -ResourceGroup $AzureResourceGroupName
+                    $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $AzureResourceGroupName
+                    
+                    if(!$Result) {
+                        throw "Failed to confirm resources exist in Azure. Please verify and try again."
+                    }
                 }
                 else {
-                    throw "Unable to locate Function (""$FunctionName"") in the Azure Tenant."
-                }
-                
-                if(!$Result) {
-                    throw "Failed to confirm resources exist in Azure. Please verify and try again."
+                    throw "Unable to locate Function (""$FunctionName"") with Resource Group in the Azure Tenant."
                 }
 
                 if($PackageIdentifier){
@@ -128,87 +117,76 @@ Function Get-WinGetManifest
                 
                 ## Specifies the REST api call that will be performed
                 $TriggerName    = "ManifestGet"
-                $apiContentType = "application/json"
-                $apiMethod      = "Get"
+                $ApiContentType = "application/json"
+                $ApiMethod      = "Get"
         
                 ## Creates the API Post Header
-                $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-                $apiHeader.Add("Accept", 'application/json')
+                $ApiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+                $ApiHeader.Add("Accept", 'application/json')
              }
             "File" {
+                ## Convert to full path if applicable
+                $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
+                
                 $ManifestFileExists  = Test-Path -Path $Path
 
                 if(!$ManifestFileExists) {
-                    ## The target path does not exist
                     $ErrReturnObject = @{
                         FilePath           = $Path
                         ManifestFileExists = $ManifestFileExists
                     }
 
                     Write-Error -Message "Target path did not point to an object." -TargetObject $ErrReturnObject
-                    return
+                    return $Return
                 }
 
-                $PathProperties = Get-ItemProperty $Path
-                $ManifestFile   = ""
+                $PathItem = Get-Item $Path
+                $ManifestFile = ""
+                $ApplicationManifest = ""
+                $ManifestFileType = ""
 
-                if($PathProperties.Attributes -like "*Directory*") {
+                if($PathItem.PSIsContainer) {
                     ## $Path variable is pointing at a directory
                     $PathChildItemsJSON = Get-ChildItem -Path $Path -Filter "*.json"
                     $PathChildItemsYAML = Get-ChildItem -Path $Path -Filter "*.yaml"
 
-                    $VerboseMessage = "Path pointed to a directory, found $($PathChildItemsJSON.count) JSON files, and $($PathChildItemsYAML.count) YAML files."
-                    Write-Verbose -Message $VerboseMessage
+                    Write-Verbose -Message "Path pointed to a directory, found $($PathChildItemsJSON.count) JSON files, and $($PathChildItemsYAML.count) YAML files."
+                    
+                    $ErrReturnObject = @{
+                        JSONFiles = $PathChildItemsJSON
+                        YAMLFiles = $PathChildItemsYAML
+                        JSONCount = $PathChildItemsJSON.count
+                        YAMLCount = $PathChildItemsYAML.count
+                    }
 
                     ## Validating found objects
                     if($PathChildItemsJSON.count -eq 0 -and $PathChildItemsYAML.count -eq 0) {
                         ## No JSON or YAML files were found in the directory.
-                        $ErrorMessage    = "Directory does not contain any combination of JSON and YAML files."
-                        $ErrReturnObject = @{
-                            JSONFiles = $PathChildItemsJSON
-                            YAMLFiles = $PathChildItemsYAML
-                            JSONCount = $PathChildItemsJSON.count
-                            YAMLCount = $PathChildItemsYAML.count
-                        }
-                        
-                        $ManifestFileType = "Error"
+                        $ErrorMessage    = "Directory does not contain any JSON or YAML files."
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
+                        return $Return
                     }
                     elseif($PathChildItemsJSON.count -gt 0 -and $PathChildItemsYAML.count -gt 0) {
                         ## A combination of JSON and YAML Files were found.
                         $ErrorMessage    = "Directory contains a combination of JSON and YAML files."
-                        $ErrReturnObject = @{
-                            JSONFiles = $PathChildItemsJSON
-                            YAMLFiles = $PathChildItemsYAML
-                            JSONCount = $PathChildItemsJSON.count
-                            YAMLCount = $PathChildItemsYAML.count
-                        }
-                        
-                        $ManifestFileType = "Error"
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
+                        return $Return
                     }
                     elseif($PathChildItemsJSON.count -gt 1) {
                         ## More than one Package Manifest's JSON files was found.
                         $ErrorMessage    = "Directory contains more than one JSON file."
-                        $ErrReturnObject = @{
-                            JSONFiles = $PathChildItemsJSON
-                            YAMLFiles = $PathChildItemsYAML
-                            JSONCount = $PathChildItemsJSON.count
-                            YAMLCount = $PathChildItemsYAML.count
-                        }
-                        
-                        $ManifestFileType = "Error"
                         Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
+                        return $Return
                     }
                     elseif($PathChildItemsJSON.count -eq 1) {
                         ## Single JSON has been found in the target folder.
                         Write-Verbose -Message "Single JSON has been found in the specified directory."
                         $ManifestFile        = $PathChildItemsJSON
                         $ApplicationManifest = Get-Content -Path $PathChildItemsJSON.FullName -Raw
-                        $ManifestFileType    = $PathChildItemsJSON.Extension
+                        $ManifestFileType    = ".json"
                     }
                     elseif($PathChildItemsYAML.count -gt 0) {
-                        Write-Verbose -Message "Single YAML has been found in the specified directory."
+                        Write-Verbose -Message "YAML has been found in the specified directory."
                         ## YAML has been found in the target folder.
                         $ManifestFile     = $PathChildItemsYAML
                         $ManifestFileType = ".yaml"
@@ -244,13 +222,13 @@ Function Get-WinGetManifest
                 $FunctionAppId   = $FunctionApp.Id
                 $DefaultHostName = $FunctionApp.DefaultHostName
                 $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
-                $apiHeader.Add("x-functions-key", $FunctionKey)
+                $ApiHeader.Add("x-functions-key", $FunctionKey)
                 $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $PackageIdentifier
                 
                 ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."
 
-                $Results = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType
+                $Results = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ContentType $ApiContentType
                 Write-Verbose "Found ($($Results.Data.Count)) Manifests that matched."
 
                 foreach ($Result in $Results.Data){
@@ -268,48 +246,33 @@ Function Get-WinGetManifest
                             ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
                             $Return = $ApplicationManifest 
 
-                            Write-Verbose -Message "Returned Manifest from JSON file: $($Return.PackageIdentifier)"
+                            Write-Information "Returned Manifest from JSON file: $($Return.PackageIdentifier)"
                         }
                     }
                     ## If the path resolves to a YAML file
                     ".yaml" {
                         ## Directory - *.yaml files included within.
-                        if($WinGetDesktopAppInstallerLibLoaded) {
-                            Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
-                            if($Json){
-                                Write-Verbose "JSON"
-                                $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
-                            }
-                            else{
-                                Write-Verbose "Other"
-                                try {
-                                    $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
-                                }
-                                catch {
-                                    Write-Verbose "Attempt to convert YAML to JSON failed."
-                                }
-                                
-                            }
+                        Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
+                        if($Json){
+                            Write-Verbose "Prior manifest provided. New manifest will be merged with prior manifest."
+                            $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
+                        }
+                        else{
+                            Write-Verbose "Prior manifest not provided."
+                            $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                        }
 
-                            Write-Verbose -Message "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
-                        }
-                        else {
-                            Write-Error -Message "Unable to process YAML files. Re-import the module to reload the required dependencies." -Category ResourceUnavailable
-                        }
-                    }
-                    "Error" {
+                        Write-Information "Returned Manifest from YAML file: $($Return.PackageIdentifier)"
                     }
                     default {
-                        if($ManifestFileExists) {
-                            $ErrorMessage = "Incorrect filetype. Verify the file is of type '*.yaml' or '*.json' and try again."
-                            $ErrReturnObject = @{
-                                ApplicationManifest = $ApplicationManifest
-                                ManifestFile        = $ManifestFile
-                                $ManifestFileType   = $ManifestFileType
-                            }
-
-                            Write-Error -Message $ErrorMessage -Category InvalidType -TargetObject $ErrReturnObject
+                        $ErrorMessage = "Incorrect file type. Verify the file is of type '*.yaml' or '*.json' and try again."
+                        $ErrReturnObject = @{
+                            ApplicationManifest = $ApplicationManifest
+                            ManifestFile        = $ManifestFile
+                            $ManifestFileType   = $ManifestFileType
                         }
+
+                        Write-Error -Message $ErrorMessage -Category InvalidType -TargetObject $ErrReturnObject
                     }
                 }
             }

@@ -27,25 +27,36 @@ Function Test-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'File')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Object")]$Manifest,
-        [Parameter(Position=1, Mandatory=$false)]  [switch]$ReturnManifest
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Object")] $Manifest
     )
     BEGIN
     {
         Write-Verbose -Message "Validating the Manifest ($($PSCmdlet.ParameterSetName))."
+        
+        $Return = $true
+        
         switch ($($PSCmdlet.ParameterSetName)) {
             "File"{
-                if((Test-Path -Path $Path)) {
-                    ## Retrieves the contents of the Manifest file
-                    $Manifest = Get-Content -Path $Path -Raw
+                ## Convert to full path if applicable
+                $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
+                
+                $PathFound = Test-Path -Path $Path;
+                
+                if ($PathFound)
+                {
+                    ## Construct $Manifest from path then validate
+                }
+                else
+                {
+                    Write-Error "Manifest path not found: $Path"
+                    $Return = $false;
                 }
             }
             "Object" {
             }
         }
 
-        $ManifestFileTypeJSON = $false
-        $Return = $true
+        
     }
     PROCESS
     {
@@ -53,20 +64,7 @@ Function Test-WinGetManifest
     }
     END
     {
-        Write-Verbose -Message "Testing the Manifest has passed: $Return"
-        ## Determines what will be returned from the Function
-        if($Return) {
-            ## Returns the Manifest only if the test passes. If the test fails return False
-            if($Return) {
-                return $Manifest
-            }
-            else {
-                return $Return
-            }
-        }
-        else {
-            ## Returns the result of the test. If all test pass, the result is True, otherwise will return False
-            return $Return
-        }
+        Write-Information "Testing the Manifest has passed: $Return"
+        return $Return
     }
 }

@@ -234,14 +234,15 @@ class PackageManifest
         $this.Versions.Add([WingetVersion]::new($a))
         $i = $this.Versions.Count -1
 
-        foreach ($installer in $b){
+        foreach ($installer in $b) {
             $this.Versions[$i].AddInstaller($installer)
         }
-        foreach ($locale in $c){
-            $this.Versions.AddLocale($locale)
-
-            if($locale.ManifestType -eq "defaultLocale"){
+        foreach ($locale in $c) {
+            if ($locale.ManifestType -eq "defaultLocale") {
                 $this.Versions.AddDefaultLocale($locale)
+            }
+            else {
+                $this.Versions.AddLocale($locale)
             }
         }
     }
@@ -254,15 +255,15 @@ class PackageManifest
         foreach ($file in $a){
             $FileContents = Get-Content -Raw -Path $file.FullName
 
-            if ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.installer')){
+            if ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.installer')) {
                 $ConvertedContents = ConvertFrom-Yaml -Yaml $FileContents
                 $YAMLInstallers.Add(($ConvertedContents))
             }
-            elseif ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.defaultLocale')){
+            elseif ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.defaultLocale')) {
                 $ConvertedContents = ConvertFrom-Yaml -Yaml $FileContents
                 $YAMLLocales.Add(($ConvertedContents))
             }
-            elseif ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.version')){
+            elseif ($FileContents.Contains('$schema=https://aka.ms/winget-manifest.version')) {
                 $ConvertedContents = ConvertFrom-Yaml -Yaml $FileContents
                 $YAMLVersions.Add(($ConvertedContents))
             }

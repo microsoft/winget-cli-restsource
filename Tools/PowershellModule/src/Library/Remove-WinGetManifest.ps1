@@ -67,7 +67,7 @@ Function Remove-WinGetManifest
 
                 ###############################
                 ##  Verify Azure Resources Exist
-                $Result = Test-AzureResource -FunctionName $FunctionName -ResourceGroup $AzureResourceGroupName
+                $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $AzureResourceGroupName
                 if(!$Result) {
                     throw "Failed to confirm resources exist in Azure. Please verify and try again."
                 }

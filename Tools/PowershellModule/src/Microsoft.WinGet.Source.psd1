@@ -10,6 +10,9 @@
 
     # Version number of this module.
     ModuleVersion = '0.1.0'
+    
+    # Compatible PowerShell edition
+    CompatiblePSEditions = @('Core')
 
     # ID used to uniquely identify this module
     GUID = 'b70c845d-ddb1-4454-bfc2-a874783c2d04'
@@ -24,7 +27,11 @@
     Description = 'This module provides support for working with Windows Package Manager REST based sources.'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '5.1'
+    PowerShellVersion = '7.4'
+    
+    # Required modules.
+    # Due to issue https://github.com/PowerShell/PowerShell/issues/11190, using RequiredModules will greatly slow down the import module. We'll handle them manually in psm1.
+    # RequiredModules = @('Az', 'powershell-yaml')
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @("Add-WinGetManifest", "Get-WinGetManifest", "Remove-WinGetManifest", "New-WinGetSource", "Convert-YamlToJson")
@@ -47,6 +54,7 @@
             # A URL to the main website for this project.
             ProjectUri = 'https://github.com/microsoft/winget-cli-restsource'
 
+            # Release channel
             PreRelease = 'alpha'
         }
     }

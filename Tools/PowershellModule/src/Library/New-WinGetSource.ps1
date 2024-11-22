@@ -35,10 +35,10 @@ Function New-WinGetSource
     [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\Library\RestAPI\WinGet.RestSource.Functions.zip)
 
     .PARAMETER ImplementationPerformance
-    [Optional] ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
+    [Optional] ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
     | Preference | Description                                                                                                             |
     |------------|-------------------------------------------------------------------------------------------------------------------------|
-    | Demo       | Specifies lowest cost for demonstrating the Windows Package Manager REST source. Uses free-tier options when available. |
+    | Developer  | Specifies lowest cost for developing the Windows Package Manager REST source. Uses free-tier options when available.    |
     | Basic      | Specifies a basic functioning Windows Package Manager REST source.                                                      |
     | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
 
@@ -68,15 +68,14 @@ Function New-WinGetSource
         [Parameter(Position=3, Mandatory=$false)] [string]$Region = "westus",
         [Parameter(Position=4, Mandatory=$false)] [string]$ParameterOutput = $(Get-Location).Path,
         [Parameter(Position=5, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\RestAPI\WinGet.RestSource.Functions.zip",
-        [ValidateSet("Demo", "Basic", "Enhanced")]
+        [ValidateSet("Developer", "Basic", "Enhanced")]
         [Parameter(Position=6, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
     BEGIN
     {
-        if($ImplementationPerformance -eq "Demo") {
-            $WarningMessage = "`n The ""Demo"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n`n"
-            Write-Warning -Message $WarningMessage
+        if($ImplementationPerformance -eq "Developer") {
+            Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n"
         }
 
         ## Paths to the Parameter and Template folders and the location of the Function Zip

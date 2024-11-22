@@ -83,7 +83,7 @@ Function Add-WinGetManifest
         ###############################
         ##  Verify Azure Resources Exist
         Write-Verbose -Message "Verifying that the Azure Resource $AzureFunctionName exists.."
-        $Result = Test-AzureResource -FunctionName $AzureFunctionName -ResourceGroup $AzureResourceGroupName
+        $Result = Test-AzureResource -ResourceName $AzureFunctionName -ResourceGroup $AzureResourceGroupName
         if(!$Result) {
             throw "Failed to confirm resources exist in Azure. Please verify and try again."
         }

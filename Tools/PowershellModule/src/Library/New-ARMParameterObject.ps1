@@ -24,17 +24,17 @@ Function New-ARMParameterObject
     The Azure location where objects will be created in.
 
     .PARAMETER ImplementationPerformance
-    ["Demo", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
+    ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
 
     .EXAMPLE
-    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Demo"
+    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Developer"
 
     Creates the Parameter files required for the creation of the ARM objects.
 
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
-        [Parameter(Position=1, Mandatory=$false)][string]$TemplateFolderPath = "$PSScriptRoot\ARMTemplate",
+        [Parameter(Position=1, Mandatory=$false)][string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplate",
         [Parameter(Position=2, Mandatory=$true)] [string]$Name,
         [Parameter(Position=3, Mandatory=$true)] [string]$Region,
         [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
@@ -42,29 +42,30 @@ Function New-ARMParameterObject
     BEGIN
     {
         ## The Names that are to be assigned to each resource.
-        $AppInsightsName    = $Name
-        $KeyVaultName       = $Name
-        $StorageAccountName = $Name.Replace("-", "")
-        $aspName            = $Name
-        $CDBAccountName     = $Name
-        $FunctionName       = $Name
-        $FrontDoorName      = $Name
-        $appConfigName      = $Name
-        $aspGenevaName      = $Name
+        $AppInsightsName    = "appin-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        $KeyVaultName       = "kv-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        $StorageAccountName = "st" + $Name.ToLower() -replace "[^a-z0-9]", ""
+        $aspName            = "asp-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        $CDBAccountName     = "cosmos-" + $Name.ToLower() -replace "[^a-z0-9-]", ""
+        $FunctionName       = "azfun-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        $appConfigName      = "appconfig-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        $apiManagementName  = "apim-" + $Name -replace "[^a-zA-Z0-9-]", ""
+        
+        ## Not supported in deployment script
+        ## $FrontDoorName      = ""
+        ## $aspGenevaName      = ""
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled
         ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
         $CDBDatabaseName    = "WinGet"
         $CDBContainerName   = "Manifests"
 
-        ## The values required for Function ARM Template
+        ## The values required for Function ARM Template. But not supported in deployment script.
         $manifestCacheEndpoint      = ""
         $monitoringTenant           = ""
         $monitoringRole             = ""
         $monitoringMetricsAccount   = ""
-
-        ## The values required for the Azure App Config ARM Template
-        #$appConfigFeatureFlag   = ""
+        $runFromPackageUrl          = ""
 
         ## Relative Path from the Working Directory to the Azure ARM Template Files
         $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
@@ -92,7 +93,7 @@ Function New-ARMParameterObject
         Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
 
         switch ($ImplementationPerformance) {
-            "Demo" {
+            "Developer" {
                 $KeyVaultSKU  = "Standard"
                 $StorageAccountPerformance = "Standard_LRS"
                 $ASPSKU = "B1"
@@ -291,7 +292,6 @@ Function New-ARMParameterObject
                     Parameters = @{
                         appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
                         location             = @{ value = $Region               }   # Azure hosting location
-                        #featureFlags         = @{ value = $appConfigFeatureFlag }   # Feature Flag
                     }
                 }
             },
@@ -368,20 +368,16 @@ Function New-ARMParameterObject
                         ipRules =@{
                             value = @(
                                 @{
-                                    ipAddressOrRange = "104.42.195.92"
-                                }
-
-                                @{
-                                    ipAddressOrRange = "40.76.54.131"
+                                    ipAddressOrRange = "13.91.105.215"
                                 }
                                 @{
-                                    ipAddressOrRange = "52.176.6.30"
+                                    ipAddressOrRange = "4.210.172.107"
                                 }
                                 @{
-                                    ipAddressOrRange = "52.169.50.45"
+                                    ipAddressOrRange = "13.88.56.148"
                                 }
                                 @{
-                                    ipAddressOrRange = "52.187.184.26"
+                                    ipAddressOrRange = "40.91.218.243"
                                 }
                                 @{
                                     ipAddressOrRange = "0.0.0.0"
@@ -392,8 +388,8 @@ Function New-ARMParameterObject
                             value = @{
                                 type = "Periodic"
                                 periodicModeProperties = @{
-                                        backupIntervalInMinutes        = 240
-                                        backupRetentionIntervalInHours = 720
+                                    backupIntervalInMinutes        = 240
+                                    backupRetentionIntervalInHours = 720
                                 }
                             }
                         }

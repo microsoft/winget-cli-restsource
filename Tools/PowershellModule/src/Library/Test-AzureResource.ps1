@@ -4,81 +4,90 @@ Function Test-AzureResource
 {
     <#
     .SYNOPSIS
-    Returns a boolean result validating that the Resource Group and Function exist.
+    Returns a boolean result validating that the Resource Group and Resource exist.
 
     .DESCRIPTION
-    Returns a boolean result validating that the Resource Group and Function exist.
+    Returns a boolean result validating that the Resource Group and Resource exist.
 
     .PARAMETER ResourceGroup
     The Resource Group that the objects will be tested in reference to.
 
-    .PARAMETER FunctionName
-    Name of the Azure function name.
+    .PARAMETER ResourceName
+    Name of the Azure Resource name.
 
     .EXAMPLE
-    Test-AzureResource -ResourceGroup "WinGet" -FunctionName "contosorestsource"
+    Test-AzureResource -ResourceGroup "WinGet" -ResourceName "contosorestsource"
 
-    Returns a boolean result validating that the Resource Group and Function exist.
+    Returns a boolean result validating that the Resource Group and Resource exist.
 
     #>
     PARAM(
-        [Parameter(Position=0, Mandatory = $false)] [string]$ResourceGroup,
-        [Parameter(Position=1, Mandatory = $false)] [string]$FunctionName
+        [Parameter(Position=0, Mandatory = $true)] [string]$ResourceGroup,
+        [Parameter(Position=1, Mandatory = $true)] [string]$ResourceName,
+        [ValidateSet("Function")]
+        [Parameter(Position=2, Mandatory = $false)] [string]$ResourceType = "Function"
     )
     BEGIN
     {
-        $Result = $true
+        $Result = $false
         $AzureResourceGroupName = $ResourceGroup
-        $AzureFunctionName = $FunctionName
+        $AzureResourceName = $ResourceName
+
+        $AzureResourceGroupNameNullOrWhiteSpace = $false
+        $AzureResourceGroupNameExists           = $false
         
-        $AzureFunctionNameNotNullOrEmpty = $true
-        $AzureFunctionNameExists         = $true
-
-        $AzureResourceGroupNameNotNullOrEmpty = $true
-        $AzureResourceGroupNameExists         = $true
-
-        ## Determines if the Azure Function App Name is not null or empty
-        if($AzureFunctionName.Length -le 0) {
-            $AzureFunctionName               = "<null>"
-            $AzureFunctionNameNotNullOrEmpty = $false 
-        }
-    
-        ## Determines if the Azure Function App Name is in Azure
-        if($(Get-AzFunctionApp).Where({$_.Name -eq $AzureFunctionName}).Count -le 0) {
-            $AzureFunctionNameExists = $false
-        }
+        $AzureResourceNameNullOrWhiteSpace = $false
+        $AzureResourceNameExists           = $false
         
         ##Determines if the Azure Resource Group Name is not null or empty
-        if($AzureResourceGroupName.Length -le 0) {
-            $AzureResourceGroupName               = "<null>"
-            $AzureResourceGroupNameNotNullOrEmpty = $false 
+        if([string]::IsNullOrWhiteSpace($AzureResourceGroupName)) {
+            $AzureResourceGroupName                 = "<null>"
+            $AzureResourceGroupNameNullOrWhiteSpace = $true 
         }
 
-        if($(Get-AzResourceGroup).Where({$_.ResourceGroupName -eq $AzureResourceGroupName}).Count -lt 0) {
-            $AzureResourceGroupNameExists = $false
+        if($(Get-AzResourceGroup).Where({$_.ResourceGroupName -eq $AzureResourceGroupName}).Count -gt 0) {
+            $AzureResourceGroupNameExists = $true
         }
-   }
+
+        ## Determines if the Azure Resource Name is not null or empty
+        if([string]::IsNullOrWhiteSpace($AzureResourceName)) {
+            $AzureResourceName               = "<null>"
+            $AzureResourceNameNullOrWhiteSpace = $true 
+        }
+    
+        ## Determines if the Azure Resource Name is in Azure
+        if ($AzureResourceGroupNameExists) {
+            switch ($ResourceType) {
+                "Function" {
+                    if($(Get-AzFunctionApp -ResourceGroupName $AzureResourceGroupName).Where({$_.Name -eq $AzureResourceName}).Count -gt 0) {
+                        $AzureResourceNameExists = $true
+                    }
+                }
+            }
+        }
+    }
     PROCESS
     {
         $VerboseMessage =  "Azure Resources:`n"
-        $VerboseMessage += "           Azure Function Exists:       $AzureFunctionNameExists`n"
-        $VerboseMessage += "           Azure Resource Group Exists: $AzureResourceGroupNameExists"
+        $VerboseMessage += "           Azure Resource Group Exists: $AzureResourceGroupNameExists`n"
+        $VerboseMessage += "           Azure Resource Exists:       $AzureResourceNameExists"
         Write-Verbose -Message $VerboseMessage
 
-        ## If either the Azure Function Name or the Azure Resource Group Name are null, error.
-        if(!$AzureFunctionNameNotNullOrEmpty -or !$AzureResourceGroupNameNotNullOrEmpty -or !$AzureFunctionNameExists -or !$AzureResourceGroupNameExists) {
-            $ErrorMessage = "Both the Azure Function and Resource Group Names can not be null and must exist. Please verify that the Azure function and Resource Group exist."
+        ## If either the Azure Resource Name or the Azure Resource Group Name are null, error.
+        if($AzureResourceGroupNameNullOrWhiteSpace -or $AzureResourceNameNullOrWhiteSpace -or !$AzureResourceGroupNameExists -or !$AzureResourceNameExists) {
+            $ErrorMessage = "Both the Azure Resource Group and Resource Names can not be null and must exist. Please verify that the Azure Resource Group and Resource exist."
             $ErrReturnObject = @{
-                AzureFunctionNameNotNullOrEmpty      = $AzureFunctionNameNotNullOrEmpty
-                AzureResourceGroupNameNotNullOrEmpty = $AzureResourceGroupNameNotNullOrEmpty
-                AzureFunctionNameExists              = $AzureFunctionNameExists
+                AzureResourceGroupNameNullOrWhiteSpace = $AzureResourceGroupNameNullOrWhiteSpace
+                AzureResourceNameNullOrWhiteSpace      = $AzureResourceNameNullOrWhiteSpace
                 AzureResourceGroupNameExists         = $AzureResourceGroupNameExists
+                AzureResourceNameExists              = $AzureResourceNameExists
                 Result                               = $false
             }
 
             Write-Error -Message $ErrorMessage -Category InvalidArgument -TargetObject $ErrReturnObject
-            $Result = $false
         }
+        
+        $Result = $AzureResourceGroupNameExists -and $AzureResourceNameExists
     }
     END
     {

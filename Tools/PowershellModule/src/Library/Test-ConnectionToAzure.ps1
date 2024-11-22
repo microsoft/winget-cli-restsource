@@ -46,23 +46,25 @@ Function Test-ConnectionToAzure
     PROCESS
     {
         if($AzContext) {
-            Write-Verbose -Message "Connected to Azure"
-            $Result = $true
-
-            if($AzContext.Subscription.Name -ne $SubscriptionName -and $SubscriptionName) {
+            if($SubscriptionName -and $AzContext.Subscription.Name -ne $SubscriptionName) {
                 ## If Subscription Name paramter is passed in, and the value doesn't match current connection return $false
-                Write-Verbose -Message "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionName"
+                Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionName"
                 $Result = $false
             }
-            if($AzContext.Subscription.Id -ne $SubscriptionId -and $SubscriptionId) {
+            elseif($SubscriptionId -and $AzContext.Subscription.Id -ne $SubscriptionId) {
                 ## If Subscription Id paramter is passed in, and the value doesn't match current connection return $false
-                Write-Verbose -Message "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionId"
+                Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionId"
                 $Result = $false
+            }
+            else {
+                Write-Information "Connected to Azure"
+                $Result = $true
             }
         }
         else {
             ## Not currently connected to Azure
-            Write-Verbose -Message "Not connected to Azure, please connect to your Azure Subscription"
+            Write-Error "Not connected to Azure, please connect to your Azure Subscription"
+            $Result = $false
         }
     }
     END

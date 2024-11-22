@@ -12,41 +12,7 @@ Function Get-PairedAzureRegion
     }
     PROCESS
     {
-        if($Region -like "*us*" -and $Region -notlike "*australia*") {
-            switch ($Region) {
-                "eastus" {
-                    $Result = "westus"
-                }
-                "westus" {
-                    $Result = "eastus"
-                }
-                "eastus2" {
-                    $Result = "centralus"
-                }
-                "centralus" {
-                    $Result = "eastus2"
-                }
-                "northcentralus" {
-                    $Result = "southcentralus"
-                }
-                "southcentralus" {
-                    $Result = "northcentralus"
-                }
-                "westus2" {
-                    $Result = "westcentralus"
-                }
-                "westcentralus" {
-                    $Result = "westus2"
-                }
-                "westus3" {
-                    $Result = "westcentralus"
-                }
-                Default {
-                    $Result = "westus"
-                }
-            }
-        }
-        elseif($Region -like "*canada*") {
+        if($Region -like "*canada*") {
             switch ($Region) {
                 "canadacentral" {
                     $Result = "canadaeast"
@@ -127,6 +93,40 @@ Function Get-PairedAzureRegion
                 }
                 Default {
                     $Result = "australiasoutheast"
+                }
+            }
+        }
+        elseif($Region -like "*us*") {
+            switch ($Region) {
+                "eastus" {
+                    $Result = "westus"
+                }
+                "westus" {
+                    $Result = "centralus"
+                }
+                "eastus2" {
+                    $Result = "centralus"
+                }
+                "centralus" {
+                    $Result = "eastus2"
+                }
+                "northcentralus" {
+                    $Result = "southcentralus"
+                }
+                "southcentralus" {
+                    $Result = "northcentralus"
+                }
+                "westus2" {
+                    $Result = "westcentralus"
+                }
+                "westcentralus" {
+                    $Result = "westus2"
+                }
+                "westus3" {
+                    $Result = "westcentralus"
+                }
+                Default {
+                    $Result = "westus"
                 }
             }
         }
