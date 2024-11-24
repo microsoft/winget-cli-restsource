@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="VersionExtended.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -36,6 +36,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             : base(versionExtended)
         {
             this.Installers = versionExtended.Installers;
+            this.Locales = versionExtended.Locales;
         }
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             : base(version)
         {
             this.Installers = null;
+            this.Locales = null;
         }
 
         /// <summary>

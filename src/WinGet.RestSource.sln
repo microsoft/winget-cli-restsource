@@ -74,8 +74,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 	ProjectSection(SolutionItems) = preProject
 		..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1 = ..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1
 		..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1
-		..\Tools\PowershellModule\src\Library\Classes.ps1 = ..\Tools\PowershellModule\src\Library\Classes.ps1
 		..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1 = ..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1
 		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1
@@ -85,8 +85,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 		..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1
 		..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1 = ..\Tools\PowershellModule\src\Library\Test-AzureResource.ps1
 		..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1
-		..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1 = ..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExists.ps1
+		..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExist.ps1 = ..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExist.ps1
 		..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1
+		..\Tools\PowershellModule\src\Library\WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\WinGetManifest.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{5CA26277-F8CA-4136-81CD-1A3CDA3542A1}"

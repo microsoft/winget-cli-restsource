@@ -4,9 +4,6 @@
 # Module script for module 'Microsoft.WinGet.Source'
 #
 
-## Loads Libraries
-Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $_.FullName }
-
 ## Loads the binaries from the Desktop App Installer Library - Only if running PowerShell at a specified edition
 try {
     Add-Type -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\Microsoft.Winget.PowershellSupport.dll"
@@ -15,6 +12,12 @@ catch {
     ## Exceptions thrown by Add-Type will not fail the Import-Module. Catch and re-throw to fail the Import-Module.
     throw $_
 }
+
+## Load classes first
+. $PSScriptRoot\Library\WinGetManifest.ps1
+
+## Loads Libraries
+Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $_.FullName }
 
 ## Validates that the required Azure Modules are present when the script is imported.
 [string[]]$RequiredModules = @("Az", "powershell-yaml")

@@ -34,7 +34,7 @@
     # RequiredModules = @('Az', 'powershell-yaml')
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Add-WinGetManifest", "Get-WinGetManifest", "Remove-WinGetManifest", "New-WinGetSource", "Convert-YamlToJson")
+    FunctionsToExport = @("Add-WinGetManifest", "Get-WinGetManifest", "Remove-WinGetManifest", "New-WinGetSource")
 
     # Cmdlets to export from this module, for best performance, do not use wild cards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport = @()

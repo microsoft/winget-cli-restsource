@@ -5,8 +5,8 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source REST API, or local file system path to retrieve the package manifests, returning 
-    the manifest found. Allows for retrieving results based on the package identifier when targetting the REST APIs.
+    Connects to the specified source REST API, or local file system path to retrieve the package manifests, returning
+    the manifest found. Allows for retrieving results based on the package identifier when targeting the REST APIs.
 
     .DESCRIPTION
     Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
@@ -244,7 +244,7 @@ Function Get-WinGetManifest
 
                         if($Result) {
                             ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
-                            $Return = $ApplicationManifest 
+                            $Return = [WinGetManifest]::CreateFromString($ApplicationManifest) 
 
                             Write-Information "Returned Manifest from JSON file: $($Return.PackageIdentifier)"
                         }
