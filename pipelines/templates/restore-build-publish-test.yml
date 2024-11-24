@@ -61,5 +61,5 @@ steps:
 - template: run-unittests.yml@self
   parameters:
     name: WinGet.RestSource.UnitTest
-    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net6.0'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net8.0'
     dll: Microsoft.WinGet.RestSource.UnitTest.

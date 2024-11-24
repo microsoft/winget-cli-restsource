@@ -139,8 +139,7 @@ Function New-WinGetSource
                 Result        = $Result
             }
 
-            Write-Error -Message "Testing found an error with the ARM template or parameter files." -TargetObject $ErrReturnObject
-            Write-Host $Err[0]
+            Write-Error -Message "Testing found an error with the ARM template or parameter files. Error: $err" -TargetObject $ErrReturnObject
         }
 
 
@@ -156,7 +155,7 @@ Function New-WinGetSource
 
         ###############################
         ## Creates Azure Objects with ARM Templates and Parameters
-        New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -AzResourceGroup $ResourceGroup
+        New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
 
         ###############################
         ## Shows how to connect local Windows Package Manager Client to newly created REST source

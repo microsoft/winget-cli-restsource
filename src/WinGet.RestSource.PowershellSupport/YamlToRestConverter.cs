@@ -9,7 +9,8 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
     using System;
     using System.IO;
     using System.Linq;
-    using Microsoft.WinGet.RestSource.PowershellSupport.Helpers;
+    using Microsoft.WinGet.RestSource.Utils;
+    using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Api;
     using Microsoft.WinGetUtil.Common;
@@ -59,7 +60,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
             // Convert the manifest into a rest manifestPost format and merge with any existing data.
             PackageManifest packageManifest = PackageManifestUtils.AddManifestToPackageManifest(
                 manifest,
-                priorRestManifest);
+                string.IsNullOrWhiteSpace(priorRestManifest) ? null : Parser.StringParser<PackageManifest>(priorRestManifest));
 
             return JsonConvert.SerializeObject(packageManifest);
         }

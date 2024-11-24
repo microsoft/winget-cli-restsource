@@ -4,11 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
+namespace Microsoft.WinGet.RestSource.Utils
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.WinGet.RestSource.Utils.Common;
     using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas;
@@ -21,20 +20,6 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport.Helpers
     /// </summary>
     public static class PackageManifestUtils
     {
-        /// <summary>
-        /// Merges a merged manifest object into an existing json representation of the app.
-        /// </summary>
-        /// <param name="manifest">Merged manifest object.</param>
-        /// <param name="priorManifest">String package manifest.</param>
-        /// <returns>A <see cref="PackageManifest"/> representing the rest source json representation of the package.</returns>
-        public static PackageManifest AddManifestToPackageManifest(
-            Manifest manifest,
-            string priorManifest)
-        {
-            PackageManifest priorPackageManifest = Parser.StringParser<PackageManifest>(priorManifest);
-            return AddManifestToPackageManifest(manifest, priorPackageManifest);
-        }
-
         /// <summary>
         /// Merges a merged manifest object into an existing json representation of the app.
         /// </summary>

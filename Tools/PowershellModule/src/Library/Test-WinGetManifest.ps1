@@ -26,7 +26,7 @@ Function Test-WinGetManifest
     #>
     [CmdletBinding(DefaultParameterSetName = 'File')]
     PARAM(
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
+        [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")] [string]$Path,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Object")] $Manifest
     )
     BEGIN

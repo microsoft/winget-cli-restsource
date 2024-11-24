@@ -22,18 +22,18 @@ Function New-ARMObjects
     .PARAMETER RestSourcePath
     Path to the compiled Function ZIP containing the REST APIs
 
-    .PARAMETER AzResourceGroup
+    .PARAMETER ResourceGroup
     Resource Group that will be used to create the ARM Objects in.
 
     .EXAMPLE
-    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet.RestSource.Functions.zip" -AzResourceGroup "WinGet"
+    New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath "C:\WinGet-CLI-RestSource\WinGet.RestSource.Functions.zip" -ResourceGroup "WinGet"
 
     Parses through the $ARMObjects variable, creating all identified Azure Resources following the provided ARM Parameters and Template information.
     #>
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)] $ARMObjects,
+        [Parameter(Position=0, Mandatory=$true)] [array]  $ARMObjects,
         [Parameter(Position=1, Mandatory=$true)] [string] $RestSourcePath,
-        [Parameter(Position=2, Mandatory=$true)] [string] $AzResourceGroup
+        [Parameter(Position=2, Mandatory=$true)] [string] $ResourceGroup
     )
     BEGIN
     {
@@ -74,7 +74,7 @@ Function New-ARMObjects
                 Write-Information -MessageData "    Creating KeyVault Secrets:"
 
                 ## Creates a reference to the Azure Storage Account Connection String as a Secret in the Azure Keyvault.
-                $AzStorageAccountKey  = $(Get-AzStorageAccountKey -ResourceGroupName $AzResourceGroup -Name $AzStorageAccountName)[0].Value
+                $AzStorageAccountKey  = $(Get-AzStorageAccountKey -ResourceGroupName $ResourceGroup -Name $AzStorageAccountName)[0].Value
 
                 ## Retrieves the required information from the previously created Azure objects. Values will be used to generate required information for the Azure Keyvault.
                 ## [TODO:] Fix the secure string readings that were removed to unblock the 1ES pipeline migration.
@@ -108,13 +108,13 @@ Function New-ARMObjects
                 ## Create base object of the Azure Function, generating reference object ID for Keyvault
                 Write-Verbose -Message "    Creating base Azure Function object."
                 Write-Information -MessageData "    Creating base Azure Function object."
-                $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue
+                $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue
             }
     
             ## Creates the Azure Resource
             Write-Verbose -Message "    Creating $($Object.ObjectType) following the ARM Parameter File..."
             Write-Information -MessageData "    Creating $($Object.ObjectType) following the ARM Parameter File..."
-            $Result = New-AzResourceGroupDeployment -ResourceGroupName $AzResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror -AsJob
+            $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror -AsJob
     
             while ($Result.State -eq "Running") {
                 ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
@@ -157,7 +157,7 @@ Function New-ARMObjects
                     ## Uploads the Windows Package Manager functions to the Azure Function.
                     Write-Verbose -Message "    Copying function files to the Azure Function."
                     Write-Information -MessageData "    Copying function files to the Azure Function."
-                    $Result = Publish-AzWebApp -ArchivePath $RestSourcePath -ResourceGroupName $AzResourceGroup -Name $AzFunctionName -Force
+                    $Result = Publish-AzWebApp -ArchivePath $RestSourcePath -ResourceGroupName $ResourceGroup -Name $AzFunctionName -Force
                 }
                 else {
                     $ErrReturnObject = @{
