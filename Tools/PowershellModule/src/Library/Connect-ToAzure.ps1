@@ -9,9 +9,6 @@ Function Connect-ToAzure
     .DESCRIPTION
     By running this function the user will be prompted to conect to their Azure environment. If a connection is not already 
     established to the (if specified) Subscription Name and / or Subscription Id.
-
-    The following Azure Modules are used by this script:
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
         
     .PARAMETER SubscriptionName
     [Optional] The Subscription name that contains the Windows Package Manager REST source REST APIs

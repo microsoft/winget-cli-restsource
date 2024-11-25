@@ -8,12 +8,6 @@ Function Test-ARMResourceName
     
     .DESCRIPTION
     Validates that the name that will be assigned to the Azure Resource will meet the resource types requirement.
-        
-    The following Azure Modules are used by this script:
-        Az.Resources
-        Az.Accounts
-        Az.Websites
-        Az.Functions
 
     .PARAMETER ResourceType
     The type of Azure Resource to validate requirements against.

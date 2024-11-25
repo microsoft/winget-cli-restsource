@@ -11,9 +11,6 @@ Function Add-AzureResourceGroup
     the Resource Group doesn't exist, it will create a new Resource Group in Azure. If successful, returns a boolean.
         - True if the group was pre-existing or created successfully.
         - False if the group failed to be created.
-        
-    The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
     
     .PARAMETER Name
     Name of the Resource Group to be created.

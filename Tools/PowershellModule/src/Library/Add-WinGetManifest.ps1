@@ -11,12 +11,6 @@ Function Add-WinGetManifest
     Windows Package Manager REST source, then collects the required URL for Manifest submission before 
     retrieving the contents of the Package Manifest to submit.
 
-    The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
-
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the REST source.
 

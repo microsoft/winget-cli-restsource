@@ -9,21 +9,15 @@ Function Remove-WinGetManifest
     .DESCRIPTION
     This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the 
     specified package Manifest.
-        
-    The following Azure Modules are used by this script:
-        Az.Resources
-        Az.Accounts
-        Az.Websites
-        Az.Functions
 
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the REST source.
 
     .PARAMETER PackageIdentifier
-    THe Package Id that represents the App Manifest to be removed.
+    The Package Id that represents the App Manifest to be removed.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name contains the Windows Package Manager REST source
+    [Optional] The Subscription name that contains the Windows Package Manager REST source
 
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
@@ -32,98 +26,91 @@ Function Remove-WinGetManifest
     the Windows Package Manager REST source
 
     #>
-    [CmdletBinding(DefaultParameterSetName = 'WinGet')]
     PARAM(
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
+        [Parameter(Position=0, Mandatory=$true)]  [string]$FunctionName,
         [Parameter(Position=2, Mandatory=$true)]  [string]$PackageIdentifier,
-        [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName   = ""
+        [Parameter(Position=2, Mandatory=$false)] [string]$PackageVersion = "",
+        [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName = ""
     )
     BEGIN
     {
-        $Found = $false
-
-        switch ($PsCmdlet.ParameterSetName) {
-            "Azure"  {
-                ###############################
-                ## Validates that the Azure Modules are installed
-                Write-Verbose -Message "Testing required PowerShell Modules are installed."
-                $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-                $Result = Test-PowerShellModuleExist -Modules $RequiredModules
-
-                if(!$Result) {
-                    throw "Unable to run script, missing required PowerShell modules"
-                }
-
-                ###############################
-                ## Connects to Azure, if not already connected.
-                Write-Verbose -Message "Testing connection to Azure."
-                $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
-                if(!($Result)) {
-                    throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
-                }
-                
-                ## Sets variables as if the Azure Function Name was provided.
-                $AzureResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $FunctionName}).ResourceGroupName
-
-                ###############################
-                ##  Verify Azure Resources Exist
-                $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $AzureResourceGroupName
-                if(!$Result) {
-                    throw "Failed to confirm resources exist in Azure. Please verify and try again."
-                }
-
-                if($PackageIdentifier){
-                    $PackageIdentifier = "$PackageIdentifier"
-                }
+        ###############################
+        ## Connects to Azure, if not already connected.
+        Write-Verbose -Message "Testing connection to Azure."
+        $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
+        if(!($Result)) {
+            throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
+        }
         
-                ###############################
-                ##  REST api call  
-                
-                ## Specifies the REST api call that will be performed
-                $TriggerName    = "ManifestDelete"
-                $apiContentType = "application/json"
-                $apiMethod      = "Delete"
+        ## Sets variables as if the Azure Function Name was provided.
+        $ResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $FunctionName}).ResourceGroupName
 
-                $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName
+        ###############################
+        ##  Verify Azure Resources Exist
+        $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $ResourceGroupName
+        if(!$Result) {
+            throw "Failed to confirm resources exist in Azure. Please verify and try again."
+        }
+
+        if($PackageIdentifier){
+            $PackageIdentifier = "$PackageIdentifier"
+        }
         
-                ## can function key be part of the header
-                $FunctionAppId   = $FunctionApp.Id
-                $DefaultHostName = $FunctionApp.DefaultHostName
-                $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
+        ###############################
+        ##  REST api call  
+        
+        ## Specifies the REST api call that will be performed
+        $TriggerName = ""
+        if([string]::IsNullOrWhiteSpace($PackageVersion)) {
+            $TriggerName = "ManifestDelete"
+        }
+        else {
+            $TriggerName = "VersionDelete"
+        }
 
-                ## Creates the API Post Header
-                $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-                $apiHeader.Add("Accept", 'application/json')
-                $apiHeader.Add("x-functions-key", $FunctionKey)
+        $ApiContentType = "application/json"
+        $ApiMethod      = "Delete"
 
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests/" + $PackageIdentifier
-            }
+        $FunctionApp = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
+        
+        ## can function key be part of the header
+        $FunctionAppId   = $FunctionApp.Id
+        $DefaultHostName = $FunctionApp.DefaultHostName
+        $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
+
+        ## Creates the API Post Header
+        $ApiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $ApiHeader.Add("Accept", 'application/json')
+        $ApiHeader.Add("x-functions-key", $FunctionKey)
+
+        $AzFunctionURL = ""
+        if([string]::IsNullOrWhiteSpace($PackageVersion)) {
+            $AzFunctionURL = "https://" + $DefaultHostName + "/api/packageManifests/" + $PackageIdentifier
+        }
+        else {
+            $AzFunctionURL = "https://" + $DefaultHostName + "/api/packages/" + $PackageIdentifier + "/versions/" + $PackageVersion
         }
     }
     PROCESS
     {
-        switch ($PsCmdlet.ParameterSetName) {
-            "Azure" {
-                Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
-                Write-Verbose -Message "Constructing the REST API call for removal of manifest."
+        Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
+        Write-Verbose -Message "Constructing the REST API call for removal of manifest."
 
-                $Response = Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -ContentType $apiContentType  -ErrorVariable errInvoke
+        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ContentType $ApiContentType -ErrorVariable ErrorInvoke
 
-                if($errInvoke -ne $()) {
-                    $ErrorMessage = "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again."
-                    $ErrReturnObject = @{
-                        AzFunctionURL       = $AzFunctionURL
-                        apiHeader           = $apiHeader
-                        apiMethod           = $apiMethod
-                        apiContentType      = $apiContentType
-                        Response            = $Response
-                        InvokeError         = $errInvoke
-                    }
-
-                    ## If the Post failed, then return User specific error messages:
-                    Write-Error -Message $ErrorMessage -Category ResourceUnavailable -TargetObject $ErrReturnObject
-                }
+        if($ErrorInvoke) {
+            $ErrorMessage = "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again."
+            $ErrReturnObject = @{
+                AzFunctionURL       = $AzFunctionURL
+                ApiHeader           = $ApiHeader
+                ApiMethod           = $ApiMethod
+                ApiContentType      = $ApiContentType
+                Response            = $Response
+                InvokeError         = $ErrorInvoke
             }
+
+            ## If the Post failed, then return User specific error messages:
+            Write-Error -Message $ErrorMessage -Category ResourceUnavailable -TargetObject $ErrReturnObject
         }
     }
     END

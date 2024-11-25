@@ -3,73 +3,73 @@
 
 class WinGetAgreement
 {
-    $AgreementLabel
-    $Agreement
-    $AgreementUrl
+    [string]$AgreementLabel
+    [string]$Agreement
+    [string]$AgreementUrl
 
     WinGetAgreement () {}
 }
 
 class WinGetDocumentation
 {
-    $DocumentLabel
-    $DocumentUrl
+    [string]$DocumentLabel
+    [string]$DocumentUrl
 
     WinGetDocumentation () {}
 }
 
 class WinGetIcon
 {
-    $IconUrl
-    $IconFileType
-    $IconResolution
-    $IconTheme
-    $IconSha256
+    [string]$IconUrl
+    [string]$IconFileType
+    [string]$IconResolution
+    [string]$IconTheme
+    [string]$IconSha256
 
     WinGetIcon () {}
 }
 
 class WinGetLocale
 {
-    $PackageLocale
-    $Publisher
-    $PublisherUrl
-    $PublisherSupportUrl
-    $PrivacyUrl
-    $Author
-    $PackageName
-    $PackageUrl
-    $License
-    $LicenseUrl
-    $Copyright
-    $CopyRightUrl
-    $ShortDescription
-    $Description
+    [string]$PackageLocale
+    [string]$Publisher
+    [string]$PublisherUrl
+    [string]$PublisherSupportUrl
+    [string]$PrivacyUrl
+    [string]$Author
+    [string]$PackageName
+    [string]$PackageUrl
+    [string]$License
+    [string]$LicenseUrl
+    [string]$Copyright
+    [string]$CopyRightUrl
+    [string]$ShortDescription
+    [string]$Description
     [string[]]$Tags
-    $ReleaseNotes
-    $ReleaseNotesUrl
+    [string]$ReleaseNotes
+    [string]$ReleaseNotesUrl
     [WinGetAgreement[]]$Agreements
-    $PurchaseUrl
-    $InstallationNotes
-    [WinGetDocument[]]$Documentations
+    [string]$PurchaseUrl
+    [string]$InstallationNotes
+    [WinGetDocumentation[]]$Documentations
     [WinGetIcon[]]$Icons
 
     ## Default locale only
-    $Moniker
+    [string]$Moniker
 
     WinGetLocale () {}
 }
 
 class WinGetInstallerSwitch
 {
-    $Silent
-    $SilentWithProgress
-    $Interactive
-    $InstallLocation
-    $Log
-    $Upgrade
-    $Custom
-    $Repair
+    [string]$Silent
+    [string]$SilentWithProgress
+    [string]$Interactive
+    [string]$InstallLocation
+    [string]$Log
+    [string]$Upgrade
+    [string]$Custom
+    [string]$Repair
 
     WinGetInstallerSwitch () {}
 }
@@ -77,16 +77,16 @@ class WinGetInstallerSwitch
 class WinGetExpectedReturnCode
 {
     [long]$InstallerReturnCode
-    $ReturnResponse
-    $ReturnResponseUrl
+    [string]$ReturnResponse
+    [string]$ReturnResponseUrl
 
     WinGetExpectedReturnCode () {}
 }
 
 class WinGetPackageDependency
 {
-    $PackageIdentifier
-    $MinimumVersion
+    [string]$PackageIdentifier
+    [string]$MinimumVersion
 
     WinGetPackageDependency () {}
 }
@@ -103,12 +103,12 @@ class WinGetDependencies
 
 class WinGetAppsAndFeaturesEntry
 {
-    $DisplayName
-    $Publisher
-    $DisplayVersion
-    $ProductCode
-    $UpgradeCode
-    $InstallerType
+    [string]$DisplayName
+    [string]$Publisher
+    [string]$DisplayVersion
+    [string]$ProductCode
+    [string]$UpgradeCode
+    [string]$InstallerType
 
     WinGetAppsAndFeaturesEntry () {}
 }
@@ -123,26 +123,26 @@ class WinGetMarkets
 
 class WinGetNestedInstallerFile
 {
-    $RelativeFilePath
-    $PortableCommandAlias
+    [string]$RelativeFilePath
+    [string]$PortableCommandAlias
 
     WinGetNestedInstallerFile () {}
 }
 
 class WinGetInstallationMetadataFile
 {
-    $RelativeFilePath
-    $FileSha256
-    $FileType
-    $InvocationParameter
-    $DisplayName
+    [string]$RelativeFilePath
+    [string]$FileSha256
+    [string]$FileType
+    [string]$InvocationParameter
+    [string]$DisplayName
 
     WinGetInstallationMetadataFile () {}
 }
 
 class WinGetInstallationMetadata
 {
-    $DefaultInstallLocation
+    [string]$DefaultInstallLocation
     [WinGetInstallationMetadataFile[]]$Files
     
     WinGetInstallationMetadata () {}
@@ -150,45 +150,45 @@ class WinGetInstallationMetadata
 
 class WinGetInstaller
 {
-    $InstallerIdentifier
-    $InstallerSha256
-    $InstallerUrl
-    $Architecture
-    $InstallerLocale
+    [string]$InstallerIdentifier
+    [string]$InstallerSha256
+    [string]$InstallerUrl
+    [string]$Architecture
+    [string]$InstallerLocale
     [string[]]$Platform
-    $MinimumOsVersion
-    $InstallerType
-    $Scope
-    $SignatureSha256
+    [string]$MinimumOsVersion
+    [string]$InstallerType
+    [string]$Scope
+    [string]$SignatureSha256
     [string[]]$InstallModes
     [WinGetInstallerSwitch]$InstallerSwitches
     [long[]]$InstallerSuccessCodes
     [WinGetExpectedReturnCode[]]$ExpectedReturnCodes
-    $UpgradeBehavior
+    [string]$UpgradeBehavior
     [string[]]$Commands
     [string[]]$Protocols
     [string[]]$FileExtensions
     [WinGetDependencies]$Dependencies
-    $PackageFamilyName
-    $ProductCode
+    [string]$PackageFamilyName
+    [string]$ProductCode
     [string[]]$Capabilities
     [string[]]$RestricedCapabilities
-    $MSStoreProductIdentifier
+    [string]$MSStoreProductIdentifier
     [bool]$InstallerAbortsTerminal
-    $ReleaseDate
+    [string]$ReleaseDate
     [bool]$InstallLocationRequired
     [bool]$RequireExplicitUpgrade
-    $ElevationRequirement
+    [string]$ElevationRequirement
     [string[]]$UnsupportedOSArchitectures
     [WinGetAppsAndFeaturesEntry[]]$AppsAndFeaturesEntries
     [WinGetMarkets]$Markets
-    $NestedInstallerType
+    [string]$NestedInstallerType
     [WinGetNestedInstallerFile[]]$NestedInstallerFiles
     [bool]$DisplayInstallWarnings
     [string[]]$UnsupportedArguments
     [WinGetInstallationMetadata]$InstallationMetadata
     [bool]$DownloadCommandProhibited
-    $RepairBehavior
+    [string]$RepairBehavior
     [bool]$ArchiveBinariesDependOnPath
 
     WinGetInstaller () {}
@@ -196,8 +196,8 @@ class WinGetInstaller
 
 class WinGetVersion
 {
-    $PackageVersion
-    $Channel
+    [string]$PackageVersion
+    [string]$Channel
     [WinGetLocale]      $DefaultLocale
     [WinGetInstaller[]] $Installers
     [WinGetLocale[]]    $Locales

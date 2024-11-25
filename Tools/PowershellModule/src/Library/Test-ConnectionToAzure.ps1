@@ -9,9 +9,6 @@ Function Test-ConnectionToAzure
     .DESCRIPTION
     Validates that a connection is existing to Azure and/or Azure Subscription Name / Id.
 
-    The following Azure Modules are used by this script:
-        Az.Accounts
-
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription.
 

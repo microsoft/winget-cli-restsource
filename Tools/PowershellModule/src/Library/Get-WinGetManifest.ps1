@@ -11,12 +11,6 @@ Function Get-WinGetManifest
     .DESCRIPTION
     Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
     an array of all Manifests found. Allows for retrieving results based on the package identifier.
-        
-    The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
 
     .PARAMETER Path
     Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.

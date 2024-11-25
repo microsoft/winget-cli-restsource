@@ -9,12 +9,6 @@ Function New-WinGetSource
     .DESCRIPTION
     Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
 
-    The following Azure Modules are used by this script:
-        Az.Resources
-        Az.Accounts
-        Az.Websites
-        Az.Functions
-
     .PARAMETER Name
     The name of the objects that will be created
 
