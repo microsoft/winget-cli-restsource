@@ -1,9 +1,36 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+class WinGetAgreement
+{
+    $AgreementLabel
+    $Agreement
+    $AgreementUrl
+
+    WinGetAgreement () {}
+}
+
+class WinGetDocumentation
+{
+    $DocumentLabel
+    $DocumentUrl
+
+    WinGetDocumentation () {}
+}
+
+class WinGetIcon
+{
+    $IconUrl
+    $IconFileType
+    $IconResolution
+    $IconTheme
+    $IconSha256
+
+    WinGetIcon () {}
+}
+
 class WinGetLocale
 {
-    $Moniker
     $PackageLocale
     $Publisher
     $PublisherUrl
@@ -18,12 +45,107 @@ class WinGetLocale
     $CopyRightUrl
     $ShortDescription
     $Description
+    [string[]]$Tags
     $ReleaseNotes
     $ReleaseNotesUrl
-    #$Agreements
-    $Tags
+    [WinGetAgreement[]]$Agreements
+    $PurchaseUrl
+    $InstallationNotes
+    [WinGetDocument[]]$Documentations
+    [WinGetIcon[]]$Icons
+
+    ## Default locale only
+    $Moniker
 
     WinGetLocale () {}
+}
+
+class WinGetInstallerSwitch
+{
+    $Silent
+    $SilentWithProgress
+    $Interactive
+    $InstallLocation
+    $Log
+    $Upgrade
+    $Custom
+    $Repair
+
+    WinGetInstallerSwitch () {}
+}
+
+class WinGetExpectedReturnCode
+{
+    [long]$InstallerReturnCode
+    $ReturnResponse
+    $ReturnResponseUrl
+
+    WinGetExpectedReturnCode () {}
+}
+
+class WinGetPackageDependency
+{
+    $PackageIdentifier
+    $MinimumVersion
+
+    WinGetPackageDependency () {}
+}
+
+class WinGetDependencies
+{
+    [string[]]$WindowsFeatures
+    [string[]]$WindowsLibraries
+    [WinGetPackageDependency[]]$PackageDependencies
+    [string[]]$ExternalDependencies
+
+    WinGetDependencies () {}
+}
+
+class WinGetAppsAndFeaturesEntry
+{
+    $DisplayName
+    $Publisher
+    $DisplayVersion
+    $ProductCode
+    $UpgradeCode
+    $InstallerType
+
+    WinGetAppsAndFeaturesEntry () {}
+}
+
+class WinGetMarkets
+{
+    [string[]]$AllowedMarkets
+    [string[]]$ExcludedMarkets
+
+    WinGetMarkets () {}
+}
+
+class WinGetNestedInstallerFile
+{
+    $RelativeFilePath
+    $PortableCommandAlias
+
+    WinGetNestedInstallerFile () {}
+}
+
+class WinGetInstallationMetadataFile
+{
+    $RelativeFilePath
+    $FileSha256
+    $FileType
+    $InvocationParameter
+    $DisplayName
+
+    WinGetInstallationMetadataFile () {}
+}
+
+class WinGetInstallationMetadata
+{
+    $DefaultInstallLocation
+    [WinGetInstallationMetadataFile[]]$Files
+    
+    WinGetInstallationMetadata () {}
 }
 
 class WinGetInstaller
@@ -33,36 +155,41 @@ class WinGetInstaller
     $InstallerUrl
     $Architecture
     $InstallerLocale
-    $Platform
+    [string[]]$Platform
     $MinimumOsVersion
     $InstallerType
     $Scope
     $SignatureSha256
-    $InstallModes
-    $InstallerSwitches
-    $InstallerSuccessCodes
-    $ExpectedReturnCodes
+    [string[]]$InstallModes
+    [WinGetInstallerSwitch]$InstallerSwitches
+    [long[]]$InstallerSuccessCodes
+    [WinGetExpectedReturnCode[]]$ExpectedReturnCodes
     $UpgradeBehavior
-    $Commands
-    $Protocols
-    $FileExtensions
-    $Dependencies
+    [string[]]$Commands
+    [string[]]$Protocols
+    [string[]]$FileExtensions
+    [WinGetDependencies]$Dependencies
     $PackageFamilyName
     $ProductCode
-    $Capabilities
-    $RestricedCapabilities
+    [string[]]$Capabilities
+    [string[]]$RestricedCapabilities
     $MSStoreProductIdentifier
-    $InstallerAbortsTerminal
+    [bool]$InstallerAbortsTerminal
     $ReleaseDate
-    $InstallLocationRequired
-    $RequireExplicitUpgrade
+    [bool]$InstallLocationRequired
+    [bool]$RequireExplicitUpgrade
     $ElevationRequirement
-    $UnsupportedOSArchitectures
-    $AppsAndFeaturesEntries
-    #$Markets
-    $DownloadCommandProhibited
+    [string[]]$UnsupportedOSArchitectures
+    [WinGetAppsAndFeaturesEntry[]]$AppsAndFeaturesEntries
+    [WinGetMarkets]$Markets
+    $NestedInstallerType
+    [WinGetNestedInstallerFile[]]$NestedInstallerFiles
+    [bool]$DisplayInstallWarnings
+    [string[]]$UnsupportedArguments
+    [WinGetInstallationMetadata]$InstallationMetadata
+    [bool]$DownloadCommandProhibited
     $RepairBehavior
-    $ArchiveBinariesDependOnPath
+    [bool]$ArchiveBinariesDependOnPath
 
     WinGetInstaller () {}
 }
@@ -87,10 +214,18 @@ class WinGetManifest
     
     [string] GetJson ()
     {
-        return [WinGetManifest]::SerializeJson($this)
+        ## Not using ConvertTo-Json here since we want more control on null property handling
+        $options = [System.Text.Json.JsonSerializerOptions]::new()
+        $options.WriteIndented = $false
+        $options.MaxDepth = 16
+        $options.DefaultIgnoreCondition = [System.Text.Json.Serialization.JsonIgnoreCondition]::WhenWritingNull
+        $options.Converters.Add([System.Text.Json.Serialization.JsonStringEnumConverter]::new())
+        $options.Encoder = [System.Text.Encodings.Web.JavaScriptEncoder]::UnsafeRelaxedJsonEscaping
+        
+        return [System.Text.Json.JsonSerializer]::Serialize($this, $options)
     }
     
-    static [WinGetManifest] CreateFromString([string] $a)
+    static [WinGetManifest] CreateFromString ([string] $a)
     {
         Write-Verbose -Message "Creating a WinGetManifest object from String object"
         
@@ -99,23 +234,12 @@ class WinGetManifest
         return [System.Text.Json.JsonSerializer]::Deserialize($a, [WinGetManifest], $options)
     }
     
-    static [WinGetManifest] CreateFromObject([psobject] $a)
+    static [WinGetManifest] CreateFromObject ([psobject] $a)
     {
         Write-Verbose -Message "Creating a WinGetManifest object from PsObject object"
         
-        $json = [WinGetManifest]::SerializeJson($a)
+        $json = ConvertTo-Json $a -Depth 16 -Compress
 
         return [WinGetManifest]::CreateFromString($json)
-    }
-    
-    static [string] SerializeJson ([psobject] $toSerialize)
-    {
-        $options = [System.Text.Json.JsonSerializerOptions]::new()
-        $options.WriteIndented = $false
-        $options.DefaultIgnoreCondition = [System.Text.Json.Serialization.JsonIgnoreCondition]::WhenWritingNull
-        $options.Converters.Add([System.Text.Json.Serialization.JsonStringEnumConverter]::new())
-        $options.Encoder = [System.Text.Encodings.Web.JavaScriptEncoder]::UnsafeRelaxedJsonEscaping
-
-        Return [System.Text.Json.JsonSerializer]::Serialize($toSerialize, $options)
     }
 }

@@ -84,7 +84,7 @@ Function Remove-WinGetManifest
                 $apiContentType = "application/json"
                 $apiMethod      = "Delete"
 
-                $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
+                $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName
         
                 ## can function key be part of the header
                 $FunctionAppId   = $FunctionApp.Id

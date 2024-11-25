@@ -214,7 +214,7 @@ Function Get-WinGetManifest
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
 
                 ## Retrieves the Azure Function URL used to add new manifests to the REST source
-                $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName -ErrorAction SilentlyContinue -ErrorVariable err
+                $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $FunctionName
                         
                 ## can function key be part of the header
                 Write-Verbose -Message "Constructing the REST API call."
@@ -223,7 +223,7 @@ Function Get-WinGetManifest
                 $DefaultHostName = $FunctionApp.DefaultHostName
                 $FunctionKey     = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
                 $ApiHeader.Add("x-functions-key", $FunctionKey)
-                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests" + $PackageIdentifier
+                $AzFunctionURL   = "https://" + $DefaultHostName + "/api/packageManifests" + $PackageIdentifier
                 
                 ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."
@@ -233,7 +233,7 @@ Function Get-WinGetManifest
 
                 foreach ($Result in $Results.Data){
                     Write-Verbose -Message "Parsing through the returned results: $Result"
-                    $Return += [WinGetManifest]::New($Result)
+                    $Return += [WinGetManifest]::CreateFromObject($Result)
                 }
             }
             "File" {
@@ -244,7 +244,7 @@ Function Get-WinGetManifest
 
                         if($Result) {
                             ## Sets the return result to be the contents of the JSON file if the Manifest test passed.
-                            $Return = [WinGetManifest]::CreateFromString($ApplicationManifest) 
+                            $Return += [WinGetManifest]::CreateFromString($ApplicationManifest) 
 
                             Write-Information "Returned Manifest from JSON file: $($Return.PackageIdentifier)"
                         }
@@ -255,11 +255,11 @@ Function Get-WinGetManifest
                         Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
                         if($Json){
                             Write-Verbose "Prior manifest provided. New manifest will be merged with prior manifest."
-                            $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson());
+                            $Return += [WinGetManifest]::CreateFromString([Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson()))
                         }
                         else{
                             Write-Verbose "Prior manifest not provided."
-                            $Return += [Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, "");
+                            $Return += [WinGetManifest]::CreateFromString([Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, ""))
                         }
 
                         Write-Information "Returned Manifest from YAML file: $($Return.PackageIdentifier)"

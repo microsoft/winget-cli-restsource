@@ -26,8 +26,8 @@ Function Test-ARMTemplate
 
     #>
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)] $ARMObjects,
-        [Parameter(Position=1, Mandatory=$true)] $ResourceGroup
+        [Parameter(Position=0, Mandatory=$true)] [array] $ARMObjects,
+        [Parameter(Position=1, Mandatory=$true)] [string] $ResourceGroup
     )
     BEGIN
     {
