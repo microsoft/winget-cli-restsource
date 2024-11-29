@@ -32,10 +32,10 @@ Function New-ARMObjects
     BEGIN
     {
         ## Imports the contents of the Parameter Files for reference and logging purposes:
-        $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount" }).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
-        $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
-        $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
-        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) -ErrorAction SilentlyContinue | ConvertFrom-Json
+        $jsonStorageAccount = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "StorageAccount" }).ParameterPath) | ConvertFrom-Json
+        $jsoncdba           = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "CosmosDBAccount"}).ParameterPath) | ConvertFrom-Json
+        $jsonKeyVault       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Keyvault"}).ParameterPath) | ConvertFrom-Json
+        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
 
         ## Azure resource names retrieved from the Parameter files.
         $AzKeyVaultName       = $jsonKeyVault.parameters.name.value
@@ -54,30 +54,18 @@ Function New-ARMObjects
     PROCESS
     {
         ## Creates the Azure Resources following the ARM template / parameters
-        Write-Verbose -Message "Creating Azure Resources following ARM Templates."
-        Write-Information -MessageData "Creating Azure Resources following ARM Templates."
+        Write-Information "Creating Azure Resources following ARM Templates."
         
         ## This is order specific, please ensure you used the New-ARMParameterObject function to create this object in the pre-determined order.
         foreach ($Object in $ARMObjects) {
-            Write-Verbose -Message "  Creating the Azure Object - $($Object.ObjectType)"
-            Write-Information -MessageData "  Creating the Azure Object - $($Object.ObjectType)"
+            Write-Information "  Creating the Azure Object - $($Object.ObjectType)"
     
             ## If the object to be created is an Azure Function, then complete these pre-required steps before creating the Azure Function.
             if($Object.ObjectType -eq "Function") {
-                Write-Verbose -Message "    Creating KeyVault Secrets:"
-                Write-Information -MessageData "    Creating KeyVault Secrets:"
+                Write-Verbose "    Creating KeyVault Secrets:"
 
                 ## Creates a reference to the Azure Storage Account Connection String as a Secret in the Azure Keyvault.
-                $AzStorageAccountKey  = $(Get-AzStorageAccountKey -ResourceGroupName $ResourceGroup -Name $AzStorageAccountName)[0].Value
-
-                ## Retrieves the required information from the previously created Azure objects. Values will be used to generate required information for the Azure Keyvault.
-                ## [TODO:] Fix the secure string readings that were removed to unblock the 1ES pipeline migration.
-                ## The previous usage of the secure string readings was causing failures in the static analysis job of the pipeline.
-                ## https://learn.microsoft.com/en-us/powershell/utility-modules/psscriptanalyzer/rules/avoidusingconverttosecurestringwithplaintext?view=ps-modules
-                $CosmosAccountEndpointValue       = ""
-                $CosmosAccountKeyWriteValue       = ""
-                $CosmosAccountKeyReadValue        = ""
-                $AzStorageAccountConnectionString = ""
+                $AzStorageAccountKey  = $(Get-AzStorageAccountKey -ResourceGroupName $ResourceGroup -Name $AzStorageAccountName)[0].Valu
 
                 ## Adds the Azure Storage Account Connection String to the Keyvault
                 Write-Verbose -Message "      Creating Keyvault Secret for Azure Storage Account Connection String."
@@ -102,13 +90,13 @@ Function New-ARMObjects
                 ## Create base object of the Azure Function, generating reference object ID for Keyvault
                 Write-Verbose -Message "    Creating base Azure Function object."
                 Write-Information -MessageData "    Creating base Azure Function object."
-                $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue
+                $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental
             }
     
             ## Creates the Azure Resource
             Write-Verbose -Message "    Creating $($Object.ObjectType) following the ARM Parameter File..."
             Write-Information -MessageData "    Creating $($Object.ObjectType) following the ARM Parameter File..."
-            $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorAction SilentlyContinue -ErrorVariable objerror -AsJob
+            $Result = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorVariable objerror -AsJob
     
             while ($Result.State -eq "Running") {
                 ## Sets a sleep of 10 seconds after object creation to allow Azure to update creation status, and mark as "running"
@@ -127,7 +115,7 @@ Function New-ARMObjects
                 ## Creating the object following the ARM template failed.
                 ## TODO: extend error reporting in logs across scripts.
                 Write-Error "Failed to create Azure object. $($Result.Error)" -TargetObject $ErrReturnObject
-                Return
+                return
             }
             else {
                 ## Creating the object was successful
@@ -166,6 +154,6 @@ Function New-ARMObjects
     }
     END
     {
-        Return
+        return
     }
 }

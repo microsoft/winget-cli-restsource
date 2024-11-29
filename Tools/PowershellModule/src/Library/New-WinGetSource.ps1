@@ -17,16 +17,19 @@ Function New-WinGetSource
     resources will be created in in this Resource Group (Default: WinGetRestsource)
 
     .PARAMETER SubscriptionName
-    [Optional] The name of the subscription that will be used to host the Windows Package Manager REST source.
+    [Optional] The name of the subscription that will be used to host the Windows Package Manager REST source. (Default: Current connected subscription)
 
     .PARAMETER Region
     [Optional] The Azure location where objects will be created in. (Default: westus)
 
-    .PARAMETER ParameterOutput
-    [Optional] The directory where Parameter objects will be created in. (Default: Current Directory)
+    .PARAMETER TemplateFolderPath
+    [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplate)
+    
+    .PARAMETER ParameterOutputPath
+    [Optional] The directory where Parameter objects will be created in. (Default: Current Directory\Parameters)
 
     .PARAMETER RestSourcePath
-    [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\Library\RestAPI\WinGet.RestSource.Functions.zip)
+    [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip)
 
     .PARAMETER ImplementationPerformance
     [Optional] ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
@@ -58,57 +61,45 @@ Function New-WinGetSource
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$Name,
         [Parameter(Position=1, Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
-        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName,
+        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = "",
         [Parameter(Position=3, Mandatory=$false)] [string]$Region = "westus",
-        [Parameter(Position=4, Mandatory=$false)] [string]$ParameterOutput = $(Get-Location).Path,
-        [Parameter(Position=5, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\RestAPI\WinGet.RestSource.Functions.zip",
+        [Parameter(Position=4, Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplate",
+        [Parameter(Position=5, Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
+        [Parameter(Position=6, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
         [ValidateSet("Developer", "Basic", "Enhanced")]
-        [Parameter(Position=6, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
+        [Parameter(Position=7, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
     BEGIN
     {
         if($ImplementationPerformance -eq "Developer") {
-            Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this.`n"
+            Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this tier.`n"
         }
-
-        ## Paths to the Parameter and Template folders and the location of the Function Zip
-        $ParameterFolderPath = "$ParameterOutput\Parameters"
-        $TemplateFolderPath  = "$PSScriptRoot\ARMTemplate"
-
-        ## Outlines the Azure Modules that are required for this Function to work.
-        $RequiredModules     = @("Az.Resources", "Az.Accounts", "Az.KeyVault","Az.Websites", "Az.Functions")
     }
     PROCESS
     {
         ###############################
-        ## Validates that the Azure Modules are installed
-        Write-Verbose -Message "Testing required PowerShell modules are installed."
-
-        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions", "Az.Storage")
-        $Result = Test-PowerShellModuleExist -Modules $RequiredModules
-
-        if(!$Result) {
-            throw "Unable to run script, missing required PowerShell modules"
+        ## Check input paths
+        if(!$(Test-Path -Path $TemplateFolderPath)) {
+            throw "REST Source Function Code is missing in specified path ($TemplateFolderPath)"
         }
-        if(!$(Test-Path -Path $RestSourcePath))
-        {
+        if(!$(Test-Path -Path $RestSourcePath)) {
             throw "REST Source Function Code is missing in specified path ($RestSourcePath)"
         }
 
-
         ###############################
-        ## Create Folders for the Parameter folder paths
-        $ResultParameter = New-Item -ItemType Directory -Path $ParameterFolderPath -ErrorAction SilentlyContinue -InformationAction SilentlyContinue
-
-        if($ResultParameter) {
-            Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($ResultParameter.FullName))."
+        ## Create folder for the Parameter output path
+        $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
+        if($Result) {
+            Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
+        }
+        else {
+            throw "Failed to create ARM parameters output path. Path: $ParameterOutputPath"
         }
 
         ###############################
         ## Connects to Azure, if not already connected.
-        Write-Verbose -Message "Testing connection to Azure."
-
+        Write-Information "Testing connection to Azure."
         $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
         if(!($Result)) {
             throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
@@ -116,17 +107,16 @@ Function New-WinGetSource
 
         ###############################
         ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterFolderPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
+        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
 
         ###############################
         ## Create Resource Group
-        Write-Verbose -Message "Creating the Resource Group used to host the Windows Package Manager REST source."
+        Write-Information "Creating the Resource Group used to host the Windows Package Manager REST source. Name: $ResourceGroup, Region: $Region"
         Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
 
-        #### Verifies ARM Parameters are correct ####
-        $Result = Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup -ErrorAction SilentlyContinue -ErrorVariable err
-
-        if($err){
+        #### Verifies ARM Parameters are correct
+        $Result = Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
+        if($Result){
             $ErrReturnObject = @{
                 ARMObjects    = $ARMObjects
                 ResourceGroup = $ResourceGroup
@@ -134,17 +124,6 @@ Function New-WinGetSource
             }
 
             Write-Error -Message "Testing found an error with the ARM template or parameter files. Error: $err" -TargetObject $ErrReturnObject
-        }
-
-
-        ## If the attempt fails.. then exit.
-        if($($Result)) {
-            $ErrReturnObject = @{
-                Result = $Result
-            }
-
-            Write-Error -Message "ARM Template and Parameter testing failed`n" -TargetObject $ErrReturnObject
-            Return
         }
 
         ###############################
@@ -171,6 +150,6 @@ Function New-WinGetSource
     }
     END
     {
-        Return $ARMObjects
+        return $true
     }
 }

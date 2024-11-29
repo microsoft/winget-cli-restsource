@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+## Classes representing WinGet manifest
+
 class WinGetAgreement
 {
     [string]$AgreementLabel

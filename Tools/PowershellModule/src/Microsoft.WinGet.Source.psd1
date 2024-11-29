@@ -31,7 +31,7 @@
     
     # Required modules.
     # Due to issue https://github.com/PowerShell/PowerShell/issues/11190, using RequiredModules will greatly slow down the import module. We'll handle them manually in psm1.
-    # RequiredModules = @('Az', 'powershell-yaml')
+    # RequiredModules = @('Az')
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @("Add-WinGetManifest", "Get-WinGetManifest", "Remove-WinGetManifest", "New-WinGetSource")

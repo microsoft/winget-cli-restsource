@@ -442,11 +442,11 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Apply Channel Filter
             if (!string.IsNullOrEmpty(channelFilter))
             {
-                foreach (PackageManifest pm in apiDataDocument.Items)
+                foreach (PackageManifest packageManifest in apiDataDocument.Items)
                 {
-                    if (pm.Versions != null)
+                    if (packageManifest.Versions != null)
                     {
-                        pm.Versions = new VersionsExtended(pm.Versions.Where(extended => extended.Channel != null && extended.Channel.Equals(channelFilter)));
+                        packageManifest.Versions = new VersionsExtended(packageManifest.Versions.Where(extended => extended.Channel != null && extended.Channel.Equals(channelFilter)));
                     }
                 }
             }

@@ -28,46 +28,40 @@ Function Add-AzureResourceGroup
         [Parameter(Position=0, Mandatory=$true)] [string]$Name,
         [Parameter(Position=1, Mandatory=$true)] [string]$Region
     )
-    BEGIN
-    {
-        $Return = $false
-        
-        ## Normalize resource group name
-        $NormalizedName = $Name -replace "[^a-zA-Z0-9-()_.]", ""
-        if($Name -cne $NormalizedName) {
-            $Name = $NormalizedName
-            Write-Warning "Removed special characters from the Azure Resource Group Name (New Name: $Name)."
-        }
+    
+    $Return = $false
+    
+    ## Normalize resource group name
+    $NormalizedName = $Name -replace "[^a-zA-Z0-9-()_.]", ""
+    if($Name -cne $NormalizedName) {
+        $Name = $NormalizedName
+        Write-Warning "Removed special characters from the Azure Resource Group Name (New Name: $Name)."
     }
-    PROCESS
-    {
-        ## Creating a line break from previous steps
-        Write-Verbose "Azure Resource Group Name to be created: $Name"
+    
+    ## Creating a line break from previous steps
+    Write-Verbose "Azure Resource Group Name to be created: $Name"
 
-        ## Determines if the Resource Group already exists
-        Write-Verbose "Retrieving details from Azure for the Resource Group Name $Name"
-        $Result = Get-AzResourceGroup -Name $Name -ErrorAction SilentlyContinue -ErrorVariable ErrorGet -InformationAction SilentlyContinue -WarningAction SilentlyContinue
+    ## Determines if the Resource Group already exists
+    Write-Verbose "Retrieving details from Azure for the Resource Group name $Name"
+    $Result = Get-AzResourceGroup -Name $Name -ErrorAction SilentlyContinue -ErrorVariable ErrorGet -InformationAction SilentlyContinue -WarningAction SilentlyContinue
 
-        if(!$Result) {
-            Write-Information "Failed to retrieve Resource Group, will attempt to create $Name in the specified $Region."
-            
-            $Result = New-AzResourceGroup -Name $Name -Location $Region
-            if($Result) {
-                Write-Information "Resource Group $Name has been created in the $Region region."
-                $Return = $true
-            }
-            else {
-                Write-Error "Failed to retrieve or create Resource Group with name $Name."
-            }
-        }
-        else {
-            ## Found an existing Resource Group matching the name of $Name
-            Write-Warning "Found an existing Resource Group matching the name of $Name. Will not create a new Resource Group."
+    if(!$Result) {
+        Write-Information "Failed to retrieve Resource Group, will attempt to create $Name in the specified $Region."
+        
+        $Result = New-AzResourceGroup -Name $Name -Location $Region
+        if($Result) {
+            Write-Information "Resource Group $Name has been created in the $Region region."
             $Return = $true
         }
+        else {
+            Write-Error "Failed to retrieve or create Resource Group with name $Name."
+        }
     }
-    END
-    {
-        Return $Return
+    else {
+        ## Found an existing Resource Group matching the name of $Name
+        Write-Warning "Found an existing Resource Group matching the name of $Name. Will not create a new Resource Group."
+        $Return = $true
     }
+    
+    return $Return
 }

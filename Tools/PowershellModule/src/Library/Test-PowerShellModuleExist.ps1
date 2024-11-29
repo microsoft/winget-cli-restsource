@@ -31,42 +31,28 @@ Function Test-PowerShellModuleExist
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Single")] [string]$Name,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Multiple")] [string[]]$Modules
     )
-    BEGIN
-    { 
-        ## Validation result to be returned is True until proven otherwise.
-        $ValidationStatus = $true
-        $TestResult       = @()
-    }
-    PROCESS
-    {
-        switch ($PsCmdlet.ParameterSetName) {
-            "Multiple" {
-                foreach ($RequiredModule in $RequiredModules) {
-                    ## Tests if the module is installed
-                    $Result = Test-PowerShellModuleExist -Name $RequiredModule
-                    $TestResult += @{
-                        TestedModule    = $RequiredModule
-                        ModuleInstalled = $Result
-                    }
-                    
-                    ## Specifies that a module is missing
-                    if(!($Result)) {
-                        $ValidationStatus = $false
-                        Write-Error "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module $RequiredModule"
-                    }
-                }
-            }
-            "Single" { 
-                ## Determines if the PowerShell Module is installed
-                if(!$(Get-Module -ListAvailable -Name $RequiredModule) ) {
-                    $ValidationStatus = $false
-                } 
+
+    ## Validation result to be returned is True until proven otherwise.
+    $ValidationStatus = $true
+
+    switch ($PsCmdlet.ParameterSetName) {
+        "Multiple" {
+            foreach ($RequiredModule in $RequiredModules) {
+                ## Tests if the module is installed
+                $Result = Test-PowerShellModuleExist -Name $RequiredModule
+                
+                $ValidationStatus = $ValidationStatus -and $Result
             }
         }
+        "Single" { 
+            ## Determines if the PowerShell Module is installed
+            if(!$(Get-Module -ListAvailable -Name $RequiredModule)) {
+                $ValidationStatus = $false
+                Write-Warning -Message "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module $RequiredModule"
+            } 
+        }
     }
-    END
-    {
-        ## Returns a value only if the module is missing
-        Return $ValidationStatus
-    }
+
+    ## Returns a value only if the module is missing
+    return $ValidationStatus
 }

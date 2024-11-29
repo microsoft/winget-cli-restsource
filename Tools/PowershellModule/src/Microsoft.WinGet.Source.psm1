@@ -20,7 +20,7 @@ catch {
 Get-ChildItem -Path "$PSScriptRoot\Library" -Filter *.ps1 | foreach-object { . $_.FullName }
 
 ## Validates that the required Azure Modules are present when the script is imported.
-[string[]]$RequiredModules = @("Az", "powershell-yaml")
+[string[]]$RequiredModules = @("Az")
 
 foreach ($RequiredModule in $RequiredModules) {
     ## Tests if the module is installed

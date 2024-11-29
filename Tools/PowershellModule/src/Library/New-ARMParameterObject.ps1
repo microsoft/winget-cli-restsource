@@ -34,7 +34,7 @@ Function New-ARMParameterObject
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)] [string]$ParameterFolderPath,
-        [Parameter(Position=1, Mandatory=$false)][string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplate",
+        [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
         [Parameter(Position=2, Mandatory=$true)] [string]$Name,
         [Parameter(Position=3, Mandatory=$true)] [string]$Region,
         [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
@@ -496,6 +496,6 @@ Function New-ARMParameterObject
     END
     {
         ## Returns the completed object.
-        Return $ARMObjects
+        return $ARMObjects
     }
 }

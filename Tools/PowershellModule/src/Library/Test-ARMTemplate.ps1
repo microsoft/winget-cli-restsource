@@ -9,12 +9,11 @@ Function Test-ARMTemplate
 
     .DESCRIPTION
     Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
-    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
-        - True, if the validation testing passes
-        - False, if the validation testing fails.
+    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns a list of
+    failed validations. If all validations pass, returns empty.
 
     .PARAMETER ARMObjects
-    Object Returned from the Get-ARMParameterObject.
+    Object Returned from the New-ARMParameterObject.
 
     .PARAMETER ResourceGroup
     The Resource Group that the objects will be tested in reference to.
@@ -29,55 +28,30 @@ Function Test-ARMTemplate
         [Parameter(Position=0, Mandatory=$true)] [array] $ARMObjects,
         [Parameter(Position=1, Mandatory=$true)] [string] $ResourceGroup
     )
-    BEGIN
+
+    Write-Information "Verifying the ARM Resource Templates and Parameters are valid:"
+    [PSCustomObject[]]$Return = @()
+
+    ## Parses through all ARM Parameter objects to validate they are properly configured.
+    foreach($Object in $ARMObjects)
     {
-        Write-Verbose "Verifying the ARM Resource Templates and Parameters are valid:"
-        $Return = @()
-    }
-    PROCESS
-    {
-        ## Parses through all ARM Parameter objects to validate they are properly configured.
-        foreach($Object in $ARMObjects)
-        {
-            ## Validates that each ARM object will work.
-            Write-Information -MessageData "  Validation testing on ARM Resource ($($Object.ObjectType))."
-            $AzResourceResult = Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
-            $AzNameResult     = Test-ARMResourceName -ARMObject $Object
+        ## Validates that each ARM object will work.
+        Write-Information "  Validation testing on ARM Resource ($($Object.ObjectType))."
+        $AzResourceResult = Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
 
-            ## If the ARM object fails validation, report error to screen.
-            if($AzResourceResult -ne "" -or !$AzNameResult) { 
-                $ErrReturnObject = @{
-                    Test     = $AzResourceResult
-                    ARMObject = $Object
-                }
-
-                if($AzResourceResult -ne "") {
-                    if($AzNameResult) { 
-                        $ErrorMessage = "$($Object.ObjectType) name is already in use, or there is an error with the Parameter file"
-                        Write-Verbose "Name is already in use."
-                        Write-Error -Message $ErrorMessage -TargetObject $ErrReturnObject
-                    }
-                    else {
-                        Write-Error -Message "$($Object.ObjectType) name does not meet the requirements" -TargetObject $ErrReturnObject
-                    }
-                }
-                ElseIF(!$AzNameResult)
-                {
-                    Write-Error "$($Object.ObjectType) name does not meet the requirements." -TargetObject $ErrReturnObject
-                }
-
-                $TestResult = @{
-                    ObjectType = $Object.ObjectType
-                    ObjectName = $Object.Parameters.Parameters.Name
-                    Result     = $Result
-                }
-                $Return += $TestResult
+        ## If the ARM object fails validation, report error to screen.
+        if($AzResourceResult) { 
+            [PSCustomObject]$ErrReturnObject = [PSCustomObject]@{
+                ARMObject = $Object
+                TestResult = $AzResourceResult
             }
+
+            Write-Error -Message "Failed to validate ARM Template with Template parameters. Template: $Object.TemplatePath, Parameters: $Object.ParameterPath" -TargetObject $ErrReturnObject
+
+            $Return += $ErrReturnObject
         }
     }
-    End
-    {
-        ## Returns the TestResults.
-        Return $Return
-    }
+
+    ## Returns the TestResults.
+    return $Return
 }

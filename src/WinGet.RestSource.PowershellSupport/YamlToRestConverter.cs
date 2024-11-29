@@ -16,6 +16,7 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
     using Microsoft.WinGetUtil.Common;
     using Microsoft.WinGetUtil.Models.V1;
     using Newtonsoft.Json;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     /// Supports converting yaml manifest to json string.
@@ -26,36 +27,47 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
         /// <summary>
         /// Processes a directory for yaml manifests and converts it into the rest json format.
         /// </summary>
-        /// <param name="directory">Directory to process. Should contain the manifests for a single app.</param>
+        /// <param name="path">Manifest file or directory to process. Should contain manifests for a single app.</param>
         /// <param name="priorRestManifest">Prior json data to merge with.</param>
         /// <returns>A string of the rest source json.</returns>
         public static string AddManifestToPackageManifest(
-            string directory,
+            string path,
             string priorRestManifest)
         {
-            // Construct merged manifest
-            var packageFiles = Directory.GetFiles(directory);
-            string mergedManifestFilePath =
-                        Path.Combine(
-                            Path.GetTempPath(),
-                            Path.GetRandomFileName() + ".yaml");
-            if (packageFiles.Length > 1)
-            {
-                // Create merged manifest from multifile manifests.
-                var factory = new WinGetFactory();
-                using var manifestResult = factory.CreateManifest(directory, mergedManifestFilePath, WinGetCreateManifestOption.NoValidation);
+            string manifestPath = string.Empty;
 
-                if (!manifestResult.IsValid)
+            if (File.Exists(path))
+            {
+                manifestPath = path;
+            }
+            else if (Directory.Exists(path))
+            {
+                var packageFiles = Directory.GetFiles(path);
+
+                if (packageFiles.Length > 1)
                 {
-                    throw new Exception("Unable to create merged manifest from multifile manifests.");
+                    manifestPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".yaml");
+
+                    // Create merged manifest from multifile manifests.
+                    var factory = new WinGetFactory();
+                    using var manifestResult = factory.CreateManifest(path, manifestPath, WinGetCreateManifestOption.NoValidation);
+
+                    if (!manifestResult.IsValid)
+                    {
+                        throw new ArgumentException("Unable to create merged manifest from multifile manifests.");
+                    }
+                }
+                else
+                {
+                    manifestPath = packageFiles.First();
                 }
             }
             else
             {
-                mergedManifestFilePath = packageFiles.First();
+                throw new ArgumentException("Input manifest path not found.");
             }
 
-            Manifest manifest = Manifest.CreateManifestFromPath(mergedManifestFilePath);
+            Manifest manifest = Manifest.CreateManifestFromPath(manifestPath);
 
             // Convert the manifest into a rest manifestPost format and merge with any existing data.
             PackageManifest packageManifest = PackageManifestUtils.AddManifestToPackageManifest(

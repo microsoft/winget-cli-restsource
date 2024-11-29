@@ -35,37 +35,31 @@ Function Test-ConnectionToAzure
         [Parameter(Position=0, Mandatory=$false)] [string] $SubscriptionName,
         [Parameter(Position=1, Mandatory=$false)] [string] $SubscriptionId
     )
-    BEGIN
-    {
-        $Result    = $false
-        $AzContext = Get-AzContext
-    }
-    PROCESS
-    {
-        if($AzContext) {
-            if($SubscriptionName -and $AzContext.Subscription.Name -ne $SubscriptionName) {
-                ## If Subscription Name paramter is passed in, and the value doesn't match current connection return $false
-                Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionName"
-                $Result = $false
-            }
-            elseif($SubscriptionId -and $AzContext.Subscription.Id -ne $SubscriptionId) {
-                ## If Subscription Id paramter is passed in, and the value doesn't match current connection return $false
-                Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionId"
-                $Result = $false
-            }
-            else {
-                Write-Information "Connected to Azure"
-                $Result = $true
-            }
-        }
-        else {
-            ## Not currently connected to Azure
-            Write-Error "Not connected to Azure, please connect to your Azure Subscription"
+
+    $Result    = $false
+    $AzContext = Get-AzContext
+
+    if($AzContext) {
+        if($SubscriptionName -and $AzContext.Subscription.Name -ne $SubscriptionName) {
+            ## If Subscription Name paramter is passed in, and the value doesn't match current connection return $false
+            Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionName"
             $Result = $false
         }
+        elseif($SubscriptionId -and $AzContext.Subscription.Id -ne $SubscriptionId) {
+            ## If Subscription Id paramter is passed in, and the value doesn't match current connection return $false
+            Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionId"
+            $Result = $false
+        }
+        else {
+            Write-Information "Connected to Azure"
+            $Result = $true
+        }
     }
-    END
-    {
-        Return $Result
+    else {
+        ## Not currently connected to Azure
+        Write-Error "Not connected to Azure, please connect to your Azure Subscription"
+        $Result = $false
     }
+
+    return $Result
 }
