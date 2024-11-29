@@ -115,10 +115,9 @@ Function Add-WinGetManifest
         Write-Verbose -Message "Contents of manifest have been retrieved. Package Identifier: $($Manifest.PackageIdentifier)."
         
         Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
-        $ApiHeader.Remove("x-functions-key")
-        $ApiHeader.Add("x-functions-key", $FunctionKeyGet)
+        $ApiHeader.Add["x-functions-key"] = $FunctionKeyGet
         $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
-        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethodGet -ContentType $ApiContentType -ErrorVariable ErrorInvoke
+        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethodGet -ErrorVariable ErrorInvoke
 
         if ($ErrorInvoke) {
             ## No existing manifest retrieved, submit as new manifest
@@ -126,8 +125,7 @@ Function Add-WinGetManifest
 
             $ApiMethod = $ApiMethodPost
             $AzFunctionURL = $AzFunctionURLBase
-            $ApiHeader.Remove("x-functions-key")
-            $ApiHeader.Add("x-functions-key", $FunctionKeyPost)
+            $ApiHeader["x-functions-key"] = $FunctionKeyPost
         }
         else {
             ## Existing manifest retrieved, submit as update existing manifest
@@ -140,8 +138,7 @@ Function Add-WinGetManifest
             
             $ApiMethod = $ApiMethodPut
             $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
-            $ApiHeader.Remove("x-functions-key")
-            $ApiHeader.Add("x-functions-key", $FunctionKeyPut)
+            $ApiHeader["x-functions-key"] = $FunctionKeyPut
         }
         
         Write-Verbose -Message "The Manifest will be added using the $ApiMethod REST API."

@@ -38,8 +38,8 @@ Function Connect-ToAzure
     #>
     
     PARAM(
-        [Parameter(Position=0, Mandatory=$false)] [string]$SubscriptionName,
-        [Parameter(Position=1, Mandatory=$false)] [string]$SubscriptionId
+        [Parameter(Position=0, Mandatory=$false)] [string]$SubscriptionName = "",
+        [Parameter(Position=1, Mandatory=$false)] [string]$SubscriptionId = ""
     )
 
     $TestAzureConnection = $false

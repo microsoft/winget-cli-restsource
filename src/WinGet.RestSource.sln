@@ -75,6 +75,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 		..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1 = ..\Tools\PowershellModule\src\Library\Add-AzureResourceGroup.ps1
 		..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1
+		..\Tools\PowershellModule\src\Library\Find-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Find-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1 = ..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1
 		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1

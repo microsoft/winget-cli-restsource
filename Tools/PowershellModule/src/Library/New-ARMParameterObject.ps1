@@ -472,10 +472,10 @@ Function New-ARMParameterObject
                         appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
                         keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
                         appInsightName           = @{ value = $AppInsightsName          }   # Azure App Insights Name
-                        manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # unknown
-                        monitoringTenant         = @{ value = $monitoringTenant         }   # unknown
-                        monitoringRole           = @{ value = $monitoringRole           }   # unknown
-                        monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # unknown
+                        manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # Not suported
+                        monitoringTenant         = @{ value = $monitoringTenant         }   # Not suported
+                        monitoringRole           = @{ value = $monitoringRole           }   # Not suported
+                        monitoringMetricsAccount = @{ value = $monitoringMetricsAccount }   # Not suported
                     }
                 }
             }    
@@ -488,7 +488,7 @@ Function New-ARMParameterObject
         foreach ($object in $ARMObjects) {
             ## Converts the structure of the variable to a JSON file.
             Write-Verbose -Message "  Creating the Parameter file for $($Object.ObjectType) in the following location:`n    $($Object.ParameterPath)"
-            $parameterFile = $Object.Parameters | ConvertTo-Json -Depth 7
+            $parameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
             $parameterFile| Out-File -FilePath $Object.ParameterPath -Force
             Write-Verbose -Message "Parameter file: ($parameterFile)"
         }

@@ -26,7 +26,7 @@ Function Get-WinGetManifest
     Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
 
     .PARAMETER PackageIdentifier
-    [Optional] Supports input from pipeline. The Windows Package Manager Package Identifier of a specific Package Manifest result.
+    Supports input from pipeline. The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
     [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
@@ -60,10 +60,10 @@ Function Get-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON,
+        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON = $null,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="Azure", ValueFromPipeline=$true)] [string]$PackageIdentifier,
-        [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName
+        [Parameter(Position=1, Mandatory=$true, ParameterSetName="Azure", ValueFromPipeline=$true)][ValidateNotNullOrEmpty()] [string]$PackageIdentifier,
+        [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName = ""
     )
     BEGIN
     {
@@ -80,7 +80,7 @@ Function Get-WinGetManifest
                 if(!($Result)) {
                     Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." -ErrorAction Stop
                 }
-                
+
                 ###############################
                 ## Gets Resource Group name of the Azure Function
                 Write-Verbose -Message "Determines the Azure Function Resource Group Name"
@@ -88,7 +88,7 @@ Function Get-WinGetManifest
                 if(!$ResourceGroupName) {
                     Write-Error "Failed to confirm Azure Function exists in Azure. Please verify and try again. Function Name: $FunctionName" -ErrorAction Stop
                 }
-                
+
                 ###############################
                 ##  Verify Azure Resources Exist
                 Write-Verbose -Message "Verifying that the Azure Resource $FunctionName exists.."
@@ -103,9 +103,8 @@ Function Get-WinGetManifest
 
                 $FunctionAppId   = $FunctionApp.Id
                 $DefaultHostName = $FunctionApp.DefaultHostName
-                
+
                 $TriggerName    = "ManifestGet"
-                $ApiContentType = "application/json"
                 $ApiMethod      = "Get"
 
                 ## Creates the API Post Header
@@ -128,14 +127,13 @@ Function Get-WinGetManifest
                 ## Publishes the Manifest to the Windows Package Manager REST source
                 Write-Verbose -Message "Invoking the REST API call."
 
-                $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ContentType $ApiContentType -ErrorVariable ErrorInvoke
+                $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ErrorVariable ErrorInvoke
 
                 if($ErrorInvoke) {
                     $ErrorMessage = "Failed to get Manifest from $FunctionName. Verify the information you provided and try again."
                     $ErrReturnObject = @{
                         AzFunctionURL       = $AzFunctionURL
                         ApiMethod           = $ApiMethod
-                        ApiContentType      = $ApiContentType
                         Response            = $Response
                         InvokeError         = $ErrorInvoke
                     }

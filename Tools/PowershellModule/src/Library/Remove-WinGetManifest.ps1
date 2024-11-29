@@ -71,7 +71,6 @@ Function Remove-WinGetManifest
         $TriggerNameManifestDelete = "ManifestDelete"
         $TriggerNameVersionDelete = "VersionDelete"
 
-        $ApiContentType = "application/json"
         $ApiMethod      = "Delete"
 
         $FunctionApp = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
@@ -95,23 +94,20 @@ Function Remove-WinGetManifest
         $AzFunctionURL = $AzFunctionURLBase
         if([string]::IsNullOrWhiteSpace($PackageVersion)) {
             $AzFunctionURL += "packageManifests/" + $PackageIdentifier
-            $ApiHeader.Remove("x-functions-key")
-            $ApiHeader.Add("x-functions-key", $FunctionKeyManifestDelete)
+            $ApiHeader["x-functions-key"] = $FunctionKeyManifestDelete
         }
         else {
             $AzFunctionURL += "packages/" + $PackageIdentifier + "/versions/" + $PackageVersion
-            $ApiHeader.Remove("x-functions-key")
-            $ApiHeader.Add("x-functions-key", $FunctionKeyVersionDelete)
+            $ApiHeader["x-functions-key"] = $FunctionKeyVersionDelete
         }
 
-        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ContentType $ApiContentType -ErrorVariable ErrorInvoke
+        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -ErrorVariable ErrorInvoke
 
         if($ErrorInvoke) {
             $ErrorMessage = "Failed to remove Manifest from $FunctionName. Verify the information you provided and try again."
             $ErrReturnObject = @{
                 AzFunctionURL       = $AzFunctionURL
                 ApiMethod           = $ApiMethod
-                ApiContentType      = $ApiContentType
                 Response            = $Response
                 InvokeError         = $ErrorInvoke
             }
