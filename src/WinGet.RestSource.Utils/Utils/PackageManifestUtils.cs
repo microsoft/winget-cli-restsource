@@ -123,9 +123,9 @@ namespace Microsoft.WinGet.RestSource.Utils
                     newInstaller.ProductCode = installer.ProductCode ?? manifest.ProductCode;
                     newInstaller.Capabilities = installer.Capabilities.ToApiArray<Capabilities>() ?? manifest.Capabilities.ToApiArray<Capabilities>();
                     newInstaller.RestrictedCapabilities = installer.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>() ?? manifest.RestrictedCapabilities.ToApiArray<RestrictedCapabilities>();
-                    newInstaller.DownloadCommandProhibited = installer.DownloadCommandProhibited;
+                    newInstaller.DownloadCommandProhibited = installer.DownloadCommandProhibited ?? manifest.DownloadCommandProhibited ?? false;
                     newInstaller.RepairBehavior = installer.RepairBehavior ?? manifest.RepairBehavior;
-                    newInstaller.ArchiveBinariesDependOnPath = installer.ArchiveBinariesDependOnPath;
+                    newInstaller.ArchiveBinariesDependOnPath = installer.ArchiveBinariesDependOnPath ?? manifest.ArchiveBinariesDependOnPath ?? false;
 
                     newInstaller.InstallerIdentifier = string.Join("_", newInstaller.Architecture, newInstaller.InstallerLocale, newInstaller.Scope, Guid.NewGuid());
                     versionExtended.AddInstaller(newInstaller);
