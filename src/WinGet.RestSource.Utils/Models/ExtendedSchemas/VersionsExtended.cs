@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="VersionsExtended.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -52,7 +52,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             ApiDataValidator.NotNull(obj);
 
             // Verify Version does not exists
-            this.AssertVersionDoesNotExists(obj.PackageVersion);
+            this.AssertVersionDoesNotExist(obj.PackageVersion);
 
             // Add
             base.Add(obj);
@@ -100,7 +100,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             ApiDataValidator.NotNull(obj);
 
             // Verify Version does not exists
-            this.AssertVersionDoesNotExists(obj.PackageVersion);
+            this.AssertVersionDoesNotExist(obj.PackageVersion);
 
             // Add
             base.Add(new VersionExtended(obj));
@@ -333,7 +333,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.ExtendedSchemas
             }
         }
 
-        private void AssertVersionDoesNotExists(string version)
+        private void AssertVersionDoesNotExist(string version)
         {
             if (this.VersionExists(version))
             {

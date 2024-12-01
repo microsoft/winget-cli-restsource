@@ -181,23 +181,23 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// Gets or sets a value indicating whether InstallerAbortsTerminal is set.
         /// This indicates if the package aborts the terminal during installation.
         /// </summary>
-        public bool InstallerAbortsTerminal { get; set; }
+        public bool? InstallerAbortsTerminal { get; set; }
 
         /// <summary>
         /// Gets or sets ReleaseDate.
         /// </summary>
         [ReleaseDateValidator]
-        public DateTime ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the installer requires an install location provided.
         /// </summary>
-        public bool InstallLocationRequired { get; set; }
+        public bool? InstallLocationRequired { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the installer requires explicit upgrade.
         /// </summary>
-        public bool RequireExplicitUpgrade { get; set; }
+        public bool? RequireExplicitUpgrade { get; set; }
 
         /// <summary>
         /// Gets or sets the installer's elevation requirement.
@@ -234,7 +234,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets a value indicating whether displayInstallWarnings.
         /// </summary>
-        public bool DisplayInstallWarnings { get; set; }
+        public bool? DisplayInstallWarnings { get; set; }
 
         /// <summary>
         /// Gets or sets unsupportedArguments.
@@ -249,7 +249,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets a value indicating whether the installer is prohibited from being downloaded for offline installation.
         /// </summary>
-        public bool DownloadCommandProhibited { get; set; }
+        public bool? DownloadCommandProhibited { get; set; }
 
         /// <summary>
         /// Gets or sets RepairBehavior.
@@ -260,7 +260,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets a value indicating whether the install location should be added directly to the PATH environment variable. Only applies to an archive containing portable packages.
         /// </summary>
-        public bool ArchiveBinariesDependOnPath { get; set; }
+        public bool? ArchiveBinariesDependOnPath { get; set; }
 
         /// <summary>
         /// Operator==.

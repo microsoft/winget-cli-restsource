@@ -154,7 +154,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets or sets installationNotes.
         /// </summary>
-        public InstallationNotes InstallationNotes { get; set; }
+        [InstallationNotesValidator]
+        public string InstallationNotes { get; set; }
 
         /// <summary>
         /// Gets or sets documentations.
@@ -229,11 +230,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             if (this.Agreements != null)
             {
                 ApiDataValidator.Validate(this.Agreements, results);
-            }
-
-            if (this.InstallationNotes != null)
-            {
-                ApiDataValidator.Validate(this.InstallationNotes, results);
             }
 
             if (this.Documentations != null)
