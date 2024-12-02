@@ -66,90 +66,127 @@ Function New-WinGetSource
         [Parameter(Position=4, Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplate",
         [Parameter(Position=5, Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
         [Parameter(Position=6, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
+        [Parameter(Position=7, Mandatory=$false)] [string]$PublisherName = "",
+        [Parameter(Position=8, Mandatory=$false)] [string]$PublisherEmail = "",
         [ValidateSet("Developer", "Basic", "Enhanced")]
-        [Parameter(Position=7, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
+        [Parameter(Position=9, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
+        [ValidateSet("None", "MicrosoftEntraId")]
+        [Parameter(Position=10,Mandatory=$false)] [string]$RestSourceAuthentication = "None",
+        [Parameter()] [switch]$CreateNewMicrosoftEntraIdAppRegistration,
+        [Parameter(Position=11,Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
+        [Parameter(Position=12,Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
-    BEGIN
-    {
-        if($ImplementationPerformance -eq "Developer") {
-            Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this tier.`n"
-        }
+    
+    if($ImplementationPerformance -eq "Developer") {
+        Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this tier.`n"
     }
-    PROCESS
-    {
-        ###############################
-        ## Check input paths
-        if(!$(Test-Path -Path $TemplateFolderPath)) {
-            throw "REST Source Function Code is missing in specified path ($TemplateFolderPath)"
-        }
-        if(!$(Test-Path -Path $RestSourcePath)) {
-            throw "REST Source Function Code is missing in specified path ($RestSourcePath)"
-        }
+    
+    ###############################
+    ## Check input paths
+    if(!$(Test-Path -Path $TemplateFolderPath)) {
+        Write-Error "REST Source Function Code is missing in specified path ($TemplateFolderPath)"
+        return $false
+    }
+    if(!$(Test-Path -Path $RestSourcePath)) {
+        Write-Error "REST Source Function Code is missing in specified path ($RestSourcePath)"
+        return $false
+    }
+    
+    ###############################
+    ## Check Microsoft Entra Id input
+    if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and !CreateNewMicrosoftEntraIdAppRegistration -and !MicrosoftEntraIdResource) {
+        Write-Error "When Microsoft Entra Id authentication is requested, either CreateNewMicrosoftEntraIdAppRegistration should be requested or MicrosoftEntraIdResource should be provided."
+        return $false
+    }
 
-        ###############################
-        ## Create folder for the Parameter output path
-        $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
-        if($Result) {
-            Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
+    ###############################
+    ## Create folder for the Parameter output path
+    $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
+    if($Result) {
+        Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
+    }
+    else {
+        Write-Error "Failed to create ARM parameter files output path. Path: $ParameterOutputPath"
+        return $false
+    }
+
+    ###############################
+    ## Connects to Azure, if not already connected.
+    Write-Information "Testing connection to Azure."
+    $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
+    if(!($Result)) {
+        Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
+        return $false
+    }
+
+    ###############################
+    ## Create new Microsoft Entra Id app registration if requested
+    if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and $CreateNewMicrosoftEntraIdAppRegistration) {
+        $Result = New-MicrosoftEntraIdApp -Name $Name
+        if (!$Result.Result) {
+            Write-Error "Failed to create new Microsoft Entra Id app registration."
+            return $false
         }
         else {
-            throw "Failed to create ARM parameters output path. Path: $ParameterOutputPath"
-        }
-
-        ###############################
-        ## Connects to Azure, if not already connected.
-        Write-Information "Testing connection to Azure."
-        $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
-        if(!($Result)) {
-            throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
-        }
-
-        ###############################
-        ## Creates the ARM files
-        $ARMObjects = New-ARMParameterObject -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
-
-        ###############################
-        ## Create Resource Group
-        Write-Information "Creating the Resource Group used to host the Windows Package Manager REST source. Name: $ResourceGroup, Region: $Region"
-        Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
-
-        #### Verifies ARM Parameters are correct
-        $Result = Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
-        if($Result){
-            $ErrReturnObject = @{
-                ARMObjects    = $ARMObjects
-                ResourceGroup = $ResourceGroup
-                Result        = $Result
-            }
-
-            Write-Error -Message "Testing found an error with the ARM template or parameter files. Error: $err" -TargetObject $ErrReturnObject
-        }
-
-        ###############################
-        ## Creates Azure Objects with ARM Templates and Parameters
-        New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
-
-        ###############################
-        ## Shows how to connect local Windows Package Manager Client to newly created REST source
-        if($ShowConnectionInstructions) {
-            $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
-            $AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
-            $AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $ResourceGroup).DefaultHostName
-
-            ## Post script Run Informational:
-            #### Instructions on how to add the REST source to your Windows Package Manager Client
-            Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:"
-            Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
-            Write-Verbose -Message "Use the following command to register the new REST source with your Windows Package Manager Client:"
-            Write-Verbose -Message "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest"""
-
-            #### For more information about how to use the solution, visit the aka.ms link.
-            Write-Information -MessageData "`n  For more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n"
+            $MicrosoftEntraIdResource = !$Result.Resource
+            $MicrosoftEntraIdResourceScope = !$Result.ResourceScope
         }
     }
-    END
-    {
-        return $true
+
+    ###############################
+    ## Creates the ARM files
+    $ARMObjects = New-ARMParameterObjects -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
+    if (!$ARMObjects) {
+        Write-Error "Failed to create ARM parameter objects."
+        return $false
     }
+
+    ###############################
+    ## Create Resource Group
+    Write-Information "Creating the Resource Group used to host the Windows Package Manager REST source. Name: $ResourceGroup, Region: $Region"
+    $Result = Add-AzureResourceGroup -Name $ResourceGroup -Region $Region
+    if (!$Result) {
+        Write-Error "Failed to create Azure resource group. Name: $ResourceGroup Region: $Region"
+        return $false
+    }
+
+    #### Verifies ARM Parameters are correct
+    $Result = Test-ARMTemplates -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
+    if($Result){
+        $ErrReturnObject = @{
+            ARMObjects    = $ARMObjects
+            ResourceGroup = $ResourceGroup
+            Result        = $Result
+        }
+
+        Write-Error -Message "Testing found an error with the ARM template or parameter files. Error: $err" -TargetObject $ErrReturnObject
+        return $false
+    }
+
+    ###############################
+    ## Creates Azure Objects with ARM Templates and Parameters
+    $Result = New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
+    if (!$Result) {
+        Write-Error "Failed to create Azure resources for WinGet rest source"
+        return $false
+    }
+
+    ###############################
+    ## Shows how to connect local Windows Package Manager Client to newly created REST source
+    if($ShowConnectionInstructions) {
+        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
+        $AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
+        $AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $ResourceGroup).DefaultHostName
+
+        ## Post script Run Informational:
+        #### Instructions on how to add the REST source to your Windows Package Manager Client
+        Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:" -InformationAction Continue
+        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest""" -InformationAction Continue
+
+        #### For more information about how to use the solution, visit the aka.ms link.
+        Write-Information -MessageData "`nFor more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n" -InformationAction Continue
+    }
+    
+    return $true
 }

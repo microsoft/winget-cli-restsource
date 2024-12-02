@@ -7,11 +7,11 @@ Function New-ARMObjects
     Creates the Azure Resources to stand-up a Windows Package Manager REST Source.
 
     .DESCRIPTION
-    Uses the custom PowerShell object provided by the "New-ARMParameterObject" cmdlet to create Azure resources, and will 
+    Uses the custom PowerShell object provided by the "New-ARMParameterObjects" cmdlet to create Azure resources, and will 
     create the the Key Vault secrets and publish the Windows Package Manager REST source REST apis to the Azure Function.
 
     .PARAMETER ARMObjects
-    Object returned from the "New-ARMParameterObject" providing the paths to the ARM Parameters and Template files.
+    Object returned from the "New-ARMParameterObjects" providing the paths to the ARM Parameters and Template files.
 
     .PARAMETER RestSourcePath
     Path to the compiled Function ZIP containing the REST APIs
@@ -56,7 +56,7 @@ Function New-ARMObjects
         ## Creates the Azure Resources following the ARM template / parameters
         Write-Information "Creating Azure Resources following ARM Templates."
         
-        ## This is order specific, please ensure you used the New-ARMParameterObject function to create this object in the pre-determined order.
+        ## This is order specific, please ensure you used the New-ARMParameterObjects function to create this object in the pre-determined order.
         foreach ($Object in $ARMObjects) {
             Write-Information "  Creating the Azure Object - $($Object.ObjectType)"
     

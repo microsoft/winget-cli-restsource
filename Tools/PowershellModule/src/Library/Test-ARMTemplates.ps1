@@ -1,11 +1,12 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-ARMTemplate
+Function Test-ARMTemplates
 {
     <#
     .SYNOPSIS
     Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
-    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns boolean.
+    resources. Will also validate that the naming used for the resources is available, and meets requirements. Returns a list of
+    failed validations. If all validations pass, returns empty.
 
     .DESCRIPTION
     Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
@@ -13,13 +14,13 @@ Function Test-ARMTemplate
     failed validations. If all validations pass, returns empty.
 
     .PARAMETER ARMObjects
-    Object Returned from the New-ARMParameterObject.
+    Object Returned from the New-ARMParameterObjects.
 
     .PARAMETER ResourceGroup
     The Resource Group that the objects will be tested in reference to.
 
     .EXAMPLE
-    Test-ARMTemplate -ARMObjects $ARMObjects -ResourceGroup "WinGet"
+    Test-ARMTemplates -ARMObjects $ARMObjects -ResourceGroup "WinGet"
 
     Tests that the Azure Resource can be created in the specified Azure Resource Group with the parameter and template files.
 

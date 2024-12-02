@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function New-ARMParameterObject
+Function New-ARMParameterObjects
 {
     <#
     .SYNOPSIS
@@ -27,7 +27,7 @@ Function New-ARMParameterObject
     ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
 
     .EXAMPLE
-    New-ARMParameterObject -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Developer"
+    New-ARMParameterObjects -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Developer"
 
     Creates the Parameter files required for the creation of the ARM objects.
 
@@ -38,9 +38,17 @@ Function New-ARMParameterObject
         [Parameter(Position=2, Mandatory=$true)] [string]$Name,
         [Parameter(Position=3, Mandatory=$true)] [string]$Region,
         [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
+        [Parameter(Position=5, Mandatory=$true)] [string]$PublisherName,
+        [Parameter(Position=6, Mandatory=$true)] [string]$PublisherEmail,
+        [ValidateSet("None", "MicrosoftEntraId")]
+        [Parameter(Position=7, Mandatory=$false)] [string]$RestSourceAuthentication = "None",
+        [Parameter(Position=8, Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
+        [Parameter(Position=9, Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
     )
     BEGIN
     {
+        $ARMObjects = @()
+        
         ## The Names that are to be assigned to each resource.
         $AppInsightsName    = "appin-" + $Name -replace "[^a-zA-Z0-9-]", ""
         $KeyVaultName       = "kv-" + $Name -replace "[^a-zA-Z0-9-]", ""
@@ -52,8 +60,8 @@ Function New-ARMParameterObject
         $apiManagementName  = "apim-" + $Name -replace "[^a-zA-Z0-9-]", ""
         
         ## Not supported in deployment script
-        ## $FrontDoorName      = ""
-        ## $aspGenevaName      = ""
+        ## $FrontDoorName   = ""
+        ## $aspGenevaName   = ""
 
         ## The names of the Azure Cosmos Database and Container - Do not change (Must match with the values in the compiled
         ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
