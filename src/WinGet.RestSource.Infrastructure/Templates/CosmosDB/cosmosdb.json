@@ -34,8 +34,8 @@
             "defaultValue": {
                 "type": "None"
             },
-            "metadata":{
-                "description": "Tags."
+            "metadata": {
+                "description": "Identity."
             }
         },
         "publicNetworkAccess": {

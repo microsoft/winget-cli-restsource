@@ -27,6 +27,13 @@
             "metadata": {
                 "description": "List of feature flags to set. These are specifically for the feature management tools in App Config, not key-vaule pairs."
             }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "metadata": {
+                "description": "Specifies the sku to be used."
+            }
         }
     },
     "resources": [
@@ -36,7 +43,7 @@
             "type": "Microsoft.AppConfiguration/configurationStores",
             "location": "[parameters('location')]",
             "sku": {
-                "name": "standard"
+                "name": "[parameters('sku')]"
             },
             "properties": {
                 "disableLocalAuth": true

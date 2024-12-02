@@ -31,6 +31,12 @@ Function New-WinGetSource
     .PARAMETER RestSourcePath
     [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip)
 
+    .PARAMETER PublisherName
+    [Optional] The WinGet rest source publisher name
+
+    .PARAMETER PublisherEmail
+    [Optional] The WinGet rest source publisher email
+
     .PARAMETER ImplementationPerformance
     [Optional] ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
     | Preference | Description                                                                                                             |
@@ -40,6 +46,18 @@ Function New-WinGetSource
     | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
 
     (Default: Basic)
+
+    .PARAMETER RestSourceAuthentication
+    [Optional] ["None", "MicrosoftEntraId"] The WinGet rest source authentication type. [Default: None]
+
+    .PARAMETER CreateNewMicrosoftEntraIdAppRegistration
+    [Optional] If specified, a new Microsoft Entra Id app registration will be created. (Default: False)
+
+    .PARAMETER MicrosoftEntraIdResource
+    [Optional] Microsoft Entra Id authentication resource
+
+    .PARAMETER MicrosoftEntraIdResourceScope
+    [Optional] Microsoft Entra Id authentication resource scope
 
     .PARAMETER ShowConnectionInstructions
     [Optional] If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)
@@ -175,14 +193,13 @@ Function New-WinGetSource
     ###############################
     ## Shows how to connect local Windows Package Manager Client to newly created REST source
     if($ShowConnectionInstructions) {
-        $jsonFunction       = Get-Content -Path $($ARMObjects.Where({$_.ObjectType -eq "Function"}).ParameterPath) | ConvertFrom-Json
-        $AzFunctionName     = $jsonFunction.Parameters.FunctionName.Value
-        $AzFunctionURL      = $(Get-AzFunctionApp -Name $AzFunctionName -ResourceGroupName $ResourceGroup).DefaultHostName
+        $ApiManagementName  = $ARMObjects.Where({$_.ObjectType -eq "ApiManagement"}).Parameters.Parameters.serviceName.value
+        $ApiManagementURL   = $(Get-AzApiManagement -Name $ApiManagementName -ResourceGroupName $ResourceGroup).RuntimeUrl
 
         ## Post script Run Informational:
         #### Instructions on how to add the REST source to your Windows Package Manager Client
         Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:" -InformationAction Continue
-        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$AzFunctionURL/api/"" -t ""Microsoft.Rest""" -InformationAction Continue
+        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$ApiManagementURL/api/"" -t ""Microsoft.Rest""" -InformationAction Continue
 
         #### For more information about how to use the solution, visit the aka.ms link.
         Write-Information -MessageData "`nFor more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n" -InformationAction Continue
