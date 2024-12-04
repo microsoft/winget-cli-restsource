@@ -40,11 +40,11 @@ Function Test-WinGetManifest
             ## Convert to full path if applicable
             $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
             
-            $PathFound = Test-Path -Path $Path;
+            $PathFound = Test-Path -Path $Path
             if ($PathFound)
             {
                 ## Construct $Manifest from path then validate
-                $Return = $true;
+                $Return = $true
             }
             else
             {
@@ -53,7 +53,7 @@ Function Test-WinGetManifest
         }
         "Object" {
             ## Validate manifest
-            $Return = $true;
+            $Return = $true
         }
     }
 

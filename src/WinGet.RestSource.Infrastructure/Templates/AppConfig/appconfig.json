@@ -28,6 +28,13 @@
                 "description": "List of feature flags to set. These are specifically for the feature management tools in App Config, not key-vaule pairs."
             }
         },
+        "deployAppConfigValues": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Specifies whether to deploy App Config values."
+            }
+        },
         "sku": {
             "type": "string",
             "defaultValue": "Standard",
@@ -50,6 +57,7 @@
             }
         },
         {
+            "condition": "[parameters('deployAppConfigValues')]",
             "apiVersion": "2021-10-01-preview",
             "name": "[format('{0}/{1}', parameters('appConfigName'), concat('.appconfig.featureflag~2F', parameters('featureFlags')[copyIndex()].id))]",
             "type": "Microsoft.AppConfiguration/configurationStores/keyValues",
@@ -61,7 +69,7 @@
                 "count": "[length(parameters('featureFlags'))]"
             },
             "properties": {
-                "value": "[concat('{\"id\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"description\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"enabled\":',parameters('featureFlags')[copyIndex()].enabled,',\"conditions\":{\"client_filters\":[]}}')]",
+                "value": "[concat('{\"id\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"description\":\"',parameters('featureFlags')[copyIndex()].description,'\",\"enabled\":',parameters('featureFlags')[copyIndex()].enabled,',\"conditions\":{\"client_filters\":[]}}')]",
                 "contentType": "application/vnd.microsoft.appconfig.ff+json;charset=utf-8"
             }
         }

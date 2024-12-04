@@ -72,7 +72,7 @@ Function Get-WinGetManifest
         ###############################
         ## Determines the PowerShell Parameter Set that was used in the call of this Function.
         switch ($PsCmdlet.ParameterSetName) {
-            "Azure"  {
+            "Azure" {
                 ###############################
                 ## Connects to Azure, if not already connected.
                 Write-Verbose "Testing connection to Azure."
@@ -89,17 +89,9 @@ Function Get-WinGetManifest
                     Write-Error "Failed to confirm Azure Function exists in Azure. Please verify and try again. Function Name: $FunctionName" -ErrorAction Stop
                 }
 
-                ###############################
-                ##  Verify Azure Resources Exist
-                Write-Verbose -Message "Verifying that the Azure Resource $FunctionName exists.."
-                $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $ResourceGroupName
-                if(!$Result) {
-                    Write-Error "Failed to confirm resources exist in Azure. Please verify and try again." -ErrorAction Stop
-                }
-
                 ## Retrieves the Azure Function URL used to add new manifests to the REST source
                 Write-Verbose -Message "Retrieving Azure Function Web Applications matching to: $FunctionName."
-                $FunctionApp = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
+                $FunctionApp = Get-AzFunctionApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
 
                 $FunctionAppId   = $FunctionApp.Id
                 $DefaultHostName = $FunctionApp.DefaultHostName

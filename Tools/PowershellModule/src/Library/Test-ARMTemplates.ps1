@@ -37,7 +37,7 @@ Function Test-ARMTemplates
     foreach($Object in $ARMObjects)
     {
         ## Validates that each ARM object will work.
-        Write-Information "  Validation testing on ARM Resource ($($Object.ObjectType))."
+        Write-Information "Validation testing on ARM Resource ($($Object.ObjectType))."
         $AzResourceResult = Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
 
         ## If the ARM object fails validation, report error to screen.
@@ -47,7 +47,7 @@ Function Test-ARMTemplates
                 TestResult = $AzResourceResult
             }
 
-            Write-Error -Message "Failed to validate ARM Template with Template parameters. Template: $Object.TemplatePath, Parameters: $Object.ParameterPath" -TargetObject $ErrReturnObject
+            Write-Error -Message "Failed to validate ARM Template with Template parameters. Template: $($Object.TemplatePath), Parameters: $($Object.ParameterPath)" -TargetObject $ErrReturnObject
 
             $Return += $ErrReturnObject
         }

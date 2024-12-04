@@ -23,7 +23,7 @@ Function New-WinGetSource
     [Optional] The Azure location where objects will be created in. (Default: westus)
 
     .PARAMETER TemplateFolderPath
-    [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplate)
+    [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplates)
     
     .PARAMETER ParameterOutputPath
     [Optional] The directory where Parameter objects will be created in. (Default: Current Directory\Parameters)
@@ -81,7 +81,7 @@ Function New-WinGetSource
         [Parameter(Position=1, Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
         [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = "",
         [Parameter(Position=3, Mandatory=$false)] [string]$Region = "westus",
-        [Parameter(Position=4, Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplate",
+        [Parameter(Position=4, Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
         [Parameter(Position=5, Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
         [Parameter(Position=6, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
         [Parameter(Position=7, Mandatory=$false)] [string]$PublisherName = "",
@@ -95,11 +95,11 @@ Function New-WinGetSource
         [Parameter(Position=12,Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
-    
+
     if($ImplementationPerformance -eq "Developer") {
         Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this tier.`n"
     }
-    
+
     ###############################
     ## Check input paths
     if(!$(Test-Path -Path $TemplateFolderPath)) {
@@ -110,10 +110,10 @@ Function New-WinGetSource
         Write-Error "REST Source Function Code is missing in specified path ($RestSourcePath)"
         return $false
     }
-    
+
     ###############################
     ## Check Microsoft Entra Id input
-    if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and !CreateNewMicrosoftEntraIdAppRegistration -and !MicrosoftEntraIdResource) {
+    if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and !$CreateNewMicrosoftEntraIdAppRegistration -and !$MicrosoftEntraIdResource) {
         Write-Error "When Microsoft Entra Id authentication is requested, either CreateNewMicrosoftEntraIdAppRegistration should be requested or MicrosoftEntraIdResource should be provided."
         return $false
     }
@@ -147,14 +147,14 @@ Function New-WinGetSource
             return $false
         }
         else {
-            $MicrosoftEntraIdResource = !$Result.Resource
-            $MicrosoftEntraIdResourceScope = !$Result.ResourceScope
+            $MicrosoftEntraIdResource = $Result.Resource
+            $MicrosoftEntraIdResourceScope = $Result.ResourceScope
         }
     }
 
     ###############################
     ## Creates the ARM files
-    $ARMObjects = New-ARMParameterObjects -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance
+    $ARMObjects = New-ARMParameterObjects -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance -PublisherName $PublisherName -PublisherEmail $PublisherEmail -RestSourceAuthentication $RestSourceAuthentication -MicrosoftEntraIdResource $MicrosoftEntraIdResource -MicrosoftEntraIdResourceScope $MicrosoftEntraIdResourceScope
     if (!$ARMObjects) {
         Write-Error "Failed to create ARM parameter objects."
         return $false
@@ -194,16 +194,16 @@ Function New-WinGetSource
     ## Shows how to connect local Windows Package Manager Client to newly created REST source
     if($ShowConnectionInstructions) {
         $ApiManagementName  = $ARMObjects.Where({$_.ObjectType -eq "ApiManagement"}).Parameters.Parameters.serviceName.value
-        $ApiManagementURL   = $(Get-AzApiManagement -Name $ApiManagementName -ResourceGroupName $ResourceGroup).RuntimeUrl
+        $ApiManagementURL   = (Get-AzApiManagement -Name $ApiManagementName -ResourceGroupName $ResourceGroup).RuntimeUrl
 
         ## Post script Run Informational:
         #### Instructions on how to add the REST source to your Windows Package Manager Client
         Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:" -InformationAction Continue
-        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""https://$ApiManagementURL/api/"" -t ""Microsoft.Rest""" -InformationAction Continue
+        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""$ApiManagementURL/winget/"" -t ""Microsoft.Rest""" -InformationAction Continue
 
         #### For more information about how to use the solution, visit the aka.ms link.
         Write-Information -MessageData "`nFor more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n" -InformationAction Continue
     }
-    
+
     return $true
 }

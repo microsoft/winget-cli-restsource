@@ -52,13 +52,13 @@ Function New-ARMParameterObjects
         [Parameter(Position=1, Mandatory=$true)] [string]$TemplateFolderPath,
         [Parameter(Position=2, Mandatory=$true)] [string]$Name,
         [Parameter(Position=3, Mandatory=$true)] [string]$Region,
-        [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance
+        [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance,
         [Parameter(Position=5, Mandatory=$false)] [string]$PublisherName = "",
         [Parameter(Position=6, Mandatory=$false)] [string]$PublisherEmail = "",
         [ValidateSet("None", "MicrosoftEntraId")]
         [Parameter(Position=7, Mandatory=$false)] [string]$RestSourceAuthentication = "None",
         [Parameter(Position=8, Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
-        [Parameter(Position=9, Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
+        [Parameter(Position=9, Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = ""
     )
 
     $ARMObjects = @()
@@ -134,6 +134,8 @@ Function New-ARMParameterObjects
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
     $AzTenantDomain = $AzContext.Tenant.Domains[0]
+    $DeployAppConfigValues = $false
+
     if ($AzContext.Account.Type -eq "User")
     {
         $AzObjectID = $(Get-AzADUser -SignedIn).Id
@@ -143,6 +145,8 @@ Function New-ARMParameterObjects
         if (!$PublisherName) {
             $PublisherName = $AzContext.Account.Id
         }
+
+        $DeployAppConfigValues = $false
     }
     else
     {
@@ -153,6 +157,8 @@ Function New-ARMParameterObjects
         if (!$PublisherName) {
             $PublisherName = "WinGetRestSource@$AzTenantDomain"
         }
+
+        $DeployAppConfigValues = $true
     }
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
 
@@ -163,7 +169,7 @@ Function New-ARMParameterObjects
             $StorageAccountPerformance = "Standard_LRS"
             $AspSku = "B1"
             $CosmosDBAEnableFreeTier   = $true
-            ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+            ## To enable Serverless then set CosmosDBACapatilities to "[{"name": ""EnableServerless""}]"
             $CosmosDBACapabilities     = "[]"
             $CosmosDBAConsistency      = "ConsistentPrefix"
             $CosmosDBALocations = @(
@@ -181,7 +187,7 @@ Function New-ARMParameterObjects
             $StorageAccountPerformance = "Standard_GRS"
             $AspSku = "S1"
             $CosmosDBAEnableFreeTier   = $false
-            ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+            ## To enable Serverless then set CosmosDBACapatilities to "[{"name": ""EnableServerless""}]"
             $CosmosDBACapabilities     = "[]"
             $CosmosDBAConsistency      = "Session"
             $CosmosDBALocations = @(
@@ -204,7 +210,7 @@ Function New-ARMParameterObjects
             $StorageAccountPerformance = "Standard_GZRS"
             $AspSku = "P1V2"
             $CosmosDBAEnableFreeTier   = $false
-            ## To enable Serverless then set CosmosDBACapatilities to "[{"name"; ""EnableServerless""}]"
+            ## To enable Serverless then set CosmosDBACapatilities to "[{"name": ""EnableServerless""}]"
             $CosmosDBACapabilities     = "[]"
             $CosmosDBAConsistency      = "Strong"
             $CosmosDBALocations = @(
@@ -280,9 +286,10 @@ Function New-ARMParameterObjects
                 '$Schema' = $JSONSchema
                 contentVersion = $JSONContentVersion
                 Parameters = @{
-                    appConfigName        = @{ value = $appConfigName        }   # Name used to contain the Storage Account connection string in the Key Value
-                    location             = @{ value = $Region               }   # Azure hosting location
-                    sku                  = @{ value = $AppConfigSku         }
+                    appConfigName           = @{ value = $appConfigName         }   # Name used to contain the Storage Account connection string in the Key Value
+                    location                = @{ value = $Region                }   # Azure hosting location
+                    sku                     = @{ value = $AppConfigSku          }
+                    deployAppConfigValues   = @{ value = $DeployAppConfigValues }
                 }
             }
         },
@@ -484,7 +491,7 @@ Function New-ARMParameterObjects
     ## Creates each JSON Parameter file inside of a Parameter folder in the working directory
     foreach ($object in $ARMObjects) {
         ## Converts the structure of the variable to a JSON file.
-        Write-Verbose -Message "  Creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
+        Write-Verbose -Message "Creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
         $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
         $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
     }

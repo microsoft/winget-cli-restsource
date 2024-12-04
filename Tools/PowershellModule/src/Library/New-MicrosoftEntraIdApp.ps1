@@ -51,7 +51,7 @@ Function New-MicrosoftEntraIdApp
     Update-AzADApplication -ApplicationId $AppId -IdentifierUri "api://$AppId" -ErrorVariable ErrorUpdate
     if ($ErrorUpdate)
     {
-        Write-Error "Failed to add App Id Uri"
+        Write-Error "Failed to add App Id Uri. Error: $ErrorUpdate"
         return $Return
     }
 
@@ -59,40 +59,40 @@ Function New-MicrosoftEntraIdApp
     $ScopeId = [guid]::NewGuid().ToString()
     $ScopeName = "user_impersonation"
     $Api = @{
-        Oauth2PermissionScopes = @(
+        oauth2PermissionScopes = @(
             @{
-                AdminConsentDescription = "Sign in to access $Name WinGet rest source"
-                AdminConsentDisplayName = "Access WinGet rest source"
-                UserConsentDescription  = "Sign in to access $Name WinGet rest source"
-                UserConsentDisplayName  = "Access WinGet rest source"
-                Id = $ScopeId
-                IsEnabled = $true
-                Type = "User"
-                Value = $ScopeName
+                adminConsentDescription = "Sign in to access $Name WinGet rest source"
+                adminConsentDisplayName = "Access WinGet rest source"
+                userConsentDescription  = "Sign in to access $Name WinGet rest source"
+                userConsentDisplayName  = "Access WinGet rest source"
+                id = $ScopeId
+                isEnabled = $true
+                type = "User"
+                value = $ScopeName
             }
         )
     }
     Update-AzADApplication -ApplicationId $AppId -Api $Api -ErrorVariable ErrorUpdate
     if ($ErrorUpdate)
     {
-        Write-Error "Failed to add Api scope"
+        Write-Error "Failed to add Api scope. Error: $ErrorUpdate"
         return $Return
     }
 
     ## Add authorized client
     $Api = @{
-        PreAuthorizedApplications = @(
+        preAuthorizedApplications = @(
             @{
-                AppId = "7b8ea11a-7f45-4b3a-ab51-794d5863af15"
-                DelegatedPermissionIds = @($ScopeId)
+                appId = "7b8ea11a-7f45-4b3a-ab51-794d5863af15"
+                delegatedPermissionIds = @($ScopeId)
             }
             @{
-                AppId = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
-                DelegatedPermissionIds = @($ScopeId)
+                appId = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
+                delegatedPermissionIds = @($ScopeId)
             }
             @{
-                AppId = "1950a258-227b-4e31-a9cf-717495945fc2"
-                DelegatedPermissionIds = @($ScopeId)
+                appId = "1950a258-227b-4e31-a9cf-717495945fc2"
+                delegatedPermissionIds = @($ScopeId)
             }
         )
     }

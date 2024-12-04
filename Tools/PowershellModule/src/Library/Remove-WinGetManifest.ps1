@@ -55,14 +55,6 @@ Function Remove-WinGetManifest
         if(!$ResourceGroupName) {
             Write-Error "Failed to confirm Azure Function exists in Azure. Please verify and try again. Function Name: $FunctionName" -ErrorAction Stop
         }
-
-        ###############################
-        ##  Verify Azure Resources Exist
-        Write-Verbose -Message "Verifying that the Azure Resource $FunctionName exists.."
-        $Result = Test-AzureResource -ResourceName $FunctionName -ResourceGroup $ResourceGroupName
-        if(!$Result) {
-            Write-Error "Failed to confirm resources exist in Azure. Please verify and try again." -ErrorAction Stop
-        }
         
         ###############################
         ##  REST api call  
@@ -73,7 +65,7 @@ Function Remove-WinGetManifest
 
         $ApiMethod      = "Delete"
 
-        $FunctionApp = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
+        $FunctionApp = Get-AzFunctionApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
         
         ## can function key be part of the header
         $FunctionAppId   = $FunctionApp.Id

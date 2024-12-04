@@ -54,7 +54,7 @@ Function Connect-ToAzure
         Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Name $SubscriptionName"
         $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName
     }
-    elseif($SubscriptionId -and $TestAzureConnection){
+    elseif($SubscriptionId){
         ## If connected to Azure, and the Subscription Id are provided then verify that the connected Azure session matches the provided Subscription Id.
         Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Id $SubscriptionId"
         $TestAzureConnection = Test-ConnectionToAzure -SubscriptionId $SubscriptionId
