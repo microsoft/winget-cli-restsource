@@ -146,7 +146,7 @@ class WinGetInstallationMetadata
 {
     [string]$DefaultInstallLocation
     [WinGetInstallationMetadataFile[]]$Files
-    
+
     WinGetInstallationMetadata () {}
 }
 
@@ -211,9 +211,9 @@ class WinGetManifest
 {
     [string] $PackageIdentifier
     [WinGetVersion[]] $Versions
-    
+
     WinGetManifest () {}
-    
+
     [string] GetJson ()
     {
         ## Not using ConvertTo-Json here since we want more control on null property handling
@@ -226,19 +226,19 @@ class WinGetManifest
         
         return [System.Text.Json.JsonSerializer]::Serialize($this, $options)
     }
-    
+
     static [WinGetManifest] CreateFromString ([string] $a)
     {
-        Write-Verbose -Message "Creating a WinGetManifest object from String object"
+        Write-Verbose -Message "Creating a WinGetManifest object from String."
         
         $options = [System.Text.Json.JsonSerializerOptions]::new()
 
         return [System.Text.Json.JsonSerializer]::Deserialize($a, [WinGetManifest], $options)
     }
-    
+
     static [WinGetManifest] CreateFromObject ([psobject] $a)
     {
-        Write-Verbose -Message "Creating a WinGetManifest object from PsObject object"
+        Write-Verbose -Message "Creating a WinGetManifest object from PsObject object."
         
         $json = ConvertTo-Json $a -Depth 16 -Compress
 

@@ -107,11 +107,11 @@ Function Add-WinGetManifest
         Write-Verbose -Message "Contents of manifest have been retrieved. Package Identifier: $($Manifest.PackageIdentifier)."
         
         Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
-        $ApiHeader.Add["x-functions-key"] = $FunctionKeyGet
+        $ApiHeader["x-functions-key"] = $FunctionKeyGet
         $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
         $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethodGet -ErrorVariable ErrorInvoke
 
-        if ($ErrorInvoke) {
+        if ($ErrorInvoke -or $Response.Data.Count -eq 0) {
             ## No existing manifest retrieved, submit as new manifest
             Write-Verbose "No manifest that matched. Package Identifier: $($Manifest.PackageIdentifier)"
 
@@ -123,7 +123,7 @@ Function Add-WinGetManifest
             ## Existing manifest retrieved, submit as update existing manifest
             Write-Verbose "Found manifest that matched. Package Identifier: $($Manifest.PackageIdentifier)"
             
-            if($Response.Data.Count -ne 1) {
+            if($Response.Data.Count -gt 1) {
                 Write-Error "Found conflicting manifests. Package Identifier: $($Manifest.PackageIdentifier)"
                 return
             }
@@ -131,6 +131,11 @@ Function Add-WinGetManifest
             $ApiMethod = $ApiMethodPut
             $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
             $ApiHeader["x-functions-key"] = $FunctionKeyPut
+
+            ## Merge with prior manifest
+            $PriorManifest = [WinGetManifest]::CreateFromObject($Response.Data[0])
+            $ApplicationManifest = Get-WinGetManifest -Path $Path -PriorManifest $PriorManifest
+            $Manifest = $ApplicationManifest[0]
         }
         
         Write-Verbose -Message "The Manifest will be added using the $ApiMethod REST API."

@@ -41,6 +41,9 @@ Function New-ARMParameterObjects
     .PARAMETER MicrosoftEntraIdResourceScope
     [Optional] Microsoft Entra Id authentication resource scope
 
+    .PARAMETER ForUpdate
+    [Optional] The operation is for update. (Default: False)
+
     .EXAMPLE
     New-ARMParameterObjects -ParameterFolderPath "C:\WinGet\Parameters" -TemplateFolderPath "C:\WinGet\Templates" -Name "contosorestsource" -AzLocation "westus" -ImplementationPerformance "Developer"
 
@@ -59,6 +62,7 @@ Function New-ARMParameterObjects
         [Parameter(Position=7, Mandatory=$false)] [string]$RestSourceAuthentication = "None",
         [Parameter(Position=8, Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
         [Parameter(Position=9, Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = ""
+        [Parameter()] [switch]$ForUpdate
     )
 
     $ARMObjects = @()
@@ -493,7 +497,12 @@ Function New-ARMParameterObjects
         ## Converts the structure of the variable to a JSON file.
         Write-Verbose -Message "Creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
         $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
-        $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
+        if ($ForUpdate) {
+            $ParameterFile | Out-File -FilePath $Object.ParameterPath -NoClobber -ErrorAction SilentlyContinue
+        }
+        else {
+            $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
+        }
     }
 
     ## Returns the completed object.

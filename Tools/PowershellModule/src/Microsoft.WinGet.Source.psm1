@@ -10,13 +10,13 @@ try {
     
     switch ($architecture) {
         "X64" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force
+            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
         }
         "X86" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x86\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force
+            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x86\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
         }
         "Arm64" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-arm64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force
+            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-arm64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
         }
         Default {
             throw "Powershell Core runtime architecture not supported"

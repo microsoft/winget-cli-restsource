@@ -70,16 +70,16 @@ Function New-ARMObjects
     $AzureFunctionHostKeyName = "AzureFunctionHostKey"
     $AppConfigPrimaryEndpointName = "AppConfigPrimaryEndpoint"
     $AppConfigSecondaryEndpointName = "AppConfigSecondaryEndpoint"
-    
+
     $FunctionAppUrls = @()
-    
+
     ## Creates the Azure Resources following the ARM template / parameters
     Write-Information "Creating Azure Resources following ARM Templates."
-    
+
     ## This is order specific, please ensure you used the New-ARMParameterObjects function to create this object in the pre-determined order.
     foreach ($Object in $ARMObjects) {
         Write-Information "Creating the Azure Object - $($Object.ObjectType)"
-    
+
         ## If the object to be created is an Azure Function, then complete these pre-required steps before creating the Azure Function.
         if ($Object.ObjectType -eq "Function") {
             $CosmosAccountEndpointValue = $(Get-AzCosmosDBAccount -Name $CosmosAccountName -ResourceGroupName $ResourceGroup).DocumentEndpoint | ConvertTo-SecureString -AsPlainText -Force
@@ -105,17 +105,19 @@ Function New-ARMObjects
                 }
             }
 
-            ## Update backend urls and re-create parameters file
-            $ApiManagementParameters.backendUrls.value = $FunctionAppUrls
-            Write-Verbose -Message "Re-creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
-            $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
-            $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
+            ## Update backend urls and re-create parameters file if needed
+            if (!$ApiManagementParameters.backendUrls.value) {
+                $ApiManagementParameters.backendUrls.value = $FunctionAppUrls
+                Write-Verbose -Message "Re-creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
+                $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
+                $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
+            }
 
             ## Set secret get for Api management service
             Write-Verbose "Set keyvault secret access for Api Management service"
             Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $ApiManagement.Identity.PrincipalId -PermissionsToSecrets Get
         }
-    
+
         ## Creates the Azure Resource
         $DeployResult = New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath -Mode Incremental -ErrorVariable DeployError
 
@@ -139,7 +141,7 @@ Function New-ARMObjects
             $FunctionAppId = $FunctionApp.Id
 
             $FunctionAppUrls += "https://$($FunctionApp.DefaultHostName)/api"
-            
+
             ## Assign necessary Azure roles
             Set-RoleAssignment -PrincipalId $FunctionApp.IdentityPrincipalId -RoleName "Storage Account Contributor" -ResourceGroup $ResourceGroup -ResourceName $StorageAccountName -ResourceType "Microsoft.Storage/storageAccounts"
             Set-RoleAssignment -PrincipalId $FunctionApp.IdentityPrincipalId -RoleName "Storage Blob Data Owner" -ResourceGroup $ResourceGroup -ResourceName $StorageAccountName -ResourceType "Microsoft.Storage/storageAccounts"
@@ -149,6 +151,10 @@ Function New-ARMObjects
             Set-RoleAssignment -PrincipalId $FunctionApp.IdentityPrincipalId -RoleName "Storage Queue Data Message Sender" -ResourceGroup $ResourceGroup -ResourceName $StorageAccountName -ResourceType "Microsoft.Storage/storageAccounts"
             Set-RoleAssignment -PrincipalId $FunctionApp.IdentityPrincipalId -RoleName "App Configuration Data Reader" -ResourceGroup $ResourceGroup -ResourceName $AppConfigName -ResourceType "Microsoft.AppConfiguration/configurationStores"
 
+            ## Set keyvault secrets get permission
+            Write-Verbose "Set keyvault secret access for Azure Function"
+            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $FunctionApp.IdentityPrincipalId -PermissionsToSecrets Get
+
             ## Assign cosmos db roles
             $CosmosAccount = Get-AzCosmosDBAccount -ResourceGroupName $ResourceGroup -Name $CosmosAccountName
             $RoleId = "00000000-0000-0000-0000-000000000002" # Built in contributor role
@@ -157,7 +163,7 @@ Function New-ARMObjects
                 Write-Verbose "Assigning Cosmos DB Account contributor role"
                 New-AzCosmosDBSqlRoleAssignment -AccountName $CosmosAccountName -ResourceGroupName $ResourceGroup -RoleDefinitionId $RoleId -Scope "/" -PrincipalId $FunctionApp.IdentityPrincipalId
             }
-            
+
             ## Create Function app key and also add to keyvault
             $NewFunctionKeyValue = New-FunctionAppKey
             $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
@@ -165,13 +171,13 @@ Function New-ARMObjects
                 Write-Error "Failed to create Azure Function key. $($Result.Content)"
                 return $false
             }
-            
+
             Write-Information -MessageData "Add Function App host key to keyvault."
             Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $AzureFunctionHostKeyName -SecretValue ($NewFunctionKeyValue | ConvertTo-SecureString -AsPlainText -Force)
 
             Write-Information -MessageData "Publishing function files to the Azure Function."
             $DeployResult = Publish-AzWebApp -ArchivePath $RestSourcePath -ResourceGroupName $ResourceGroup -Name $FunctionName -Force -ErrorVariable DeployError
-            
+
             ## Verifies that no error occured when publishing the Function App
             if ($DeployError -or !$DeployResult) {
                 $ErrReturnObject = @{
@@ -182,7 +188,7 @@ Function New-ARMObjects
                 Write-Error "Failed to publishing the Function App. $DeployError" -TargetObject $ErrReturnObject
                 return $false
             }
-            
+
             ## Restart the Function App
             Restart-AzFunctionApp -Name $FunctionName -ResourceGroupName $ResourceGroup -Force
         }
@@ -221,6 +227,6 @@ Function New-ARMObjects
             }
         }
     }
-    
+
     return $true
 }

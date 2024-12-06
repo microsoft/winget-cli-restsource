@@ -18,9 +18,9 @@ Function Get-WinGetManifest
     If you are processing a multi-file manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
     the same package manifest.
 
-    .PARAMETER JSON
-    A JSON string containing a single application's REST source Packages Manifest that will be merged with locally processed .yaml files. This is
-    used by the script infrastructure internally and is not expected to be useful to an end user using this command.
+    .PARAMETER PriorManifest
+    A WinGetManifest object containing a single application's REST source Packages Manifest that will be merged with locally processed .yaml files.
+    This is used by the script infrastructure internally.
 
     .PARAMETER FunctionName
     Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
@@ -60,7 +60,7 @@ Function Get-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$JSON = $null,
+        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$PriorManifest = $null,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$true, ParameterSetName="Azure", ValueFromPipeline=$true)][ValidateNotNullOrEmpty()] [string]$PackageIdentifier,
         [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName = ""
@@ -233,9 +233,9 @@ Function Get-WinGetManifest
                     ".yaml" {
                         ## Directory - *.yaml files included within.
                         Write-Verbose -Message "YAML Files have been found in the target directory. Building a JSON manifest with found files."
-                        if($Json){
+                        if($PriorManifest){
                             Write-Verbose "Prior manifest provided. New manifest will be merged with prior manifest."
-                            $Return += [WinGetManifest]::CreateFromString([Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $JSON.GetJson()))
+                            $Return += [WinGetManifest]::CreateFromString([Microsoft.WinGet.RestSource.PowershellSupport.YamlToRestConverter]::AddManifestToPackageManifest($Path, $PriorManifest.GetJson()))
                         }
                         else{
                             Write-Verbose "Prior manifest not provided."

@@ -74,7 +74,13 @@ namespace Microsoft.WinGet.RestSource.PowershellSupport
                 manifest,
                 string.IsNullOrWhiteSpace(priorRestManifest) ? null : Parser.StringParser<PackageManifest>(priorRestManifest));
 
-            return JsonConvert.SerializeObject(packageManifest);
+            return JsonConvert.SerializeObject(
+                packageManifest,
+                Newtonsoft.Json.Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
         }
     }
 }

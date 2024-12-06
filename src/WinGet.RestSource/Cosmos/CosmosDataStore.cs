@@ -213,9 +213,17 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Remove Version
             cosmosDocument.Document.RemoveVersion(packageVersion);
 
-            // Save Package
-            ApiDataValidator.Validate(cosmosDocument.Document);
-            await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+            if (cosmosDocument.Document.Versions is null)
+            {
+                // No version left, delete the package
+                await this.DeletePackage(packageIdentifier);
+            }
+            else
+            {
+                // Save Package
+                ApiDataValidator.Validate(cosmosDocument.Document);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+            }
         }
 
         /// <inheritdoc />
@@ -272,9 +280,17 @@ namespace Microsoft.WinGet.RestSource.Cosmos
             // Remove Installer
             cosmosDocument.Document.RemoveInstaller(installerIdentifier, packageVersion);
 
-            // Save Document
-            ApiDataValidator.Validate(cosmosDocument.Document);
-            await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+            if (cosmosDocument.Document.GetVersion(packageVersion)[0].Installers is null)
+            {
+                // No installer left, delete the version
+                await this.DeleteVersion(packageIdentifier, packageVersion);
+            }
+            else
+            {
+                // Save Document
+                ApiDataValidator.Validate(cosmosDocument.Document);
+                await this.cosmosDatabase.Update<CosmosPackageManifest>(cosmosDocument);
+            }
         }
 
         /// <inheritdoc />
