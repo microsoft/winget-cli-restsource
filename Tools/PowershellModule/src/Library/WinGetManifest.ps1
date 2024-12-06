@@ -176,22 +176,22 @@ class WinGetInstaller
     [string[]]$Capabilities
     [string[]]$RestricedCapabilities
     [string]$MSStoreProductIdentifier
-    [bool]$InstallerAbortsTerminal
+    [Nullable[bool]]$InstallerAbortsTerminal
     [string]$ReleaseDate
-    [bool]$InstallLocationRequired
-    [bool]$RequireExplicitUpgrade
+    [Nullable[bool]]$InstallLocationRequired
+    [Nullable[bool]]$RequireExplicitUpgrade
     [string]$ElevationRequirement
     [string[]]$UnsupportedOSArchitectures
     [WinGetAppsAndFeaturesEntry[]]$AppsAndFeaturesEntries
     [WinGetMarkets]$Markets
     [string]$NestedInstallerType
     [WinGetNestedInstallerFile[]]$NestedInstallerFiles
-    [bool]$DisplayInstallWarnings
+    [Nullable[bool]]$DisplayInstallWarnings
     [string[]]$UnsupportedArguments
     [WinGetInstallationMetadata]$InstallationMetadata
-    [bool]$DownloadCommandProhibited
+    [Nullable[bool]]$DownloadCommandProhibited
     [string]$RepairBehavior
-    [bool]$ArchiveBinariesDependOnPath
+    [Nullable[bool]]$ArchiveBinariesDependOnPath
 
     WinGetInstaller () {}
 }

@@ -43,7 +43,7 @@ Function Add-AzureResourceGroup
 
     ## Determines if the Resource Group already exists
     Write-Verbose "Retrieving details from Azure for the Resource Group name $Name"
-    $Result = Get-AzResourceGroup -Name $Name -ErrorAction SilentlyContinue -ErrorVariable ErrorGet -InformationAction SilentlyContinue -WarningAction SilentlyContinue
+    $Result = Get-AzResourceGroup -Name $Name -ErrorAction SilentlyContinue -ErrorVariable ErrorGet
 
     if(!$Result) {
         Write-Information "Failed to retrieve Resource Group, will attempt to create $Name in the specified $Region."

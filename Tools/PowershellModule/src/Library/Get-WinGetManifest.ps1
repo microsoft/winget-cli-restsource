@@ -60,10 +60,10 @@ Function Get-WinGetManifest
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
     PARAM(
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")]  [string]$Path,
-        [Parameter(Position=1, Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$PriorManifest = $null,
+        [Parameter(Mandatory=$false,ParameterSetName="File")]  [WinGetManifest]$PriorManifest = $null,
         [Parameter(Position=0, Mandatory=$true, ParameterSetName="Azure")] [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$true, ParameterSetName="Azure", ValueFromPipeline=$true)][ValidateNotNullOrEmpty()] [string]$PackageIdentifier,
-        [Parameter(Position=2, Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName = ""
+        [Parameter(Mandatory=$false,ParameterSetName="Azure")] [string]$SubscriptionName = ""
     )
     BEGIN
     {

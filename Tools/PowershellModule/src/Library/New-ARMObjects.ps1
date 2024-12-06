@@ -190,6 +190,7 @@ Function New-ARMObjects
             }
 
             ## Restart the Function App
+            Write-Verbose "Restarting Azure Function."
             Restart-AzFunctionApp -Name $FunctionName -ResourceGroupName $ResourceGroup -Force
         }
         elseif ($Object.ObjectType -eq "AppConfig") {

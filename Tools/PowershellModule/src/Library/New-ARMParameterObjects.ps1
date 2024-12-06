@@ -56,12 +56,12 @@ Function New-ARMParameterObjects
         [Parameter(Position=2, Mandatory=$true)] [string]$Name,
         [Parameter(Position=3, Mandatory=$true)] [string]$Region,
         [Parameter(Position=4, Mandatory=$true)] [string]$ImplementationPerformance,
-        [Parameter(Position=5, Mandatory=$false)] [string]$PublisherName = "",
-        [Parameter(Position=6, Mandatory=$false)] [string]$PublisherEmail = "",
+        [Parameter(Mandatory=$false)] [string]$PublisherName = "",
+        [Parameter(Mandatory=$false)] [string]$PublisherEmail = "",
         [ValidateSet("None", "MicrosoftEntraId")]
-        [Parameter(Position=7, Mandatory=$false)] [string]$RestSourceAuthentication = "None",
-        [Parameter(Position=8, Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
-        [Parameter(Position=9, Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = ""
+        [Parameter(Mandatory=$false)] [string]$RestSourceAuthentication = "None",
+        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
+        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
         [Parameter()] [switch]$ForUpdate
     )
 
@@ -206,10 +206,10 @@ Function New-ARMParameterObjects
                                 isZoneRedundant  = $false
                             }
                         )
-            $ApiManagementSku = "BasicV2"
+            $ApiManagementSku = "Basicv2"
         }
         "Enhanced" {
-            $AppConfigSku = "Premium"
+            $AppConfigSku = "Standard"
             $KeyVaultSKU  = "Standard"
             $StorageAccountPerformance = "Standard_GZRS"
             $AspSku = "P1V2"
@@ -496,12 +496,13 @@ Function New-ARMParameterObjects
     foreach ($object in $ARMObjects) {
         ## Converts the structure of the variable to a JSON file.
         Write-Verbose -Message "Creating the Parameter file for $($Object.ObjectType) in the following location: $($Object.ParameterPath)"
-        $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
-        if ($ForUpdate) {
-            $ParameterFile | Out-File -FilePath $Object.ParameterPath -NoClobber -ErrorAction SilentlyContinue
+
+        if ($ForUpdate -and (Test-Path -Path $Object.ParameterPath)) {
+            $Object.Parameters = Get-Content -Path $Object.ParameterPath -Raw | ConvertFrom-Json
         }
         else {
-            $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
+            $ParameterFileContent = $Object.Parameters | ConvertTo-Json -Depth 8
+            $ParameterFileContent | Out-File -FilePath $Object.ParameterPath -Force
         }
     }
 

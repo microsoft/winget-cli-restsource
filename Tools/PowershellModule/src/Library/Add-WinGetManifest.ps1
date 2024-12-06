@@ -44,7 +44,7 @@ Function Add-WinGetManifest
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$true, ValueFromPipeline=$true)] [string]$Path,
-        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = ""
+        [Parameter(Mandatory=$false)] [string]$SubscriptionName = ""
     )
     BEGIN
     {
@@ -94,6 +94,8 @@ Function Add-WinGetManifest
     }
     PROCESS
     {
+        $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
+
         ###############################
         ## Gets the content from the Package Manifest (*.JSON, or *.YAML) file for posting to REST source.
         Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."

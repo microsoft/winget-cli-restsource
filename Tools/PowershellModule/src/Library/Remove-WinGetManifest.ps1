@@ -33,8 +33,8 @@ Function Remove-WinGetManifest
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$FunctionName,
         [Parameter(Position=1, Mandatory=$true, ValueFromPipelineByPropertyName=$true)]  [string]$PackageIdentifier,
-        [Parameter(Position=2, Mandatory=$false, ValueFromPipelineByPropertyName=$true)] [string]$PackageVersion = "",
-        [Parameter(Position=3, Mandatory=$false)] [string]$SubscriptionName = ""
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)] [string]$PackageVersion = "",
+        [Parameter(Mandatory=$false)] [string]$SubscriptionName = ""
     )
     BEGIN
     {

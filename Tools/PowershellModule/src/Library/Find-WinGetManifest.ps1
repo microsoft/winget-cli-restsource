@@ -47,10 +47,10 @@ Function Find-WinGetManifest
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$false)] [string]$Query = "",
-        [Parameter(Position=2, Mandatory=$false)] [string]$PackageIdentifier = "",
-        [Parameter(Position=3, Mandatory=$false)] [string]$PackageName = "",
-        [Parameter(Position=4, Mandatory=$false)] [string]$SubscriptionName = "",
+        [Parameter(Mandatory=$false)] [string]$Query = "",
+        [Parameter(Mandatory=$false)] [string]$PackageIdentifier = "",
+        [Parameter(Mandatory=$false)] [string]$PackageName = "",
+        [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
         [Parameter()] [switch]$Exact
     )
     BEGIN

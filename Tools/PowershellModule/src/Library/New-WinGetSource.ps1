@@ -26,7 +26,7 @@ Function New-WinGetSource
     [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplates)
     
     .PARAMETER ParameterOutputPath
-    [Optional] The directory where Parameter objects will be created in. (Default: Current Directory\Parameters)
+    [Optional] The directory where Parameter files will be created in. (Default: Current Directory\Parameters)
 
     .PARAMETER RestSourcePath
     [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip)
@@ -78,27 +78,31 @@ Function New-WinGetSource
     #>
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$Name,
-        [Parameter(Position=1, Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
-        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = "",
-        [Parameter(Position=3, Mandatory=$false)] [string]$Region = "westus",
-        [Parameter(Position=4, Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
-        [Parameter(Position=5, Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
-        [Parameter(Position=6, Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
-        [Parameter(Position=7, Mandatory=$false)] [string]$PublisherName = "",
-        [Parameter(Position=8, Mandatory=$false)] [string]$PublisherEmail = "",
+        [Parameter(Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
+        [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
+        [Parameter(Mandatory=$false)] [string]$Region = "westus",
+        [Parameter(Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
+        [Parameter(Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
+        [Parameter(Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
+        [Parameter(Mandatory=$false)] [string]$PublisherName = "",
+        [Parameter(Mandatory=$false)] [string]$PublisherEmail = "",
         [ValidateSet("Developer", "Basic", "Enhanced")]
-        [Parameter(Position=9, Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
+        [Parameter(Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
         [ValidateSet("None", "MicrosoftEntraId")]
-        [Parameter(Position=10,Mandatory=$false)] [string]$RestSourceAuthentication = "None",
+        [Parameter(Mandatory=$false)] [string]$RestSourceAuthentication = "None",
         [Parameter()] [switch]$CreateNewMicrosoftEntraIdAppRegistration,
-        [Parameter(Position=11,Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
-        [Parameter(Position=12,Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
+        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
+        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
         [Parameter()] [switch]$ShowConnectionInstructions
     )
 
     if($ImplementationPerformance -eq "Developer") {
         Write-Warning "The ""Developer"" build creates the Azure Cosmos DB Account with the ""Free-tier"" option selected which offset the total cost. Only 1 Cosmos DB Account per tenant can make use of this tier.`n"
     }
+
+    $TemplateFolderPath = [System.IO.Path]::GetFullPath($TemplateFolderPath, $pwd.Path)
+    $ParameterOutputPath = [System.IO.Path]::GetFullPath($ParameterOutputPath, $pwd.Path)
+    $RestSourcePath = [System.IO.Path]::GetFullPath($RestSourcePath, $pwd.Path)
 
     ###############################
     ## Check input paths
