@@ -206,7 +206,7 @@ Function New-ARMParameterObjects
                                 isZoneRedundant  = $false
                             }
                         )
-            $ApiManagementSku = "Basicv2"
+            $ApiManagementSku = "Basic"
         }
         "Enhanced" {
             $AppConfigSku = "Standard"
@@ -229,7 +229,7 @@ Function New-ARMParameterObjects
                                 isZoneRedundant  = $false
                             }
                         )
-            $ApiManagementSku = "Standardv2"
+            $ApiManagementSku = "Standard"
         }
     }
 
