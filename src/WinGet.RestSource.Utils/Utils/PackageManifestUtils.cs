@@ -274,9 +274,7 @@ namespace Microsoft.WinGet.RestSource.Utils
                     {
                         InstallerReturnCode = sourceExpectedReturnCode.InstallerReturnCode,
                         ReturnResponse = sourceExpectedReturnCode.ReturnResponse,
-
-                        // Todo: Needs WinGetUtilInterop update
-                        // ReturnResponseUrl = sourceExpectedReturnCode.ReturnResponseUrl,
+                        ReturnResponseUrl = sourceExpectedReturnCode.ReturnResponseUrl,
                     };
                     expectedReturnCodes.Add(expectedReturnCode);
                 }

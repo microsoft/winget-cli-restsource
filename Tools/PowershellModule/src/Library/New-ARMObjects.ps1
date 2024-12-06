@@ -105,6 +105,12 @@ Function New-ARMObjects
                 }
             }
 
+            ## Set secret get for Api management service
+            Write-Verbose "Set keyvault secret access for Api Management service"
+            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $ApiManagement.Identity.PrincipalId -PermissionsToSecrets Get -BypassObjectIdValidation
+            ## There's no good way to check if the permission has been propagated through the system. And this permission is immediately needed in the next ARM deployment.
+            Start-Sleep -Seconds 10
+
             ## Update backend urls and re-create parameters file if needed
             if (!$ApiManagementParameters.backendUrls.value) {
                 $ApiManagementParameters.backendUrls.value = $FunctionAppUrls
@@ -112,10 +118,6 @@ Function New-ARMObjects
                 $ParameterFile = $Object.Parameters | ConvertTo-Json -Depth 8
                 $ParameterFile | Out-File -FilePath $Object.ParameterPath -Force
             }
-
-            ## Set secret get for Api management service
-            Write-Verbose "Set keyvault secret access for Api Management service"
-            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $ApiManagement.Identity.PrincipalId -PermissionsToSecrets Get
         }
 
         ## Creates the Azure Resource
@@ -153,7 +155,7 @@ Function New-ARMObjects
 
             ## Set keyvault secrets get permission
             Write-Verbose "Set keyvault secret access for Azure Function"
-            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $FunctionApp.IdentityPrincipalId -PermissionsToSecrets Get
+            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ResourceGroupName $ResourceGroup -ObjectId $FunctionApp.IdentityPrincipalId -PermissionsToSecrets Get -BypassObjectIdValidation
 
             ## Assign cosmos db roles
             $CosmosAccount = Get-AzCosmosDBAccount -ResourceGroupName $ResourceGroup -Name $CosmosAccountName
