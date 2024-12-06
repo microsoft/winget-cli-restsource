@@ -9,7 +9,7 @@ schema: 2.0.0
 
 ## SYNOPSIS
 Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning an array of all Manifests found.
-Allows for filtering results based on the name when targetting the REST APIs.
+Allows for filtering results based on the name when targeting the REST APIs.
 
 ## SYNTAX
 

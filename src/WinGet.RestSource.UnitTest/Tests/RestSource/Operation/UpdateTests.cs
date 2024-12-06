@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="UpdateTests.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -12,8 +12,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.RestSource.Operation
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Operations;
-    using Microsoft.WinGet.RestSource.PowershellSupport.Helpers;
     using Microsoft.Winget.RestSource.UnitTest.Common;
+    using Microsoft.WinGet.RestSource.Utils;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Models.V1;
     using Moq;

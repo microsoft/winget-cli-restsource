@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <AssemblyName>Microsoft.WinGet.RestSource.Utils</AssemblyName>
@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
-    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="*" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.10.70-preview" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
 

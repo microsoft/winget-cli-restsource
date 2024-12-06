@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             ApiDataValidator.NotNull(obj);
 
             // Verify installer does not exist
-            this.AssertInstallerDoesNotExists(obj.InstallerIdentifier);
+            this.AssertInstallerDoesNotExist(obj.InstallerIdentifier);
 
             base.Add(obj);
         }
@@ -150,7 +150,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             }
         }
 
-        private void AssertInstallerDoesNotExists(string installerIdentifier)
+        private void AssertInstallerDoesNotExist(string installerIdentifier)
         {
             if (this.InstallerExists(installerIdentifier))
             {

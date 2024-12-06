@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Locales.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -51,7 +51,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             ApiDataValidator.NotNull(obj);
 
             // Verify locale does not exist
-            this.AssertLocaleDoesNotExists(obj.PackageLocale);
+            this.AssertLocaleDoesNotExist(obj.PackageLocale);
 
             base.Add(obj);
         }
@@ -138,9 +138,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             return this.Any(p => p.PackageLocale == packageLocale);
         }
 
-        private void AssertLocaleExists(string installerIdentifier)
+        private void AssertLocaleExists(string packageLocale)
         {
-            if (!this.LocaleExists(installerIdentifier))
+            if (!this.LocaleExists(packageLocale))
             {
                 throw new InvalidArgumentException(
                     new InternalRestError(
@@ -149,9 +149,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             }
         }
 
-        private void AssertLocaleDoesNotExists(string installerIdentifier)
+        private void AssertLocaleDoesNotExist(string packageLocale)
         {
-            if (this.LocaleExists(installerIdentifier))
+            if (this.LocaleExists(packageLocale))
             {
                 throw new InvalidArgumentException(
                     new InternalRestError(

@@ -11,17 +11,11 @@ Function Add-WinGetManifest
     Windows Package Manager REST source, then collects the required URL for Manifest submission before 
     retrieving the contents of the Package Manifest to submit.
 
-    The following Azure Modules are used by this script:
-        Az.Resources --> Invoke-AzResourceAction
-        Az.Accounts  --> Connect-AzAccount, Get-AzContext
-        Az.Websites  --> Get-AzWebapp
-        Az.Functions --> Get-AzFunctionApp
-
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the REST source.
 
     .PARAMETER Path
-    The path to the Package Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
+    Supports input from pipeline. The path to the Package Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
     This path may contain a single Package Manifest file, or a folder containing files for a single Package Manifest. Does not support 
     targeting a single folder of multiple different applications.
 
@@ -49,136 +43,132 @@ Function Add-WinGetManifest
 
     PARAM(
         [Parameter(Position=0, Mandatory=$true)]  [string]$FunctionName,
-        [Parameter(Position=1, Mandatory=$true)]  [string]$Path,
-        [Parameter(Position=2, Mandatory=$false)] [string]$SubscriptionName = ""
+        [Parameter(Position=1, Mandatory=$true, ValueFromPipeline=$true)] [string]$Path,
+        [Parameter(Mandatory=$false)] [string]$SubscriptionName = ""
     )
     BEGIN
     {
-        ###############################
-        ## Validates that the Azure Modules are installed
-        $RequiredModules = @("Az.Resources", "Az.Accounts", "Az.Websites", "Az.Functions")
-        $Result = Test-PowerShellModuleExist -Modules $RequiredModules
-        $Response = @()
+        [WinGetManifest[]] $Return = @()
         
-        $AzureFunctionName = $FunctionName
-
-        if(!$Result) {
-            throw "Unable to run script, missing required PowerShell modules"
-        }
-
         ###############################
         ## Connects to Azure, if not already connected.
         Write-Verbose -Message "Validating connection to azure, will attempt to connect if not already connected."
-        $Result = Connect-ToAzure
+        $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
         if(!($Result)) {
-            throw "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
+            Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." -ErrorAction Stop
         }
 
         ###############################
-        ## Determines the PowerShell Parameter Set that was used in the call of this Function.
-        ## Sets variables as if the Azure Function Name was provided.
+        ## Gets Resource Group name of the Azure Function
         Write-Verbose -Message "Determines the Azure Function Resource Group Name"
-        $AzureResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $AzureFunctionName}).ResourceGroupName
-
-        ###############################
-        ##  Verify Azure Resources Exist
-        Write-Verbose -Message "Verifying that the Azure Resource $AzureFunctionName exists.."
-        $Result = Test-AzureResource -FunctionName $AzureFunctionName -ResourceGroup $AzureResourceGroupName
-        if(!$Result) {
-            throw "Failed to confirm resources exist in Azure. Please verify and try again."
+        $ResourceGroupName = $(Get-AzFunctionApp).Where({$_.Name -eq $FunctionName}).ResourceGroupName
+        if(!$ResourceGroupName) {
+            Write-Error "Failed to confirm Azure Function exists in Azure. Please verify and try again. Function Name: $FunctionName" -ErrorAction Stop
         }
-
-        ###############################
-        ## Gets the content from the Package Manifest (*.JSON, or *.YAML) file for posting to REST source.
-        Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."
-        $ApplicationManifest = Get-WinGetManifest -Path $Path
-        if(!$ApplicationManifest) {
-            Write-Verbose "$ApplicationManifest`n`n`n"
-            throw "Failed to retrieve a proper manifest. Verify and try again."
-        }
-
-        Write-Verbose -Message "Contents of the ($($ApplicationManifest.Count)) manifests have been retrieved [$ApplicationManifest]"
 
         #############################################
         ##############  REST api call  ##############
 
         ## Specifies the REST api call that will be performed
-        Write-Verbose -Message "Setting the REST API Invoke Actions."
-        $apiContentType = "application/json"
-        $apiMethod      = "Post"
+        $ApiContentType = "application/json"
+        $ApiMethodPost  = "Post"
+        $ApiMethodGet   = "Get"
+        $ApiMethodPut   = "Put"
 
         ## Retrieves the Azure Function URL used to add new manifests to the REST source
-        Write-Verbose -Message "Retrieving the Azure Function $AzureFunctionName to build out the REST API request."
-        $FunctionApp = Get-AzWebApp -ResourceGroupName $AzureResourceGroupName -Name $AzureFunctionName -ErrorAction SilentlyContinue -ErrorVariable err
+        Write-Verbose -Message "Retrieving the Azure Function $FunctionName to build out the REST API request."
+        $FunctionApp = Get-AzFunctionApp -ResourceGroupName $ResourceGroupName -Name $FunctionName
 
-        ## can function key be part of the header
         $FunctionAppId   = $FunctionApp.Id
         $DefaultHostName = $FunctionApp.DefaultHostName
+        $FunctionKeyPost = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/ManifestPost" -Action listkeys -Force).default
+        $FunctionKeyGet = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/ManifestGet" -Action listkeys -Force).default
+        $FunctionKeyPut = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/ManifestPut" -Action listkeys -Force).default
+        
         
         ## Creates the API Post Header
-        $apiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-        $apiHeader.Add("Accept", 'application/json')
+        $ApiHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $ApiHeader.Add("Accept", 'application/json')
         
-        $AzFunctionURL   = "https://" + $DefaultHostName + "/api/" + "packageManifests"
+        $AzFunctionURLBase   = "https://" + $DefaultHostName + "/api/packageManifests/"
     }
     PROCESS
     {
-        foreach ($Manifest in $ApplicationManifest) {
-            Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
-            $GetResult = Get-WinGetManifest -FunctionName $AzureFunctionName -SubscriptionName $SubscriptionName -PackageIdentifier $Manifest.PackageIdentifier
+        $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
 
-            $ManifestObject = $Manifest
-            $TriggerName = "ManifestPost"
+        ###############################
+        ## Gets the content from the Package Manifest (*.JSON, or *.YAML) file for posting to REST source.
+        Write-Verbose -Message "Retrieving a copy of the app Manifest file for submission to WinGet source."
+        $ApplicationManifest = Get-WinGetManifest -Path $Path
+        if($ApplicationManifest.Count -ne 1) {
+            Write-Error "Failed to retrieve a proper manifest. Verify and try again."
+            return
+        }
+
+        $Manifest = $ApplicationManifest[0]
+        Write-Verbose -Message "Contents of manifest have been retrieved. Package Identifier: $($Manifest.PackageIdentifier)."
+        
+        Write-Verbose -Message "Confirming that the Package ID doesn't already exist in Azure for $($Manifest.PackageIdentifier)."
+        $ApiHeader["x-functions-key"] = $FunctionKeyGet
+        $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
+        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethodGet -ErrorVariable ErrorInvoke
+
+        if ($ErrorInvoke -or $Response.Data.Count -eq 0) {
+            ## No existing manifest retrieved, submit as new manifest
+            Write-Verbose "No manifest that matched. Package Identifier: $($Manifest.PackageIdentifier)"
+
+            $ApiMethod = $ApiMethodPost
+            $AzFunctionURL = $AzFunctionURLBase
+            $ApiHeader["x-functions-key"] = $FunctionKeyPost
+        }
+        else {
+            ## Existing manifest retrieved, submit as update existing manifest
+            Write-Verbose "Found manifest that matched. Package Identifier: $($Manifest.PackageIdentifier)"
             
-            ## If the package already exists, return Error
-            $GetResult | foreach-object {
-                Write-Verbose -Message "Reviewing the name found ""$($_.PackageIdentifier)"" matches with what we are looking to add ""$($ManifestObject.PackageIdentifier)"""
-                IF($_.PackageIdentifier -eq $ManifestObject.PackageIdentifier) {
-                    $apiMethod = "Put"
-                    $TriggerName = "VersionPost"
-                    $AzFunctionURL += "/$($ApplicationManifest.PackageIdentifier)"
-                    $ApplicationManifest = Get-WinGetManifest -Path $Path -JSON $_
-                }
+            if($Response.Data.Count -gt 1) {
+                Write-Error "Found conflicting manifests. Package Identifier: $($Manifest.PackageIdentifier)"
+                return
+            }
+            
+            $ApiMethod = $ApiMethodPut
+            $AzFunctionURL = $AzFunctionURLBase + $Manifest.PackageIdentifier
+            $ApiHeader["x-functions-key"] = $FunctionKeyPut
+
+            ## Merge with prior manifest
+            $PriorManifest = [WinGetManifest]::CreateFromObject($Response.Data[0])
+            $ApplicationManifest = Get-WinGetManifest -Path $Path -PriorManifest $PriorManifest
+            $Manifest = $ApplicationManifest[0]
+        }
+        
+        Write-Verbose -Message "The Manifest will be added using the $ApiMethod REST API."
+
+        $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -Body $Manifest.GetJson() -ContentType $ApiContentType -ErrorVariable ErrorInvoke
+
+        if($ErrorInvoke) {
+            $ErrReturnObject = @{
+                AzFunctionURL       = $AzFunctionURL
+                ApiMethod           = $ApiMethod
+                ApiContentType      = $ApiContentType
+                ApplicationManifest = $Manifest.GetJson()
+                Response            = $Response
+                InvokeError         = $ErrorInvoke
             }
 
-            ## Determines the REST API that will be called, generates keys, and performs either Add (Post) or Update (Put) action.
-            Write-Verbose -Message "The Manifest will be added using the $apiMethod REST API."
-            $TriggerName = "Manifest$apiMethod"
-            $FunctionKey = (Invoke-AzResourceAction -ResourceId "$FunctionAppId/functions/$TriggerName" -Action listkeys -Force).default
-            $apiHeader.Add("x-functions-key", $FunctionKey)
-
-            $Response += Invoke-RestMethod $AzFunctionURL -Headers $apiHeader -Method $apiMethod -Body $ApplicationManifest.GetJson() -ContentType $apiContentType -ErrorVariable errInvoke
-
-            if($errInvoke -ne @{}) {
-                $ErrReturnObject = @{
-                    AzFunctionURL       = $AzFunctionURL
-                    apiHeader           = $apiHeader
-                    apiMethod           = $apiMethod
-                    apiContentType      = $apiContentType
-                    ApplicationManifest = $Manifest.GetJson()
-                    Response            = $Response
-                    InvokeError         = $errInvoke
-                }
-
-                ## If the Post failed, then return User specific error messages:
-                if($errInvoke -eq "Failure (409)"){
-                    Write-Warning -Message "Manifest file already exists."
-                }
-                else {
-                    Write-Error -Message "Unhandled Error" -TargetObject $ErrReturnObject
-                }
+            Write-Error -Message "Failed to add manifest." -TargetObject $ErrReturnObject
+        }
+        else {
+            if ($Response.Data.Count -ne 1) {
+                Write-Warning "Returned conflicting manifests after adding the manifest. Package Identifier: $($Manifest.PackageIdentifier)"
+            }
+            
+            foreach ($ResponseData in $Response.Data){
+                Write-Verbose "Parsing through the returned results: $ResponseData"
+                $Return += [WinGetManifest]::CreateFromObject($ResponseData)
             }
         }
     }
     END
     {
-        ## If a package is created, return the objects data
-        if($Response.Data) {
-            return $Response.Data
-        }
-        ## If no new package is created, return a boolean: False
-        else {
-            return $False
-        }
+        return $Return
     }
 }

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Rebuild.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -18,8 +18,8 @@ namespace Microsoft.WinGet.RestSource.Operations
     using Microsoft.WindowsPackageManager.Rest.Utils;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Interfaces;
-    using Microsoft.WinGet.RestSource.PowershellSupport.Helpers;
     using Microsoft.WinGet.RestSource.Sql;
+    using Microsoft.WinGet.RestSource.Utils;
     using Microsoft.WinGet.RestSource.Utils.Extensions;
     using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
     using Microsoft.WinGetUtil.Models.V1;

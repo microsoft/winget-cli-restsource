@@ -218,12 +218,6 @@
                     "alwaysOn": "[parameters('enableAlwaysOn')]",
                     "minTlsVersion": "[parameters('minimumTlsVersion')]"
                 },
-                "appSettings": [
-                    {
-                        "name": "FUNCTIONS_EXTENSION_VERSION",
-                        "value": "[parameters('functionExtensionVersion')]"
-                    }
-                ],
                 "httpsOnly": true
             },
             "resources": [
@@ -232,8 +226,7 @@
                     "type": "config",
                     "name": "appsettings",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]",
-                        "AzureFunctionKeyVaultAccessPolicy"
+                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]"
                     ],
                     "properties": {
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
@@ -246,6 +239,7 @@
                         "FunctionName": "[parameters('functionName')]",
                         "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
                         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+                        "FUNCTIONS_INPROC_NET8_ENABLED": 1,
                         "ManifestCacheEndpoint": "[parameters('manifestCacheEndpoint')]",
                         "ServerIdentifier": "[parameters('serverIdentifier')]",
                         "WEBSITE_FIRST_PARTY_ID": "AntMDS",
@@ -273,50 +267,6 @@
                     }
                 }
             ]
-        },
-        {
-            "apiVersion": "2019-05-01",
-            "name": "AzureFunctionKeyVaultAccessPolicy",
-            "type": "Microsoft.Resources/deployments",
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/', parameters('functionName'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": [
-                        {
-                            "type": "Microsoft.KeyVault/vaults/accessPolicies",
-                            "name": "[concat(parameters('keyVaultName'), '/add')]",
-                            "apiVersion": "2016-10-01",
-                            "properties": {
-                                "accessPolicies": [
-                                    {
-                                        "tenantId": "[reference(concat('Microsoft.Web/sites/', parameters('functionName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').tenantId]",
-                                        "objectId": "[reference(concat('Microsoft.Web/sites/', parameters('functionName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
-                                        "permissions": {
-                                            "keys": [
-                                                "Get"
-                                            ],
-                                            "secrets": [
-                                                "Get"
-                                            ],
-                                            "certificates": [
-                                                "Get"
-                                            ]
-                                        },
-                                        "metadata": {
-                                            "description": "This is the service principal for the Service Functions Azure Function."
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
         }
     ],
     "outputs": {}

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="DefaultLocale.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -115,7 +115,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                 return true;
             }
 
-            return Equals(this, other) && Equals(this.Moniker, other.Moniker);
+            return base.Equals(other) && Equals(this.Moniker, other.Moniker);
         }
 
         /// <inheritdoc />
