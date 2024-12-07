@@ -48,7 +48,7 @@ Function New-MicrosoftEntraIdApp
 
     ## Add App Id Uri
     $AppId = $App.AppId
-    Update-AzADApplication -ApplicationId $AppId -IdentifierUri "api://$AppId" -ErrorVariable ErrorUpdate
+    $App = Update-AzADApplication -ApplicationId $AppId -IdentifierUri "api://$AppId" -ErrorVariable ErrorUpdate
     if ($ErrorUpdate)
     {
         Write-Error "Failed to add App Id Uri. Error: $ErrorUpdate"
@@ -72,7 +72,7 @@ Function New-MicrosoftEntraIdApp
             }
         )
     }
-    Update-AzADApplication -ApplicationId $AppId -Api $Api -ErrorVariable ErrorUpdate
+    $App = Update-AzADApplication -ApplicationId $AppId -Api $Api -ErrorVariable ErrorUpdate
     if ($ErrorUpdate)
     {
         Write-Error "Failed to add Api scope. Error: $ErrorUpdate"
@@ -96,7 +96,7 @@ Function New-MicrosoftEntraIdApp
             }
         )
     }
-    Update-AzADApplication -ApplicationId $AppId -Api $Api -ErrorVariable ErrorUpdate
+    $App = Update-AzADApplication -ApplicationId $AppId -Api $Api -ErrorVariable ErrorUpdate
     if ($ErrorUpdate)
     {
         Write-Error "Failed to add authorized clients"

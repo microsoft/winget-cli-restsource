@@ -75,7 +75,7 @@ Function Get-WinGetManifest
             "Azure" {
                 ###############################
                 ## Connects to Azure, if not already connected.
-                Write-Verbose "Testing connection to Azure."
+                Write-Verbose "Validating connection to azure, will attempt to connect if not already connected."
                 $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
                 if(!($Result)) {
                     Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials." -ErrorAction Stop

@@ -138,10 +138,10 @@ Function New-ARMParameterObjects
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
     $AzTenantDomain = $AzContext.Tenant.Domains[0]
-    $DeployAppConfigValues = $false
 
     if ($AzContext.Account.Type -eq "User")
     {
+        $LocalDeployment = $true
         $AzObjectID = $(Get-AzADUser -SignedIn).Id
         if (!$PublisherEmail) {
             $PublisherEmail = $AzContext.Account.Id
@@ -149,11 +149,10 @@ Function New-ARMParameterObjects
         if (!$PublisherName) {
             $PublisherName = $AzContext.Account.Id
         }
-
-        $DeployAppConfigValues = $false
     }
     else
     {
+        $LocalDeployment = $false
         $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         if (!$PublisherEmail) {
             $PublisherEmail = "WinGetRestSource@$AzTenantDomain"
@@ -161,8 +160,6 @@ Function New-ARMParameterObjects
         if (!$PublisherName) {
             $PublisherName = "WinGetRestSource@$AzTenantDomain"
         }
-
-        $DeployAppConfigValues = $true
     }
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
 
@@ -211,12 +208,12 @@ Function New-ARMParameterObjects
         "Enhanced" {
             $AppConfigSku = "Standard"
             $KeyVaultSKU  = "Standard"
-            $StorageAccountPerformance = "Standard_GZRS"
+            $StorageAccountPerformance = "Standard_GRS"
             $AspSku = "P1V2"
             $CosmosDBAEnableFreeTier   = $false
             ## To enable Serverless then set CosmosDBACapatilities to "[{"name": ""EnableServerless""}]"
             $CosmosDBACapabilities     = "[]"
-            $CosmosDBAConsistency      = "Strong"
+            $CosmosDBAConsistency      = "Session"
             $CosmosDBALocations = @(
                             @{
                                 locationName     = $PrimaryRegionName
@@ -293,7 +290,7 @@ Function New-ARMParameterObjects
                     appConfigName           = @{ value = $appConfigName         }   # Name used to contain the Storage Account connection string in the Key Value
                     location                = @{ value = $Region                }   # Azure hosting location
                     sku                     = @{ value = $AppConfigSku          }
-                    deployAppConfigValues   = @{ value = $DeployAppConfigValues }
+                    localDeployment         = @{ value = $LocalDeployment       }
                 }
             }
         },

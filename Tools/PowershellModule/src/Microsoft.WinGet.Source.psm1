@@ -6,24 +6,20 @@
 
 ## Loads the binaries from the Desktop App Installer Library - Only if running PowerShell at a specified edition
 try {
-    $architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture
+    $Architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLower()
     
-    switch ($architecture) {
-        "X64" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
-        }
-        "X86" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-x86\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
-        }
-        "Arm64" {
-            Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-arm64\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
-        }
-        Default {
-            throw "Powershell Core runtime architecture not supported"
-        }
+    if ($Architecture -eq "x64" -or $Architecture -eq "x86" -or $Architecture -eq "arm64") {
+        Copy-Item -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-$Architecture\native\WinGetUtil.dll" -Destination "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll" -Force -ErrorAction SilentlyContinue
+    }
+    else {
+        Write-Error "Powershell Core runtime architecture not supported" -ErrorAction Stop
+    }
+
+    if (!$(Test-Path -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\WinGetUtil.dll")) {
+        Write-Error "WinGetUtil.dll not found under $PSScriptRoot\Library\WinGet.RestSource.PowershellSupport directory. Please manually copy the dll from $PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\runtimes\win-$Architecture\native directory and try again." -ErrorAction Stop
     }
     
-    Add-Type -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\Microsoft.Winget.PowershellSupport.dll"
+    Add-Type -Path "$PSScriptRoot\Library\WinGet.RestSource.PowershellSupport\Microsoft.Winget.PowershellSupport.dll" -ErrorAction Stop
 }
 catch {
     ## Exceptions thrown by Add-Type will not fail the Import-Module. Catch and re-throw to fail the Import-Module.
