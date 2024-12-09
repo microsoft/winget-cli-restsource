@@ -1,0 +1,63 @@
+{
+  "properties": {
+    "helpUri": "https://eng.ms/docs/microsoft-security/security/azure-security/cloudai-security-fundamentals-engineering/security-integration/guardian-wiki/microsoft-guardian/general/baselines"
+  },
+  "version": "1.0.0",
+  "baselines": {
+    "default": {
+      "name": "default",
+      "createdDate": "2024-12-09 22:52:25Z",
+      "lastUpdatedDate": "2024-12-09 22:52:25Z"
+    }
+  },
+  "results": {
+    "73a94eeb40b5d53d2d2746bcde53790be6c06af01c2e0d4ad6824db9267a75d8": {
+      "signature": "73a94eeb40b5d53d2d2746bcde53790be6c06af01c2e0d4ad6824db9267a75d8",
+      "alternativeSignatures": [
+        "f7853c8c0475a420c9acc9298d11938c1863ef11e285bf73d97910346b642839"
+      ],
+      "target": "Tools/PowershellModule/src/Library/New-ARMObjects.ps1",
+      "line": 96,
+      "memberOf": [
+        "default"
+      ],
+      "tool": "psscriptanalyzer",
+      "ruleId": "PSAvoidUsingConvertToSecureStringWithPlainText",
+      "createdDate": "2024-12-09 22:52:25Z",
+      "expirationDate": "2025-05-28 23:21:32Z",
+      "justification": "This error is baselined with an expiration date of 180 days from 2024-12-09 23:21:32Z"
+    },
+    "278debb2cc27fd55bac53602bc3d1227b610747bdd7332f73be73dc47e6974d6": {
+      "signature": "278debb2cc27fd55bac53602bc3d1227b610747bdd7332f73be73dc47e6974d6",
+      "alternativeSignatures": [
+        "427445dd2778c27d6824321548022f0a1e424d38e2637a18b069474fd0997d84"
+      ],
+      "target": "Tools/PowershellModule/src/Library/New-ARMObjects.ps1",
+      "line": 104,
+      "memberOf": [
+        "default"
+      ],
+      "tool": "psscriptanalyzer",
+      "ruleId": "PSAvoidUsingConvertToSecureStringWithPlainText",
+      "createdDate": "2024-12-09 22:52:25Z",
+      "expirationDate": "2025-05-28 23:21:32Z",
+      "justification": "This error is baselined with an expiration date of 180 days from 2024-12-09 23:21:32Z"
+    },
+    "11cc1157754c33986891c73d8baa1829565074c025b042b05ef59fa9437d5848": {
+      "signature": "11cc1157754c33986891c73d8baa1829565074c025b042b05ef59fa9437d5848",
+      "alternativeSignatures": [
+        "d16f82cd0eee44cd7742ec02d2217c21e8a22a35b4ab9c98cf3ca1c2c7b444e1"
+      ],
+      "target": "Tools/PowershellModule/src/Library/New-ARMObjects.ps1",
+      "line": 213,
+      "memberOf": [
+        "default"
+      ],
+      "tool": "psscriptanalyzer",
+      "ruleId": "PSAvoidUsingConvertToSecureStringWithPlainText",
+      "createdDate": "2024-12-09 22:52:25Z",
+      "expirationDate": "2025-05-28 23:21:32Z",
+      "justification": "This error is baselined with an expiration date of 180 days from 2024-12-09 23:21:32Z"
+    }
+  }
+}
