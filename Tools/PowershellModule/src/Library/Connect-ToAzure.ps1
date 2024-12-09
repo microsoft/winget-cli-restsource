@@ -70,28 +70,28 @@ Function Connect-ToAzure
         if($SubscriptionName -and $SubscriptionId) {
             ## Attempts a connection to Azure using both the Subscription Name and Subscription Id
             Write-Information "Initiating a connection to your Azure Subscription Name $SubscriptionName and Subscription Id $SubscriptionId"
-            Connect-AzAccount -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
+            $ConnectResult = Connect-AzAccount -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
             
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
         }
         elseif($SubscriptionName) {
             ## Attempts a connection to Azure using Subscription Name
             Write-Information "Initiating a connection to your Azure Subscription Name $SubscriptionName"
-            Connect-AzAccount -SubscriptionName $SubscriptionName
+            $ConnectResult = Connect-AzAccount -SubscriptionName $SubscriptionName
 
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName
         }
         elseif($SubscriptionId) {
             ## Attempts a connection to Azure using Subscription Id
             Write-Information "Initiating a connection to your Azure Subscription Id $SubscriptionId"
-            Connect-AzAccount -SubscriptionId $SubscriptionId
+            $ConnectResult = Connect-AzAccount -SubscriptionId $SubscriptionId
 
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionId $SubscriptionId
         }
         else{
             ## Attempts a connection to Azure with the users default Subscription
             Write-Information "Initiating a connection to your Azure environment."
-            Connect-AzAccount
+            $ConnectResult = Connect-AzAccount
 
             $TestAzureConnection = Test-ConnectionToAzure
         }

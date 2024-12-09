@@ -62,14 +62,17 @@ Function New-WinGetSource
     .PARAMETER ShowConnectionInstructions
     [Optional] If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)
 
+    .PARAMETER MaxRetryCount
+    [Optional] Max ARM template deployment retry count upon failure. (Default: 5)
+
     .EXAMPLE
-    New-WinGetSource -Name "contosorestsource"
+    New-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
 
     Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
     Azure with the basic level performance.
 
     .EXAMPLE
-    New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation
+    New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation -InformationAction Continue -Verbose
 
     Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
     Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command
@@ -77,7 +80,7 @@ Function New-WinGetSource
 
     #>
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)]  [string]$Name,
+        [Parameter(Position=0, Mandatory=$true)] [string]$Name,
         [Parameter(Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
         [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
         [Parameter(Mandatory=$false)] [string]$Region = "westus",
@@ -93,7 +96,8 @@ Function New-WinGetSource
         [Parameter()] [switch]$CreateNewMicrosoftEntraIdAppRegistration,
         [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
         [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
-        [Parameter()] [switch]$ShowConnectionInstructions
+        [Parameter()] [switch]$ShowConnectionInstructions,
+        [Parameter(Mandatory=$false)] [int]$MaxRetryCount = 5
     )
 
     if($ImplementationPerformance -eq "Developer") {
@@ -106,11 +110,11 @@ Function New-WinGetSource
 
     ###############################
     ## Check input paths
-    if(!$(Test-Path -Path $TemplateFolderPath)) {
+    if (!$(Test-Path -Path $TemplateFolderPath)) {
         Write-Error "REST Source Function Code is missing in specified path ($TemplateFolderPath)"
         return $false
     }
-    if(!$(Test-Path -Path $RestSourcePath)) {
+    if (!$(Test-Path -Path $RestSourcePath)) {
         Write-Error "REST Source Function Code is missing in specified path ($RestSourcePath)"
         return $false
     }
@@ -125,7 +129,7 @@ Function New-WinGetSource
     ###############################
     ## Create folder for the Parameter output path
     $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
-    if($Result) {
+    if ($Result) {
         Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
     }
     else {
@@ -135,9 +139,9 @@ Function New-WinGetSource
 
     ###############################
     ## Connects to Azure, if not already connected.
-    Write-Information "Testing connection to Azure."
+    Write-Information "Validating connection to azure, will attempt to connect if not already connected."
     $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
-    if(!($Result)) {
+    if (!($Result)) {
         Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
         return $false
     }
@@ -173,7 +177,8 @@ Function New-WinGetSource
         return $false
     }
 
-    #### Verifies ARM Parameters are correct
+    ###############################
+    ## Verifies ARM Parameters are correct. If any failed, the return results will contain failed objects. Otherwise, success.
     $Result = Test-ARMTemplates -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
     if($Result){
         $ErrReturnObject = @{
@@ -188,11 +193,25 @@ Function New-WinGetSource
 
     ###############################
     ## Creates Azure Objects with ARM Templates and Parameters
-    $Result = New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
-    if (!$Result) {
-        Write-Error "Failed to create Azure resources for WinGet rest source"
-        return $false
-    }
+    $Attempt = 0
+    $Retry = $false
+    do {
+        $Attempt++
+        $Retry = $false
+
+        $Result = New-ARMObjects -ARMObjects ([ref]$ARMObjects) -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
+        if (!$Result) {
+            if ($Attempt -lt $MaxRetryCount) {
+                $Retry = $true
+                Write-Verbose "Retrying deployment after 15 seconds."
+                Start-Sleep -Seconds 15
+            }
+            else {
+                Write-Error "Failed to create Azure resources for WinGet rest source."
+                return $false
+            }
+        }
+    } while ($Retry)
 
     ###############################
     ## Shows how to connect local Windows Package Manager Client to newly created REST source
@@ -203,7 +222,7 @@ Function New-WinGetSource
         ## Post script Run Informational:
         #### Instructions on how to add the REST source to your Windows Package Manager Client
         Write-Information -MessageData "Use the following command to register the new REST source with your Windows Package Manager Client:" -InformationAction Continue
-        Write-Information -MessageData "  winget source add -n ""restsource"" -a ""$ApiManagementURL/winget/"" -t ""Microsoft.Rest""" -InformationAction Continue
+        Write-Information -MessageData "  winget source add -n ""$Name"" -a ""$ApiManagementURL/winget/"" -t ""Microsoft.Rest""" -InformationAction Continue
 
         #### For more information about how to use the solution, visit the aka.ms link.
         Write-Information -MessageData "`nFor more information on the Windows Package Manager Client, go to: https://aka.ms/winget-command-help`n" -InformationAction Continue

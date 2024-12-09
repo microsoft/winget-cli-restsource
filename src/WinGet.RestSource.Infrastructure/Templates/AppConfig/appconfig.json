@@ -28,11 +28,11 @@
                 "description": "List of feature flags to set. These are specifically for the feature management tools in App Config, not key-vaule pairs."
             }
         },
-        "deployAppConfigValues": {
+        "localDeployment": {
             "type": "bool",
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
-                "description": "Specifies whether to deploy App Config values."
+                "description": "Specifies whether the deployment is initiated from local."
             }
         },
         "sku": {
@@ -53,11 +53,10 @@
                 "name": "[parameters('sku')]"
             },
             "properties": {
-                "disableLocalAuth": true
+                "disableLocalAuth": "[not(parameters('localDeployment'))]"
             }
         },
         {
-            "condition": "[parameters('deployAppConfigValues')]",
             "apiVersion": "2021-10-01-preview",
             "name": "[format('{0}/{1}', parameters('appConfigName'), concat('.appconfig.featureflag~2F', parameters('featureFlags')[copyIndex()].id))]",
             "type": "Microsoft.AppConfiguration/configurationStores/keyValues",
@@ -71,6 +70,40 @@
             "properties": {
                 "value": "[concat('{\"id\":\"',parameters('featureFlags')[copyIndex()].id,'\",\"description\":\"',parameters('featureFlags')[copyIndex()].description,'\",\"enabled\":',parameters('featureFlags')[copyIndex()].enabled,',\"conditions\":{\"client_filters\":[]}}')]",
                 "contentType": "application/vnd.microsoft.appconfig.ff+json;charset=utf-8"
+            }
+        },
+        {
+            "condition": "[parameters('localDeployment')]",
+            "apiVersion": "2022-05-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "enforceDisableLocalAuth",
+            "dependsOn": [
+                "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigName'))]",
+                "configStoreKeyValue"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.1",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "2021-10-01-preview",
+                            "name": "[parameters('appConfigName')]",
+                            "type": "Microsoft.AppConfiguration/configurationStores",
+                            "location": "[parameters('location')]",
+                            "sku": {
+                                "name": "[parameters('sku')]"
+                            },
+                            "properties": {
+                                "disableLocalAuth": true
+                            }
+                        }
+                    ]
+                }
             }
         }
     ]

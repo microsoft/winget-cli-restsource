@@ -10,7 +10,7 @@ Function Update-WinGetSource
     Updates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
 
     .PARAMETER Name
-    The name of the objects that will be updated
+    [Optional] The name of the objects that will be updated. Required if not PublishAzureFunctionOnly.
 
     .PARAMETER ResourceGroup
     [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure
@@ -56,6 +56,9 @@ Function Update-WinGetSource
     .PARAMETER MicrosoftEntraIdResourceScope
     [Optional] Microsoft Entra Id authentication resource scope
 
+    .PARAMETER MaxRetryCount
+    [Optional] Max ARM template deployment retry count upon failure. (Default: 3)
+
     .PARAMETER FunctionName
     [Optional] The Azure Function name. Required if PublishAzureFunctionOnly is specified.
 
@@ -63,23 +66,23 @@ Function Update-WinGetSource
     [Optional] If specified, only does Azure Function publish.
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource"
+    Update-WinGetSource-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
 
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance.
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic"
+    Update-WinGetSource-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -InformationAction Continue -Verbose
 
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance in the "Visual Studio Subscription" Subscription.
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource" -PublishAzureFunctionOnly
+    Update-WinGetSource-WinGetSource -Name "contosorestsource" -PublishAzureFunctionOnly -InformationAction Continue -Verbose
 
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with publishing Azure Function only.
 
     #>
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)] [string]$Name,
+        [Parameter(Mandatory=$false)] [string]$Name,
         [Parameter(Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
         [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
         [Parameter(Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
@@ -93,6 +96,7 @@ Function Update-WinGetSource
         [Parameter(Mandatory=$false)] [string]$RestSourceAuthentication = "None",
         [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
         [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
+        [Parameter(Mandatory=$false)] [int]$MaxRetryCount = 3,
         [Parameter(Mandatory=$false)] [string]$FunctionName = "",
         [Parameter()] [switch]$PublishAzureFunctionOnly
     )
@@ -102,18 +106,18 @@ Function Update-WinGetSource
     $RestSourcePath = [System.IO.Path]::GetFullPath($RestSourcePath, $pwd.Path)
 
     ## Check input paths
-    if(!$(Test-Path -Path $TemplateFolderPath)) {
+    if (!$(Test-Path -Path $TemplateFolderPath)) {
         Write-Error "REST Source Function Code is missing in specified path ($TemplateFolderPath)"
         return $false
     }
-    if(!$(Test-Path -Path $RestSourcePath)) {
+    if (!$(Test-Path -Path $RestSourcePath)) {
         Write-Error "REST Source Function Code is missing in specified path ($RestSourcePath)"
         return $false
     }
 
     ## Create folder for the Parameter output path
     $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
-    if($Result) {
+    if ($Result) {
         Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
     }
     else {
@@ -122,9 +126,9 @@ Function Update-WinGetSource
     }
 
     ## Connects to Azure, if not already connected.
-    Write-Information "Testing connection to Azure."
+    Write-Information "Validating connection to azure, will attempt to connect if not already connected."
     $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
-    if(!($Result)) {
+    if (!($Result)) {
         Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
         return $false
     }
@@ -159,9 +163,17 @@ Function Update-WinGetSource
 
         ## Restart the Function App
         Write-Verbose "Restarting Azure Function."
-        Restart-AzFunctionApp -Name $FunctionName -ResourceGroupName $ResourceGroup -Force
+        if (!$(Restart-AzFunctionApp -Name $FunctionName -ResourceGroupName $ResourceGroup -Force -PassThru)) {
+            Write-Error "Failed to restart Function App. Name: $FunctionName"
+            return $false
+        }
     }
     else {
+        if ([string]::IsNullOrWhiteSpace($Name)) {
+            Write-Error "Name is null or empty"
+            return $false
+        }
+
         ## Check Microsoft Entra Id input
         if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and !$MicrosoftEntraIdResource) {
             Write-Error "When Microsoft Entra Id authentication is requested, MicrosoftEntraIdResource should be provided."
@@ -175,7 +187,7 @@ Function Update-WinGetSource
             return $false
         }
 
-        #### Verifies ARM Parameters are correct
+        ## Verifies ARM Parameters are correct
         $Result = Test-ARMTemplates -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
         if($Result){
             $ErrReturnObject = @{
@@ -189,11 +201,25 @@ Function Update-WinGetSource
         }
 
         ## Creates Azure Objects with ARM Templates and Parameters
-        $Result = New-ARMObjects -ARMObjects $ARMObjects -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
-        if (!$Result) {
-            Write-Error "Failed to create Azure resources for WinGet rest source"
-            return $false
-        }
+        $Attempt = 0
+        $Retry = $false
+        do {
+            $Attempt++
+            $Retry = $false
+
+            $Result = New-ARMObjects -ARMObjects ([ref]$ARMObjects) -RestSourcePath $RestSourcePath -ResourceGroup $ResourceGroup
+            if (!$Result) {
+                if ($Attempt -lt $MaxRetryCount) {
+                    $Retry = $true
+                    Write-Verbose "Retrying deployment after 15 seconds."
+                    Start-Sleep -Seconds 15
+                }
+                else {
+                    Write-Error "Failed to create Azure resources for WinGet rest source."
+                    return $false
+                }
+            }
+        } while ($Retry)
     }
 
     return $true
