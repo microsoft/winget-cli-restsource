@@ -261,7 +261,7 @@ Function New-ARMParameterObjects
                 Parameters = @{
                     name            = @{ value = $KeyVaultName }
                     location        = @{ value = $Region }
-                    sku             = @{ value = $KeyVaultSKU}
+                    sku             = @{ value = $KeyVaultSKU }
                     accessPolicies  = @{
                         value = @(
                             @{

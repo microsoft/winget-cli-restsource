@@ -79,7 +79,7 @@ Function Find-WinGetManifest
 
         $FunctionAppId   = $FunctionApp.Id
         $DefaultHostName = $FunctionApp.DefaultHostName
-        
+
         $TriggerName    = "ManifestSearchPost"
         $ApiContentType = "application/json"
         $ApiMethod      = "Post"
@@ -95,21 +95,35 @@ Function Find-WinGetManifest
     PROCESS
     {
         Write-Verbose -Message "Invoking the REST API call."
-        
+
+        ## Internal scan does not recognize ternary oprator, use if else here
+        if ($Exact) {
+            $QueryMatchType = "Exact"
+        }
+        else {
+            $QueryMatchType = "Substring"
+        }
         $RequestBody = @{
             Query = @{
                 KeyWord = $Query
-                MatchType = $Exact ? "Exact" : "Substring"
+                MatchType = $QueryMatchType
             }
             Filters = @()
         }
 
+        ## Internal scan does not recognize ternary oprator, use if else here
+        if ($Exact) {
+            $FilterMatchType = "Exact"
+        }
+        else {
+            $FilterMatchType = "CaseInsensitive"
+        }
         if (![string]::IsNullOrWhiteSpace($PackageIdentifier)) {
             $RequestBody.Filters += @{
                 PackageMatchField = "PackageIdentifier"
                 RequestMatch = @{
                     KeyWord = $PackageIdentifier
-                    MatchType = $Exact ? "Exact" : "CaseInsensitive"
+                    MatchType = $FilterMatchType
                 }
             }
         }
@@ -118,7 +132,7 @@ Function Find-WinGetManifest
                 PackageMatchField = "PackageName"
                 RequestMatch = @{
                     KeyWord = $PackageName
-                    MatchType = $Exact ? "Exact" : "CaseInsensitive"
+                    MatchType = $FilterMatchType
                 }
             }
         }
@@ -131,7 +145,7 @@ Function Find-WinGetManifest
             if ($ContinuationToken) {
                 $ApiHeader["ContinuationToken"] = $ContinuationToken
             }
-            
+
             $Response = Invoke-RestMethod $AzFunctionURL -Headers $ApiHeader -Method $ApiMethod -Body $RequestBodyJson -ContentType $ApiContentType -ErrorVariable ErrorInvoke
      
             if ($ErrorInvoke) {
@@ -164,7 +178,7 @@ Function Find-WinGetManifest
                     $Return += $ManifestInfo
                 }
             }
-     
+
             $ContinuationToken = $Response.ContinuationToken
         } while (![string]::IsNullOrWhiteSpace($ContinuationToken))
     }

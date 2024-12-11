@@ -26,10 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{13F84087-30FC-4274-AAF2-F7A0AAB6FD81}"
 	ProjectSection(SolutionItems) = preProject
-		..\pipelines\templates\binSkim.yml = ..\pipelines\templates\binSkim.yml
 		..\pipelines\templates\copy.yml = ..\pipelines\templates\copy.yml
-		..\pipelines\templates\package.yml = ..\pipelines\templates\package.yml
+		..\pipelines\templates\copy-and-publish-powershell.yml = ..\pipelines\templates\copy-and-publish-powershell.yml
+		..\pipelines\templates\publish.yml = ..\pipelines\templates\publish.yml
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
+		..\pipelines\templates\run-integrationtests.yml = ..\pipelines\templates\run-integrationtests.yml
 		..\pipelines\templates\run-unittests.yml = ..\pipelines\templates\run-unittests.yml
 	EndProjectSection
 EndProject
@@ -79,11 +80,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 		..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1 = ..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1
 		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1
-		..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObject.ps1
+		..\Tools\PowershellModule\src\Library\New-ARMParameterObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObjects.ps1
 		..\Tools\PowershellModule\src\Library\New-MicrosoftEntraIdApp.ps1 = ..\Tools\PowershellModule\src\Library\New-MicrosoftEntraIdApp.ps1
 		..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1 = ..\Tools\PowershellModule\src\Library\New-WinGetSource.ps1
 		..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Remove-WinGetManifest.ps1
-		..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMTemplate.ps1
+		..\Tools\PowershellModule\src\Library\Test-ARMTemplates.ps1 = ..\Tools\PowershellModule\src\Library\Test-ARMTemplates.ps1
 		..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Test-ConnectionToAzure.ps1
 		..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExist.ps1 = ..\Tools\PowershellModule\src\Library\Test-PowerShellModuleExist.ps1
 		..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Test-WinGetManifest.ps1

@@ -39,7 +39,7 @@ steps:
     source: '$(Build.SourcesDirectory)\scripts\Release'
 
 # Publish Rest Function App
-- template: package.yml@self
+- template: publish.yml@self
   parameters:
     name: WinGet.RestSource.Functions
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
@@ -47,7 +47,7 @@ steps:
     zipAfterPublish: True
 
 # Publish Rest Function App
-- template: package.yml@self
+- template: publish.yml@self
   parameters:
     name: WinGet.RestSource.IntegrationTest
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\WinGet.RestSource.IntegrationTest.csproj'
