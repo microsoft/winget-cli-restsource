@@ -65,6 +65,20 @@ Function New-ARMObjects
         return $true
     }
 
+    function Get-SecureString
+    {
+        param(
+            [string] $InputString
+        )
+
+        $Result = New-Object SecureString
+        foreach ($char in $InputString.ToCharArray()) {
+            $Result.AppendChar($char)
+        }
+
+        return $Result
+    }
+
     ## TODO: Consider multiple instances of same Azure Resource in the future
     ## Azure resource names retrieved from the Parameter files.
     $StorageAccountName   = $ARMObjects.Where({$_.ObjectType -eq "StorageAccount"}).Parameters.Parameters.storageAccountName.value
@@ -93,7 +107,7 @@ Function New-ARMObjects
 
         ## Pre ARM deployment operations
         if ($Object.ObjectType -eq "Function") {
-            $CosmosAccountEndpointValue = $(Get-AzCosmosDBAccount -Name $CosmosAccountName -ResourceGroupName $ResourceGroup).DocumentEndpoint | ConvertTo-SecureString -AsPlainText -Force
+            $CosmosAccountEndpointValue = Get-SecureString($(Get-AzCosmosDBAccount -Name $CosmosAccountName -ResourceGroupName $ResourceGroup).DocumentEndpoint)
             Write-Verbose "Creating Keyvault Secret for Azure CosmosDB endpoint."
             $Result = Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $CosmosAccountEndpointKeyName -SecretValue $CosmosAccountEndpointValue -ErrorVariable ErrorSet
             if ($ErrorSet) {
@@ -101,7 +115,7 @@ Function New-ARMObjects
                 return $false
             }
 
-            $AppConfigEndpointValue = $(Get-AzAppConfigurationStore -Name $AppConfigName -ResourceGroupName $ResourceGroup).Endpoint | ConvertTo-SecureString -AsPlainText -Force
+            $AppConfigEndpointValue = Get-SecureString($(Get-AzAppConfigurationStore -Name $AppConfigName -ResourceGroupName $ResourceGroup).Endpoint)
             Write-Verbose "Creating Keyvault Secret for Azure App Config endpoint."
             $Result = Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $AppConfigPrimaryEndpointName -SecretValue $AppConfigEndpointValue -ErrorVariable ErrorSet
             if ($ErrorSet) {
@@ -210,7 +224,7 @@ Function New-ARMObjects
             }
 
             Write-Information -MessageData "Add Function App host key to keyvault."
-            $Result = Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $AzureFunctionHostKeyName -SecretValue ($NewFunctionKeyValue | ConvertTo-SecureString -AsPlainText -Force) -ErrorVariable ErrorSet
+            $Result = Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name $AzureFunctionHostKeyName -SecretValue (Get-SecureString($NewFunctionKeyValue)) -ErrorVariable ErrorSet
             if ($ErrorSet) {
                 Write-Error "Failed to set keyvault secret. Name: $AzureFunctionHostKeyName Error: $ErrorSet"
                 return $false

@@ -1,4 +1,4 @@
-# Template helper to package projects (using DotNetCoreCLI Publish Command)
+# Template helper to publish projects (using DotNetCoreCLI Publish Command)
 parameters:
   name: ''
   projects: ''
@@ -7,7 +7,7 @@ parameters:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'Package Azure Function: WinGet.RestSource-${{ parameters.name }}'
+  displayName: 'Publish: WinGet.RestSource-${{ parameters.name }}'
   inputs:
     command: publish
     publishWebProjects: false

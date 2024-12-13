@@ -1,6 +1,6 @@
 # Template helper to copy PowerShell scripts and all dependencies
 parameters:
- helperLibsPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\netcoreapp3.1'
+ powershellSupportPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\net8.0'
  templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
 
 steps:
@@ -13,20 +13,25 @@ steps:
     OverWrite: true
 
 # Publish Helper Libs - win-x86
-- task: DotNetCoreCLI@2
-  displayName: 'Package Helper Libs: Portable'
+- task: CopyFiles@2
+  displayName: 'Copy Files: WinGet.RestSource.PowershellSupport'
   inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\WinGet.RestSource.PowershellSupport.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library --no-restore'
-    zipAfterPublish: false
+    SourceFolder: ${{ parameters.powershellSupportPath }}
+    Contents: |
+      Microsoft.Extensions.Logging.Abstractions.dll
+      Microsoft.WinGet.PowershellSupport.dll
+      Microsoft.WinGet.RestSource.Utils.dll
+      WinGetUtilInterop.dll
+      YamlDotNet.dll
+      runtimes\**\native\WinGetUtil.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\WinGet.RestSource.PowershellSupport'
+    OverWrite: true
 
 - task: CopyFiles@2
   displayName: 'Copy Files: Arm Templates'
   inputs:
     Contents: ${{ parameters.templatesPath }}\**\*.json
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\ARMTemplate'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Data\ARMTemplates'
     OverWrite: true
     flattenFolders: true
 
@@ -34,5 +39,5 @@ steps:
   displayName: 'Copy Files: azure function'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\RestAPI'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Data'
     OverWrite: true
