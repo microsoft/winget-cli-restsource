@@ -1,6 +1,5 @@
 ---
-external help file: Microsoft.WinGet.Source-help.xml
-Module Name: Microsoft.WinGet.Source
+Module Name: Microsoft.WinGet.RestSource
 online version:
 schema: 2.0.0
 ---

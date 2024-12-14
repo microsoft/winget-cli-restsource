@@ -11,11 +11,11 @@ There are two ways available for managing REST source repositories with Windows 
 
 ## Manage Windows Package Manager REST source with PowerShell
 
-To simplify the management and interaction with the Windows Package Manager REST source, the `Microsoft.WinGet.Source` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get package manifests from your Windows Package Manager REST source, as well as stand up a new Windows Package Manager REST source in Azure.
+To simplify the management and interaction with the Windows Package Manager REST source, the `Microsoft.WinGet.RestSource` PowerShell module has been made available. This PowerShell module provides cmdlets that enable you to Add, Remove and Get package manifests from your Windows Package Manager REST source, as well as stand up a new Windows Package Manager REST source in Azure.
 
 The following steps are required for managing a Windows Package Manager REST source with PowerShell:
 
-1. Download and install the `Microsoft.WinGet.Source` PowerShell Module.
+1. Download and install the `Microsoft.WinGet.RestSource` PowerShell Module.
 2. Automate the creation of a Windows Package Manager REST source.
 3. Publishing Package Manifests to the Windows Package Manager REST source.
 4. Retrieve published Package Manifests from the Windows Package Manager REST source.
@@ -49,28 +49,28 @@ The following steps must be performed before the PowerShell cmdlets are availabl
 
 1. Open an Edge Browser.
 2. Navigate to [https://github.com/microsoft/winget-cli-restsource/releases](https://github.com/microsoft/winget-cli-restsource/releases).
-3. Download the latest release of the Microsoft.WinGet.Source PowerShell module. (WinGet.RestSource-Winget.PowerShell.Source.zip)
-4. Open a File Explorer window, and navigate to where you downloaded the Microsoft.WinGet.Source PowerShell module.
+3. Download the latest release of the Microsoft.WinGet.RestSource PowerShell module. (WinGet.RestSource-Winget.PowerShell.Source.zip)
+4. Open a File Explorer window, and navigate to where you downloaded the Microsoft.WinGet.RestSource PowerShell module.
 5. Right-click on WinGet.RestSource-Winget.PowerShell.Source.zip, and select **Extract all** from the drop-down menu.
 6. In the new window, select the **Extract** button.
 7. After the extraction has completed, navigate to '<extracted folder>\WinGet.RestSource-Winget.Powershell.Source'.
 8. Open an **Administrative PowerShell** window.
-9. Ensure the downloaded `Microsoft.WinGet.Source` files are not blocked
+9. Ensure the downloaded `Microsoft.WinGet.RestSource` files are not blocked
    
     ```Powershell
-    PS C:\> Get-ChildItem -Path [Paste the path to the root folder of Microsoft.WinGet.Source] -Recurse | Unblock-File
+    PS C:\> Get-ChildItem -Path [Paste the path to the root folder of Microsoft.WinGet.RestSource] -Recurse | Unblock-File
     ```
-10. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.Source.psd1` file. Select **Copy Path** from the drop-down menu.
+10. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.RestSource.psd1` file. Select **Copy Path** from the drop-down menu.
 
 11. Run the following command from the Administrative PowerShell window:
 
     ```Powershell
-    PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.Source.psd1 file]
+    PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.RestSource.psd1 file]
     ```
 
 ### Automate the creation of a Windows Package Manager REST source
 
-The `Microsoft.WinGet.Source` PowerShell module provides the [New-WinGetSource](PowerShell/New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
+The `Microsoft.WinGet.RestSource` PowerShell module provides the [New-WinGetSource](PowerShell/New-WinGetSource.md) cmdlet to simplify the creation of a Windows Package Manager REST source. This PowerShell cmdlet will initiate a connection to Azure if not currently connected. Validating that the connection is established with a specific Subscription (if specified). Generate the ARM Parameter files with specified values, then create Azure resources with the generated ARM Parameter files and the provided ARM Template files.
 
 The `New-WinGetSource` PowerShell cmdlet makes use of the following input parameters. For more information on how to use this cmdlet, use the `Get-Help New-WinGetSource -Full` or visit the [New-WinGetSource PowerShell Article](PowerShell/New-WinGetSource.md) in Docs.
 
@@ -100,7 +100,7 @@ The PowerShell Module must be re-imported each time the PowerShell window is clo
 
 ### Add manifests to the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Package Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Package Manifests for your users to install from. Using the `Microsoft.WinGet.Source` PowerShell module, the [Add-WinGetManifest](PowerShell/Add-WinGetManifest.md) cmdlet will add new Package Manifests to your Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. After the creation of your Windows Package Manager REST source has completed, you'll need to add Package Manifests for your users to install from. Using the `Microsoft.WinGet.RestSource` PowerShell module, the [Add-WinGetManifest](PowerShell/Add-WinGetManifest.md) cmdlet will add new Package Manifests to your Windows Package Manager REST source.
 
 The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file, or a folder containing `*.yaml` files for a single package manifest. For more information on how to use this cmdlet, use the command: `Get-Help Add-WinGetManifest -Full` or visit the [Add-WinGetManifest article in the PowerShell docs](PowerShell/Add-WinGetManifest.md).
 
@@ -112,7 +112,7 @@ PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Wi
 
 ## Get manifests from the REST source
 
-The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all packages or a specific package by Package Identifier.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.RestSource` PowerShell module provides the [Get-WinGetManifest](PowerShell/Get-WinGetManifest.md) cmdlet that will use ManifestGET against a specified Windows Package Manager REST source to fetch all packages or a specific package by Package Identifier.
 
 Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](PowerShell/Get-WinGetManifest.md).
 
@@ -124,7 +124,7 @@ PS C:\> Get-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.P
 
 ## Remove manifests from a REST source
 
-The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.Source` PowerShell module provides the [Remove-WinGetManifest](PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Package Manifest from the specified Windows Package Manager REST source.
+The Windows Package Manager REST source provides a location for hosting your Package Manifests. The `Microsoft.WinGet.RestSource` PowerShell module provides the [Remove-WinGetManifest](PowerShell/Remove-WinGetManifest.md) cmdlet that will remove a specific Package Manifest from the specified Windows Package Manager REST source.
 
 The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source for a specific Package Identifier. For more information on how to use this cmdlet, use the `Get-Help Remove-WinGetManifest -Full` or visit the [Remove-WinGetManifest article in the PowerShell docs](PowerShell/Remove-WinGetManifest.md).
 

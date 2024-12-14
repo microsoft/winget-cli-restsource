@@ -1,12 +1,12 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# Module manifest for module 'Microsoft.WinGet.Source'
+# Module manifest for module 'Microsoft.WinGet.RestSource'
 #
 
 @{
     # Script module or binary module file associated with this manifest.
-    RootModule = 'Microsoft.WinGet.Source.psm1'
+    RootModule = 'Microsoft.WinGet.RestSource.psm1'
 
     # Version number of this module.
     ModuleVersion = '0.1.0'
