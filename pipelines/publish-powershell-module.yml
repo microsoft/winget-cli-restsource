@@ -55,7 +55,7 @@ extends:
             patterns: '**'
 
           - pwsh: |
-              $psd1File = "$(downloadRoot)\Microsoft.WinGet.Client.psd1"
+              $psd1File = "$(downloadRoot)\Microsoft.WinGet.RestSource.psd1"
 
               # This needs to be modified when the build sets the correct version number.
               $manifestContent = (Get-Content -Path $psd1File -Raw)
