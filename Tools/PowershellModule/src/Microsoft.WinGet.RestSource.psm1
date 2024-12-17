@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# Module script for module 'Microsoft.WinGet.Source'
+# Module script for module 'Microsoft.WinGet.RestSource'
 #
 
 ## Loads the binaries from the Desktop App Installer Library - Only if running PowerShell at a specified edition

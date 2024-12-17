@@ -1,0 +1,197 @@
+# Publishes winget rest source powershell module.
+
+trigger: none
+
+# parameters are shown up in ADO UI in a build queue time
+parameters:
+- name: moduleVersion
+  displayName: 'Version of the module'
+  type: string
+
+variables:
+  moduleName: Microsoft.WinGet.RestSource
+  sourceArtifactName: WinGet.RestSource-WinGet.PowerShell.Source
+  downloadRoot: $(Pipeline.Workspace)\buildRelease\$(sourceArtifactName)
+
+resources:
+  pipelines:
+  - pipeline: buildRelease
+    source: 'winget-cli-restsource Build_Test'
+    trigger: none
+
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-2022
+      os: windows
+    customBuildTags:
+      - ES365AIMigrationTooling
+    settings:
+      skipBuildTagsForGitHubPullRequests: true
+
+    stages:
+      - stage: Prepare
+        jobs:
+        - job: Prepare_Sign
+          displayName: Prepare and sign $(moduleName)
+          steps:
+
+          - task: NuGetToolInstaller@1
+            displayName: 'Use NuGet 6.x'
+            inputs:
+              versionSpec: 6.x
+
+          - download: buildRelease
+            displayName: Download artifacts to sign
+            artifact: $(sourceArtifactName)
+            patterns: '**'
+
+          - pwsh: |
+              $psd1File = "$(downloadRoot)\Microsoft.WinGet.Client.psd1"
+
+              # This needs to be modified when the build sets the correct version number.
+              $manifestContent = (Get-Content -Path $psd1File -Raw)
+              if ($manifestContent -notlike "*ModuleVersion = '0.1.0'*")
+              {
+                  throw "Expected version before changes is 0.1.0"
+              }
+
+              # Set module version
+              $manifestContent = $manifestContent -replace "ModuleVersion = '0.1.0'", "ModuleVersion = '${{ parameters.moduleVersion }}'"
+
+              # Set release as needed in the future
+              # $manifestContent = $manifestContent -replace "Prerelease = 'alpha'", "#Prerelease = 'alpha'"
+
+              Set-Content -Path $psd1File -Value $manifestContent
+
+              Get-Content -Path $psd1File -Raw
+            displayName: 'PowerShell: Prepare Microsoft.WinGet.RestSource Module'
+
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+            displayName: 'Sign 1st party module files'
+            inputs:
+              ConnectedServiceName: AppInstallerESRPCodeSigning
+              AppRegistrationClientId: '32216f16-efc9-4013-9fae-c6a2c54a3fc0'
+              AppRegistrationTenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+              AuthAKVName: PeetDevOpsKeyVault
+              AuthCertName: ESRPAuth
+              AuthSignCertName: ESRPRequestSigning
+              FolderPath: '$(downloadRoot)'
+              Pattern: |
+                **/Microsoft.WinGet.RestSource.psd1
+                **/Microsoft.WinGet.RestSource.psm1
+                **/Library/*.ps1
+                **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll
+                **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll
+              signConfigType: inlineSignParams
+              inlineOperation: |
+                [
+                  {
+                      "KeyCode" : "CP-230012",
+                      "OperationCode" : "SigntoolSign",
+                      "Parameters" : {
+                          "OpusName" : "Microsoft",
+                          "OpusInfo" : "http://www.microsoft.com",
+                          "FileDigest" : "/fd \"SHA256\"",
+                          "PageHash" : "/NPH",
+                          "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                      },
+                      "ToolName" : "sign",
+                      "ToolVersion" : "1.0"
+                  },
+                  {
+                      "KeyCode" : "CP-230012",
+                      "OperationCode" : "SigntoolVerify",
+                      "Parameters" : {},
+                      "ToolName" : "sign",
+                      "ToolVersion" : "1.0"
+                  }
+                ]
+
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+            displayName: 'Sign 3rd party module files'
+            inputs:
+              ConnectedServiceName: AppInstallerESRPCodeSigning
+              AppRegistrationClientId: '32216f16-efc9-4013-9fae-c6a2c54a3fc0'
+              AppRegistrationTenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+              AuthAKVName: PeetDevOpsKeyVault
+              AuthCertName: ESRPAuth
+              AuthSignCertName: ESRPRequestSigning
+              FolderPath: '$(downloadRoot)'
+              Pattern: |
+                **/Library/WinGet.RestSource.PowershellSupport/YamlDotNet.dll
+              signConfigType: inlineSignParams
+              inlineOperation: |
+                [
+                  {
+                      "KeyCode" : "CP-231522",
+                      "OperationCode" : "SigntoolSign",
+                      "Parameters" : {
+                          "OpusName" : "Microsoft",
+                          "OpusInfo" : "http://www.microsoft.com",
+                          "FileDigest" : "/fd \"SHA256\"",
+                          "Append" : "/as",
+                          "PageHash" : "/NPH",
+                          "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                      },
+                      "ToolName" : "sign",
+                      "ToolVersion" : "1.0"
+                  },
+                  {
+                      "KeyCode" : "CP-231522",
+                      "OperationCode" : "SigntoolVerify",
+                      "Parameters" : {},
+                      "ToolName" : "sign",
+                      "ToolVersion" : "1.0"
+                  }
+                ]
+
+          - task: CopyFiles@2
+            displayName: Copy files to be published to staging directory
+            inputs:
+              SourceFolder: $(downloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(moduleName)
+              Contents: |
+                *.psm1
+                *.psd1
+                Library/**
+                Data/**
+
+          - task: 1ES.PublishPipelineArtifact@1
+            inputs:
+              targetPath: $(Build.ArtifactStagingDirectory)/$(moduleName)
+              artifactName: $(moduleName)
+              displayName: Publish Module Artifact
+
+      - stage: Publish
+        displayName: Manual Approval
+        trigger: manual
+        jobs:
+        - job: PublishToGallery
+          steps:
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: current
+              artifactName: $(moduleName)
+              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)
+              itemPattern: |
+                *.psm1
+                *.psd1
+                Library/**
+                Data/**
+
+          - pwsh: |
+              $moduleFolder = "$(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)"
+              Get-ChildItem -Path $moduleFolder -Recurse
+              $moduleFolderPath = (Resolve-Path $moduleFolder).Path
+              Publish-Module -Path $moduleFolderPath -Repository PSGallery -NuGetApiKey $(PowerShellNugetAPIKey) -verbose
+            displayName: 'Publish $(moduleName)'
