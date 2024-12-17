@@ -86,9 +86,9 @@ extends:
               AuthSignCertName: ESRPRequestSigning
               FolderPath: '$(downloadRoot)'
               Pattern: |
-                **/Microsoft.WinGet.RestSource.psd1
-                **/Microsoft.WinGet.RestSource.psm1
-                **/Library/*.ps1
+                **/*.psd1
+                **/*.psm1
+                **/*.ps1
                 **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll
                 **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll
               signConfigType: inlineSignParams
