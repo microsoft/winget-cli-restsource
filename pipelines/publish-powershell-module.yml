@@ -89,6 +89,8 @@ extends:
                 **/*.psd1
                 **/*.psm1
                 **/*.ps1
+                **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll
+                **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll
               signConfigType: inlineSignParams
               inlineOperation: |
                 [
