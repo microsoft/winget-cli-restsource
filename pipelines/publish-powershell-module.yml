@@ -91,6 +91,7 @@ extends:
                 **/Library/*.ps1
                 **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll
                 **/Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll
+              UseMinimatch: true
               signConfigType: inlineSignParams
               inlineOperation: |
                 [
@@ -128,6 +129,7 @@ extends:
               FolderPath: '$(downloadRoot)'
               Pattern: |
                 **/Library/WinGet.RestSource.PowershellSupport/YamlDotNet.dll
+              UseMinimatch: true
               signConfigType: inlineSignParams
               inlineOperation: |
                 [
