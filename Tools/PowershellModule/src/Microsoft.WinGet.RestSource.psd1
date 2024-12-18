@@ -17,11 +17,14 @@
     # ID used to uniquely identify this module
     GUID = 'b70c845d-ddb1-4454-bfc2-a874783c2d04'
 
+    # Author of this module
+    Author = 'Microsoft Corporation'
+
     # Company or vendor of this module
-    CompanyName = 'Microsoft'
+    CompanyName = 'Microsoft Corporation'
 
     # Copyright statement for this module
-    Copyright = '(c) Microsoft. All rights reserved.'
+    Copyright = '(c) Microsoft Corporation. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'This module provides support for working with Windows Package Manager REST based sources.'
@@ -49,7 +52,11 @@
     PrivateData = @{
         PSData = @{
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags = @("winget")
+            Tags = @(
+                'PSEdition_Core',
+                'WindowsPackageManager',
+                'WinGet'
+            )
 
             # A URL to the main website for this project.
             ProjectUri = 'https://github.com/microsoft/winget-cli-restsource'
