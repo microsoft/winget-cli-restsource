@@ -1,5 +1,6 @@
 ---
-Module Name: Microsoft.WinGet.RestSource
+external help file: Microsoft.WinGet.RestSource-help.xml
+Module Name: microsoft.WinGet.RestSource
 online version:
 schema: 2.0.0
 ---
@@ -7,29 +8,19 @@ schema: 2.0.0
 # Remove-WinGetManifest
 
 ## SYNOPSIS
-Removes a Manifest file from the Azure REST source
+Removes a Manifest from the Windows Package Manager REST source.
 
 ## SYNTAX
 
-### WinGet (Default)
 ```
-Remove-WinGetManifest [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>] [<CommonParameters>]
-```
-
-### Azure
-```
-Remove-WinGetManifest [-FunctionName] <String> [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>]
- [<CommonParameters>]
+Remove-WinGetManifest [-FunctionName] <String> [-PackageIdentifier] <String> [[-PackageVersion] <String>]
+ [-SubscriptionName <String>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the specified package Manifest.
-    
-The following Azure Modules are used by this script:
-    Az.Resources
-    Az.Accounts
-    Az.Websites
-    Az.Functions
+Removes a Manifest from the Windows Package Manager REST source.  
+This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the 
+specified Manifest.
 
 ## EXAMPLES
 
@@ -38,16 +29,25 @@ The following Azure Modules are used by this script:
 Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 ```
 
-Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from the Windows Package Manager REST source
+Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove all versions of the specified Manifest from 
+the Windows Package Manager REST source.
+
+### EXAMPLE 2
+```
+Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -PackageVersion "1.0.0.0"
+```
+
+Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove specified version of the specified Manifest from 
+the Windows Package Manager REST source.
 
 ## PARAMETERS
 
 ### -FunctionName
-Name of the Azure Function that hosts the REST source.
+Name of the Azure Function that hosts the Windows Package Manager REST source.
 
 ```yaml
 Type: String
-Parameter Sets: Azure
+Parameter Sets: (All)
 Aliases:
 
 Required: True
@@ -58,7 +58,8 @@ Accept wildcard characters: False
 ```
 
 ### -PackageIdentifier
-The Package Identifier that represents the App Manifest to be removed.
+Supports input from pipeline by property.
+The Package Identifier that represents the Manifest to be removed.
 
 ```yaml
 Type: String
@@ -66,14 +67,16 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 3
+Position: 2
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -SubscriptionName
-\[Optional\] The Subscription name contains the Windows Package Manager REST source
+### -PackageVersion
+\[Optional\] Supports input from pipeline by property.
+The Package version that represents the Manifest to be removed.
+If empty, all versions will be removed.
 
 ```yaml
 Type: String
@@ -81,7 +84,22 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: 3
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -SubscriptionName
+\[Optional\] The Subscription name that contains the Windows Package Manager REST source.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

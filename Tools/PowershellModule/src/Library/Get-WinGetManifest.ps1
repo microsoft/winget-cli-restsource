@@ -5,12 +5,12 @@ Function Get-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified source REST API, or local file system path to retrieve the package manifests, returning
-    the manifest found. Allows for retrieving results based on the package identifier when targeting the REST APIs.
+    Connects to the specified Windows Package Manager source, or local file system path to retrieve the package manifest, returning
+    the manifest found.
 
     .DESCRIPTION
-    Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning 
-    an array of all Manifests found. Allows for retrieving results based on the package identifier.
+    Connects to the specified Windows Package Manager source, or local file system path to retrieve the package Manifest, returning
+    the manifest found. Allows for retrieving results based on the package identifier when targeting the Windows Package Manager source.
 
     .PARAMETER Path
     Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
@@ -19,42 +19,37 @@ Function Get-WinGetManifest
     the same package manifest.
 
     .PARAMETER PriorManifest
-    A WinGetManifest object containing a single application's REST source Packages Manifest that will be merged with locally processed .yaml files.
+    A WinGetManifest object containing a single Windows Package Manager REST source Manifest that will be merged with locally processed .yaml files.
     This is used by the script infrastructure internally.
 
     .PARAMETER FunctionName
-    Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
+    Name of the Azure Function Name that contains the Windows Package Manager REST source.
 
     .PARAMETER PackageIdentifier
     Supports input from pipeline. The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
+    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Windows Package Manager REST source.
 
     .EXAMPLE
     Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
 
-    Returns an array of all Manifest objects based on the files found within the specified Path.
+    Returns a Manifest object based on the files found within the specified Path.
 
     .EXAMPLE
     Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys\Microsoft.PowerToys.json"
 
     Returns a Manifest object (*.json) of the specified JSON file.
-    
+
     .EXAMPLE
     Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 
-    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs.
+    Returns a Manifest object of the specified Package Identifier that is queried against the Windows Package Manager REST source.
 
     .EXAMPLE
     Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 
-    Returns a Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
-
-    .EXAMPLE
-    Get-WinGetManifest -FunctionName "contosorestSource"
-
-    Returns an array of Manifest objects that are found in the specified Azure Function.
+    Returns a Manifest object of the specified Package Identifier that is queried against the Windows Package Manager REST source from the specified Subscription Name.
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
