@@ -68,13 +68,13 @@ Function New-ARMParameterObjects
     $ARMObjects = @()
     
     ## The Names that are to be assigned to each resource.
-    $AppInsightsName    = "appin-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $AppInsightsName    = "appi-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $KeyVaultName       = "kv-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $StorageAccountName = "st" + $Name.ToLower() -replace "[^a-z0-9]", ""
     $AspName            = "asp-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $CDBAccountName     = "cosmos-" + $Name.ToLower() -replace "[^a-z0-9-]", ""
-    $FunctionName       = "azfun-" + $Name -replace "[^a-zA-Z0-9-]", ""
-    $AppConfigName      = "appconfig-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $FunctionName       = "func-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $AppConfigName      = "appcs-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ApiManagementName  = "apim-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ServerIdentifier   = "WinGetRestSource-" + $Name -replace "[^a-zA-Z0-9-]", ""
     
