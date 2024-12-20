@@ -5,75 +5,70 @@ online version:
 schema: 2.0.0
 ---
 
-# New-WinGetSource
+# Update-WinGetSource
 
 ## SYNOPSIS
-Creates a Windows Package Manager REST source in Azure.
+Updates a Windows Package Manager REST source in Azure.
 
 ## SYNTAX
 
 ```
-New-WinGetSource [-Name] <String> [-ResourceGroup <String>] [-SubscriptionName <String>] [-Region <String>]
- [-TemplateFolderPath <String>] [-ParameterOutputPath <String>] [-RestSourcePath <String>]
- [-PublisherName <String>] [-PublisherEmail <String>] [-ImplementationPerformance <String>]
- [-RestSourceAuthentication <String>] [-CreateNewMicrosoftEntraIdAppRegistration]
- [-MicrosoftEntraIdResource <String>] [-MicrosoftEntraIdResourceScope <String>] [-ShowConnectionInstructions]
- [-MaxRetryCount <Int32>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Update-WinGetSource [[-Name] <String>] [[-ResourceGroup] <String>] [[-SubscriptionName] <String>]
+ [[-TemplateFolderPath] <String>] [[-ParameterOutputPath] <String>] [[-RestSourcePath] <String>]
+ [[-PublisherName] <String>] [[-PublisherEmail] <String>] [[-ImplementationPerformance] <String>]
+ [[-RestSourceAuthentication] <String>] [[-MicrosoftEntraIdResource] <String>]
+ [[-MicrosoftEntraIdResourceScope] <String>] [[-MaxRetryCount] <Int32>] [[-FunctionName] <String>]
+ [-PublishAzureFunctionOnly] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Creates a Windows Package Manager REST source in Azure.
+Updates a Windows Package Manager REST source in Azure.  
+The update operation will not be able to detect existing Windows Package Manager REST source configurations. 
+To use existing configurations, put existing ARM Template Parameter files in ParameterOutputPath.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-New-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
+Update-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-Azure with the basic level performance.
+Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance.
 
 ### EXAMPLE 2
 ```
-New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation -InformationAction Continue -Verbose
+Update-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -InformationAction Continue -Verbose
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-Azure with the basic level performance in the "Visual Studio Subscription" subscription.
-Displays the required command to connect the WinGet client to the new Windows Package Manager REST source after the source has been created.
+Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance in the "Visual Studio Subscription" Subscription.
 
 ### EXAMPLE 3
 ```
-New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -CreateNewMicrosoftEntraIdAppRegistration -ShowConnectionInformation -InformationAction Continue -Verbose
+Update-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResourceScope "user-impersonation" -InformationAction Continue -Verbose
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-Azure with the basic level performance.
-The Windows Package Manager REST source is protected with Microsoft Entra Id authentication. 
-A new Microsoft Entra Id app registration is created.
+Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance. 
+Uses existing Microsoft Entra Id app registration.
 
 ### EXAMPLE 4
 ```
-New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResourceScope "user-impersonation" -ShowConnectionInformation -InformationAction Continue -Verbose
+Update-WinGetSource -Name "contosorestsource" -PublishAzureFunctionOnly -InformationAction Continue -Verbose
 ```
 
-Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-Azure with the basic level performance.
-The Windows Package Manager REST source is protected with Microsoft Entra Id authentication. 
-Uses existing Microsoft Entra Id app registration.
+Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with publishing Azure Function only.
 
 ## PARAMETERS
 
 ### -Name
-The base name of Azure Resources (Windows Package Manager REST source components) that will be created.
+\[Optional\] The base name of Azure Resources (Windows Package Manager REST source components) that will be created.
+Required if not PublishAzureFunctionOnly.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 1
 Default value: None
 Accept pipeline input: False
@@ -83,7 +78,7 @@ Accept wildcard characters: False
 ### -ResourceGroup
 \[Optional\] The name of the Resource Group that the Windows Package Manager REST source will reside.
 All Azure
-Resources will be created in in this Resource Group (Default: WinGetRestSource)
+Resources will be updated in in this Resource Group (Default: WinGetRestSource)
 
 ```yaml
 Type: String
@@ -91,7 +86,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 2
 Default value: WinGetRestSource
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -107,24 +102,8 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Region
-\[Optional\] The Azure location where Azure Resources (Windows Package Manager REST source components) will be created in.
-(Default: westus)
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: Westus
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -139,14 +118,16 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 4
 Default value: "$PSScriptRoot\..\Data\ARMTemplates"
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -ParameterOutputPath
-\[Optional\] The directory where ARM Template Parameter files will be created in.
+\[Optional\] The directory containing ARM Template Parameter files.
+If existing ARM Template Parameter files are found, they will be used for Windows Package Manager REST source update without modification.
+If ARM Template Parameter files are not found, new ARM Template Parameter files with default values will be created.
 (Default: Current Directory\Parameters)
 
 ```yaml
@@ -155,7 +136,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 5
 Default value: "$($(Get-Location).Path)\Parameters"
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -171,14 +152,14 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 6
 Default value: "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip"
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -PublisherName
-\[Optional\] The Windows Package Manager REST source publisher name.
+\[Optional\] The WinGet rest source publisher name.
 (Default: Signed in user email Or WinGetRestSource@DomainName)
 
 ```yaml
@@ -187,14 +168,14 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -PublisherEmail
-\[Optional\] The Windows Package Manager REST source publisher email.
+\[Optional\] The WinGet rest source publisher email.
 (Default: Signed in user email Or WinGetRestSource@DomainName)
 
 ```yaml
@@ -203,7 +184,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 8
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -217,6 +198,8 @@ Accept wildcard characters: False
 | Basic      | Specifies a basic functioning Windows Package Manager REST source.                                                      |
 | Enhanced   | Specifies a higher tier functionality with data replication across multiple data centers.                               |
 
+Note for updating Windows Package Manager REST source, performance downgrading is not allowed by Azure Resources used in Windows Package Manager REST source.
+
 (Default: Basic)
 
 ```yaml
@@ -225,7 +208,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 9
 Default value: Basic
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -241,24 +224,8 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 10
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -CreateNewMicrosoftEntraIdAppRegistration
-\[Optional\] If specified, a new Microsoft Entra Id app registration will be created.
-(Default: False)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -273,7 +240,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 11
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -289,14 +256,47 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 12
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ShowConnectionInstructions
-\[Optional\] If specified, shows the instructions for connecting to the Windows Package Manager REST source.
+### -MaxRetryCount
+\[Optional\] Max ARM Templates deployment retry count upon failure.
+(Default: 3)
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 13
+Default value: 3
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FunctionName
+\[Optional\] The Azure Function name.
+Required if PublishAzureFunctionOnly is specified.
+(Default: None)
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 14
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PublishAzureFunctionOnly
+\[Optional\] If specified, only performs Azure Function publish.
 (Default: False)
 
 ```yaml
@@ -307,22 +307,6 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -MaxRetryCount
-\[Optional\] Max ARM Templates deployment retry count upon failure.
-(Default: 5)
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: 5
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

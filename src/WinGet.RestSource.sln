@@ -27,8 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{13F84087-30FC-4274-AAF2-F7A0AAB6FD81}"
 	ProjectSection(SolutionItems) = preProject
-		..\pipelines\templates\copy.yml = ..\pipelines\templates\copy.yml
 		..\pipelines\templates\copy-and-publish-powershell.yml = ..\pipelines\templates\copy-and-publish-powershell.yml
+		..\pipelines\templates\copy.yml = ..\pipelines\templates\copy.yml
 		..\pipelines\templates\publish.yml = ..\pipelines\templates\publish.yml
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
 		..\pipelines\templates\run-integrationtests.yml = ..\pipelines\templates\run-integrationtests.yml
@@ -67,9 +67,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Powershell", "Powershell", "{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5}"
 	ProjectSection(SolutionItems) = preProject
 		..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Find-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Find-WinGetManifest.md
 		..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md
 		..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md
 		..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Update-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\Update-WinGetSource.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7BF3F-415D-4A9D-B859-ED1168438F1F}"
