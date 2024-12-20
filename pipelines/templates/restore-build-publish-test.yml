@@ -54,6 +54,12 @@ steps:
     buildconfig: '$(BuildConfiguration)'
     zipAfterPublish: False
 
+# Publish Fuzzing Artifacts
+- template: copy.yml@self
+  parameters:
+    name: WinGet.RestSource.Fuzzing
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net6.0'
+
 # Publish powershell
 - template: copy-and-publish-powershell.yml@self
 
