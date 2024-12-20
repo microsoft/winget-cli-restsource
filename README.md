@@ -1,6 +1,6 @@
 # Welcome to the winget-cli-restsource repository
 
-## Create a rest source on Azure with PowerShell
+## Create a Windows Package Manager REST source on Azure with PowerShell
 
 The [Microsoft.WinGet.RestSource](https://www.powershellgallery.com/packages/Microsoft.WinGet.RestSource) PowerShell module is provided for standing up and managing Windows Package Manager REST source.
 
