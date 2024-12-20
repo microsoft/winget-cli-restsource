@@ -23,7 +23,7 @@ Function Update-WinGetSource
 
     .PARAMETER TemplateFolderPath
     [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplates)
-    
+
     .PARAMETER ParameterOutputPath
     [Optional] The directory containing ARM Template Parameter files. If existing ARM Template Parameter files are found, they will be used for Windows Package Manager REST source update without modification.
     If ARM Template Parameter files are not found, new ARM Template Parameter files with default values will be created. (Default: Current Directory\Parameters)
@@ -68,17 +68,23 @@ Function Update-WinGetSource
     [Optional] If specified, only performs Azure Function publish. (Default: False)
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
+    Update-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
 
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance.
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -InformationAction Continue -Verbose
+    Update-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -InformationAction Continue -Verbose
 
-    Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance in the "Visual Studio Subscription" Subscription.
+    Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance in the "Visual Studio Subscription" subscription.
 
     .EXAMPLE
-    Update-WinGetSource-WinGetSource -Name "contosorestsource" -PublishAzureFunctionOnly -InformationAction Continue -Verbose
+    Update-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResourceScope "user-impersonation" -InformationAction Continue -Verbose
+
+    Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with the basic level performance.
+    Uses existing Microsoft Entra Id app registration.
+
+    .EXAMPLE
+    Update-WinGetSource -Name "contosorestsource" -PublishAzureFunctionOnly -InformationAction Continue -Verbose
 
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with publishing Azure Function only.
 

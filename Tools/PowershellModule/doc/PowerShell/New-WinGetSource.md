@@ -40,9 +40,8 @@ New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Subscription
 ```
 
 Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
-Azure with the basic level performance in the "Visual Studio Subscription" Subscription.
-Displays the required command 
-to connect the WinGet client to the new Windows Package Manager REST source after the source has been created.
+Azure with the basic level performance in the "Visual Studio Subscription" subscription.
+Displays the required command to connect the WinGet client to the new Windows Package Manager REST source after the source has been created.
 
 ### EXAMPLE 3
 ```
@@ -56,7 +55,7 @@ A new Microsoft Entra Id app registration is created.
 
 ### EXAMPLE 4
 ```
-New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResource "user-impersonation" -ShowConnectionInformation -InformationAction Continue -Verbose
+New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResourceScope "user-impersonation" -ShowConnectionInformation -InformationAction Continue -Verbose
 ```
 
 Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
