@@ -42,7 +42,7 @@ Before getting started with the Windows Package Manager REST source with PowerSh
 ### Download and install the PowerShell module
 
 #### Get PowerShell Module from PSGallery (Recommended)
-Install the PowerShell module from PSGallery
+1. Install the PowerShell module from PSGallery
     ```Powershell
     PS C:\> Install-Module -Name Microsoft.WinGet.RestSource -AllowPrerelease
     ```
@@ -69,8 +69,8 @@ The following steps will get PowerShell from Github Releases for use with the Wi
     ```
 
 > [!Note]
-> The PowerShell Module must be re-imported each time the PowerShell window is closed.
-> To prevent having to re-install this new PowerShell module each time, review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://docs.microsoft.com/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.4)
+> If PowerShell module is extracted from zip file downloaded from Github releases page, the PowerShell Module must be re-imported each time the PowerShell window is closed.  
+> To prevent having to re-install this PowerShell module each time, install from PowerShell Gallery or review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://learn.microsoft.com/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.4)
 
 ### Automate the creation of a Windows Package Manager REST source
 
@@ -131,6 +131,12 @@ The `Microsoft.WinGet.RestSource` PowerShell module provides the [Find-WinGetMan
 
 The `Find-WinGetManifest` PowerShell cmdlet supports targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Find-WinGetManifest -Full` or visit the [Find-WinGetManifest article in the PowerShell docs](PowerShell/Find-WinGetManifest.md).
 
+To find package manifests, open the Administrative PowerShell Window and run the following:
+
+```PowerShell
+PS C:\> Find-WinGetManifest -FunctionName "contoso" -Query "PowerToys"
+```
+
 To find all package manifests, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
@@ -143,7 +149,7 @@ The `Microsoft.WinGet.RestSource` PowerShell module provides the [Get-WinGetMani
 
 Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json` file or `*.yaml` files in a folder as well as targeting an existing Windows Package Manager REST source. For more information on how to use this cmdlet, use the `Get-Help Get-WinGetManifest -Full` or visit the [Get-WinGetManifest article in the PowerShell docs](PowerShell/Get-WinGetManifest.md).
 
-To get a Package Manifest, open the Administrative PowerShell Window and run the following:
+To get a Package Manifest from Windows Package Manager REST source, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
 PS C:\> Get-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
@@ -161,8 +167,8 @@ To remove all versions of a package, open the Administrative PowerShell Window a
 PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
 ```
 
-To remove specific version of a package, open the Administrative PowerShell Window and run the following:
+To remove a specific version of a package, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
+PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys" -PackageVersion "1.0.0"
 ```
