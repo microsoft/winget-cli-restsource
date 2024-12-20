@@ -4,6 +4,6 @@ This section provides guidance on how to create a REST source for the Windows Pa
 
 Windows Package Manager offers a comprehensive package manager solution including a command line tool and a set of services for installing applications. For more general package submission information, see [submit packages to Windows Package Manager](https://learn.microsoft.com/windows/package-manager/package/).
 
-The recommended way for standing up and managing Windows Package Manager REST source is:
+The recommended way for creating and managing Windows Package Manager REST sources is:
 
 - [Manage Windows Package Manager REST source with PowerShell](WingetRestSource.md#manage-windows-package-manager-rest-source-with-powershell)

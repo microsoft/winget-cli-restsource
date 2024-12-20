@@ -8,20 +8,19 @@ Function Add-WinGetManifest
 
     .DESCRIPTION
     Submits a Manifest to the Windows Package Manager REST source.
-    By running this function with the required inputs, it will connect to the Azure Tenant that hosts the 
-    Windows Package Manager REST source, then collects the required URL for Manifest submission before 
-    retrieving the contents of the Manifest to submit.
+    Running this function will first connect to the Azure Tenant that hosts the Windows Package Manager REST source. 
+    The function will then collect the required URL before retrieving the contents of the Manifest for submission.
 
     .PARAMETER FunctionName
     Name of the Azure Function that hosts the Windows Package Manager REST source.
 
     .PARAMETER Path
     Supports input from pipeline. The path to the Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
-    This path may contain a single Manifest file, or a folder containing files for a single Manifest. Does not support 
-    targeting a single folder of multiple different Manifests.
+    This path may contain a single Manifest file, or a folder containing Manifest files for a single Manifest. Does not support 
+    targeting a single folder containing multiple different Manifests.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name contains the Windows Package Manager REST source.
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .EXAMPLE
     Add-WinGetManifest -FunctionName "contosorestsource" -Path "C:\AppManifests\Microsoft.PowerToys\PowerToys.json"

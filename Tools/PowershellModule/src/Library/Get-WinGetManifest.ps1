@@ -13,23 +13,23 @@ Function Get-WinGetManifest
     the manifest found. Allows for retrieving results based on the package identifier when targeting the Windows Package Manager source.
 
     .PARAMETER Path
-    Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
+    Points to either a folder containing a specific Manifest of type .json or .yaml or to a specific .json or .yaml file.
 
-    If you are processing a multi-file manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
-    the same package manifest.
+    If you are processing a multi-file Manifest, point to the folder that contains all yamls. Note: all yamls within the folder must be part of
+    the same Manifest.
 
     .PARAMETER PriorManifest
     A WinGetManifest object containing a single Windows Package Manager REST source Manifest that will be merged with locally processed .yaml files.
     This is used by the script infrastructure internally.
 
     .PARAMETER FunctionName
-    Name of the Azure Function Name that contains the Windows Package Manager REST source.
+    Name of the Azure Function that contains the Windows Package Manager REST source.
 
     .PARAMETER PackageIdentifier
     Supports input from pipeline. The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the Windows Package Manager REST source.
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .EXAMPLE
     Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"

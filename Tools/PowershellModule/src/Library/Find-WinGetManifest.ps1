@@ -5,17 +5,17 @@ Function Find-WinGetManifest
 {
     <#
     .SYNOPSIS
-    Connects to the specified Windows Package Manager source REST API to retrieve the manifest infos, returning manifest package identifier, name, publisher and versions.
+    Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.
 
     .DESCRIPTION
-    Connects to the specified Windows Package Manager source REST API to retrieve the manifest infos, returning manifest package identifier, name, publisher and versions.
+    Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.
     This function does not return the full WinGetManifest since the results may be very large. Use Get-WinGetManifest for retrieving individual full WinGetManifest.
 
     .PARAMETER FunctionName
     Name of the Azure Function that contains the Windows Package Manager REST source.
 
     .PARAMETER Query
-    [Optional] The query to be performed against Windows Package Manager REST source. Empty query will return all manifest infos.
+    [Optional] The query to be performed against the Windows Package Manager REST source. Empty query will return all manifest infos.
 
     .PARAMETER PackageIdentifier
     [Optional] Filter the search results with PackageIdentifier.
@@ -24,7 +24,7 @@ Function Find-WinGetManifest
     [Optional] Filter the search results with PackageName.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Windows Package Manager REST source.
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .PARAMETER Exact
     [Optional] If specified, the Windows Package Manager REST source search will be performed with exact match.

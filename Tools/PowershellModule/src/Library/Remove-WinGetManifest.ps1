@@ -22,7 +22,7 @@ Function Remove-WinGetManifest
     If empty, all versions will be removed.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name that contains the Windows Package Manager REST source.
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"

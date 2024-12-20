@@ -2,7 +2,7 @@
 
 ## Create a Windows Package Manager REST source on Azure with PowerShell
 
-The [Microsoft.WinGet.RestSource](https://www.powershellgallery.com/packages/Microsoft.WinGet.RestSource) PowerShell module is provided for standing up and managing Windows Package Manager REST source.
+The [Microsoft.WinGet.RestSource](https://www.powershellgallery.com/packages/Microsoft.WinGet.RestSource) PowerShell module is provided for creating and managing Windows Package Manager REST sources.
 
 Please visit [Create a Windows Package Manager REST source](/Tools/PowershellModule/doc/WingetRestSource.md) for more details.
 
@@ -21,7 +21,7 @@ Open `src\WinGet.RestSource.sln` in Visual Studio and build. We currently only b
 
 ## Running locally
 
-The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS, this is pre-configured by the `launchSettings.json` file.
+The REST functions can be run locally, but to use winget with them, the functions must be run using HTTPS. This is pre-configured by the `launchSettings.json` file.
 
 1. In the `src\WinGet.RestSource.Functions` directory, run `generate_self_sign_cert.ps1` in PowerShell.
    * This will generate a test pfx and install it into the Root store.
@@ -34,7 +34,7 @@ The REST functions can be run locally, but to use winget with them, the function
 5. Run the `WinGet.RestSource.Functions` project locally in Visual Studio using F5.
 6. Add it as a source in winget with: `winget source add -n "winget-pkgs-restsource" -a https://localhost:7071/api/ -t "Microsoft.Rest"`
 
-Your commands to winget will now use your locally running REST instance as user added source.
+Your commands to winget will now use your locally running REST instance as a user added source.
 
 ## Running Tests
 
@@ -51,9 +51,9 @@ Running tests are a great way to ensure that functionality is preserved across m
 
 * Install the [winget client](https://github.com/microsoft/winget-cli) locally.
 * Copy the `WinGet.RestSource.IntegrationTest\Test.runsettings.template.json` template configuration to `Test.runsettings.json`
-  * Modify the `RestSourceUrl` property to point to a deployed rest source endpoint. You can use the below instructions to deploy a rest instance.
+  * Modify the `RestSourceUrl` property to point to a deployed REST source endpoint. You can use the below instructions to deploy a REST instance.
   * If the local winget client doesn't already have the source added, the integration tests can add it. To do so, change the `AddRestSource` property to true. Visual Studio must be running as admin in this case.
-  * There is a test case that **modifies** the rest source. By default it's disabled, to run it the `RunWriteTests` setting must be set to true. The `FunctionsHostKey` setting must also be set since the add/update/delete endpoints all require function authorization. We recommend creating a new pipeline-specific host key for this purpose.
+  * There is a test case that **modifies** the REST source. This test is disabled by default. To run it the `RunWriteTests` setting must be set to true. The `FunctionsHostKey` setting must also be set since the add/update/delete endpoints all require function authorization. We recommend creating a new pipeline-specific host key for this purpose.
 
 ## Contributing
 

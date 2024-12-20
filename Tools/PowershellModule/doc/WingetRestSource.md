@@ -17,7 +17,9 @@ The following steps are for managing a Windows Package Manager REST source with 
 5. Retrieve published Package Manifests from the Windows Package Manager REST source.
 6. Remove published Package Manifests from the Windows Package Manager REST source.
 
-### PowerShell pre-Requisites
+### PowerShell Pre-Requisites
+
+**The `Microsoft.WinGet.RestSource` PowerShell module requires PowerShell Core version 7.4 or later.**
 
 Before getting started with the Windows Package Manager REST source with PowerShell, here are a few recommended steps you should complete before using the PowerShell module to ensure you can successfully stand up a new Windows Package Manager REST source in Azure.
 
@@ -28,7 +30,7 @@ Before getting started with the Windows Package Manager REST source with PowerSh
     ```
 4. Install the Azure Az module 
     ```Powershell
-    PS C:\> Install-Module az -AllowClobber
+    PS C:\> Install-Module -Name Az -AllowClobber
     ```
 5. Connect to Azure with an authenticated account
     ```Powershell
@@ -41,10 +43,10 @@ Before getting started with the Windows Package Manager REST source with PowerSh
 
 ### Download and install the PowerShell module
 
-#### Get PowerShell Module from PSGallery (Recommended)
-1. Install the PowerShell module from PSGallery
+#### Get PowerShell Module from PowerShell Gallery (Recommended)
+1. Install the PowerShell module from PowerShell Gallery
     ```Powershell
-    PS C:\> Install-Module -Name Microsoft.WinGet.RestSource -AllowPrerelease
+    PS C:\> Install-PSResource -Name Microsoft.WinGet.RestSource -Prerelease
     ```
 
 #### Get PowerShell Module from Github Releases
@@ -69,8 +71,8 @@ The following steps will get PowerShell from Github Releases for use with the Wi
     ```
 
 > [!Note]
-> If PowerShell module is extracted from zip file downloaded from Github releases page, the PowerShell Module must be re-imported each time the PowerShell window is closed.  
-> To prevent having to re-install this PowerShell module each time, install from PowerShell Gallery or review the instructions in the [Installing a PowerShell Module on Microsoft Docs](https://learn.microsoft.com/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.4)
+> If PowerShell module is extracted from zip file downloaded from Github releases page, the PowerShell module must be re-imported each time the PowerShell window is closed.  
+> To prevent having to re-install this PowerShell module each time, install from PowerShell Gallery or review the instructions in the [Installing a PowerShell module on Microsoft Docs](https://learn.microsoft.com/powershell/scripting/developer/module/installing-a-powershell-module?view=powershell-7.4)
 
 ### Automate the creation of a Windows Package Manager REST source
 
@@ -84,9 +86,9 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | ResourceGroup                            | The Resource Group that will be used to contain the Azure resources. (Default: WinGetRestSource)                                    |
 | No       | SubscriptionName                         | The name of the Azure Subscription that will be used to pay for the Azure resources. (Default: current subscription)                |
 | No       | Region                                   | The Azure location where the Azure resources will be created. (Default: westus)                                                     |
-| No       | TemplateFolderPath                       | The folder location where ARM templates can be found. (Default: Templates provided by the Powershell Module)                        |
+| No       | TemplateFolderPath                       | The folder location where ARM templates can be found. (Default: Templates provided by the Powershell module)                        |
 | No       | ParameterOutputPath                      | The folder location where the ARM template parameter files will be created. (Default: Current Directory\Parameters)                 |
-| No       | RestSourcePath                           | Path to the compiled REST API Zip file. (Default: Zip file provided by the Powershell Module)                                       |
+| No       | RestSourcePath                           | Path to the compiled REST API Zip file. (Default: Zip file provided by the Powershell module)                                       |
 | No       | PublisherName                            | The Windows Package Manager REST source publisher name. (Default: Signed in user email Or WinGetRestSource@DomainName)              |
 | No       | PublisherEmail                           | The Windows Package Manager REST source publisher email. (Default: Signed in user email Or WinGetRestSource@DomainName)             |
 | No       | ImplementationPerformance                | Specifies the performance of the Azure resources for the Windows Package Manager REST source. ["Developer", "Basic", "Enhanced"]    |
@@ -97,7 +99,7 @@ The `New-WinGetSource` PowerShell cmdlet makes use of the following input parame
 | No       | ShowConnectionInstructions               | If specified, the instructions for connecting to the new Windows Package Manager REST source will be provided. (Default: False)     |
 | No       | MaxRetryCount                            | Max ARM templates deployment retry count upon failure. (Default: 5)                                                                 |
 
-To create a new Windows Package Manager REST source open the Administrative PowerShell Window and run the following:
+To create a new Windows Package Manager REST source, open the Administrative PowerShell Window and run the following:
 
 1. From an Administrative PowerShell window run the following:
     For public access WIndows Package Manager REST source
