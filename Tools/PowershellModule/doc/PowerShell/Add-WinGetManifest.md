@@ -68,7 +68,7 @@ Accept wildcard characters: False
 ### -Path
 Supports input from pipeline.
 The path to the Manifest file or folder hosting either a JSON or YAML file(s) that will be uploaded to the REST source. 
-This path may contain a single Manifest file, or a folder containing Manifest files for a single Manifest. Does not support 
+This path may contain a single Manifest file, or a folder containing multiple YAML files for a single Manifest. 
 Does not support targeting a single folder containing multiple different Manifests.
 
 ```yaml
