@@ -8,7 +8,7 @@ schema: 2.0.0
 # Find-WinGetManifest
 
 ## SYNOPSIS
-Connects to the specified Windows Package Manager source REST API to retrieve the manifest infos, returning manifest package identifier, name, publisher and versions.
+Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.
 
 ## SYNTAX
 
@@ -19,7 +19,7 @@ Find-WinGetManifest [-FunctionName] <String> [-Query <String>] [-PackageIdentifi
 ```
 
 ## DESCRIPTION
-Connects to the specified Windows Package Manager source REST API to retrieve the manifest infos, returning manifest package identifier, name, publisher and versions.  
+Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.  
 This function does not return the full WinGetManifest since the results may be very large.
 Use Get-WinGetManifest for retrieving individual full WinGetManifest.
 
@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] Name of the Azure Subscription that contains the Windows Package Manager REST source.
+\[Optional\] The name of the subscription containing the Windows Package Manager REST source.
 
 ```yaml
 Type: String

@@ -62,7 +62,7 @@ New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftE
 Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
 Azure with the basic level performance.
 The Windows Package Manager REST source is protected with Microsoft Entra Id authentication. 
-Uses existing Microsoft Entra Id app resgitration.
+Uses existing Microsoft Entra Id app registration.
 
 ## PARAMETERS
 

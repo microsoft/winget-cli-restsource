@@ -63,11 +63,10 @@ Returns a Manifest object of the specified Package Identifier that is queried ag
 ## PARAMETERS
 
 ### -Path
-Points to either a folder containing a specific application's manifest of type .json or .yaml or to a specific .json or .yaml file.
+Points to either a folder containing a specific Manifest of type .json or .yaml or to a specific .json or .yaml file.
 
-If you are processing a multi-file manifest, point to the folder that contains all yamls.
-Note: all yamls within the folder must be part of
-the same package manifest.
+If you are processing a multi-file Manifest, point to the folder that contains all yamls.
+Note: all yamls within the folder must be part of the same Manifest.
 
 ```yaml
 Type: String
@@ -129,7 +128,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the Windows Package Manager REST source.
+\[Optional\] The name of the subscription containing the Windows Package Manager REST source.
 
 ```yaml
 Type: String

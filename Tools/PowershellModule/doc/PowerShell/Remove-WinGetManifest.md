@@ -91,7 +91,7 @@ Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] The Subscription name that contains the Windows Package Manager REST source.
+\[Optional\] The name of the subscription containing the Windows Package Manager REST source.
 
 ```yaml
 Type: String
