@@ -1,59 +1,60 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": "westus"
-    },
-    "serverIdentifier": {
-      "value": "winget-pkgs-rest-int"
-    },
-    "manifestCacheEndpoint": {
-      "value": "https://winget-int.azureedge.net/cache/"
-    },
-    "cosmosContainer": {
-      "value": "Manifests"
-    },
-    "cosmosDatabase": {
-      "value": "cosmossql-wgrest-int"
-    },
-    "functionName": {
-      "value": "azfun-wgrest-api-westus-int"
-    },
-    "appServiceName": {
-      "value": "asp-wgrest-westus-int"
-    },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-int"
-    },
-    "appInsightName": {
-      "value": "appin-wgrest-westus-int"
-    },
-    "monitoringTenant": {
-      "value": "PkgMgrInt"
-    },
-    "monitoringRole": {
-      "value": "azfun-wgrest-api-westus-int"
-    },
-    "monitoringMetricsAccount": {
-      "value": "MsPkgMgrMetrics"
-    },
-    "cors": {
-      "value": {
-        "allowedOrigins": [
-          "https://functions.azure.com",
-          "https://functions-staging.azure.com",
-          "https://functions-next.azure.com",
-          "https://df-devicemanagement.onecloud.azure-test.net"
-        ],
-        "supportCredentials": false
-      }
-    },
-    "azFuncStorageName": {
-      "value": "stwgrestwestusint"
-    },
-    "serverAuthenticationType": {
-        "value": "none"
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "serverIdentifier": {
+            "value": "winget-pkgs-rest-int"
+        },
+        "manifestCacheEndpoint": {
+            "value": "https://winget-int.azureedge.net/cache/"
+        },
+        "cosmosContainer": {
+            "value": "Manifests"
+        },
+        "cosmosDatabase": {
+            "value": "cosmossql-wgrest-int"
+        },
+        "functionName": {
+            "value": "func-wgrest-api-westus-int"
+        },
+        "appServiceName": {
+            "value": "asp-wgrest-westus-int"
+        },
+        "keyVaultName": {
+            "value": "kv-wgrest-westus-int"
+        },
+        "appInsightName": {
+            "value": "appi-wgrest-westus-int"
+        },
+        "monitoringTenant": {
+            "value": "PkgMgrInt"
+        },
+        "monitoringRole": {
+            "value": "func-wgrest-api-westus-int"
+        },
+        "monitoringMetricsAccount": {
+            "value": "MsPkgMgrMetrics"
+        },
+        "cors": {
+            "value": {
+                "allowedOrigins": [
+                    "https://functions.azure.com",
+                    "https://functions-staging.azure.com",
+                    "https://functions-next.azure.com",
+                    "https://df-devicemanagement.onecloud.azure-test.net"
+                ],
+                "supportCredentials": false
+            }
+        },
+        "azFuncStorageName": {
+            "value": "stwgrestwestusint"
+        },
+        "serverAuthenticationType": {
+            "value": "none"
+        }
     }
-  }
 }
+

@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appConfigName": {
-            "value": "appconfig-wgrest-centus-int"
+            "value": "appcs-wgrest-centus-int"
         },
         "location": {
             "value": "centralus"

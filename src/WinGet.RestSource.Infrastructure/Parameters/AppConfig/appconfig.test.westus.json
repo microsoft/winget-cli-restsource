@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appConfigName": {
-            "value": "appconfig-wgrest-westus-test"
+            "value": "appcs-wgrest-westus-test"
         },
         "location": {
             "value": "westus"

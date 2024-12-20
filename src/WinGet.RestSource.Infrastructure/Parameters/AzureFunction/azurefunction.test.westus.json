@@ -1,48 +1,49 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": "westus"
-    },
-    "serverIdentifier": {
-      "value": "winget-pkgs-rest-test"
-    },
-    "manifestCacheEndpoint": {
-      "value": "https://winget-test.azureedge.net/cache/"
-    },
-    "cosmosContainer": {
-      "value": "Manifests"
-    },
-    "cosmosDatabase": {
-      "value": "cosmossql-wgrest-test"
-    },
-    "functionName": {
-      "value": "azfun-wgrest-api-westus-test"
-    },
-    "appServiceName": {
-      "value": "asp-wgrest-westus-test"
-    },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-test"
-    },
-    "appInsightName": {
-      "value": "appin-wgrest-westus-test"
-    },
-    "monitoringTenant": {
-      "value": "PkgMgrTest"
-    },
-    "monitoringRole": {
-      "value": "azfun-wgrest-api-westus-test"
-    },
-    "monitoringMetricsAccount": {
-      "value": "MsPkgMgrMetrics"
-    },
-    "azFuncStorageName": {
-      "value": "stwgrestwestustest"
-    },
-    "serverAuthenticationType": {
-        "value": "none"
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westus"
+        },
+        "serverIdentifier": {
+            "value": "winget-pkgs-rest-test"
+        },
+        "manifestCacheEndpoint": {
+            "value": "https://winget-test.azureedge.net/cache/"
+        },
+        "cosmosContainer": {
+            "value": "Manifests"
+        },
+        "cosmosDatabase": {
+            "value": "cosmossql-wgrest-test"
+        },
+        "functionName": {
+            "value": "func-wgrest-api-westus-test"
+        },
+        "appServiceName": {
+            "value": "asp-wgrest-westus-test"
+        },
+        "keyVaultName": {
+            "value": "kv-wgrest-westus-test"
+        },
+        "appInsightName": {
+            "value": "appi-wgrest-westus-test"
+        },
+        "monitoringTenant": {
+            "value": "PkgMgrTest"
+        },
+        "monitoringRole": {
+            "value": "func-wgrest-api-westus-test"
+        },
+        "monitoringMetricsAccount": {
+            "value": "MsPkgMgrMetrics"
+        },
+        "azFuncStorageName": {
+            "value": "stwgrestwestustest"
+        },
+        "serverAuthenticationType": {
+            "value": "none"
+        }
     }
-  }
 }
+

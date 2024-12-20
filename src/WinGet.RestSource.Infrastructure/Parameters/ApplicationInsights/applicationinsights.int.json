@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "appin-wgrest-westus-int"
+            "value": "appi-wgrest-westus-int"
         }
     }
 }
