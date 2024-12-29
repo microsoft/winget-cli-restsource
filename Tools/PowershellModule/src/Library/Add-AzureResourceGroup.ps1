@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Add-AzureResourceGroup
-{
+Function Add-AzureResourceGroup {
     <#
     .SYNOPSIS
     Adds a Resource Group to the connected to Subscription.
@@ -25,15 +24,15 @@ Function Add-AzureResourceGroup
     #>
 
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)] [string]$Name,
-        [Parameter(Position=1, Mandatory=$true)] [string]$Region
+        [Parameter(Position = 0, Mandatory = $true)] [string]$Name,
+        [Parameter(Position = 1, Mandatory = $true)] [string]$Region
     )
     
     $Return = $false
     
     ## Normalize resource group name
-    $NormalizedName = $Name -replace "[^a-zA-Z0-9-()_.]", ""
-    if($Name -cne $NormalizedName) {
+    $NormalizedName = $Name -replace '[^a-zA-Z0-9-()_.]', ''
+    if ($Name -cne $NormalizedName) {
         $Name = $NormalizedName
         Write-Warning "Removed special characters from the Azure Resource Group Name (New Name: $Name)."
     }
@@ -45,19 +44,17 @@ Function Add-AzureResourceGroup
     Write-Verbose "Retrieving details from Azure for the Resource Group name $Name"
     $Result = Get-AzResourceGroup -Name $Name -ErrorAction SilentlyContinue -ErrorVariable ErrorGet
 
-    if(!$Result) {
+    if (!$Result) {
         Write-Information "Failed to retrieve Resource Group, will attempt to create $Name in the specified $Region."
         
         $Result = New-AzResourceGroup -Name $Name -Location $Region
-        if($Result) {
+        if ($Result) {
             Write-Information "Resource Group $Name has been created in the $Region region."
             $Return = $true
-        }
-        else {
+        } else {
             Write-Error "Failed to retrieve or create Resource Group with name $Name."
         }
-    }
-    else {
+    } else {
         ## Found an existing Resource Group matching the name of $Name
         Write-Warning "Found an existing Resource Group matching the name of $Name. Will not create a new Resource Group."
         $Return = $true

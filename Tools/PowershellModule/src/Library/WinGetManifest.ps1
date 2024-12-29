@@ -3,8 +3,7 @@
 
 ## Classes representing WinGet manifest
 
-class WinGetAgreement
-{
+class WinGetAgreement {
     [string]$AgreementLabel
     [string]$Agreement
     [string]$AgreementUrl
@@ -12,16 +11,14 @@ class WinGetAgreement
     WinGetAgreement () {}
 }
 
-class WinGetDocumentation
-{
+class WinGetDocumentation {
     [string]$DocumentLabel
     [string]$DocumentUrl
 
     WinGetDocumentation () {}
 }
 
-class WinGetIcon
-{
+class WinGetIcon {
     [string]$IconUrl
     [string]$IconFileType
     [string]$IconResolution
@@ -31,8 +28,7 @@ class WinGetIcon
     WinGetIcon () {}
 }
 
-class WinGetLocale
-{
+class WinGetLocale {
     [string]$PackageLocale
     [string]$Publisher
     [string]$PublisherUrl
@@ -62,8 +58,7 @@ class WinGetLocale
     WinGetLocale () {}
 }
 
-class WinGetInstallerSwitch
-{
+class WinGetInstallerSwitch {
     [string]$Silent
     [string]$SilentWithProgress
     [string]$Interactive
@@ -76,8 +71,7 @@ class WinGetInstallerSwitch
     WinGetInstallerSwitch () {}
 }
 
-class WinGetExpectedReturnCode
-{
+class WinGetExpectedReturnCode {
     [long]$InstallerReturnCode
     [string]$ReturnResponse
     [string]$ReturnResponseUrl
@@ -85,16 +79,14 @@ class WinGetExpectedReturnCode
     WinGetExpectedReturnCode () {}
 }
 
-class WinGetPackageDependency
-{
+class WinGetPackageDependency {
     [string]$PackageIdentifier
     [string]$MinimumVersion
 
     WinGetPackageDependency () {}
 }
 
-class WinGetDependencies
-{
+class WinGetDependencies {
     [string[]]$WindowsFeatures
     [string[]]$WindowsLibraries
     [WinGetPackageDependency[]]$PackageDependencies
@@ -103,8 +95,7 @@ class WinGetDependencies
     WinGetDependencies () {}
 }
 
-class WinGetAppsAndFeaturesEntry
-{
+class WinGetAppsAndFeaturesEntry {
     [string]$DisplayName
     [string]$Publisher
     [string]$DisplayVersion
@@ -115,24 +106,21 @@ class WinGetAppsAndFeaturesEntry
     WinGetAppsAndFeaturesEntry () {}
 }
 
-class WinGetMarkets
-{
+class WinGetMarkets {
     [string[]]$AllowedMarkets
     [string[]]$ExcludedMarkets
 
     WinGetMarkets () {}
 }
 
-class WinGetNestedInstallerFile
-{
+class WinGetNestedInstallerFile {
     [string]$RelativeFilePath
     [string]$PortableCommandAlias
 
     WinGetNestedInstallerFile () {}
 }
 
-class WinGetInstallationMetadataFile
-{
+class WinGetInstallationMetadataFile {
     [string]$RelativeFilePath
     [string]$FileSha256
     [string]$FileType
@@ -142,16 +130,14 @@ class WinGetInstallationMetadataFile
     WinGetInstallationMetadataFile () {}
 }
 
-class WinGetInstallationMetadata
-{
+class WinGetInstallationMetadata {
     [string]$DefaultInstallLocation
     [WinGetInstallationMetadataFile[]]$Files
 
     WinGetInstallationMetadata () {}
 }
 
-class WinGetInstaller
-{
+class WinGetInstaller {
     [string]$InstallerIdentifier
     [string]$InstallerSha256
     [string]$InstallerUrl
@@ -196,8 +182,7 @@ class WinGetInstaller
     WinGetInstaller () {}
 }
 
-class WinGetVersion
-{
+class WinGetVersion {
     [string]$PackageVersion
     [string]$Channel
     [WinGetLocale]      $DefaultLocale
@@ -207,15 +192,13 @@ class WinGetVersion
     WinGetVersion () {}
 }
 
-class WinGetManifest
-{
+class WinGetManifest {
     [string] $PackageIdentifier
     [WinGetVersion[]] $Versions
 
     WinGetManifest () {}
 
-    [string] GetJson ()
-    {
+    [string] GetJson () {
         ## Not using ConvertTo-Json here since we want more control on null property handling
         $options = [System.Text.Json.JsonSerializerOptions]::new()
         $options.WriteIndented = $false
@@ -227,18 +210,16 @@ class WinGetManifest
         return [System.Text.Json.JsonSerializer]::Serialize($this, $options)
     }
 
-    static [WinGetManifest] CreateFromString ([string] $a)
-    {
-        Write-Verbose -Message "Creating a WinGetManifest object from String."
+    static [WinGetManifest] CreateFromString ([string] $a) {
+        Write-Verbose -Message 'Creating a WinGetManifest object from String.'
         
         $options = [System.Text.Json.JsonSerializerOptions]::new()
 
         return [System.Text.Json.JsonSerializer]::Deserialize($a, [WinGetManifest], $options)
     }
 
-    static [WinGetManifest] CreateFromObject ([psobject] $a)
-    {
-        Write-Verbose -Message "Creating a WinGetManifest object from PsObject object."
+    static [WinGetManifest] CreateFromObject ([psobject] $a) {
+        Write-Verbose -Message 'Creating a WinGetManifest object from PsObject object.'
         
         $json = ConvertTo-Json $a -Depth 16 -Compress
 

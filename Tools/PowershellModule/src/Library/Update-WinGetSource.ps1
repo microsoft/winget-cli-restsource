@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Update-WinGetSource
-{
+Function Update-WinGetSource {
     <#
     .SYNOPSIS
     Updates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
@@ -82,22 +81,22 @@ Function Update-WinGetSource
 
     #>
     PARAM(
-        [Parameter(Mandatory=$false)] [string]$Name,
-        [Parameter(Mandatory=$false)] [string]$ResourceGroup = "WinGetRestSource",
-        [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
-        [Parameter(Mandatory=$false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
-        [Parameter(Mandatory=$false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
-        [Parameter(Mandatory=$false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
-        [Parameter(Mandatory=$false)] [string]$PublisherName = "",
-        [Parameter(Mandatory=$false)] [string]$PublisherEmail = "",
-        [ValidateSet("Developer", "Basic", "Enhanced")]
-        [Parameter(Mandatory=$false)] [string]$ImplementationPerformance = "Basic",
-        [ValidateSet("None", "MicrosoftEntraId")]
-        [Parameter(Mandatory=$false)] [string]$RestSourceAuthentication = "None",
-        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResource = "",
-        [Parameter(Mandatory=$false)] [string]$MicrosoftEntraIdResourceScope = "",
-        [Parameter(Mandatory=$false)] [int]$MaxRetryCount = 3,
-        [Parameter(Mandatory=$false)] [string]$FunctionName = "",
+        [Parameter(Mandatory = $false)] [string]$Name,
+        [Parameter(Mandatory = $false)] [string]$ResourceGroup = 'WinGetRestSource',
+        [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',
+        [Parameter(Mandatory = $false)] [string]$TemplateFolderPath = "$PSScriptRoot\..\Data\ARMTemplates",
+        [Parameter(Mandatory = $false)] [string]$ParameterOutputPath = "$($(Get-Location).Path)\Parameters",
+        [Parameter(Mandatory = $false)] [string]$RestSourcePath = "$PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip",
+        [Parameter(Mandatory = $false)] [string]$PublisherName = '',
+        [Parameter(Mandatory = $false)] [string]$PublisherEmail = '',
+        [ValidateSet('Developer', 'Basic', 'Enhanced')]
+        [Parameter(Mandatory = $false)] [string]$ImplementationPerformance = 'Basic',
+        [ValidateSet('None', 'MicrosoftEntraId')]
+        [Parameter(Mandatory = $false)] [string]$RestSourceAuthentication = 'None',
+        [Parameter(Mandatory = $false)] [string]$MicrosoftEntraIdResource = '',
+        [Parameter(Mandatory = $false)] [string]$MicrosoftEntraIdResourceScope = '',
+        [Parameter(Mandatory = $false)] [int]$MaxRetryCount = 3,
+        [Parameter(Mandatory = $false)] [string]$FunctionName = '',
         [Parameter()] [switch]$PublishAzureFunctionOnly
     )
 
@@ -119,17 +118,16 @@ Function Update-WinGetSource
     $Result = New-Item -ItemType Directory -Path $ParameterOutputPath -Force
     if ($Result) {
         Write-Verbose -Message "Created Directory to contain the ARM Parameter files ($($Result.FullName))."
-    }
-    else {
+    } else {
         Write-Error "Failed to create ARM parameter files output path. Path: $ParameterOutputPath"
         return $false
     }
 
     ## Connects to Azure, if not already connected.
-    Write-Information "Validating connection to azure, will attempt to connect if not already connected."
+    Write-Information 'Validating connection to azure, will attempt to connect if not already connected.'
     $Result = Connect-ToAzure -SubscriptionName $SubscriptionName
     if (!($Result)) {
-        Write-Error "Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials."
+        Write-Error 'Failed to connect to Azure. Please run Connect-AzAccount to connect to Azure, or re-run the cmdlet and enter your credentials.'
         return $false
     }
 
@@ -143,17 +141,17 @@ Function Update-WinGetSource
 
     if ($PublishAzureFunctionOnly) {
         if ([string]::IsNullOrWhiteSpace($FunctionName)) {
-            Write-Error "FunctionName is null or empty"
+            Write-Error 'FunctionName is null or empty'
             return $false
         }
 
-        Write-Information -MessageData "Publishing function files to the Azure Function."
+        Write-Information -MessageData 'Publishing function files to the Azure Function.'
         $DeployResult = Publish-AzWebApp -ArchivePath $RestSourcePath -ResourceGroupName $ResourceGroup -Name $FunctionName -Force -ErrorVariable DeployError
 
         ## Verifies that no error occured when publishing the Function App
         if ($DeployError -or !$DeployResult) {
             $ErrReturnObject = @{
-                DeployError = $DeployError
+                DeployError  = $DeployError
                 DeployResult = $DeployResult
             }
 
@@ -162,34 +160,33 @@ Function Update-WinGetSource
         }
 
         ## Restart the Function App
-        Write-Verbose "Restarting Azure Function."
+        Write-Verbose 'Restarting Azure Function.'
         if (!$(Restart-AzFunctionApp -Name $FunctionName -ResourceGroupName $ResourceGroup -Force -PassThru)) {
             Write-Error "Failed to restart Function App. Name: $FunctionName"
             return $false
         }
-    }
-    else {
+    } else {
         if ([string]::IsNullOrWhiteSpace($Name)) {
-            Write-Error "Name is null or empty"
+            Write-Error 'Name is null or empty'
             return $false
         }
 
         ## Check Microsoft Entra Id input
-        if ($RestSourceAuthentication -eq "MicrosoftEntraId" -and !$MicrosoftEntraIdResource) {
-            Write-Error "When Microsoft Entra Id authentication is requested, MicrosoftEntraIdResource should be provided."
+        if ($RestSourceAuthentication -eq 'MicrosoftEntraId' -and !$MicrosoftEntraIdResource) {
+            Write-Error 'When Microsoft Entra Id authentication is requested, MicrosoftEntraIdResource should be provided.'
             return $false
         }
 
         ## Creates the ARM files
         $ARMObjects = New-ARMParameterObjects -ParameterFolderPath $ParameterOutputPath -TemplateFolderPath $TemplateFolderPath -Name $Name -Region $Region -ImplementationPerformance $ImplementationPerformance -PublisherName $PublisherName -PublisherEmail $PublisherEmail -RestSourceAuthentication $RestSourceAuthentication -MicrosoftEntraIdResource $MicrosoftEntraIdResource -MicrosoftEntraIdResourceScope $MicrosoftEntraIdResourceScope -ForUpdate
         if (!$ARMObjects) {
-            Write-Error "Failed to create ARM parameter objects."
+            Write-Error 'Failed to create ARM parameter objects.'
             return $false
         }
 
         ## Verifies ARM Parameters are correct
         $Result = Test-ARMTemplates -ARMObjects $ARMObjects -ResourceGroup $ResourceGroup
-        if($Result){
+        if ($Result) {
             $ErrReturnObject = @{
                 ARMObjects    = $ARMObjects
                 ResourceGroup = $ResourceGroup
@@ -211,11 +208,10 @@ Function Update-WinGetSource
             if (!$Result) {
                 if ($Attempt -lt $MaxRetryCount) {
                     $Retry = $true
-                    Write-Verbose "Retrying deployment after 15 seconds."
+                    Write-Verbose 'Retrying deployment after 15 seconds.'
                     Start-Sleep -Seconds 15
-                }
-                else {
-                    Write-Error "Failed to create Azure resources for WinGet rest source."
+                } else {
+                    Write-Error 'Failed to create Azure resources for WinGet rest source.'
                     return $false
                 }
             }

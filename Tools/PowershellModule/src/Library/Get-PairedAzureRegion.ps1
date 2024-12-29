@@ -1,249 +1,233 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-Function Get-PairedAzureRegion
-{
+Function Get-PairedAzureRegion {
     PARAM(
-        [Parameter(Position=0, Mandatory=$true)]  [string]$Region
+        [Parameter(Position = 0, Mandatory = $true)]  [string]$Region
     )
 
-    $Result = "westus"
+    $Result = 'westus'
 
-    if($Region -like "*canada*") {
+    if ($Region -like '*canada*') {
         switch ($Region) {
-            "canadacentral" {
-                $Result = "canadaeast"
+            'canadacentral' {
+                $Result = 'canadaeast'
             }
-            "canadaeast" {
-                $Result = "canadacentral"
+            'canadaeast' {
+                $Result = 'canadacentral'
             }
             Default {
-                $Result = "canadacentral"
+                $Result = 'canadacentral'
             }
         }
-    }
-    elseif($Region -like "*asia*") {
+    } elseif ($Region -like '*asia*') {
         switch ($Region) {
-            "eastasia" {
-                $Result = "southeastasia"
+            'eastasia' {
+                $Result = 'southeastasia'
             }
-            "southeastasia" {
-                $Result = "eastasia"
+            'southeastasia' {
+                $Result = 'eastasia'
             }
             Default {
-                $Result = "eastasia"
+                $Result = 'eastasia'
             }
         }
-    }
-    elseif($Region -like "*japan*") {
+    } elseif ($Region -like '*japan*') {
         switch ($Region) {
-            "japanwest" {
-                $Result = "japaneast"
+            'japanwest' {
+                $Result = 'japaneast'
             }
-            "japaneast" {
-                $Result = "japanwest"
+            'japaneast' {
+                $Result = 'japanwest'
             }
             Default {
-                $Result = "japanwest"
+                $Result = 'japanwest'
             }
         }
-    }
-    elseif($Region -like "*europe*") {
+    } elseif ($Region -like '*europe*') {
         switch ($Region) {
-            "northeurope" {
-                $Result = "westeurope"
+            'northeurope' {
+                $Result = 'westeurope'
             }
-            "westeurope" {
-                $Result = "northeurope"
+            'westeurope' {
+                $Result = 'northeurope'
             }
             Default {
-                $Result = "westeurope"
+                $Result = 'westeurope'
             }
         }
-    }
-    elseif($Region -like "*brazil*") {
+    } elseif ($Region -like '*brazil*') {
         switch ($Region) {
-            "brazilsouth" {
-                $Result = "brazilsoutheast"
+            'brazilsouth' {
+                $Result = 'brazilsoutheast'
             }
-            "brazilsoutheast" {
-                $Result = "brazilsouth"
+            'brazilsoutheast' {
+                $Result = 'brazilsouth'
             }
             Default {
-                $Result = "brazilsoutheast"
+                $Result = 'brazilsoutheast'
             }
         }
-    }
-    elseif($Region -like "*australia*") {
+    } elseif ($Region -like '*australia*') {
         switch ($Region) {
-            "australiaeast" {
-                $Result = "australiasoutheast"
+            'australiaeast' {
+                $Result = 'australiasoutheast'
             }
-            "australiasoutheast" {
-                $Result = "australiaeast"
+            'australiasoutheast' {
+                $Result = 'australiaeast'
             }
-            "australiacentral" {
-                $Result = "australiacentral2"
+            'australiacentral' {
+                $Result = 'australiacentral2'
             }
-            "australiacentral2" {
-                $Result = "australiacentral"
+            'australiacentral2' {
+                $Result = 'australiacentral'
             }
             Default {
-                $Result = "australiasoutheast"
+                $Result = 'australiasoutheast'
             }
         }
-    }
-    elseif($Region -like "*us*") {
+    } elseif ($Region -like '*us*') {
         switch ($Region) {
-            "eastus" {
-                $Result = "westus"
+            'eastus' {
+                $Result = 'westus'
             }
-            "westus" {
-                $Result = "centralus"
+            'westus' {
+                $Result = 'centralus'
             }
-            "eastus2" {
-                $Result = "centralus"
+            'eastus2' {
+                $Result = 'centralus'
             }
-            "centralus" {
-                $Result = "eastus2"
+            'centralus' {
+                $Result = 'eastus2'
             }
-            "northcentralus" {
-                $Result = "southcentralus"
+            'northcentralus' {
+                $Result = 'southcentralus'
             }
-            "southcentralus" {
-                $Result = "northcentralus"
+            'southcentralus' {
+                $Result = 'northcentralus'
             }
-            "westus2" {
-                $Result = "westcentralus"
+            'westus2' {
+                $Result = 'westcentralus'
             }
-            "westcentralus" {
-                $Result = "westus2"
+            'westcentralus' {
+                $Result = 'westus2'
             }
-            "westus3" {
-                $Result = "westcentralus"
+            'westus3' {
+                $Result = 'westcentralus'
             }
             Default {
-                $Result = "westus"
+                $Result = 'westus'
             }
         }
-    }
-    elseif($Region -like "*india*") {
+    } elseif ($Region -like '*india*') {
         switch ($Region) {
-            "westindia" {
-                $Result = "southindia"
+            'westindia' {
+                $Result = 'southindia'
             }
-            "centralindia" {
-                $Result = "southindia"
+            'centralindia' {
+                $Result = 'southindia'
             }
-            "southindia" {
-                $Result = "centralindia"
+            'southindia' {
+                $Result = 'centralindia'
             }
             Default {
-                $Result = "southindia"
+                $Result = 'southindia'
             }
         }
-    }
-    elseif($Region -like "*uk*") {
+    } elseif ($Region -like '*uk*') {
         switch ($Region) {
-            "uksouth" {
-                $Result = "ukwest"
+            'uksouth' {
+                $Result = 'ukwest'
             }
-            "ukwest" {
-                $Result = "uksouth"
+            'ukwest' {
+                $Result = 'uksouth'
             }
             Default {
-                $Result = "uksouth"
+                $Result = 'uksouth'
             }
         }
-    }
-    elseif($Region -like "*korea*") {
+    } elseif ($Region -like '*korea*') {
         switch ($Region) {
-            "koreacentral" {
-                $Result = "koreasouth"
+            'koreacentral' {
+                $Result = 'koreasouth'
             }
-            "koreasouth" {
-                $Result = "koreacentral"
+            'koreasouth' {
+                $Result = 'koreacentral'
             }
             Default {
-                $Result = "koreacentral"
+                $Result = 'koreacentral'
             }
         }
-    }
-    elseif($Region -like "*france*") {
+    } elseif ($Region -like '*france*') {
         switch ($Region) {
-            "francecentral" {
-                $Result = "francesouth"
+            'francecentral' {
+                $Result = 'francesouth'
             }
-            "francesouth" {
-                $Result = "francecentral"
+            'francesouth' {
+                $Result = 'francecentral'
             }
             Default {
-                $Result = "francecentral"
+                $Result = 'francecentral'
             }
         }
-    }
-    elseif($Region -like "*africa*") {
+    } elseif ($Region -like '*africa*') {
         switch ($Region) {
-            "southafricanorth" {
-                $Result = "southafricawest"
+            'southafricanorth' {
+                $Result = 'southafricawest'
             }
-            "southafricawest" {
-                $Result = "southafricanorth"
+            'southafricawest' {
+                $Result = 'southafricanorth'
             }
             Default {
-                $Result = "southafricanorth"
+                $Result = 'southafricanorth'
             }
         }
-    }
-    elseif($Region -like "*switzerland*") {
+    } elseif ($Region -like '*switzerland*') {
         switch ($Region) {
-            "switzerlandnorth" {
-                $Result = "switzerlandwest"
+            'switzerlandnorth' {
+                $Result = 'switzerlandwest'
             }
-            "switzerlandwest" {
-                $Result = "switzerlandnorth"
+            'switzerlandwest' {
+                $Result = 'switzerlandnorth'
             }
             Default {
-                $Result = "switzerlandwest"
+                $Result = 'switzerlandwest'
             }
         }
-    }
-    elseif($Region -like "*germany*") {
+    } elseif ($Region -like '*germany*') {
         switch ($Region) {
-            "germanynorth" {
-                $Result = "germanywestcentral"
+            'germanynorth' {
+                $Result = 'germanywestcentral'
             }
-            "germanywestcentral" {
-                $Result = "germanynorth"
+            'germanywestcentral' {
+                $Result = 'germanynorth'
             }
             Default {
-                $Result = "germanywestcentral"
+                $Result = 'germanywestcentral'
             }
         }
-    }
-    elseif($Region -like "*norway*") {
+    } elseif ($Region -like '*norway*') {
         switch ($Region) {
-            "norwaywest" {
-                $Result = "norwayeast"
+            'norwaywest' {
+                $Result = 'norwayeast'
             }
-            "norwayeast" {
-                $Result = "norwaywest"
+            'norwayeast' {
+                $Result = 'norwaywest'
             }
             Default {
-                $Result = "norwaywest"
+                $Result = 'norwaywest'
             }
         }
-    }
-    elseif($Region -like "*uae*") {
+    } elseif ($Region -like '*uae*') {
         switch ($Region) {
-            "uaecentral" {
-                $Result = "uaenorth"
+            'uaecentral' {
+                $Result = 'uaenorth'
             }
-            "uaenorth" {
-                $Result = "uaecentral"
+            'uaenorth' {
+                $Result = 'uaecentral'
             }
             Default {
-                $Result = "uaecentral"
+                $Result = 'uaecentral'
             }
         }
     }

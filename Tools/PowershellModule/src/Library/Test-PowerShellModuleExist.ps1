@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-PowerShellModuleExist
-{
+Function Test-PowerShellModuleExist {
     <#
     .SYNOPSIS
     Verifies that the provided Modules are installed.
@@ -28,15 +27,15 @@ Function Test-PowerShellModuleExist
     #>
     [CmdletBinding(DefaultParameterSetName = 'Multiple')]
     PARAM(
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Single")] [string]$Name,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Multiple")] [string[]]$Modules
+        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Single')] [string]$Name,
+        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Multiple')] [string[]]$Modules
     )
 
     ## Validation result to be returned is True until proven otherwise.
     $ValidationStatus = $true
 
     switch ($PsCmdlet.ParameterSetName) {
-        "Multiple" {
+        'Multiple' {
             foreach ($RequiredModule in $RequiredModules) {
                 ## Tests if the module is installed
                 $Result = Test-PowerShellModuleExist -Name $RequiredModule
@@ -44,9 +43,9 @@ Function Test-PowerShellModuleExist
                 $ValidationStatus = $ValidationStatus -and $Result
             }
         }
-        "Single" { 
+        'Single' { 
             ## Determines if the PowerShell Module is installed
-            if(!$(Get-Module -ListAvailable -Name $RequiredModule)) {
+            if (!$(Get-Module -ListAvailable -Name $RequiredModule)) {
                 $ValidationStatus = $false
                 Write-Warning -Message "Missing required PowerShell modules. Run the following command to install the missing modules: Install-Module $RequiredModule"
             } 
