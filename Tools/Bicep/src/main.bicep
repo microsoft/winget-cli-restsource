@@ -55,6 +55,14 @@ param keyVaultSku string = 'standard'
 @description('Optional. The name of the SKU will determine the tier, size, family of the App Service Plan. This defaults to S1.')
 param serverFarmSkuName string = 'S1'
 
+module userAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+  name: 'userAssignedIdentity'
+  params: {
+    name: 'id-${resourceGroup().name}'
+    location: location
+  }
+}
+
 // resource user 'Microsoft.Graph/users@v1.0' existing = {
 //     objectId: deployer().objectId
 //   } TODO: Track issue: https://github.com/microsoftgraph/msgraph-bicep-types/issues/135 if this becomes available we can pass in the email to API management
@@ -231,7 +239,7 @@ module function 'br/public:avm/res/web/site:0.12.1' = {
       FUNCTIONS_WORKER_RUNTIME: 'dotnet'
       FUNCTIONS_INPROC_NET8_ENABLED: 1
       ManifestCacheEndpoint: null
-      MicrosoftEntraIdResource: null 
+      MicrosoftEntraIdResource: null
       MicrosoftEntraIdResourceScope: null
       ServerIdentifier: 'WinGetRestSource-${resourceGroup().name}'
       WEBSITE_FIRST_PARTY_ID: 'AntMDS'
@@ -243,6 +251,13 @@ module function 'br/public:avm/res/web/site:0.12.1' = {
       'WinGetRest:Telemetry:Role': null
       'WinGetRest:Telemetry:Tenant': null
     }
+    roleAssignments: [
+      {
+        principalId: userAssignedIdentity.outputs.principalId
+        roleDefinitionIdOrName: 'de139f84-1756-47ae-9be6-808fbbe84772'
+        description: 'Assign the Website Contributor to the User Assigned Identity.'
+      }
+    ]
   }
 }
 
@@ -323,6 +338,67 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.10.1' = {
         ]
       }
     ]
+  }
+}
+
+// TODO: Follow issue: https://github.com/Azure/azure-powershell/issues/23558
+module deploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
+  name: 'deploymentScript'
+  params: {
+    name: 'ds-${resourceGroup().name}'
+    kind: 'AzurePowerShell'
+    timeout: 'PT30M'
+    runOnce: true
+    azPowerShellVersion: '12.3'
+    retentionInterval: 'PT1H'
+    location: location
+    arguments: '-FunctionAppId ${function.outputs.resourceId} -ResourceGroupName ${resourceGroup().name} -FunctionName ${functionName}'
+    scriptContent: '''
+          param (
+              [string] $FunctionAppId,
+              [string] $ResourceGroupName,
+              [string] $FunctionName
+          )
+  
+          # Generate function key 
+          function New-FunctionAppKey
+          {
+              $private:characters = 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
+              $private:randomChars = 1..64 | ForEach-Object { Get-Random -Maximum $characters.length }
+          
+              # Set the output field separator to empty instead of space
+              $private:ofs=""
+              return [String]$characters[$randomChars]
+          }
+  
+          $NewFunctionKeyValue = New-FunctionAppKey
+          $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
+          if ($Result.StatusCode -ne 200 -and $Result.StatusCode -ne 201) {
+              Throw "Failed to create Azure Function key. $($Result.Content)"
+          }
+    
+          # Define variables
+          $repo = "microsoft/winget-cli-restsource"
+          $file = "WinGet.RestSource-WinGet.RestSource.Functions.zip"
+          $releases = "https://api.github.com/repos/$repo/releases"
+  
+          # Get the latest ZIP file URI
+          $zipUri = ((Invoke-RestMethod -Uri $releases)[0].assets | Where-Object {$_.Name -eq $file}).browser_download_url
+          $out = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath $file
+  
+          # Extract the file on container
+          Write-Host "Retrieving $zipUri to $out"
+          Invoke-RestMethod -Uri $zipUri -OutFile $out
+  
+          # Publish file
+          try {
+          Write-Host "Publishing $out the Azure Function $FunctionName"
+          Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName -ArchivePath $out -Confirm:$false -Force -Restart -ErrorAction Stop
+          } catch {
+          Throw "Failed to publish the Azure Function $FunctionName. Error: $_" 
+          }
+          '''
+    managedIdentities: { userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId] }
   }
 }
 
