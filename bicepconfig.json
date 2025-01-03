@@ -1,0 +1,11 @@
+{
+    "analyzers": {
+        "core": {
+            "rules": {
+                "use-recent-module-versions": {
+                    "level": "error"
+                }
+            }
+        }
+    }
+}
