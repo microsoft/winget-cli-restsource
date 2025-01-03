@@ -194,3 +194,70 @@ PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Window
 
 ## Manage Windows Package Manager REST source with Azure Bicep
 
+Azure Bicep can be used as an infrastructure as Code (IaC) language to deploy the required Azure resources without using the `Microsoft.WinGet.RestClient` module, offering a more intuitive and declarative approach. The [Bicep](../../Bicep/) folder consist out of multiple patterns, mimicking the `ImplementationPerformance` parameter for each scenario e.g. `Free`, `Basic`, and `Enhanced`.  
+
+The following steps are for managing a Windows Package Manager REST source with Azure Bicep:
+
+1. Download and install `Bicep`.
+2. Create Azure Resource Group.
+3. Deploy the pattern of choose.
+
+### Download and install Bicep
+
+**To deploy the required Azure resources with Bicep, you require version 0.32.4 or later.**
+
+#### Get Bicep from WinGet (Recommended)
+
+1. Install Bicep using WinGet
+
+    ```powershell
+    PS C:\> winget install Microsoft.Bicep --source winget
+    ```
+
+#### Get Bicep using PowerShell
+
+The following steps will get the latest version of Bicep using PowerShell:
+
+1. Open PowerShell
+2. Execute the following code snippet to install Bicep in your user profile.
+
+    ```powershell
+    $installPath = "$env:USERPROFILE\.bicep"
+    $installDir = New-Item -ItemType Directory -Path $installPath -Force
+    $installDir.Attributes += 'Hidden'
+    (New-Object Net.WebClient).DownloadFile("https://github.com/Azure/bicep/releases/latest/download/bicep-win-x64.exe", "$installPath\bicep.exe")
+    $currentPath = (Get-Item -path "HKCU:\Environment" ).GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+    if (-not $currentPath.Contains("%USERPROFILE%\.bicep")) { setx PATH ($currentPath + ";%USERPROFILE%\.bicep") }
+    if (-not $env:path.Contains($installPath)) { $env:path += ";$installPath" }
+    bicep --help
+    ```
+
+> [!NOTE]
+> For alternative methods, check out the following documentation on this [link](https://github.com/maikvandergaag/bicep-1/blob/main/docs/installing.md#setup-your-bicep-development-environment).
+
+### Create Azure Resource Group
+
+To create the Azure Resource Group, you can follow the steps below:
+
+1. Open PowerShell if it isn't currently running
+2. Execute the following command by replacing the placeholder values: `New-AzResourceGroup -Name <name> -Location <location>`
+
+> [!NOTE]
+> The `Az` module is required from the [PowerShell pre-requisites](#powershell-pre-requisites)
+
+### Deploy pattern of choose
+
+The following steps demonstrate how you can deploy the Windows Package Manager REST source using the `Basic` pattern:
+
+1. Open PowerShell if it isn't currently running.
+2. Navigate to the folder containing the Bicep files.
+3. Execute the following command to deploy the `Basic` pattern, replacing the placeholder values:
+
+    ```powershell
+    PS C:\> New-AzResourceGroupDeployment -ResourceGroupName <ResourceGroupName> -TemplateFile basic.bicep -publisherEmail <publisherEmail> -cosmosDbPrimaryLocation <cosmosDbPrimaryLocation> -cosmosDbSecondaryLocation <cosmosDbSecondaryLocation>
+    ```
+
+> [!NOTE]
+> The `cosmosDbPrimaryLocation` and `cosmosDbSecondaryLocation` parameters need to be filled in based on the resource group location because Bicep currently does not support a function to automatically retrieve these values. This ensures that the Cosmos DB is deployed in the correct regions for high availability and disaster recovery.
+
+4. Monitor the deployment process and ensure all resources are created successfully.

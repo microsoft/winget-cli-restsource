@@ -218,7 +218,7 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.10.1' = {
   name: 'cosmosDb'
   params: {
     name: cosmosDbName
-    location: 'westus'
+    location: location
     disableLocalAuth: true
     networkRestrictions: {
       publicNetworkAccess: 'Enabled'
@@ -234,12 +234,12 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.10.1' = {
     locations: [
       {
         failoverPriority: 0
-        locationName: 'West US'
+        locationName: cosmosDbPrimaryLocation
         isZoneRedundant: false
       }
       {
         failoverPriority: 1
-        locationName: 'Central US'
+        locationName: cosmosDbSecondaryLocation
         isZoneRedundant: false
       }
     ]
@@ -294,127 +294,6 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.10.1' = {
   }
 }
 
-// TODO: Follow issue: https://github.com/Azure/azure-powershell/issues/23558
-module deploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
-  name: 'deploymentScript'
-  params: {
-    name: 'ds-${resourceGroup().name}'
-    kind: 'AzurePowerShell'
-    timeout: 'PT30M'
-    runOnce: true
-    azPowerShellVersion: '12.3'
-    retentionInterval: 'PT1H'
-    location: location
-    arguments: '-FunctionAppId ${function.outputs.resourceId} -ResourceGroupName ${resourceGroup().name} -FunctionName ${functionName}'
-    scriptContent: '''
-        param (
-            [string] $FunctionAppId,
-            [string] $ResourceGroupName,
-            [string] $FunctionName
-        )
-
-        # Generate function key 
-        function New-FunctionAppKey
-        {
-            $private:characters = 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
-            $private:randomChars = 1..64 | ForEach-Object { Get-Random -Maximum $characters.length }
-        
-            # Set the output field separator to empty instead of space
-            $private:ofs=""
-            return [String]$characters[$randomChars]
-        }
-
-        $NewFunctionKeyValue = New-FunctionAppKey
-        $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
-        if ($Result.StatusCode -ne 200 -and $Result.StatusCode -ne 201) {
-            Throw "Failed to create Azure Function key. $($Result.Content)"
-        }
-
-        # Define variables
-        $repo = "microsoft/winget-cli-restsource"
-        $file = "WinGet.RestSource-WinGet.RestSource.Functions.zip"
-        $releases = "https://api.github.com/repos/$repo/releases"
-
-        # Get the latest ZIP file URI
-        $zipUri = ((Invoke-RestMethod -Uri $releases)[0].assets | Where-Object {$_.Name -eq $file}).browser_download_url
-        $out = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath $file
-
-        # Extract the file on container
-        Write-Host "Retrieving $zipUri to $out"
-        Invoke-RestMethod -Uri $zipUri -OutFile $out
-
-        # Publish file
-        try {
-            Write-Host "Publishing $out the Azure Function $FunctionName"
-            Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName -ArchivePath $out -Confirm:$false -Force -Restart -ErrorAction Stop
-        } catch {
-            Throw "Failed to publish the Azure Function $FunctionName. Error: $_" 
-        }
-
-        # Send key to output
-        $DeploymentScriptOutputs = @{}
-        $DeploymentScriptOutputs['functionAppHostKey'] = $NewFunctionKeyValue
-          '''
-    managedIdentities: { userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId] }
-  }
-}
-
-module apiManagement 'br/public:avm/res/api-management/service:0.6.0' = {
-  name: 'apiManagement'
-  params: {
-    name: apiServiceName
-    publisherEmail: publisherEmail
-    publisherName: publisherEmail
-    sku: 'Basic'
-    managedIdentities: { systemAssigned: true }
-    skuCapacity: 1
-    hostnameConfigurations: [
-      {
-        type: 'Proxy'
-        hostName: '${apiServiceName}.azure-api.net'
-        negotiateClientCertificate: false
-        defaultSslBinding: true
-        certificateSource: 'BuiltIn'
-      }
-    ]
-    apis: [
-      {
-        displayName: 'winget rest source api'
-        description: 'winget rest source api'
-        name: 'winget'
-        path: 'winget'
-      }
-    ]
-    namedValues: [
-      {
-        name: 'winget-functions-access-key'
-        displayName: 'winget-functions-access-key'
-        keyVault: {
-          secretIdentifier: 'https://${keyVaultName}.vault.azure.net/secrets/AzureFunctionHostKey'
-        }
-        secret: true
-      }
-    ]
-    backends: [
-      {
-        name: 'winget-backend'
-        url: 'https://${function.outputs.name}.azurewebsites.net/api'
-        tls: {
-          validateCertificateChain: true
-          validateCertificateName: true
-        }
-        credentials: {
-          header: {
-            'x-functions-key': [
-              '{{winget-functions-access-key}}'
-            ]
-          }
-        }
-      }
-    ]
-  }
-}
-
 module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
   name: 'keyVault'
   params: {
@@ -455,10 +334,10 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
         }
       }
       {
-        objectId: apiManagement.outputs.systemAssignedMIPrincipalId
+        objectId: userAssignedIdentity.outputs.principalId
         permissions: {
           secrets: [
-            'get'
+            'set'
           ]
         }
       }
@@ -476,18 +355,134 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
         name: 'AppConfigSecondaryEndpoint'
         value: appConfig.outputs.endpoint
       }
+    ]
+    roleAssignments: [
       {
-        name: 'AzureFunctionHostKey'
-        value: deploymentScript.outputs.outputs.functionAppHostKey
+        principalId: userAssignedIdentity.outputs.principalId
+        roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+        description: 'Assign Contributor to provide the ability to create Access Policy in deployment script.'
       }
     ]
   }
 }
 
+// TODO: Follow issue: https://github.com/Azure/azure-powershell/issues/23558
+module preDeploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
+  name: 'preDeploymentScript'
+  params: {
+    name: 'ds-${resourceGroup().name}'
+    kind: 'AzurePowerShell'
+    timeout: 'PT30M'
+    runOnce: true
+    azPowerShellVersion: '12.3'
+    retentionInterval: 'PT1H'
+    location: location
+    arguments: '-FunctionAppId ${function.outputs.resourceId} -ResourceGroupName ${resourceGroup().name} -FunctionName ${functionName} -KeyVaultName ${keyVaultName}'
+    scriptContent: '''
+          param (
+              [string] $FunctionAppId,
+              [string] $ResourceGroupName,
+              [string] $FunctionName,
+              [string] $KeyVaultName
+          )
+  
+          # Generate function key 
+          function New-FunctionAppKey
+          {
+              $private:characters = 'abcdefghiklmnoprstuvwxyzABCDEFGHIJKLMENOPTSTUVWXYZ'
+              $private:randomChars = 1..64 | ForEach-Object { Get-Random -Maximum $characters.length }
+          
+              # Set the output field separator to empty instead of space
+              $private:ofs=""
+              return [String]$characters[$randomChars]
+          }
+  
+          $NewFunctionKeyValue = New-FunctionAppKey
+          $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
+          if ($Result.StatusCode -ne 200 -and $Result.StatusCode -ne 201) {
+              Throw "Failed to create Azure Function key. $($Result.Content)"
+          }
+  
+          # Define variables
+          $repo = "microsoft/winget-cli-restsource"
+          $file = "WinGet.RestSource-WinGet.RestSource.Functions.zip"
+          $releases = "https://api.github.com/repos/$repo/releases"
+  
+          # Get the latest ZIP file URI
+          $zipUri = ((Invoke-RestMethod -Uri $releases)[0].assets | Where-Object {$_.Name -eq $file}).browser_download_url
+          $out = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath $file
+  
+          # Extract the file on container
+          Write-Host "Retrieving $zipUri to $out"
+          Invoke-RestMethod -Uri $zipUri -OutFile $out
+  
+          # Publish file
+          try {
+              Write-Host "Publishing $out the Azure Function $FunctionName"
+              Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionName -ArchivePath $out -Confirm:$false -Force -Restart -ErrorAction Stop
+          } catch {
+              Throw "Failed to publish the Azure Function $FunctionName. Error: $_" 
+          }
+  
+          # Send key to keyvault 
+          $Secret = ConvertTo-SecureString -String $NewFunctionKeyValue -AsPlainText -Force
+          Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name 'AzureFunctionHostKey' -SecretValue $Secret
+            '''
+    managedIdentities: { userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId] }
+  }
+}
+
+module apiManagement 'br/public:avm/res/api-management/service:0.6.0' = {
+  name: 'apiManagement'
+  params: {
+    name: apiServiceName
+    publisherEmail: publisherEmail
+    publisherName: publisherEmail
+    sku: 'Basic'
+    managedIdentities: { systemAssigned: true }
+    skuCapacity: 1
+    hostnameConfigurations: [
+      {
+        type: 'Proxy'
+        hostName: '${apiServiceName}.azure-api.net'
+        negotiateClientCertificate: false
+        defaultSslBinding: true
+        certificateSource: 'BuiltIn'
+      }
+    ]
+    apis: [
+      {
+        displayName: 'winget rest source api'
+        description: 'winget rest source api'
+        name: 'winget'
+        path: 'winget'
+      }
+    ]
+    backends: [
+      {
+        name: 'winget-backend'
+        url: 'https://${function.outputs.name}.azurewebsites.net/api'
+        tls: {
+          validateCertificateChain: true
+          validateCertificateName: true
+        }
+      }
+    ]
+    roleAssignments: [
+      {
+        principalId: userAssignedIdentity.outputs.principalId
+        roleDefinitionIdOrName: '312a565d-c81f-4fd8-895a-4e21e48d571c'
+        description: 'Assign API Management Service Contributor to create named values and credentials.'
+      }
+    ]
+  }
+  dependsOn: [
+    preDeploymentScript
+  ]
+}
+
 // region API Management operations
 //TODO: Track issue: https://github.com/Azure/bicep-registry-modules/issues/2419
-
-var backEndPolicy = '<policies> <inbound> <set-backend-service id=\'public-api-policy\' backend-id=\'winget-backend\'/> </inbound> <backend> </backend> <outbound> </outbound> <on-error> </on-error> </policies>'
 
 resource existingApiManagement 'Microsoft.ApiManagement/service/apis@2024-06-01-preview' existing = {
   name: '${apiServiceName}/winget'
@@ -505,7 +500,6 @@ resource service_apim_rest_name_winget_get_informationget 'Microsoft.ApiManageme
     urlTemplate: '/information'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -537,7 +531,6 @@ resource service_apim_rest_name_winget_delete_installerdelete 'Microsoft.ApiMana
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -568,7 +561,6 @@ resource service_apim_rest_name_winget_get_installerget 'Microsoft.ApiManagement
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -594,7 +586,6 @@ resource service_apim_rest_name_winget_post_localepost 'Microsoft.ApiManagement/
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -607,7 +598,6 @@ resource service_apim_rest_name_winget_post_manifestpost 'Microsoft.ApiManagemen
     urlTemplate: '/packageManifests'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -620,7 +610,6 @@ resource service_apim_rest_name_winget_post_manifestsearchpost 'Microsoft.ApiMan
     urlTemplate: '/manifestSearch'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -633,7 +622,6 @@ resource service_apim_rest_name_winget_post_packagepost 'Microsoft.ApiManagement
     urlTemplate: '/packages'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -646,7 +634,6 @@ resource service_apim_rest_name_winget_post_rebuildpost 'Microsoft.ApiManagement
     urlTemplate: '/rebuild'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -659,7 +646,6 @@ resource service_apim_rest_name_winget_post_updatepost 'Microsoft.ApiManagement/
     urlTemplate: '/update'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -672,7 +658,6 @@ resource service_apim_rest_name_winget_post_versionpost 'Microsoft.ApiManagement
     urlTemplate: '/packages/'
     templateParameters: []
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -703,7 +688,6 @@ resource service_apim_rest_name_winget_put_installerput 'Microsoft.ApiManagement
         values: []
       }
     ]
-    policies: backEndPolicy
     responses: []
   }
 }
@@ -735,7 +719,6 @@ resource service_apim_rest_name_winget_put_localeput 'Microsoft.ApiManagement/se
         values: []
       }
     ]
-    policies: backEndPolicy
     responses: []
   }
 }
@@ -755,7 +738,6 @@ resource service_apim_rest_name_winget_put_manifestput 'Microsoft.ApiManagement/
         values: []
       }
     ]
-    policies: backEndPolicy
     responses: []
   }
 }
@@ -775,7 +757,6 @@ resource service_apim_rest_name_winget_put_packageput 'Microsoft.ApiManagement/s
         values: []
       }
     ]
-    policies: backEndPolicy
     responses: []
   }
 }
@@ -801,7 +782,6 @@ resource service_apim_rest_name_winget_put_versionput 'Microsoft.ApiManagement/s
         values: []
       }
     ]
-    policies: backEndPolicy
     responses: []
   }
 }
@@ -827,7 +807,6 @@ resource service_apim_rest_name_winget_get_versionget 'Microsoft.ApiManagement/s
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -853,7 +832,6 @@ resource service_apim_rest_name_winget_delete_versiondelete 'Microsoft.ApiManage
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -879,7 +857,6 @@ resource service_apim_rest_name_winget_post_installerpost 'Microsoft.ApiManageme
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -911,7 +888,6 @@ resource service_apim_rest_name_winget_delete_localedelete 'Microsoft.ApiManagem
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -931,7 +907,6 @@ resource service_apim_rest_name_winget_delete_manifestdelete 'Microsoft.ApiManag
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -962,7 +937,6 @@ resource service_apim_rest_name_winget_get_localeget 'Microsoft.ApiManagement/se
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -982,7 +956,6 @@ resource service_apim_rest_name_winget_get_manifestget 'Microsoft.ApiManagement/
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
@@ -1002,30 +975,113 @@ resource service_apim_rest_name_winget_delete_packagedelete 'Microsoft.ApiManage
       }
     ]
     responses: []
-    policies: backEndPolicy
   }
 }
 
 resource service_apim_rest_name_winget_get_packageget 'Microsoft.ApiManagement/service/apis/operations@2024-06-01-preview' = {
-    parent: existingApiManagement
-    name: 'get-packageget'
-    properties: {
-      displayName: 'PackageGet'
-      method: 'GET'
-      urlTemplate: '/packages/{packageIdentifier}'
-      templateParameters: [
-        {
-          name: 'packageIdentifier'
-          type: 'string'
-          values: []
-        }
-      ]
-      responses: []
-      policies: backEndPolicy
-    }
+  parent: existingApiManagement
+  name: 'get-packageget'
+  properties: {
+    displayName: 'PackageGet'
+    method: 'GET'
+    urlTemplate: '/packages/{packageIdentifier}'
+    templateParameters: [
+      {
+        name: 'packageIdentifier'
+        type: 'string'
+        values: []
+      }
+    ]
+    responses: []
   }
+}
 
 // endregion API Management operations
+
+module postDeploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
+  name: 'postDeploymentScript'
+  params: {
+    name: 'ds-${resourceGroup().name}'
+    kind: 'AzurePowerShell'
+    timeout: 'PT30M'
+    runOnce: true
+    azPowerShellVersion: '12.3'
+    retentionInterval: 'PT1H'
+    location: location
+    arguments: '-ResourceGroupName ${resourceGroup().name} -KeyVaultName ${keyVaultName} -ApiManagementName ${apiServiceName} -ApiManagementIdentity ${apiManagement.outputs.systemAssignedMIPrincipalId}'
+    scriptContent: '''
+            param (
+                [string] $ResourceGroupName,
+                [string] $KeyVaultName,
+                [string] $ApiManagementName,
+                [string] $ApiManagementIdentity
+            )
+
+            # Grant access to APIM identity 
+            Set-AzKeyVaultAccessPolicy -VaultName $KeyVaultName -ObjectId $ApiManagementIdentity -PermissionsToSecrets get -BypassObjectIdValidation
+
+            # Build context
+            $Context = New-AzApiManagementContext -ResourceGroupName $ResourceGroupName -ServiceName $ApiManagementName
+            try {
+                # Create named value 
+                $secretIdentifier = "https://$KeyVaultName.vault.azure.net/secrets/AzureFunctionHostKey"
+                $keyVault = New-AzApiManagementKeyVaultObject -SecretIdentifier $secretIdentifier
+
+                $functionInput = @{
+                    Context = $Context
+                    NamedValueId = 'winget-functions-access-key'
+                    Name = 'winget-functions-access-key'
+                    KeyVault = $keyVault
+                    Secret = $true
+                }
+                New-AzApiManagementNamedValue @functionInput -Verbose 
+
+                # Set credential in backend
+                $credential = New-AzApiManagementBackendCredential -Header @{ "x-functions-key" = @('{{winget-functions-access-key}}') } -ErrorAction Stop
+                Set-AzApiManagementBackend -Context $Context -BackendId 'winget-backend' -Credential $credential -ErrorAction Stop
+
+                # Update all operations with backend policy
+                $operations = Get-AzApiManagementOperation -Context $Context -ApiId 'winget'
+
+                foreach ($operation in $operations) {
+                    $policy = '<policies> <inbound> <base /> <set-backend-service id=''public-api-policy'' backend-id=''winget-backend''/> </inbound> <backend> <base /> </backend> <outbound> </outbound> <on-error> <base /> </on-error> </policies>'
+
+                    Write-Verbose -Message "Updating operation '$($operation.OperationId)' with policy" -Verbose
+                    Set-AzApiManagementPolicy -Context $context -ApiId "winget" -OperationId $operation.OperationId -Policy $policy
+                }
+            } catch {
+                Throw $PSItem.Exception.Message 
+            }
+            '''
+    managedIdentities: { userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId] }
+  }
+  dependsOn: [
+        service_apim_rest_name_winget_get_informationget
+        service_apim_rest_name_winget_delete_installerdelete
+        service_apim_rest_name_winget_get_installerget
+        service_apim_rest_name_winget_post_localepost
+        service_apim_rest_name_winget_post_manifestpost
+        service_apim_rest_name_winget_post_manifestsearchpost
+        service_apim_rest_name_winget_post_packagepost
+        service_apim_rest_name_winget_post_rebuildpost
+        service_apim_rest_name_winget_post_updatepost
+        service_apim_rest_name_winget_post_versionpost
+        service_apim_rest_name_winget_put_installerput
+        service_apim_rest_name_winget_put_localeput
+        service_apim_rest_name_winget_put_manifestput
+        service_apim_rest_name_winget_put_packageput
+        service_apim_rest_name_winget_put_versionput
+        service_apim_rest_name_winget_get_versionget
+        service_apim_rest_name_winget_delete_versiondelete
+        service_apim_rest_name_winget_post_installerpost
+        service_apim_rest_name_winget_delete_localedelete
+        service_apim_rest_name_winget_delete_manifestdelete
+        service_apim_rest_name_winget_get_localeget
+        service_apim_rest_name_winget_get_manifestget
+        service_apim_rest_name_winget_delete_packagedelete
+        service_apim_rest_name_winget_get_packageget
+  ]
+}
 
 module roleAssignmentBlobDataOwner 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.1' = {
   name: 'BlobDataOwner'
