@@ -58,10 +58,19 @@ param serverFarmSkuName string = 'S1'
 @description('Optional. The name of the API Management service.')
 param apiServiceName string = 'apim${resourceGroup().name}'
 
+@description('Optional. Name of the Log Analytics workspace.')
+param logAnalyticsWorkspaceName string = 'log${resourceGroup().name}'
+
+@description('Optional. Name of the User Assigned Identity.')
+param uamiName string = 'id-${resourceGroup().name}'
+
+@description('Optional. Name of the Deployment Script performing pre and post-deployment tasks.')
+param deploymentScriptName string = 'ds-${resourceGroup().name}'
+
 module userAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
   name: 'userAssignedIdentity'
   params: {
-    name: 'id-${resourceGroup().name}'
+    name: uamiName
     location: location
   }
 }
@@ -73,7 +82,7 @@ module userAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-id
 module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.9.1' = {
   name: 'logAnalytics'
   params: {
-    name: 'log${resourceGroup().name}'
+    name: logAnalyticsWorkspaceName
     location: location
   }
 }
@@ -101,13 +110,6 @@ module appConfig 'br/public:avm/res/app-configuration/configuration-store:0.6.0'
     sku: 'Standard'
     disableLocalAuth: true
     softDeleteRetentionInDays: 7
-    // keyValues: [
-    //   {
-    //     name: '${appConfigName}/.appconfig.featureflag~2FGenevaLogging'
-    //     value: '{"id":"GenevaLogging","description":"Feature flag to use Geneva Monitoring.","enabled":false,"conditions":{"client_filters":[]}}'
-    //     contentType: 'application/vnd.microsoft.appconfig.ff+json;charset=utf-8'
-    //   }
-    // ]
   }
 }
 
@@ -147,20 +149,6 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.15.0' = {
       containerDeleteRetentionPolicyEnabled: false
     }
     requireInfrastructureEncryption: false
-    // The encryption property should be set by AVM
-    // encryption: {
-    //   services: {
-    //     file: {
-    //       keyType: 'Account'
-    //       enabled: true
-    //     }
-    //     blob: {
-    //       keyType: 'Account'
-    //       enabled: true
-    //     }
-    //   }
-    //   keySource: 'Microsoft.Storage'
-    // }
     allowSharedKeyAccess: false
   }
 }
@@ -370,7 +358,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
 module preDeploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
   name: 'preDeploymentScript'
   params: {
-    name: 'ds-${resourceGroup().name}'
+    name: deploymentScriptName
     kind: 'AzurePowerShell'
     timeout: 'PT30M'
     runOnce: true
@@ -1001,7 +989,7 @@ resource service_apim_rest_name_winget_get_packageget 'Microsoft.ApiManagement/s
 module postDeploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1' = {
   name: 'postDeploymentScript'
   params: {
-    name: 'ds-${resourceGroup().name}'
+    name: deploymentScriptName
     kind: 'AzurePowerShell'
     timeout: 'PT30M'
     runOnce: true
@@ -1056,30 +1044,30 @@ module postDeploymentScript 'br/public:avm/res/resources/deployment-script:0.5.1
     managedIdentities: { userAssignedResourceIds: [userAssignedIdentity.outputs.resourceId] }
   }
   dependsOn: [
-        service_apim_rest_name_winget_get_informationget
-        service_apim_rest_name_winget_delete_installerdelete
-        service_apim_rest_name_winget_get_installerget
-        service_apim_rest_name_winget_post_localepost
-        service_apim_rest_name_winget_post_manifestpost
-        service_apim_rest_name_winget_post_manifestsearchpost
-        service_apim_rest_name_winget_post_packagepost
-        service_apim_rest_name_winget_post_rebuildpost
-        service_apim_rest_name_winget_post_updatepost
-        service_apim_rest_name_winget_post_versionpost
-        service_apim_rest_name_winget_put_installerput
-        service_apim_rest_name_winget_put_localeput
-        service_apim_rest_name_winget_put_manifestput
-        service_apim_rest_name_winget_put_packageput
-        service_apim_rest_name_winget_put_versionput
-        service_apim_rest_name_winget_get_versionget
-        service_apim_rest_name_winget_delete_versiondelete
-        service_apim_rest_name_winget_post_installerpost
-        service_apim_rest_name_winget_delete_localedelete
-        service_apim_rest_name_winget_delete_manifestdelete
-        service_apim_rest_name_winget_get_localeget
-        service_apim_rest_name_winget_get_manifestget
-        service_apim_rest_name_winget_delete_packagedelete
-        service_apim_rest_name_winget_get_packageget
+    service_apim_rest_name_winget_get_informationget
+    service_apim_rest_name_winget_delete_installerdelete
+    service_apim_rest_name_winget_get_installerget
+    service_apim_rest_name_winget_post_localepost
+    service_apim_rest_name_winget_post_manifestpost
+    service_apim_rest_name_winget_post_manifestsearchpost
+    service_apim_rest_name_winget_post_packagepost
+    service_apim_rest_name_winget_post_rebuildpost
+    service_apim_rest_name_winget_post_updatepost
+    service_apim_rest_name_winget_post_versionpost
+    service_apim_rest_name_winget_put_installerput
+    service_apim_rest_name_winget_put_localeput
+    service_apim_rest_name_winget_put_manifestput
+    service_apim_rest_name_winget_put_packageput
+    service_apim_rest_name_winget_put_versionput
+    service_apim_rest_name_winget_get_versionget
+    service_apim_rest_name_winget_delete_versiondelete
+    service_apim_rest_name_winget_post_installerpost
+    service_apim_rest_name_winget_delete_localedelete
+    service_apim_rest_name_winget_delete_manifestdelete
+    service_apim_rest_name_winget_get_localeget
+    service_apim_rest_name_winget_get_manifestget
+    service_apim_rest_name_winget_delete_packagedelete
+    service_apim_rest_name_winget_get_packageget
   ]
 }
 
