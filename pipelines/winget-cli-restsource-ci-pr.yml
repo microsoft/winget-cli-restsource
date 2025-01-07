@@ -36,7 +36,7 @@ extends:
         - name: BuildConfiguration
           value: 'release'
         - name: BuildPlatform
-          value: 'Any CPU'
+          value: 'Any CPU'    
 
         steps:
         # Restore and Build
@@ -73,3 +73,28 @@ extends:
             displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
             targetPath: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
             artifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
+
+          # Publish Fuzzing Artifacts
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-FuzzingBinaries'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing
+            artifactName: WinGet.RestSource-WinGet.RestSource.Fuzzing
+
+      - job: 'Fuzzing'
+        displayName: Submit Fuzzing Artifacts
+        timeoutInMinutes: 30
+        dependsOn: 'BuildPublishTest'
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Fuzzing Artifacts'
+          inputs:
+            artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing
+            targetPath: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+
+        - task: onefuzz-task@0
+          inputs:
+            onefuzzOSes: 'Windows'
+          env:
+            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)

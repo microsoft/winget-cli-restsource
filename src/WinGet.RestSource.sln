@@ -106,6 +106,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsPackageMan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.AppConfig", "WinGet.RestSource.AppConfig\WinGet.RestSource.AppConfig.csproj", "{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinGet.RestSource.Fuzzing", "WinGet.RestSource.Fuzzing\WinGet.RestSource.Fuzzing.csproj", "{270833BB-CC75-40DD-AA78-EF8EC556625C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,10 @@ Global
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
