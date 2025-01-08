@@ -25,14 +25,9 @@
                 }
             ],
             "jobDependencies": [
-                "Microsoft.WinGet.RestSource.*.dll",
-                "Microsoft.WinGet.RestSource.*.pdb",
-                "Microsoft.WindowsPackageManager.Rest.dll",
-                "Microsoft.WindowsPackageManager.Rest.pdb",
-                "Microsoft.WinGet.RestSource.Fuzzing.*",
-                "Microsoft.WinGet.RestSource.Utils.*",
-                "Cosmos.CRTCompat.dll",
-                "Microsoft.Azure.Cosmos.ServiceInterop.dll"
+                "Microsoft.WinGet.RestSource.Fuzzing.deps.json",
+                "Microsoft.WinGet.RestSource.Fuzzing.dll",
+                "Microsoft.WinGet.RestSource.Fuzzing.pdb"
             ],
             "SdlWorkItemId": 48765191
         }

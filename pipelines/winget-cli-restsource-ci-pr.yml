@@ -84,7 +84,7 @@ extends:
         displayName: Submit Fuzzing Artifacts
         timeoutInMinutes: 30
         dependsOn: 'BuildPublishTest'
-        condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+        # condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
         steps:
         - task: DownloadPipelineArtifact@2
