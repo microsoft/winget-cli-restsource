@@ -25,9 +25,10 @@
                 }
             ],
             "jobDependencies": [
-                "Microsoft.WinGet.RestSource.Fuzzing.deps.json",
-                "Microsoft.WinGet.RestSource.Fuzzing.dll",
-                "Microsoft.WinGet.RestSource.Fuzzing.pdb"
+                "Microsoft.WinGet.RestSource.Fuzzing.*",
+                "Microsoft.WinGet.RestSource.Utils.*",
+                "Newtonsoft.Json.dll",
+                "Microsoft.Extensions.Logging.Abstractions.dll"
             ],
             "SdlWorkItemId": 48765191
         }
