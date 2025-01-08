@@ -58,7 +58,7 @@ steps:
 - template: copy.yml@self
   parameters:
     name: WinGet.RestSource.Fuzzing
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net6.0'
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net8.0'
 
 # Publish powershell
 - template: copy-and-publish-powershell.yml@self

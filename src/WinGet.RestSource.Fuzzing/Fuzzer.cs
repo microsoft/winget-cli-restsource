@@ -23,13 +23,13 @@ namespace Microsoft.WinGet.RestSource.Fuzzing
         {
             try
             {
-                if (input.Length < 4)
-                {
-                    return;
-                }
-
                 using var ms = new MemoryStream(input.ToArray());
-                var result = Task.Run(() => Parser.StreamParser<PackageManifest>(ms)).Result;
+                var manifest = Task.Run(() => Parser.StreamParser<PackageManifest>(ms)).Result;
+                var installer = Task.Run(() => Parser.StreamParser<Installer>(ms)).Result;
+                var locale = Task.Run(() => Parser.StreamParser<Locale>(ms)).Result;
+                var searchRequest = Task.Run(() => Parser.StreamParser<ManifestSearchRequest>(ms)).Result;
+                var package = Task.Run(() => Parser.StreamParser<Package>(ms)).Result;
+                var version = Task.Run(() => Parser.StreamParser<Version>(ms)).Result;
             }
             catch (AggregateException ae)
             {
