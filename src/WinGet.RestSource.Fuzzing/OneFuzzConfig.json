@@ -15,7 +15,7 @@
                 "AreaPath": "OS\\Windows Client and Services\\WinPD\\DEEP-Developer Experience, Ecosystem and Partnerships\\InstaDev",
                 "IterationPath": "OS"
             },
-            "jobNotificationEmail": "yaosun@microsoft.com",
+            "jobNotificationEmail": "InstaDev@microsoft.com",
             "skip": false,
             "rebootAfterSetup": false,
             "oneFuzzJobs": [
