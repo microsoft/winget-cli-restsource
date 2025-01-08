@@ -76,7 +76,7 @@ extends:
 
           # Publish Fuzzing Artifacts
           - output: pipelineArtifact
-            displayName: 'Publish Artifact: WinGet.RestSource-FuzzingBinaries'
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing'
             targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing
             artifactName: WinGet.RestSource-WinGet.RestSource.Fuzzing
 
@@ -84,6 +84,7 @@ extends:
         displayName: Submit Fuzzing Artifacts
         timeoutInMinutes: 30
         dependsOn: 'BuildPublishTest'
+        condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
         steps:
         - task: DownloadPipelineArtifact@2

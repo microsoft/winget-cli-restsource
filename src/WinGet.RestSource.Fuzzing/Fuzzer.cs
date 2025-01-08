@@ -21,15 +21,21 @@ namespace Microsoft.WinGet.RestSource.Fuzzing
         /// <param name="input">Fuzz test inputs.</param>
         public static void FuzzTest(ReadOnlySpan<byte> input)
         {
+            using var ms = new MemoryStream(input.ToArray());
+            FuzzTestOne<PackageManifest>(ms);
+            FuzzTestOne<Installer>(ms);
+            FuzzTestOne<Locale>(ms);
+            FuzzTestOne<ManifestSearchRequest>(ms);
+            FuzzTestOne<Package>(ms);
+            FuzzTestOne<Version>(ms);
+        }
+
+        private static void FuzzTestOne<T>(MemoryStream ms)
+            where T : class
+        {
             try
             {
-                if (input.Length < 4)
-                {
-                    return;
-                }
-
-                using var ms = new MemoryStream(input.ToArray());
-                var result = Task.Run(() => Parser.StreamParser<PackageManifest>(ms)).Result;
+                var result = Task.Run(() => Parser.StreamParser<T>(ms)).Result;
             }
             catch (AggregateException ae)
             {

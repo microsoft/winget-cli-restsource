@@ -11,11 +11,11 @@
             "adoTemplate": {
                 "org": "microsoft",
                 "project": "OS",
-                "AssignedTo": "ryfu@microsoft.com",
-                "AreaPath": "OS\\Windows Client and Services\\ADEPT\\E4D-Engineered for Developers\\InstaDev",
+                "AssignedTo": "yaosun@microsoft.com",
+                "AreaPath": "OS\\Windows Client and Services\\WinPD\\DEEP-Developer Experience, Ecosystem and Partnerships\\InstaDev",
                 "IterationPath": "OS"
             },
-            "jobNotificationEmail": "ryfu@microsoft.com",
+            "jobNotificationEmail": "InstaDev@microsoft.com",
             "skip": false,
             "rebootAfterSetup": false,
             "oneFuzzJobs": [
@@ -25,14 +25,10 @@
                 }
             ],
             "jobDependencies": [
-                "Microsoft.WinGet.RestSource.*.dll",
-                "Microsoft.WinGet.RestSource.*.pdb",
-                "Microsoft.WindowsPackageManager.Rest.dll",
-                "Microsoft.WindowsPackageManager.Rest.pdb",
                 "Microsoft.WinGet.RestSource.Fuzzing.*",
                 "Microsoft.WinGet.RestSource.Utils.*",
-                "Cosmos.CRTCompat.dll",
-                "Microsoft.Azure.Cosmos.ServiceInterop.dll"
+                "Newtonsoft.Json.dll",
+                "Microsoft.Extensions.Logging.Abstractions.dll"
             ],
             "SdlWorkItemId": 48765191
         }
