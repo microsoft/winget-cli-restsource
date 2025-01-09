@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="JsonHelper.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -50,9 +50,7 @@ namespace Microsoft.WindowsPackageManager.Rest.Utils
 
         private static string SerializeObject<T>(T obj, Formatting format)
         {
-            string output = JsonConvert.SerializeObject(obj, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            string jsonFormatted = JValue.Parse(output).ToString(format);
-            return jsonFormatted;
+            return JsonConvert.SerializeObject(obj, format, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
         }
     }
 }
