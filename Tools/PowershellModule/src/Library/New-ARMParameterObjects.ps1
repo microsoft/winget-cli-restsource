@@ -197,12 +197,14 @@ Function New-ARMParameterObjects
                                 failoverPriority = 0
                                 isZoneRedundant  = $false
                             }
-                            @{
+                        )
+            if ($SecondaryRegionName) {
+                $CosmosDBALocations += @{
                                 locationName     = $SecondaryRegionName
                                 failoverPriority = 1
                                 isZoneRedundant  = $false
                             }
-                        )
+            }
             $ApiManagementSku = "Basic"
         }
         "Enhanced" {
@@ -220,12 +222,14 @@ Function New-ARMParameterObjects
                                 failoverPriority = 0
                                 isZoneRedundant  = $false
                             }
-                            @{
+                        )
+            if ($SecondaryRegionName) {
+                $CosmosDBALocations += @{
                                 locationName     = $SecondaryRegionName
                                 failoverPriority = 1
                                 isZoneRedundant  = $false
                             }
-                        )
+            }
             $ApiManagementSku = "Standard"
         }
     }
