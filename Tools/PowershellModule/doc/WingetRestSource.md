@@ -26,19 +26,19 @@ Before getting started with the Windows Package Manager REST source with PowerSh
 1. Open PowerShell as an Administrator
 2. Set the PowerShell execution policies
     ```Powershell
-    PS C:\> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
     ```
 4. Install the Azure Az module 
     ```Powershell
-    PS C:\> Install-Module -Name Az -AllowClobber
+    Install-Module -Name Az -AllowClobber
     ```
 5. Connect to Azure with an authenticated account
     ```Powershell
-    PS C:\> Connect-AzAccount
+    Connect-AzAccount
     ```
 6. Select the required subscription using Set-AzContext
     ```Powershell
-    PS C:\> Set-AzContext -Subscription [Paste the Azure Subscription here]
+    Set-AzContext -Subscription [Paste the Azure Subscription here]
     ```
 
 ### Download and install the PowerShell module
@@ -46,7 +46,7 @@ Before getting started with the Windows Package Manager REST source with PowerSh
 #### Get PowerShell Module from PowerShell Gallery (Recommended)
 1. Install the PowerShell module from PowerShell Gallery
     ```Powershell
-    PS C:\> Install-PSResource -Name Microsoft.WinGet.RestSource -Prerelease
+    Install-PSResource -Name Microsoft.WinGet.RestSource -Prerelease
     ```
 
 #### Get PowerShell Module from Github Releases
@@ -62,12 +62,12 @@ The following steps will get PowerShell from Github Releases for use with the Wi
 8. Open an **Administrative PowerShell** window.
 9. Ensure the downloaded `Microsoft.WinGet.RestSource` files are not blocked
     ```Powershell
-    PS C:\> Get-ChildItem -Path [Paste the path to the root folder of Microsoft.WinGet.RestSource] -Recurse | Unblock-File
+    Get-ChildItem -Path [Paste the path to the root folder of Microsoft.WinGet.RestSource] -Recurse | Unblock-File
     ```
 10. In combination, press [Ctrl]+[Shift]+Right-click on the `Microsoft.WinGet.RestSource.psd1` file. Select **Copy Path** from the drop-down menu.
 11. Run the following command from the Administrative PowerShell window:
     ```Powershell
-    PS C:\> Import-Module [Paste the path to the Microsoft.WinGet.RestSource.psd1 file]
+    Import-Module [Paste the path to the Microsoft.WinGet.RestSource.psd1 file]
     ```
 
 > [!Note]
@@ -104,11 +104,11 @@ To create a new Windows Package Manager REST source, open the Administrative Pow
 1. From an Administrative PowerShell window run the following:
     For public access WIndows Package Manager REST source
     ```PowerShell
-    PS C:\> New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Region "westus" -ImplementationPerformance "Basic" -ShowConnectionInstructions -InformationAction Continue -Verbose
+    New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Region "westus" -ImplementationPerformance "Basic" -ShowConnectionInstructions -InformationAction Continue -Verbose
     ```
     **Or** for Microsoft Entra Id protected WIndows Package Manager REST source
     ```PowerShell
-    PS C:\> New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Region "westus" -ImplementationPerformance "Basic" -RestSourceAuthentication "MicrosoftEntraId" -CreateNewMicrosoftEntraIdAppRegistration -ShowConnectionInstructions -InformationAction Continue -Verbose
+    New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -Region "westus" -ImplementationPerformance "Basic" -RestSourceAuthentication "MicrosoftEntraId" -CreateNewMicrosoftEntraIdAppRegistration -ShowConnectionInstructions -InformationAction Continue -Verbose
     ```
 2. After the above command has completed, copy and run the connection information provided for your newly created Windows Package Manager REST source to add to your winget client.
 
@@ -124,7 +124,7 @@ The `Add-WinGetManifest` PowerShell cmdlet supports targeting a specific `*.json
 To add an Package Manifest, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys\1.0.0"
+Add-WinGetManifest -FunctionName "contoso" -Path "C:\WinGet\Manifests\Windows.PowerToys\1.0.0"
 ```
 
 ### Find manifests from the REST source
@@ -136,13 +136,13 @@ The `Find-WinGetManifest` PowerShell cmdlet supports targeting an existing Windo
 To find package manifests, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Find-WinGetManifest -FunctionName "contoso" -Query "PowerToys"
+Find-WinGetManifest -FunctionName "contoso" -Query "PowerToys"
 ```
 
 To find all package manifests, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Find-WinGetManifest -FunctionName "contoso" -Query ""
+Find-WinGetManifest -FunctionName "contoso" -Query ""
 ```
 
 ### Get manifests from the REST source
@@ -154,7 +154,7 @@ Alternatively, the `Get-WinGetManifest` PowerShell cmdlet supports targeting a s
 To get a Package Manifest from Windows Package Manager REST source, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Get-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
+Get-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
 ```
 
 ### Remove manifests from a REST source
@@ -166,11 +166,11 @@ The `Remove-WinGetManifest` PowerShell cmdlet supports targeting an existing Win
 To remove all versions of a package, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
+Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys"
 ```
 
 To remove a specific version of a package, open the Administrative PowerShell Window and run the following:
 
 ```PowerShell
-PS C:\> Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys" -PackageVersion "1.0.0"
+Remove-WinGetManifest -FunctionName "contoso" -PackageIdentifier "Windows.PowerToys" -PackageVersion "1.0.0"
 ```
