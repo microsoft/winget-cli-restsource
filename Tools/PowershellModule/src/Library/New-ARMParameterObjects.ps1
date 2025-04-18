@@ -129,10 +129,12 @@ Function New-ARMParameterObjects
     $ParameterApiManagementPath  = "$ParameterFolderPath\apimanagement.json"
 
     Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
-    
-    $PrimaryRegionName   = $(Get-AzLocation).Where({$_.Location -eq $Region}).DisplayName
-    $SecondaryRegion     = Get-PairedAzureRegion -Region $Region
-    $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $SecondaryRegion}).DisplayName
+
+    $PrimaryRegion       = $(Get-AzLocation).Where({$_.Location -eq $Region})
+    $PrimaryRegionName   = $PrimaryRegion.DisplayName
+    if ($PrimaryRegion.PairedRegion.Length -gt 0) {
+        $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $PrimaryRegion.PairedRegion[0].Name}).DisplayName
+    }
     
     Write-Verbose -Message "Retrieving the Azure Tenant and User Information"
     $AzContext = Get-AzContext
