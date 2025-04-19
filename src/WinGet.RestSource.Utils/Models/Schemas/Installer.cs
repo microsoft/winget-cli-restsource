@@ -263,6 +263,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         public bool? ArchiveBinariesDependOnPath { get; set; }
 
         /// <summary>
+        /// Gets or sets authentication requirement for downloading the installer.
+        /// </summary>
+        public Authentication<Installer> Authentication { get; set; }
+
+        /// <summary>
         /// Operator==.
         /// </summary>
         /// <param name="left">Left.</param>
@@ -327,6 +332,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             this.DownloadCommandProhibited = obj.DownloadCommandProhibited;
             this.RepairBehavior = obj.RepairBehavior;
             this.ArchiveBinariesDependOnPath = obj.ArchiveBinariesDependOnPath;
+            this.Authentication = obj.Authentication;
         }
 
         /// <inheritdoc />
@@ -434,6 +440,11 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                 ApiDataValidator.Validate(this.InstallationMetadata, results);
             }
 
+            if (this.Authentication != null)
+            {
+                ApiDataValidator.Validate(this.Authentication, results);
+            }
+
             // Return Results
             return results;
         }
@@ -490,7 +501,8 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
                    && Equals(this.InstallationMetadata, other.InstallationMetadata)
                    && Equals(this.DownloadCommandProhibited, other.DownloadCommandProhibited)
                    && Equals(this.RepairBehavior, other.RepairBehavior)
-                   && Equals(this.ArchiveBinariesDependOnPath, other.ArchiveBinariesDependOnPath);
+                   && Equals(this.ArchiveBinariesDependOnPath, other.ArchiveBinariesDependOnPath)
+                   && Equals(this.Authentication, other.Authentication);
         }
 
         /// <inheritdoc />
@@ -543,6 +555,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
             hashCode.Add(this.DownloadCommandProhibited);
             hashCode.Add(this.RepairBehavior);
             hashCode.Add(this.ArchiveBinariesDependOnPath);
+            hashCode.Add(this.Authentication);
             return hashCode.ToHashCode();
         }
     }

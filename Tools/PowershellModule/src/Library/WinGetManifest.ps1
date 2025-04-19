@@ -150,6 +150,22 @@ class WinGetInstallationMetadata
     WinGetInstallationMetadata () {}
 }
 
+class WinGetMicrosoftEntraIdAuthenticationInfo
+{
+    [string]$Resource
+    [string]$Scope
+
+    WinGetMicrosoftEntraIdAuthenticationInfo () {}
+}
+
+class WinGetInstallerAuthentication
+{
+    [string]$AuthenticationType
+    [WinGetMicrosoftEntraIdAuthenticationInfo]$MicrosoftEntraIdAuthenticationInfo
+
+    WinGetInstallerAuthentication () {}
+}
+
 class WinGetInstaller
 {
     [string]$InstallerIdentifier
@@ -192,6 +208,7 @@ class WinGetInstaller
     [Nullable[bool]]$DownloadCommandProhibited
     [string]$RepairBehavior
     [Nullable[bool]]$ArchiveBinariesDependOnPath
+    [WinGetInstallerAuthentication]$Authentication
 
     WinGetInstaller () {}
 }

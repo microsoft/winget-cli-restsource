@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AzureFunctionsVersion>V4</AzureFunctionsVersion>
@@ -7,6 +7,7 @@
     <Platforms>AnyCPU</Platforms>
     <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
+    <LangVersion>12.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

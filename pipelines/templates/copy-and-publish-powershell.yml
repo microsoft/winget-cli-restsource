@@ -12,7 +12,7 @@ steps:
     CleanTargetFolder: true
     OverWrite: true
 
-# Publish Helper Libs - win-x86
+# Publish Helper Libs
 - task: CopyFiles@2
   displayName: 'Copy Files: WinGet.RestSource.PowershellSupport'
   inputs:

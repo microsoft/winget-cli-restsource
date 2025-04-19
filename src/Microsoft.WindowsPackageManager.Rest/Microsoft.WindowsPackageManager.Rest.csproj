@@ -8,7 +8,7 @@
     <AssemblyName>Microsoft.WindowsPackageManager.Rest</AssemblyName>
     <RootNamespace>Microsoft.WindowsPackageManager.Rest</RootNamespace>
     <OutputType>Library</OutputType>
-    <LangVersion>8</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

@@ -20,5 +20,10 @@ namespace Microsoft.WinGet.RestSource.Utils.Constants.Enumerations
         /// MicrosoftEntraId.
         /// </summary>
         public const string MicrosoftEntraId = "microsoftEntraId";
+
+        /// <summary>
+        /// MicrosoftEntraIdForAzureBlobStorage.
+        /// </summary>
+        public const string MicrosoftEntraIdForAzureBlobStorage = "microsoftEntraIdForAzureBlobStorage";
     }
 }

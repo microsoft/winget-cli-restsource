@@ -8,7 +8,7 @@
     <RootNamespace>Microsoft.WinGet.RestSource.IntegrationTest</RootNamespace>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>9</LangVersion>
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>

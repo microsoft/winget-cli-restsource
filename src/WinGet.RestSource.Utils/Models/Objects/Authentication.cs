@@ -18,20 +18,22 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
     /// <summary>
     /// Authentication.
     /// </summary>
-    public class Authentication : IApiObject<Authentication>
+    /// <typeparam name="T">The authentication class type.</typeparam>
+    public class Authentication<T> : IApiObject<Authentication<T>>
+        where T : class
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Authentication"/> class.
+        /// Initializes a new instance of the <see cref="Authentication{T}"/> class.
         /// </summary>
         public Authentication()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Authentication"/> class.
+        /// Initializes a new instance of the <see cref="Authentication{T}"/> class.
         /// </summary>
         /// <param name="authentication">Authentication.</param>
-        public Authentication(Authentication authentication)
+        public Authentication(Authentication<T> authentication)
         {
             this.Update(authentication);
         }
@@ -39,7 +41,6 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <summary>
         /// Gets or sets AuthenticationType.
         /// </summary>
-        [AuthenticationTypeValidator]
         public string AuthenticationType { get; set; }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <param name="left">Left.</param>
         /// <param name="right">Right.</param>
         /// <returns>Bool.</returns>
-        public static bool operator ==(Authentication left, Authentication right)
+        public static bool operator ==(Authentication<T> left, Authentication<T> right)
         {
             return Equals(left, right);
         }
@@ -64,13 +65,13 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <param name="left">Left.</param>
         /// <param name="right">Right.</param>
         /// <returns>Bool.</returns>
-        public static bool operator !=(Authentication left, Authentication right)
+        public static bool operator !=(Authentication<T> left, Authentication<T> right)
         {
             return !Equals(left, right);
         }
 
         /// <inheritdoc />
-        public void Update(Authentication obj)
+        public void Update(Authentication<T> obj)
         {
             this.AuthenticationType = obj.AuthenticationType;
             this.MicrosoftEntraIdAuthenticationInfo = obj.MicrosoftEntraIdAuthenticationInfo;
@@ -80,6 +81,9 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
+
+            var authenticationTypeValidator = new AuthenticationTypeValidator(typeof(T));
+            authenticationTypeValidator.Validate(this.AuthenticationType, validationContext);
 
             if (Constants.Enumerations.AuthenticationType.MicrosoftEntraId.Equals(this.AuthenticationType, StringComparison.OrdinalIgnoreCase))
             {
@@ -95,7 +99,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         }
 
         /// <inheritdoc />
-        public bool Equals(Authentication other)
+        public bool Equals(Authentication<T> other)
         {
             return (this.AuthenticationType, this.MicrosoftEntraIdAuthenticationInfo) ==
                    (other.AuthenticationType, other.MicrosoftEntraIdAuthenticationInfo);
@@ -104,7 +108,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Objects
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is Authentication auth && this.Equals(auth);
+            return obj is Authentication<T> auth && this.Equals(auth);
         }
 
         /// <inheritdoc />
