@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.9.0
+  version: 1.10.0
   title: Open Windows Catalog API
   description: This is the API for the Open Windows Catalog.
   contact:
@@ -599,17 +599,17 @@ components:
       type: string
       maxLength: 1024
 
-    # Definitions
+    ContinuationToken:
+      description: A generic continuation token to be used by the server.
+      type: string
+      maxLength: 4096
+
+    # Package Definitions
     PackageIdentifier:
       description: The package unique identifier
       type: string
       pattern: "^[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}(\\.[^\\.\\s\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]{1,32}){1,7}$"
       maxLength: 128
-
-    ContinuationToken:
-      description: A generic continuation token to be used by the server.
-      type: string
-      maxLength: 4096
 
     PackageVersion:
       description: Version Type
@@ -617,11 +617,14 @@ components:
       pattern: "^[^\\\\/:\\*\\?\"<>\\|\\x01-\\x1f]+$"
       maxLength: 128
 
-    InstallerIdentifier:
-      description: Version Type
+    Channel:
+      description: This field is not supported by the client yet. The client will set this to null when processing.
       type: string
-      maxLength: 128
+      nullable: true
+      minLength: 1
+      maxLength: 16
 
+    # Locale Definitions
     Publisher:
       description: Publisher Name
       type: string
@@ -832,12 +835,11 @@ components:
       items:
         $ref: '#/components/schemas/Icon'
 
-    Channel:
-      description: This field is not supported by the client yet. The client will set this to null when processing.
+    # Installer Definitions
+    InstallerIdentifier:
+      description: Version Type
       type: string
-      nullable: true
-      minLength: 1
-      maxLength: 16
+      maxLength: 128
 
     Platform:
       description: The installer supported operating system
@@ -1428,6 +1430,41 @@ components:
       description: Indicates whether the install location should be added directly to the PATH environment variable. Only applies to an archive containing portable packages.
       type: boolean
 
+    MicrosoftEntraIdAuthenticationInfo:
+      description: The Microsoft Entra Id authentication requirement.
+      type: object
+      properties:
+        Resource:
+          description: The resource value for Microsoft Entra Id authentication.
+          type: string
+          minLength: 1
+          maxLength: 512
+        Scope:
+          description: The optional scope value for Microsoft Entra Id authentication.
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 512
+      required:
+        - Resource
+
+    InstallerAuthentication:
+      description: The authentication requirement for downloading the installer.
+      type: object
+      properties:
+        AuthenticationType:
+          description: The authentication type required by the server.
+          type: string
+          enum:
+            - none
+            - microsoftEntraId
+            - microsoftEntraIdForAzureBlobStorage
+        MicrosoftEntraIdAuthenticationInfo:
+          $ref: '#/components/schemas/MicrosoftEntraIdAuthenticationInfo'
+      required:
+        - AuthenticationType
+
+    # Source Definitions
     SourceIdentifier:
       description: The source identifier is a unique identifier for the source server.
       type: string
@@ -1475,7 +1512,7 @@ components:
           - Channel
           - Market
 
-    Authentication:
+    SourceAuthentication:
       description: The authentication requirement from the server. Information endpoint should not require authentication.
       type: object
       properties:
@@ -1486,22 +1523,7 @@ components:
             - none
             - microsoftEntraId
         MicrosoftEntraIdAuthenticationInfo:
-          description: The Microsoft Entra Id authentication requirement from the server if applicable.
-          type: object
-          properties:
-            Resource:
-              description: The resource value for Microsoft Entra Id authentication.
-              type: string
-              minLength: 1
-              maxLength: 512
-            Scope:
-              description: The optional scope value for Microsoft Entra Id authentication.
-              type: string
-              nullable: true
-              minLength: 1
-              maxLength: 512
-          required:
-            - Resource
+          $ref: '#/components/schemas/MicrosoftEntraIdAuthenticationInfo'
       required:
         - AuthenticationType
 
@@ -1589,6 +1611,8 @@ components:
           $ref: '#/components/schemas/RepairBehavior'
         ArchiveBinariesDependOnPath:
           $ref: '#/components/schemas/ArchiveBinariesDependOnPath'
+        Authentication:
+          $ref: '#/components/schemas/InstallerAuthentication'
       required:
         - Architecture
         - InstallerType
@@ -1878,7 +1902,7 @@ components:
         - type: object
           properties:
             Authentication:
-              $ref: '#/components/schemas/Authentication'
+              $ref: '#/components/schemas/SourceAuthentication'
       required:
         - SourceIdentifier
         - ServerSupportedVersions
