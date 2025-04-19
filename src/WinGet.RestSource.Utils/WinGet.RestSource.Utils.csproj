@@ -6,7 +6,7 @@
     <Authors>Microsoft</Authors>
     <AssemblyName>Microsoft.WinGet.RestSource.Utils</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.Utils</RootNamespace>
-    <LangVersion>8</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.0" />
-    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.10.70-preview" />
+    <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.10.340" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.12" />
   </ItemGroup>
 

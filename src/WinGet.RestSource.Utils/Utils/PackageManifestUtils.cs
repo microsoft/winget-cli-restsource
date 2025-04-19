@@ -155,6 +155,7 @@ namespace Microsoft.WinGet.RestSource.Utils
                     newInstaller.DownloadCommandProhibited = installer.DownloadCommandProhibited ?? manifest.DownloadCommandProhibited;
                     newInstaller.RepairBehavior = installer.RepairBehavior ?? manifest.RepairBehavior;
                     newInstaller.ArchiveBinariesDependOnPath = installer.ArchiveBinariesDependOnPath ?? manifest.ArchiveBinariesDependOnPath;
+                    newInstaller.Authentication = AddInstallerAuthentication(installer.Authentication) ?? AddInstallerAuthentication(manifest.Authentication);
 
                     newInstaller.InstallerIdentifier = string.Join("_", newInstaller.Architecture, newInstaller.InstallerLocale, newInstaller.Scope, Guid.NewGuid());
                     versionExtended.AddInstaller(newInstaller);
@@ -414,6 +415,26 @@ namespace Microsoft.WinGet.RestSource.Utils
                 }
 
                 return metadata;
+            }
+
+            return null;
+        }
+
+        private static Utils.Models.Objects.Authentication<Installer> AddInstallerAuthentication(InstallerAuthentication installerAuthentication)
+        {
+            if (installerAuthentication != null)
+            {
+                var authentication = new Utils.Models.Objects.Authentication<Installer>();
+
+                authentication.AuthenticationType = installerAuthentication.AuthenticationType;
+                if (installerAuthentication.MicrosoftEntraIdAuthenticationInfo != null)
+                {
+                    authentication.MicrosoftEntraIdAuthenticationInfo = new Models.Objects.MicrosoftEntraIdAuthenticationInfo();
+                    authentication.MicrosoftEntraIdAuthenticationInfo.Resource = installerAuthentication.MicrosoftEntraIdAuthenticationInfo.Resource;
+                    authentication.MicrosoftEntraIdAuthenticationInfo.Scope = installerAuthentication.MicrosoftEntraIdAuthenticationInfo.Scope;
+                }
+
+                return authentication;
             }
 
             return null;
