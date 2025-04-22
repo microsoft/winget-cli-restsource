@@ -45,7 +45,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
 
                 this.ServerSupportedVersions = this.GetServerSupportedVersions(ApiConstants.MinVersionForMicrosoftEntraId);
 
-                this.Authentication = new Authentication();
+                this.Authentication = new Authentication<Information>();
                 this.Authentication.AuthenticationType = AuthenticationType.MicrosoftEntraId;
                 this.Authentication.MicrosoftEntraIdAuthenticationInfo = new MicrosoftEntraIdAuthenticationInfo();
                 this.Authentication.MicrosoftEntraIdAuthenticationInfo.Resource = ApiConstants.MicrosoftEntraIdResource;
@@ -100,7 +100,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Schemas
         /// <summary>
         /// Gets Authentication.
         /// </summary>
-        public Authentication Authentication { get; }
+        public Authentication<Information> Authentication { get; }
 
         private ApiVersions GetServerSupportedVersions(string minVersion = null)
         {
