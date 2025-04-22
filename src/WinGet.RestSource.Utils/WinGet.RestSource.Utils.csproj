@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,6 +8,7 @@
     <RootNamespace>Microsoft.WinGet.RestSource.Utils</RootNamespace>
     <LangVersion>12.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Configurations>Debug;Release;LegacySupport</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,6 +30,12 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='LegacySupport'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants);WINGET_REST_SOURCE_LEGACY_SUPPORT</DefineConstants>
   </PropertyGroup>
 
   <!-- StyleCop Item Group. -->
