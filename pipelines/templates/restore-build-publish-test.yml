@@ -27,7 +27,7 @@ steps:
 
 ## Build Legacy Support
 - task: VSBuild@1
-  displayName: Build
+  displayName: Build Legacy Support
   inputs:
     solution: '**\*.sln'
     platform: '$(BuildPlatform)'
