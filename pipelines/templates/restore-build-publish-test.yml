@@ -25,6 +25,15 @@ steps:
     configuration: '$(BuildConfiguration)'
     clean: true
 
+## Build Legacy Support
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    solution: '**\*.sln'
+    platform: '$(BuildPlatform)'
+    configuration: '$(LegacySupportBuildConfiguration)'
+    clean: true
+
 ## Publish
 # Publish ARM Templates
 - template: copy.yml@self
@@ -46,7 +55,15 @@ steps:
     buildconfig: '$(BuildConfiguration)'
     zipAfterPublish: True
 
-# Publish Rest Function App
+# Publish Legacy Support Rest Function App
+- template: publish.yml@self
+  parameters:
+    name: WinGet.RestSource.Functions.LegacySupport
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
+    buildconfig: '$(LegacySupportBuildConfiguration)'
+    zipAfterPublish: True
+
+# Publish Integration Test
 - template: publish.yml@self
   parameters:
     name: WinGet.RestSource.IntegrationTest
