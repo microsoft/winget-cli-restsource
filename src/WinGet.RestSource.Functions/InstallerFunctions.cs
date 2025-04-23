@@ -246,7 +246,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.InstallerGet)]
         public async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
                 AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers/{installerIdentifier?}")]
             HttpRequest req,
