@@ -35,8 +35,10 @@ extends:
         variables:
         - name: BuildConfiguration
           value: 'release'
+        - name: LegacySupportBuildConfiguration
+          value: 'LegacySupport'
         - name: BuildPlatform
-          value: 'Any CPU'    
+          value: 'Any CPU'
 
         steps:
         # Restore and Build
@@ -62,7 +64,13 @@ extends:
             targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions
             artifactName: WinGet.RestSource-WinGet.RestSource.Functions
 
-          # Publish Rest Function App as an artifact 
+          # Publish Rest Function App Legacy Support
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions.LegacySupport
+            artifactName: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport
+
+          # Publish Integration Test
           - output: pipelineArtifact
             displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.IntegrationTest'
             targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.IntegrationTest

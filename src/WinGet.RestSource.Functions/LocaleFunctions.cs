@@ -243,7 +243,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.LocaleGet)]
         public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
                 AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,
