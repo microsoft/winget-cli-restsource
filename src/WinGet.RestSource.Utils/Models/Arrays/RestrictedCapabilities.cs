@@ -17,7 +17,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Arrays
         private const bool Nullable = true;
         private const bool Unique = true;
         private const uint Max = 1000;
-        private static readonly Type Validator = typeof(Capabilities);
+        private static readonly Type Validator = typeof(CapabilitiesValidator);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestrictedCapabilities"/> class.
