@@ -8,6 +8,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Arrays
 {
     using System;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
+    using Microsoft.WinGet.RestSource.Utils.Validators.StringValidators;
 
     /// <summary>
     /// RestrictedCapabilities.
