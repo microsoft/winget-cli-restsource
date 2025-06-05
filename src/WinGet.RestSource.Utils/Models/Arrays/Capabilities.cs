@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Capabilities.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -9,7 +9,7 @@ namespace Microsoft.WinGet.RestSource.Utils.Models.Arrays
     using System;
     using Microsoft.WinGet.RestSource.Utils.Models.Core;
     using Microsoft.WinGet.RestSource.Utils.Validators.StringValidators;
-    
+
     /// <summary>
     /// Capabilities.
     /// </summary>
