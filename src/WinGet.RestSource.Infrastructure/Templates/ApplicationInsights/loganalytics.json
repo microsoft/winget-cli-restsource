@@ -68,7 +68,7 @@
                 "retentionInDays": "[parameters('heartbeatTableRetention')]"
             },
             "dependsOn": [
-                "workspace"
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('name'))]"
             ]
         }
     ],
