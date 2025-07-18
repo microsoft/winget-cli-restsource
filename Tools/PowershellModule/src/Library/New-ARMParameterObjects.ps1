@@ -66,8 +66,9 @@ Function New-ARMParameterObjects
     )
 
     $ARMObjects = @()
-    
+
     ## The Names that are to be assigned to each resource.
+    $LogAnalyticsName   = "log-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $AppInsightsName    = "appi-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $KeyVaultName       = "kv-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $StorageAccountName = "st" + $Name.ToLower() -replace "[^a-z0-9]", ""
@@ -77,7 +78,7 @@ Function New-ARMParameterObjects
     $AppConfigName      = "appcs-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ApiManagementName  = "apim-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ServerIdentifier   = "WinGetRestSource-" + $Name -replace "[^a-zA-Z0-9-]", ""
-    
+
     ## Not supported in deployment script
     ## $FrontDoorName   = ""
     ## $AspGenevaName   = ""
@@ -86,7 +87,7 @@ Function New-ARMParameterObjects
     ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
     $CDBDatabaseName    = "WinGet"
     $CDBContainerName   = "Manifests"
-    
+
     if ($RestSourceAuthentication -eq "MicrosoftEntraId") {
         $ServerAuthenticationType = "microsoftEntraId"
         $QueryApiValidationEnabled = $true
@@ -106,6 +107,7 @@ Function New-ARMParameterObjects
     $RunFromPackageUrl          = ""
 
     ## Relative Path from the Working Directory to the Azure ARM Template Files
+    $TemplateLogAnalyticsPath   = "$TemplateFolderPath\loganalytics.json"
     $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
     $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
     $TemplateStorageAccountPath = "$TemplateFolderPath\storageaccount.json"
@@ -117,6 +119,7 @@ Function New-ARMParameterObjects
     $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
     $TemplateApiManagementPath  = "$TemplateFolderPath\apimanagement.json"
 
+    $ParameterLogAnalyticsPath   = "$ParameterFolderPath\loganalytics.json"
     $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
     $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
     $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount.json"
@@ -135,7 +138,7 @@ Function New-ARMParameterObjects
     if ($PrimaryRegion.PairedRegion.Length -gt 0) {
         $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $PrimaryRegion.PairedRegion[0].Name}).DisplayName
     }
-    
+
     Write-Verbose -Message "Retrieving the Azure Tenant and User Information"
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
@@ -242,6 +245,19 @@ Function New-ARMParameterObjects
 
     ## Creates a PowerShell object array to contain the details of the Parameter files.
     $ARMObjects = @(
+        @{  ObjectType = "LogAnalytics"
+            ObjectName = $LogAnalyticsName
+            ParameterPath  = "$ParameterLogAnalyticsPath"
+            TemplatePath   = "$TemplateLogAnalyticsPath"
+            Error      = ""
+            Parameters = @{
+                '$Schema' = $JSONSchema
+                contentVersion = $JSONContentVersion
+                Parameters = @{
+                    name       = @{ value = $LogAnalyticsName }
+                }
+            }
+        },
         @{  ObjectType = "AppInsight"
             ObjectName = $AppInsightsName
             ParameterPath  = "$ParameterAppInsightsPath"
@@ -252,7 +268,8 @@ Function New-ARMParameterObjects
                 contentVersion = $JSONContentVersion
                 Parameters = @{
                     name       = @{ value = $AppInsightsName }
-                    location   = @{ value = $Region          }
+                    location   = @{ value = $Region }
+                    workspaceResourceName = @{ value = $LogAnalyticsName }
                 }
             }
         },
