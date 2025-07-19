@@ -38,8 +38,14 @@
     "monitoringMetricsAccount": {
       "value": "MsPkgMgrMetrics"
     },
-    "azFuncStorageName": {
-      "value": "stwgrestwestustest"
+    "blobStorageServiceUri": {
+      "value": "stwgrestwestustest.blob.core.windows.net"
+    },
+    "queueStorageServiceUri": {
+      "value": "stwgrestwestustest.queue.core.windows.net"
+    },
+    "tableStorageServiceUri": {
+      "value": "stwgrestwestustest.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"

@@ -49,8 +49,14 @@
         "supportCredentials": false
       }
     },
-    "azFuncStorageName": {
-      "value": "stwgrestwestusint"
+    "blobStorageServiceUri": {
+      "value": "stwgrestwestusint.blob.core.windows.net"
+    },
+    "queueStorageServiceUri": {
+      "value": "stwgrestwestusint.queue.core.windows.net"
+    },
+    "tableStorageServiceUri": {
+      "value": "stwgrestwestusint.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"
