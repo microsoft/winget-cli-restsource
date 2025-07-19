@@ -129,11 +129,7 @@
         "cors": {
             "type": "object",
             "defaultValue": {
-                "allowedOrigins": [
-                    "https://functions.azure.com",
-                    "https://functions-staging.azure.com",
-                    "https://functions-next.azure.com"
-                ],
+                "allowedOrigins": [],
                 "supportCredentials": false
             },
             "metadata": {
