@@ -139,13 +139,28 @@ Function New-ARMParameterObjects
         $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $PrimaryRegion.PairedRegion[0].Name}).DisplayName
     }
 
+    if ($Region.StartsWith("usgov", [StringComparison]::OrdinalIgnoreCase) -or $Region.StartsWith("usdod", [StringComparison]::OrdinalIgnoreCase)) {
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.usgovcloudapi.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.usgovcloudapi.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.usgovcloudapi.net"
+    }
+    elseif ($Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase) -or $Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase)) {
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.chinacloudapi.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.chinacloudapi.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.chinacloudapi.net"
+    }
+    else {
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.windows.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.windows.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.windows.net"
+    }
+
     Write-Verbose -Message "Retrieving the Azure Tenant and User Information"
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
     $AzTenantDomain = $AzContext.Tenant.Domains[0]
 
-    if ($AzContext.Account.Type -eq "User")
-    {
+    if ($AzContext.Account.Type -eq "User") {
         $LocalDeployment = $true
         $AzObjectID = $(Get-AzADUser -SignedIn).Id
         if (!$PublisherEmail) {
@@ -155,8 +170,7 @@ Function New-ARMParameterObjects
             $PublisherName = $AzContext.Account.Id
         }
     }
-    else
-    {
+    else {
         $LocalDeployment = $false
         $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         if (!$PublisherEmail) {
@@ -453,7 +467,9 @@ Function New-ARMParameterObjects
                     functionName             = @{ value = $FunctionName             }   # Azure Function Name
                     appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
                     keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
-                    azFuncStorageName        = @{ value = $StorageAccountName       }   # Azure Storage Account Name
+                    blobStorageServiceUri    = @{ value = $blobStorageServiceUri    }   # Azure Blob Storage Uri
+                    queueStorageServiceUri   = @{ value = $queueStorageServiceUri   }   # Azure Queue Storage Uri
+                    tableStorageServiceUri   = @{ value = $tableStorageServiceUri   }   # Azure Table Storage Uri
                     appInsightName           = @{ value = $AppInsightsName          }   # Azure App Insights Name
                     manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # Not suported
                     monitoringTenant         = @{ value = $monitoringTenant         }   # Not suported

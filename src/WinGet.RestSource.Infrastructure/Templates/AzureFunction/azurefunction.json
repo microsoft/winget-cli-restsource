@@ -65,10 +65,22 @@
                 "description": "Key Vault Name"
             }
         },
-        "azFuncStorageName": {
+        "blobStorageServiceUri": {
             "type": "string",
             "metadata": {
-                "description": "The name of the storage account used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
+                "description": "The uri of the blob storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
+            }
+        },
+        "queueStorageServiceUri": {
+            "type": "string",
+            "metadata": {
+                "description": "The uri of the queue storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
+            }
+        },
+        "tableStorageServiceUri": {
+            "type": "string",
+            "metadata": {
+                "description": "The uri of the table storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
             }
         },
         "appInsightSubscription": {
@@ -227,7 +239,9 @@
                     "properties": {
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
                         "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
-                        "AzureWebJobsStorage__accountName": "[parameters('azFuncStorageName')]",
+                        "AzureWebJobsStorage__blobServiceUri": "[parameters('blobStorageServiceUri')]",
+                        "AzureWebJobsStorage__queueServiceUri": "[parameters('queueStorageServiceUri')]",
+                        "AzureWebJobsStorage__tableServiceUri": "[parameters('tableStorageServiceUri')]",
                         "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
                         "CosmosContainer": "[parameters('cosmosContainer')]",
                         "CosmosDatabase": "[parameters('cosmosDatabase')]",
