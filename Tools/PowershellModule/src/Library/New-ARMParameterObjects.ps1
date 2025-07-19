@@ -367,26 +367,6 @@ Function New-ARMParameterObjects
                         }
                     }
                     locations = @{ value = $CosmosDBALocations }
-                    # Allows requests from azure portal and Azure datacenter ip range (0.0.0.0)
-                    ipRules = @{
-                        value = @(
-                            @{
-                                ipAddressOrRange = "13.91.105.215"
-                            }
-                            @{
-                                ipAddressOrRange = "4.210.172.107"
-                            }
-                            @{
-                                ipAddressOrRange = "13.88.56.148"
-                            }
-                            @{
-                                ipAddressOrRange = "40.91.218.243"
-                            }
-                            @{
-                                ipAddressOrRange = "0.0.0.0"
-                            }
-                        )
-                    }
                     backupPolicy = @{
                         value = @{
                             type = "Periodic"
