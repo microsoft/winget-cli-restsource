@@ -139,22 +139,6 @@ Function New-ARMParameterObjects
         $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $PrimaryRegion.PairedRegion[0].Name}).DisplayName
     }
 
-    if ($Region.StartsWith("usgov", [StringComparison]::OrdinalIgnoreCase) -or $Region.StartsWith("usdod", [StringComparison]::OrdinalIgnoreCase)) {
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.usgovcloudapi.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.usgovcloudapi.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.usgovcloudapi.net"
-    }
-    elseif ($Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase)) {
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.chinacloudapi.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.chinacloudapi.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.chinacloudapi.net"
-    }
-    else {
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.windows.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.windows.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.windows.net"
-    }
-
     Write-Verbose -Message "Retrieving the Azure Tenant and User Information"
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
@@ -181,6 +165,22 @@ Function New-ARMParameterObjects
         }
     }
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
+
+    if ($AzContext.Environment.Name -eq "AzureUSGovernment") {
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.usgovcloudapi.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.usgovcloudapi.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.usgovcloudapi.net"
+    }
+    elseif ($AzContext.Environment.Name -eq "AzureChinaCloud") {
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.chinacloudapi.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.chinacloudapi.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.chinacloudapi.net"
+    }
+    else { ## AzureCloud as default
+        $blobStorageServiceUri = $StorageAccountName + ".blob.core.windows.net"
+        $queueStorageServiceUri = $StorageAccountName + ".queue.core.windows.net"
+        $tableStorageServiceUri = $StorageAccountName + ".table.core.windows.net"
+    }
 
     switch ($ImplementationPerformance) {
         "Developer" {
