@@ -144,7 +144,7 @@ Function New-ARMParameterObjects
         $queueStorageServiceUri = $StorageAccountName + ".queue.core.usgovcloudapi.net"
         $tableStorageServiceUri = $StorageAccountName + ".table.core.usgovcloudapi.net"
     }
-    elseif ($Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase) -or $Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase)) {
+    elseif ($Region.StartsWith("china", [StringComparison]::OrdinalIgnoreCase)) {
         $blobStorageServiceUri = $StorageAccountName + ".blob.core.chinacloudapi.net"
         $queueStorageServiceUri = $StorageAccountName + ".queue.core.chinacloudapi.net"
         $tableStorageServiceUri = $StorageAccountName + ".table.core.chinacloudapi.net"
