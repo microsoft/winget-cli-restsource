@@ -167,19 +167,19 @@ Function New-ARMParameterObjects
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
 
     if ($AzContext.Environment.Name -eq "AzureUSGovernment") {
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.usgovcloudapi.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.usgovcloudapi.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.usgovcloudapi.net"
+        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.usgovcloudapi.net"
+        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.usgovcloudapi.net"
+        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.usgovcloudapi.net"
     }
     elseif ($AzContext.Environment.Name -eq "AzureChinaCloud") {
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.chinacloudapi.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.chinacloudapi.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.chinacloudapi.net"
+        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.chinacloudapi.net"
+        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.chinacloudapi.net"
+        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.chinacloudapi.net"
     }
     else { ## AzureCloud as default
-        $blobStorageServiceUri = $StorageAccountName + ".blob.core.windows.net"
-        $queueStorageServiceUri = $StorageAccountName + ".queue.core.windows.net"
-        $tableStorageServiceUri = $StorageAccountName + ".table.core.windows.net"
+        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.windows.net"
+        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.windows.net"
+        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.windows.net"
     }
 
     switch ($ImplementationPerformance) {

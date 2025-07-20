@@ -39,13 +39,13 @@
       "value": "MsPkgMgrMetrics"
     },
     "blobStorageServiceUri": {
-      "value": "stwgrestwestustest.blob.core.windows.net"
+      "value": "https://stwgrestwestustest.blob.core.windows.net"
     },
     "queueStorageServiceUri": {
-      "value": "stwgrestwestustest.queue.core.windows.net"
+      "value": "https://stwgrestwestustest.queue.core.windows.net"
     },
     "tableStorageServiceUri": {
-      "value": "stwgrestwestustest.table.core.windows.net"
+      "value": "https://stwgrestwestustest.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"

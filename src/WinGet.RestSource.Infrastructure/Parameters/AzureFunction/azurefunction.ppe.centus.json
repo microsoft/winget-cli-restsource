@@ -50,13 +50,13 @@
       }
     },
     "blobStorageServiceUri": {
-      "value": "stwgrestcentusppe.blob.core.windows.net"
+      "value": "https://stwgrestcentusppe.blob.core.windows.net"
     },
     "queueStorageServiceUri": {
-      "value": "stwgrestcentusppe.queue.core.windows.net"
+      "value": "https://stwgrestcentusppe.queue.core.windows.net"
     },
     "tableStorageServiceUri": {
-      "value": "stwgrestcentusppe.table.core.windows.net"
+      "value": "https://stwgrestcentusppe.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"
