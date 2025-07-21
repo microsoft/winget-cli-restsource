@@ -29,11 +29,15 @@ resources:
       ref: refs/heads/main
 
 extends:
-  template: v2/Microsoft.Official.yml@templates
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
   parameters:
+    globalSdl:
+      tsa:
+        enabled: false
     platform:
-      name: 'windows_undocked'
-
+      name: 'onebranch'
+    release:
+      category: NonAzure
     git:
       fetchTags: false
 
@@ -113,32 +117,20 @@ extends:
                 Data/**
 
       - stage: Publish
-        displayName: Manual Approval
+        displayName: Publish to PS Gallery
         dependsOn: Prepare
+        variables:
+          ob_release_environment: Production
+
         jobs:
-        - job: Wait
-          displayName: Wait for manual approval
-          pool:
-            type: agentless
-
-          timeoutInMinutes: 1440 # job times out in 1 day
-
-          steps:
-            - task: ManualValidation@0
-              timeoutInMinutes: 1440 # task times out in 1 day
-
         - job: PublishToGallery
-          dependsOn: Wait
           pool:
-            type: windows
-          variables:
-            # Not used, but required by the pipeline to be defined
-            ob_outputDirectory: $(Build.ArtifactStagingDirectory)
+            type: release
+            os: windows
 
-          steps:
-          - task: DownloadPipelineArtifact@2
+          templateContext:
             inputs:
-              buildType: current
+            - input: pipelineArtifact
               artifactName: drop_Prepare_Prepare_Sign
               targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)
               itemPattern: |
@@ -147,6 +139,7 @@ extends:
                 Library/**
                 Data/**
 
+          steps:
           - pwsh: |
               $moduleFolder = "$(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)"
               Get-ChildItem -Path $moduleFolder -Recurse
