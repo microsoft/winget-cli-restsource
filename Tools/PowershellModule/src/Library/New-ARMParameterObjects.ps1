@@ -166,21 +166,11 @@ Function New-ARMParameterObjects
     }
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
 
-    if ($AzContext.Environment.Name -eq "AzureUSGovernment") {
-        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.usgovcloudapi.net"
-        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.usgovcloudapi.net"
-        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.usgovcloudapi.net"
-    }
-    elseif ($AzContext.Environment.Name -eq "AzureChinaCloud") {
-        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.chinacloudapi.net"
-        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.chinacloudapi.net"
-        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.chinacloudapi.net"
-    }
-    else { ## AzureCloud as default
-        $blobStorageServiceUri = "https://" + $StorageAccountName + ".blob.core.windows.net"
-        $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue.core.windows.net"
-        $tableStorageServiceUri = "https://" + $StorageAccountName + ".table.core.windows.net"
-    }
+    $AzEnvironment = Get-AzEnvironment -Name $AzContext.Environment.Name
+    $blobStorageServiceUri  = "https://" + $StorageAccountName + ".blob." + $AzEnvironment.StorageEndpointSuffix
+    $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue." + $AzEnvironment.StorageEndpointSuffix
+    $tableStorageServiceUri = "https://" + $StorageAccountName + ".table." + $AzEnvironment.StorageEndpointSuffix
+    $keyVaultServiceUri     = "https://" + $KeyVaultName + "." + $AzEnvironment.AzureKeyVaultDnsSuffix
 
     switch ($ImplementationPerformance) {
         "Developer" {
@@ -466,7 +456,7 @@ Function New-ARMParameterObjects
                     serverIdentifier         = @{ value = $ServerIdentifier         }   # Azure Function Server Identifier
                     functionName             = @{ value = $FunctionName             }   # Azure Function Name
                     appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
-                    keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
+                    keyVaultServiceUri       = @{ value = $keyVaultServiceUri       }   # Azure Keyvault Uri
                     blobStorageServiceUri    = @{ value = $blobStorageServiceUri    }   # Azure Blob Storage Uri
                     queueStorageServiceUri   = @{ value = $queueStorageServiceUri   }   # Azure Queue Storage Uri
                     tableStorageServiceUri   = @{ value = $tableStorageServiceUri   }   # Azure Table Storage Uri
@@ -496,13 +486,13 @@ Function New-ARMParameterObjects
                     publisherName = @{ value = $PublisherName }
                     sku = @{ value = $ApiManagementSku }
                     location = @{ value = $Region }
-                    keyVaultName = @{ value = $KeyVaultName }
+                    keyVaultServiceUri = @{ value = $keyVaultServiceUri }
                     backendUrls = @{ value = @() }  # Value to be populated after Azure Function is created
                     queryApiValidationEnabled = @{ value = $QueryApiValidationEnabled }
                     microsoftEntraIdResource = @{ value = $MicrosoftEntraIdResource }
                 }
             }
-        }    
+        }
     )
 
     ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.

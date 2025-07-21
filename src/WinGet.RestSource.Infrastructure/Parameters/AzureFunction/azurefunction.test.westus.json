@@ -23,8 +23,8 @@
     "appServiceName": {
       "value": "asp-wgrest-westus-test"
     },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-test"
+    "keyVaultServiceUri": {
+      "value": "https://kv-wgrest-westus-test.vault.azure.net"
     },
     "appInsightName": {
       "value": "appin-wgrest-westus-test"

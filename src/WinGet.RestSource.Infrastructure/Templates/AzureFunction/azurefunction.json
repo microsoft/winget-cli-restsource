@@ -59,10 +59,10 @@
                 "description": "App Service Name"
             }
         },
-        "keyVaultName": {
+        "keyVaultServiceUri": {
             "type": "string",
             "metadata": {
-                "description": "Key Vault Name"
+                "description": "Key Vault service uri. Do not append '/' to the uri."
             }
         },
         "blobStorageServiceUri": {
@@ -206,7 +206,7 @@
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
         "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
         "kv_restSourceApiEndpoint_SecretName": "AzFuncRestSourceEndpoint",
-        "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]"
+        "kv_secreturi_path": "[concat(parameters('keyVaultServiceUri'), '/secrets/')]"
     },
     "resources": [
         {

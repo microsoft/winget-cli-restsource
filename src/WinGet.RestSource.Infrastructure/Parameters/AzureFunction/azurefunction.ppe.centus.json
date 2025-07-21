@@ -23,8 +23,8 @@
     "appServiceName": {
       "value": "asp-wgrest-centus-ppe"
     },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-ppe"
+    "keyVaultServiceUri": {
+      "value": "https://kv-wgrest-westus-ppe.vault.azure.net"
     },
     "appInsightName": {
       "value": "appin-wgrest-westus-ppe"
