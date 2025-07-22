@@ -60,8 +60,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{954044E2-C2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C510F11-3A5B-4E30-8189-05E87B7DE1F0}"
 	ProjectSection(SolutionItems) = preProject
-		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1
-		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psd1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psm1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Powershell", "Powershell", "{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5}"
