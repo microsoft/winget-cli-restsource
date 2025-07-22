@@ -23,8 +23,8 @@
     "appServiceName": {
       "value": "asp-wgrest-westus-test"
     },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-test"
+    "keyVaultServiceUri": {
+      "value": "https://kv-wgrest-westus-test.vault.azure.net"
     },
     "appInsightName": {
       "value": "appin-wgrest-westus-test"
@@ -38,8 +38,14 @@
     "monitoringMetricsAccount": {
       "value": "MsPkgMgrMetrics"
     },
-    "azFuncStorageName": {
-      "value": "stwgrestwestustest"
+    "blobStorageServiceUri": {
+      "value": "https://stwgrestwestustest.blob.core.windows.net"
+    },
+    "queueStorageServiceUri": {
+      "value": "https://stwgrestwestustest.queue.core.windows.net"
+    },
+    "tableStorageServiceUri": {
+      "value": "https://stwgrestwestustest.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"

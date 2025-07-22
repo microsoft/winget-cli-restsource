@@ -23,8 +23,8 @@
     "appServiceName": {
       "value": "asp-wgrest-centus-int"
     },
-    "keyVaultName": {
-      "value": "kv-wgrest-westus-int"
+    "keyVaultServiceUri": {
+      "value": "https://kv-wgrest-westus-int.vault.azure.net"
     },
     "appInsightName": {
       "value": "appin-wgrest-westus-int"
@@ -49,8 +49,14 @@
         "supportCredentials": false
       }
     },
-    "azFuncStorageName": {
-        "value": "stwgrestcentusint"
+    "blobStorageServiceUri": {
+      "value": "https://stwgrestcentusint.blob.core.windows.net"
+    },
+    "queueStorageServiceUri": {
+      "value": "https://stwgrestcentusint.queue.core.windows.net"
+    },
+    "tableStorageServiceUri": {
+      "value": "https://stwgrestcentusint.table.core.windows.net"
     },
     "serverAuthenticationType": {
         "value": "none"

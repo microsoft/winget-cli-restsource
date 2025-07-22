@@ -22,18 +22,32 @@
             "metadata": {
                 "description": "Type of Application"
             }
+        },
+        "requestSource": {
+            "type": "string",
+            "defaultValue": "WinGet Rest Source",
+            "metadata": {
+                "description": "Source of Azure Resource Manager deployment"
+            }
+        },
+        "workspaceResourceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Log Analytics workspace name to associate with your Application Insights resource."
+            }
         }
     },
     "variables": {},
     "resources": [
         {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
             "name": "[parameters('name')]",
-            "type": "microsoft.insights/components",
             "location": "[parameters('location')]",
-            "apiVersion": "2015-05-01",
             "properties": {
-                "ApplicationId": "[parameters('name')]",
-                "Application_Type": "[parameters('type')]"
+                "Application_Type": "[parameters('type')]",
+                "Request_Source": "[parameters('requestSource')]",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceResourceName'))]"
             }
         }
     ],

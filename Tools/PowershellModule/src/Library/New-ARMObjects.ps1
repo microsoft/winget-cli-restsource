@@ -217,7 +217,7 @@ Function New-ARMObjects
 
             ## Create Function app key and also add to keyvault
             $NewFunctionKeyValue = New-FunctionAppKey
-            $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
+            $Result = Invoke-AzRestMethod -Path "$FunctionAppId/host/default/functionKeys/WinGetRestSourceAccess?api-version=2024-04-01" -Method PUT -Payload (@{properties=@{name = "WinGetRestSourceAccess"; value = $NewFunctionKeyValue}} | ConvertTo-Json -Depth 8)
             if ($Result.StatusCode -ne 200 -and $Result.StatusCode -ne 201) {
                 Write-Error "Failed to create Azure Function key. $($Result.Content)"
                 return $false
