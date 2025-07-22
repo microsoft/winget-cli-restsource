@@ -28,6 +28,14 @@ extends:
     sdl:
       codeInspector:
         enabled: true
+      binskim:
+        analyzeTargetGlob: |
+          -:f|**\WinGet.RestSource.IntegrationTest\**\*.dll
+          -:f|**\WinGet.RestSource.IntegrationTest\**\*.exe
+          -:f|**\WinGet.RestSource.UnitTest\**\*.dll
+          -:f|**\WinGet.RestSource.UnitTest\**\*.exe
+          -:f|**\WinGet.RestSource.Fuzzing\**\*.dll
+          -:f|**\WinGet.RestSource.Fuzzing\**\*.exe
 
     stages:
     - stage: Build_Publish_Test
