@@ -30,12 +30,12 @@ extends:
         enabled: true
       binskim:
         analyzeTargetGlob: >
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.Rest.dll;
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.dll;
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Utils.dll;
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.AppConfig.dll;
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Functions.dll;
-          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.PowershellSupport.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.Rest.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Utils.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.AppConfig.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Functions.dll;
+          $(Build.SourcesDirectory)\**\Microsoft.WinGet.PowershellSupport.dll;
 
     stages:
     - stage: Build_Publish_Test
