@@ -26,6 +26,10 @@ extends:
       # Builds from forked repos do not have permissions to set tags
       skipBuildTagsForGitHubPullRequests: true
 
+    sdl:
+      binskim:
+        analyzeTargetGlob: '$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.*.dll;$(Build.SourcesDirectory)\**\Microsoft.WinGet.*.dll;'
+
     stages:
     - stage: Build_Publish_Test
       jobs:

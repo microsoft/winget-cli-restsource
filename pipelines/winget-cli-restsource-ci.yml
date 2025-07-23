@@ -28,6 +28,8 @@ extends:
     sdl:
       codeInspector:
         enabled: true
+      binskim:
+        analyzeTargetGlob: '$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.*.dll;$(Build.SourcesDirectory)\**\Microsoft.WinGet.*.dll;'
 
     stages:
     - stage: Build_Publish_Test
