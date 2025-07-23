@@ -28,13 +28,13 @@ extends:
 
     sdl:
       binskim:
-        analyzeTargetGlob: |
-          -:f|**\WinGet.RestSource.IntegrationTest\**\*.dll;
-          -:f|**\WinGet.RestSource.IntegrationTest\**\*.exe;
-          -:f|**\WinGet.RestSource.UnitTest\**\*.dll;
-          -:f|**\WinGet.RestSource.UnitTest\**\*.exe;
-          -:f|**\WinGet.RestSource.Fuzzing\**\*.dll;
-          -:f|**\WinGet.RestSource.Fuzzing\**\*.exe;
+        analyzeTargetGlob: >
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.Rest.dll;
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.dll;
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Utils.dll;
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.AppConfig.dll;
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.RestSource.Functions.dll;
+          +:f|$(Build.SourcesDirectory)\**\Microsoft.WinGet.PowershellSupport.dll;
 
     stages:
     - stage: Build_Publish_Test
