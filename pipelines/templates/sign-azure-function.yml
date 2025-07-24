@@ -1,0 +1,54 @@
+# Template helper to sign Azure Function zip package
+parameters:
+  - azureFunctionFolder: ''
+    type: string
+  - azureFunctionFileName: 'WinGet.RestSource.Functions.zip'
+    type: string
+
+variables:
+  azureFunctionFilePath: '${{ parameters.azureFunctionFolder }}\${{ parameters.azureFunctionFileName }}'
+  azureFunctionExtractedFilesPath: '${{ parameters.azureFunctionFolder }}\ExtractedFiles'
+
+steps:
+- task: ExtractFiles@1
+  displayName: 'Extract Files: ${{ parameters.azureFunctionFileName }}'
+  inputs:
+    archiveFilePatterns: '$(azureFunctionFilePath)'
+    destinationFolder: '$(azureFunctionExtractedFilesPath)'
+
+- task: onebranch.pipeline.signing@1
+  displayName: 'Sign 1st party module files'
+  inputs:
+    command: 'sign'
+    signing_profile: 'external_distribution'
+    search_root: '$(azureFunctionExtractedFilesPath)'
+    files_to_sign: |
+      **/Microsoft.WindowsPackageManager.*.dll;
+      **/Microsoft.WinGet.*.dll;
+
+- task: onebranch.pipeline.signing@1
+  displayName: 'Sign 3rd party module files'
+  inputs:
+    command: 'sign'
+    cp_code: '135020002' # CP-231522 - Microsoft 3rd Party Application Component (SHA2)
+    search_root: '$(azureFunctionExtractedFilesPath)'
+    files_to_sign: |
+      **/Castle.*.dll;
+      **/DnsClient.dll;
+      **/Google.*.dll;
+      **/[Gg]rpc*.dll;
+      **/LinqKit.dll;
+      **/NCrontab.*.dll;
+      **/Newtonsoft.*.dll;
+      **/OpenTelemetry*.dll;
+      **/*[Ss][Qq][Ll][Ii][Tt][Ee]*.dll;
+      **/System.Reactive.*.dll;
+      **/YamlDotNet.dll;
+
+- task: ArchiveFiles@2
+  displayName: 'Archive Files: ${{ parameters.azureFunctionFileName }}'
+  inputs:
+    rootFolderOrFile: '$(azureFunctionExtractedFilesPath)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    replaceExistingArchive: true

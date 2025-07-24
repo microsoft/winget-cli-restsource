@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
 		..\pipelines\templates\run-integrationtests.yml = ..\pipelines\templates\run-integrationtests.yml
 		..\pipelines\templates\run-unittests.yml = ..\pipelines\templates\run-unittests.yml
+		..\pipelines\templates\sign-azure-function.yml = ..\pipelines\templates\sign-azure-function.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E49C6A16-7E44-4318-8F1B-8B17EBFD5189}"
