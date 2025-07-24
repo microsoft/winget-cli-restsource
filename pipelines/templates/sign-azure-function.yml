@@ -36,7 +36,7 @@ steps:
       **/Newtonsoft.*.dll;
       **/OpenTelemetry*.dll;
       **/*[Ss][Qq][Ll][Ii][Tt][Ee]*.dll;
-      **/System.Reactive.*.dll;
+      **/System.Reactive*.dll;
       **/YamlDotNet.dll;
 
 - task: ArchiveFiles@2

@@ -124,6 +124,40 @@ extends:
                 Library/**
                 Data/**
 
+          - download: buildRelease
+            displayName: Download Azure Functions to sign
+            artifact: $(azureFunctionArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionArtifactName)
+              Contents: |
+                **/*
+
+          - download: buildRelease
+            displayName: Download Azure Functions Legacy to sign
+            artifact: $(azureFunctionLegacyArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionLegacyDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionLegacyDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionLegacyArtifactName)
+              Contents: |
+                **/*
+
       - stage: Publish
         displayName: Publish to PS Gallery
         dependsOn: Prepare
@@ -139,7 +173,7 @@ extends:
           templateContext:
             inputs:
             - input: pipelineArtifact
-              artifactName: drop_Prepare_Prepare_Sign
+              artifactName: $(moduleName)
               targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)
               itemPattern: |
                 *.psm1
