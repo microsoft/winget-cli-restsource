@@ -111,7 +111,7 @@ extends:
 
           - template: pipelines/templates/sign-azure-function.yml@self
             parameters:
-              name: '$(downloadRoot)\Data'
+              azureFunctionFolder: '$(downloadRoot)\Data'
 
           - task: CopyFiles@2
             displayName: Copy files to be published to staging directory

@@ -1,9 +1,7 @@
 # Template helper to sign Azure Function zip package
 parameters:
-  - azureFunctionFolder: ''
-    type: string
-  - azureFunctionFileName: 'WinGet.RestSource.Functions.zip'
-    type: string
+  azureFunctionFolder: ''
+  azureFunctionFileName: 'WinGet.RestSource.Functions.zip'
 
 variables:
   azureFunctionFilePath: '${{ parameters.azureFunctionFolder }}\${{ parameters.azureFunctionFileName }}'
