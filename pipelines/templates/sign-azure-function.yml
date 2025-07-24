@@ -52,5 +52,6 @@ steps:
   displayName: 'Clean Files: ${{ parameters.azureFunctionFileName }}'
   inputs:
     sourceFolder: '${{ parameters.azureFunctionFolder }}\ExtractedFiles'
-    Contents: **/*
+    contents: |
+      **/*
     removeSourceFolder: true
