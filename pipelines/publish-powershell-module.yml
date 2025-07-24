@@ -173,13 +173,10 @@ extends:
           templateContext:
             inputs:
             - input: pipelineArtifact
-              artifactName: $(moduleName)
-              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)
+              artifactName: drop_Prepare_Prepare_Sign
+              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/
               itemPattern: |
-                *.psm1
-                *.psd1
-                Library/**
-                Data/**
+                Microsoft.WinGet.RestSource/**
 
           steps:
           - pwsh: |
