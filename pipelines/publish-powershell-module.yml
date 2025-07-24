@@ -53,7 +53,7 @@ extends:
           pool:
             type: windows
           variables:
-            ob_outputDirectory: $(Build.ArtifactStagingDirectory)/$(moduleName)
+            ob_outputDirectory: $(Build.ArtifactStagingDirectory)
 
           steps:
           - task: NuGetToolInstaller@1
