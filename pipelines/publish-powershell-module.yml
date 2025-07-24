@@ -12,6 +12,10 @@ variables:
   moduleName: Microsoft.WinGet.RestSource
   sourceArtifactName: WinGet.RestSource-WinGet.PowerShell.Source
   downloadRoot: $(Pipeline.Workspace)\buildRelease\$(sourceArtifactName)
+  azureFunctionArtifactName: WinGet.RestSource-WinGet.RestSource.Functions
+  azureFunctionDownloadRoot: $(Pipeline.Workspace)\buildRelease\$(azureFunctionArtifactName)
+  azureFunctionLegacyArtifactName: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport
+  azureFunctionLegacyDownloadRoot: $(Pipeline.Workspace)\buildRelease\$(azureFunctionLegacyArtifactName)
 
   # Docker image which is used to build the project
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
@@ -49,7 +53,7 @@ extends:
           pool:
             type: windows
           variables:
-            ob_outputDirectory: $(Build.ArtifactStagingDirectory)/$(moduleName)
+            ob_outputDirectory: $(Build.ArtifactStagingDirectory)
 
           steps:
           - task: NuGetToolInstaller@1
@@ -90,11 +94,11 @@ extends:
               signing_profile: 'external_distribution'
               search_root: '$(downloadRoot)'
               files_to_sign: |
-                Microsoft.WinGet.RestSource.psd1
-                Microsoft.WinGet.RestSource.psm1
-                Library/*.ps1
-                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll
-                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll
+                Microsoft.WinGet.RestSource.psd1;
+                Microsoft.WinGet.RestSource.psm1;
+                Library/*.ps1;
+                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll;
+                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll;
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Sign 3rd party module files'
@@ -103,7 +107,11 @@ extends:
               cp_code: '135020002' # CP-231522 - Microsoft 3rd Party Application Component (SHA2)
               search_root: '$(downloadRoot)'
               files_to_sign: |
-                Library/WinGet.RestSource.PowershellSupport/YamlDotNet.dll
+                Library/WinGet.RestSource.PowershellSupport/YamlDotNet.dll;
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(downloadRoot)\Data'
 
           - task: CopyFiles@2
             displayName: Copy files to be published to staging directory
@@ -115,6 +123,40 @@ extends:
                 *.psd1
                 Library/**
                 Data/**
+
+          - download: buildRelease
+            displayName: Download Azure Functions to sign
+            artifact: $(azureFunctionArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionArtifactName)
+              Contents: |
+                **/*
+
+          - download: buildRelease
+            displayName: Download Azure Functions Legacy to sign
+            artifact: $(azureFunctionLegacyArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionLegacyDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionLegacyDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionLegacyArtifactName)
+              Contents: |
+                **/*
 
       - stage: Publish
         displayName: Publish to PS Gallery
@@ -132,12 +174,9 @@ extends:
             inputs:
             - input: pipelineArtifact
               artifactName: drop_Prepare_Prepare_Sign
-              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)
+              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/
               itemPattern: |
-                *.psm1
-                *.psd1
-                Library/**
-                Data/**
+                Microsoft.WinGet.RestSource/**
 
           steps:
           - pwsh: |
