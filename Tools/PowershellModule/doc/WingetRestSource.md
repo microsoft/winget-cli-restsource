@@ -46,7 +46,7 @@ Before getting started with the Windows Package Manager REST source with PowerSh
 #### Get PowerShell Module from PowerShell Gallery (Recommended)
 1. Install the PowerShell module from PowerShell Gallery
     ```Powershell
-    Install-PSResource -Name Microsoft.WinGet.RestSource -Prerelease
+    Install-PSResource -Name Microsoft.WinGet.RestSource
     ```
 
 #### Get PowerShell Module from Github Releases
