@@ -1497,7 +1497,7 @@ components:
         $ref: '#/components/schemas/APIVersion'
 
     ContinuationToken:
-      name: Version
+      name: ContinuationToken
       in: header
       description: This is a generic continuation token as a header parameter.
       required: false
