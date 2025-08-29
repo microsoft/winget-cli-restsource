@@ -137,6 +137,20 @@ class WinGetInstallationMetadata {
     WinGetInstallationMetadata () {}
 }
 
+class WinGetMicrosoftEntraIdAuthenticationInfo {
+    [string]$Resource
+    [string]$Scope
+
+    WinGetMicrosoftEntraIdAuthenticationInfo () {}
+}
+
+class WinGetInstallerAuthentication {
+    [string]$AuthenticationType
+    [WinGetMicrosoftEntraIdAuthenticationInfo]$MicrosoftEntraIdAuthenticationInfo
+
+    WinGetInstallerAuthentication () {}
+}
+
 class WinGetInstaller {
     [string]$InstallerIdentifier
     [string]$InstallerSha256

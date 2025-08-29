@@ -1,0 +1,36 @@
+{
+    "configVersion": 3,
+    "entries": [
+        {
+            "fuzzer": {
+                "$type": "libfuzzerDotNet",
+                "dll": "Microsoft.WinGet.RestSource.Fuzzing.dll",
+                "class": "Microsoft.WinGet.RestSource.Fuzzing.Fuzzer",
+                "method": "FuzzTest"
+            },
+            "adoTemplate": {
+                "org": "microsoft",
+                "project": "OS",
+                "AssignedTo": "yaosun@microsoft.com",
+                "AreaPath": "OS\\Windows Client and Services\\WinPD\\DFX-Developer Fundamentals and Experiences\\DEFT\\InstaDev",
+                "IterationPath": "OS"
+            },
+            "jobNotificationEmail": "InstaDev@microsoft.com",
+            "skip": false,
+            "rebootAfterSetup": false,
+            "oneFuzzJobs": [
+                {
+                    "projectName": "winget-restsource-fuzzing",
+                    "targetName": "fuzzer"
+                }
+            ],
+            "jobDependencies": [
+                "Microsoft.WinGet.RestSource.Fuzzing.*",
+                "Microsoft.WinGet.RestSource.Utils.*",
+                "Newtonsoft.Json.dll",
+                "Microsoft.Extensions.Logging.Abstractions.dll"
+            ],
+            "SdlWorkItemId": 48765191
+        }
+    ]
+}

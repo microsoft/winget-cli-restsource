@@ -63,11 +63,7 @@
 
             # A URL to the main website for this project.
             ProjectUri = 'https://github.com/microsoft/winget-cli-restsource'
-
-            # Release channel
-            PreRelease = 'alpha'
         }
     }
 }
-    
     

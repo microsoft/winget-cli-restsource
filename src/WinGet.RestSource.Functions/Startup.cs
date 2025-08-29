@@ -41,14 +41,30 @@ namespace Microsoft.WinGet.RestSource.Functions
             string databaseId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.DatabaseNameSetting) ?? throw new InvalidDataException();
             string containerId = Environment.GetEnvironmentVariable(CosmosConnectionConstants.ContainerNameSetting) ?? throw new InvalidDataException();
 
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+            string readOnlyKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadOnlyKeySetting) ?? throw new InvalidDataException();
+            string readWriteKey = Environment.GetEnvironmentVariable(CosmosConnectionConstants.CosmosReadWriteKeySetting) ?? throw new InvalidDataException();
+#endif
+
             builder.Services.AddSingleton<IWinGetAppConfig>(sp => WinGetAppConfig.Instance);
 
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+            builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(
+                sp => new CosmosDataStore(
+                    sp.GetRequiredService<ILogger<CosmosDataStore>>(),
+                    endpoint,
+                    databaseId,
+                    containerId,
+                    readOnlyKey,
+                    readWriteKey));
+#else
             builder.Services.AddSingleton<IApiDataStore, CosmosDataStore>(
                 sp => new CosmosDataStore(
                     sp.GetRequiredService<ILogger<CosmosDataStore>>(),
                     endpoint,
                     databaseId,
                     containerId));
+#endif
 
             builder.Services.AddSingleton<IRebuild>((s) => RebuildFactory.InitializeRebuildInstance());
             builder.Services.AddSingleton<IUpdate>((s) => UpdateFactory.InitializeUpdateInstance());

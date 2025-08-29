@@ -66,18 +66,19 @@ Function New-ARMParameterObjects
     )
 
     $ARMObjects = @()
-    
+
     ## The Names that are to be assigned to each resource.
-    $AppInsightsName    = "appin-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $LogAnalyticsName   = "log-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $AppInsightsName    = "appi-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $KeyVaultName       = "kv-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $StorageAccountName = "st" + $Name.ToLower() -replace "[^a-z0-9]", ""
     $AspName            = "asp-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $CDBAccountName     = "cosmos-" + $Name.ToLower() -replace "[^a-z0-9-]", ""
-    $FunctionName       = "azfun-" + $Name -replace "[^a-zA-Z0-9-]", ""
-    $AppConfigName      = "appconfig-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $FunctionName       = "func-" + $Name -replace "[^a-zA-Z0-9-]", ""
+    $AppConfigName      = "appcs-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ApiManagementName  = "apim-" + $Name -replace "[^a-zA-Z0-9-]", ""
     $ServerIdentifier   = "WinGetRestSource-" + $Name -replace "[^a-zA-Z0-9-]", ""
-    
+
     ## Not supported in deployment script
     ## $FrontDoorName   = ""
     ## $AspGenevaName   = ""
@@ -86,7 +87,7 @@ Function New-ARMParameterObjects
     ## Windows Package Manager Functions [WinGet.RestSource.Functions.zip])
     $CDBDatabaseName    = "WinGet"
     $CDBContainerName   = "Manifests"
-    
+
     if ($RestSourceAuthentication -eq "MicrosoftEntraId") {
         $ServerAuthenticationType = "microsoftEntraId"
         $QueryApiValidationEnabled = $true
@@ -106,6 +107,7 @@ Function New-ARMParameterObjects
     $RunFromPackageUrl          = ""
 
     ## Relative Path from the Working Directory to the Azure ARM Template Files
+    $TemplateLogAnalyticsPath   = "$TemplateFolderPath\loganalytics.json"
     $TemplateAppInsightsPath    = "$TemplateFolderPath\applicationinsights.json"
     $TemplateKeyVaultPath       = "$TemplateFolderPath\keyvault.json"
     $TemplateStorageAccountPath = "$TemplateFolderPath\storageaccount.json"
@@ -117,6 +119,7 @@ Function New-ARMParameterObjects
     $TemplateAppConfigPath      = "$TemplateFolderPath\appconfig.json"
     $TemplateApiManagementPath  = "$TemplateFolderPath\apimanagement.json"
 
+    $ParameterLogAnalyticsPath   = "$ParameterFolderPath\loganalytics.json"
     $ParameterAppInsightsPath    = "$ParameterFolderPath\applicationinsights.json"
     $ParameterKeyVaultPath       = "$ParameterFolderPath\keyvault.json"
     $ParameterStorageAccountPath = "$ParameterFolderPath\storageaccount.json"
@@ -129,18 +132,19 @@ Function New-ARMParameterObjects
     $ParameterApiManagementPath  = "$ParameterFolderPath\apimanagement.json"
 
     Write-Verbose -Message "ARM Parameter Resource performance is based on the: $ImplementationPerformance."
-    
-    $PrimaryRegionName   = $(Get-AzLocation).Where({$_.Location -eq $Region}).DisplayName
-    $SecondaryRegion     = Get-PairedAzureRegion -Region $Region
-    $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $SecondaryRegion}).DisplayName
-    
+
+    $PrimaryRegion       = $(Get-AzLocation).Where({$_.Location -eq $Region})
+    $PrimaryRegionName   = $PrimaryRegion.DisplayName
+    if ($PrimaryRegion.PairedRegion.Length -gt 0) {
+        $SecondaryRegionName = $(Get-AzLocation).Where({$_.Location -eq $PrimaryRegion.PairedRegion[0].Name}).DisplayName
+    }
+
     Write-Verbose -Message "Retrieving the Azure Tenant and User Information"
     $AzContext = Get-AzContext
     $AzTenantID = $AzContext.Tenant.Id
     $AzTenantDomain = $AzContext.Tenant.Domains[0]
 
-    if ($AzContext.Account.Type -eq "User")
-    {
+    if ($AzContext.Account.Type -eq "User") {
         $LocalDeployment = $true
         $AzObjectID = $(Get-AzADUser -SignedIn).Id
         if (!$PublisherEmail) {
@@ -150,8 +154,7 @@ Function New-ARMParameterObjects
             $PublisherName = $AzContext.Account.Id
         }
     }
-    else
-    {
+    else {
         $LocalDeployment = $false
         $AzObjectID = $(Get-AzADServicePrincipal -ApplicationId $AzContext.Account.ID).Id
         if (!$PublisherEmail) {
@@ -162,6 +165,12 @@ Function New-ARMParameterObjects
         }
     }
     Write-Verbose -Message "Retrieved the Azure Object Id: $AzObjectID"
+
+    $AzEnvironment = Get-AzEnvironment -Name $AzContext.Environment.Name
+    $blobStorageServiceUri  = "https://" + $StorageAccountName + ".blob." + $AzEnvironment.StorageEndpointSuffix
+    $queueStorageServiceUri = "https://" + $StorageAccountName + ".queue." + $AzEnvironment.StorageEndpointSuffix
+    $tableStorageServiceUri = "https://" + $StorageAccountName + ".table." + $AzEnvironment.StorageEndpointSuffix
+    $keyVaultServiceUri     = "https://" + $KeyVaultName + "." + $AzEnvironment.AzureKeyVaultDnsSuffix
 
     switch ($ImplementationPerformance) {
         "Developer" {
@@ -197,12 +206,14 @@ Function New-ARMParameterObjects
                                 failoverPriority = 0
                                 isZoneRedundant  = $false
                             }
-                            @{
+                        )
+            if ($SecondaryRegionName) {
+                $CosmosDBALocations += @{
                                 locationName     = $SecondaryRegionName
                                 failoverPriority = 1
                                 isZoneRedundant  = $false
                             }
-                        )
+            }
             $ApiManagementSku = "Basic"
         }
         "Enhanced" {
@@ -220,12 +231,14 @@ Function New-ARMParameterObjects
                                 failoverPriority = 0
                                 isZoneRedundant  = $false
                             }
-                            @{
+                        )
+            if ($SecondaryRegionName) {
+                $CosmosDBALocations += @{
                                 locationName     = $SecondaryRegionName
                                 failoverPriority = 1
                                 isZoneRedundant  = $false
                             }
-                        )
+            }
             $ApiManagementSku = "Standard"
         }
     }
@@ -236,6 +249,19 @@ Function New-ARMParameterObjects
 
     ## Creates a PowerShell object array to contain the details of the Parameter files.
     $ARMObjects = @(
+        @{  ObjectType = "LogAnalytics"
+            ObjectName = $LogAnalyticsName
+            ParameterPath  = "$ParameterLogAnalyticsPath"
+            TemplatePath   = "$TemplateLogAnalyticsPath"
+            Error      = ""
+            Parameters = @{
+                '$Schema' = $JSONSchema
+                contentVersion = $JSONContentVersion
+                Parameters = @{
+                    name       = @{ value = $LogAnalyticsName }
+                }
+            }
+        },
         @{  ObjectType = "AppInsight"
             ObjectName = $AppInsightsName
             ParameterPath  = "$ParameterAppInsightsPath"
@@ -246,7 +272,8 @@ Function New-ARMParameterObjects
                 contentVersion = $JSONContentVersion
                 Parameters = @{
                     name       = @{ value = $AppInsightsName }
-                    location   = @{ value = $Region          }
+                    location   = @{ value = $Region }
+                    workspaceResourceName = @{ value = $LogAnalyticsName }
                 }
             }
         },
@@ -344,26 +371,6 @@ Function New-ARMParameterObjects
                         }
                     }
                     locations = @{ value = $CosmosDBALocations }
-                    # Allows requests from azure portal and Azure datacenter ip range (0.0.0.0)
-                    ipRules = @{
-                        value = @(
-                            @{
-                                ipAddressOrRange = "13.91.105.215"
-                            }
-                            @{
-                                ipAddressOrRange = "4.210.172.107"
-                            }
-                            @{
-                                ipAddressOrRange = "13.88.56.148"
-                            }
-                            @{
-                                ipAddressOrRange = "40.91.218.243"
-                            }
-                            @{
-                                ipAddressOrRange = "0.0.0.0"
-                            }
-                        )
-                    }
                     backupPolicy = @{
                         value = @{
                             type = "Periodic"
@@ -449,8 +456,10 @@ Function New-ARMParameterObjects
                     serverIdentifier         = @{ value = $ServerIdentifier         }   # Azure Function Server Identifier
                     functionName             = @{ value = $FunctionName             }   # Azure Function Name
                     appServiceName           = @{ value = $aspName                  }   # Azure App Service Name
-                    keyVaultName             = @{ value = $KeyVaultName             }   # Azure Keyvault Name
-                    azFuncStorageName        = @{ value = $StorageAccountName       }   # Azure Storage Account Name
+                    keyVaultServiceUri       = @{ value = $keyVaultServiceUri       }   # Azure Keyvault Uri
+                    blobStorageServiceUri    = @{ value = $blobStorageServiceUri    }   # Azure Blob Storage Uri
+                    queueStorageServiceUri   = @{ value = $queueStorageServiceUri   }   # Azure Queue Storage Uri
+                    tableStorageServiceUri   = @{ value = $tableStorageServiceUri   }   # Azure Table Storage Uri
                     appInsightName           = @{ value = $AppInsightsName          }   # Azure App Insights Name
                     manifestCacheEndpoint    = @{ value = $manifestCacheEndpoint    }   # Not suported
                     monitoringTenant         = @{ value = $monitoringTenant         }   # Not suported
@@ -477,13 +486,13 @@ Function New-ARMParameterObjects
                     publisherName = @{ value = $PublisherName }
                     sku = @{ value = $ApiManagementSku }
                     location = @{ value = $Region }
-                    keyVaultName = @{ value = $KeyVaultName }
+                    keyVaultServiceUri = @{ value = $keyVaultServiceUri }
                     backendUrls = @{ value = @() }  # Value to be populated after Azure Function is created
                     queryApiValidationEnabled = @{ value = $QueryApiValidationEnabled }
                     microsoftEntraIdResource = @{ value = $MicrosoftEntraIdResource }
                 }
             }
-        }    
+        }
     )
 
     ## Uses the newly created ARMObjects[#].Parameters to create new JSON Parameter files.

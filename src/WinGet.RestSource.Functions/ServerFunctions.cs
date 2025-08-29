@@ -49,7 +49,16 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.InformationGet)]
         public IActionResult InformationGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "information")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionGet,
+                Route = "information")]
             HttpRequest req,
             ILogger log)
         {

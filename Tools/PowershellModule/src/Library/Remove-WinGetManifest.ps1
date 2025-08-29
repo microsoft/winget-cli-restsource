@@ -1,41 +1,48 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Remove-WinGetManifest {
+function Remove-WinGetManifest {
     <#
     .SYNOPSIS
-    Removes a Manifest file from the Azure REST source
+    Removes a Manifest from the Windows Package Manager REST source.
 
     .DESCRIPTION
+    Removes a Manifest from the Windows Package Manager REST source.
     This function will connect to the Azure Tenant that hosts the Windows Package Manager REST source, removing the 
-    specified package Manifest.
+    specified Manifest.
 
     .PARAMETER FunctionName
-    Name of the Azure Function that hosts the REST source.
+    Name of the Azure Function that hosts the Windows Package Manager REST source.
 
     .PARAMETER PackageIdentifier
-    Supports input from pipeline by property. The Package Id that represents the App Manifest to be removed.
+    Supports input from pipeline by property. The Package Identifier that represents the Manifest to be removed.
 
     .PARAMETER PackageVersion
-    [Optional] Supports input from pipeline by property. The Package version that represents the App Manifest to be removed.
-    If empty, the whole package (all versions) will be removed.
+    [Optional] Supports input from pipeline by property. The Package version that represents the Manifest to be removed.
+    If empty, all versions will be removed.
 
     .PARAMETER SubscriptionName
-    [Optional] The Subscription name that contains the Windows Package Manager REST source
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .EXAMPLE
     Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 
-    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove the specified Manifest file from 
-    the Windows Package Manager REST source
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove all versions of the specified Manifest from 
+    the Windows Package Manager REST source.
+
+    .EXAMPLE
+    Remove-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -PackageVersion "1.0.0.0"
+
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to remove specified version of the specified Manifest from 
+    the Windows Package Manager REST source.
 
     #>
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)]  [string]$FunctionName,
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]  [string]$PackageIdentifier,
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)] [string]$PackageVersion = '',
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = ''
     )
-    BEGIN {
+    begin {
         [PSCustomObject[]]$Return = @()
         
         ###############################
@@ -77,7 +84,7 @@ Function Remove-WinGetManifest {
 
         $AzFunctionURLBase = 'https://' + $DefaultHostName + '/api/'
     }
-    PROCESS {
+    process {
         Write-Verbose -Message 'Constructing the REST API call for removal of manifest.'
 
         $AzFunctionURL = $AzFunctionURLBase
@@ -108,7 +115,7 @@ Function Remove-WinGetManifest {
             }
         }
     }
-    END {
+    end {
         return $Return
     }
 }

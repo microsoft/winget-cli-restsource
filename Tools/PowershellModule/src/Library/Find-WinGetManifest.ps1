@@ -1,50 +1,50 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-Function Find-WinGetManifest {
+function Find-WinGetManifest {
     <#
     .SYNOPSIS
-    Connects to the specified source REST API to retrieve the package manifests, returning manifest package identifier, name, publisher and versions.
+    Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.
 
     .DESCRIPTION
-    Connects to the specified source REST API to retrieve the package manifests, returning manifest package identifier, name, publisher and versions.
-    This function does not return the full WinGetManifest since the results may be very large. Use Get-WinGetManifest for retrieving full WinGetManifest.
+    Connects to the specified Windows Package Manager source REST API to retrieve available Manifests, returning only the package identifier, name, publisher and versions for each Manifest result.
+    This function does not return the full WinGetManifest since the results may be very large. Use Get-WinGetManifest for retrieving individual full WinGetManifest.
 
     .PARAMETER FunctionName
-    Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
+    Name of the Azure Function that contains the Windows Package Manager REST source.
 
     .PARAMETER Query
-    [Optional] The query to be performed against rest source. Empty query will return all package manifests.
+    [Optional] The query to be performed against the Windows Package Manager REST source. Empty query will return all manifest infos.
 
     .PARAMETER PackageIdentifier
-    [Optional] Filter the search results with PackageIdentifier
+    [Optional] Filter the search results with PackageIdentifier.
 
     .PARAMETER PackageName
-    [Optional] Filter the search results with PackageName
+    [Optional] Filter the search results with PackageName.
 
     .PARAMETER SubscriptionName
-    [Optional] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
+    [Optional] The name of the subscription containing the Windows Package Manager REST source.
 
     .PARAMETER Exact
-    [Optional] If specified, the rest source search will be performed with exact match.
+    [Optional] If specified, the Windows Package Manager REST source search will be performed with exact match.
 
     .EXAMPLE
     Find-WinGetManifest -FunctionName "contosorestsource" -Query "PowerToys"
 
-    Searches rest source for package manifests with PowerToys.
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to search for manifests with PowerToys.
 
     .EXAMPLE
     Find-WinGetManifest -FunctionName "contosorestsource" -Query "PowerToys" -PackageIdentifier "Windows.PowerToys"
 
-    Searches rest source for package manifests with PowerToys and filter the result with package identifier Windows.PowerToys.
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to search for manifests with PowerToys and filter the result with package identifier Windows.PowerToys.
 
     .EXAMPLE
     Find-WinGetManifest -FunctionName "contosorestsource" -Query "PowerToys" -PackageName "Windows PowerToys" -Exact
 
-    Searches rest source for package manifests with PowerToys and filter the result with package name Windows PowerToys. Use exact match.
+    Connects to Azure, then runs the Azure Function "contosorestsource" REST APIs to search for manifests with PowerToys and filter the result with package name Windows PowerToys. Use exact match.
 
     #>
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)]  [string]$FunctionName,
         [Parameter(Mandatory = $false)] [string]$Query = '',
         [Parameter(Mandatory = $false)] [string]$PackageIdentifier = '',
@@ -52,7 +52,7 @@ Function Find-WinGetManifest {
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',
         [Parameter()] [switch]$Exact
     )
-    BEGIN {
+    begin {
         [PSCustomObject[]] $Return = @()
 
         ###############################
@@ -90,7 +90,7 @@ Function Find-WinGetManifest {
 
         $AzFunctionURL = 'https://' + $DefaultHostName + '/api/manifestSearch'
     }
-    PROCESS {
+    process {
         Write-Verbose -Message 'Invoking the REST API call.'
 
         ## Internal scan does not recognize ternary oprator, use if else here
@@ -176,7 +176,7 @@ Function Find-WinGetManifest {
             $ContinuationToken = $Response.ContinuationToken
         } while (![string]::IsNullOrWhiteSpace($ContinuationToken))
     }
-    END {
+    end {
         ## Returns results
         Write-Verbose -Message "Returning ($($Return.Count)) manifests based on search."
         return $Return

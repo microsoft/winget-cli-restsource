@@ -1,5 +1,6 @@
 ---
-Module Name: Microsoft.WinGet.RestSource
+external help file: Microsoft.WinGet.RestSource-help.xml
+Module Name: microsoft.WinGet.RestSource
 online version:
 schema: 2.0.0
 ---
@@ -7,31 +8,27 @@ schema: 2.0.0
 # Get-WinGetManifest
 
 ## SYNOPSIS
-Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning an array of all Manifests found.
-Allows for filtering results based on the name when targeting the REST APIs.
+Connects to the specified Windows Package Manager source, or local file system path to retrieve the package manifest, returning
+the manifest found.
 
 ## SYNTAX
 
 ### Azure (Default)
 ```
-Get-WinGetManifest [-FunctionName] <String> [[-PackageIdentifier] <String>] [[-SubscriptionName] <String>]
- [<CommonParameters>]
+Get-WinGetManifest [-FunctionName] <String> [-PackageIdentifier] <String> [-SubscriptionName <String>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### File
 ```
-Get-WinGetManifest [-Path] <String> [<CommonParameters>]
+Get-WinGetManifest [-Path] <String> [-PriorManifest <WinGetManifest>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Connects to the specified source REST API, or local file system path to retrieve the package Manifests, returning an array of all Manifests found.
-Allows for filtering results based on the name.
-    
-The following Azure Modules are used by this script:
-    Az.Resources
-    Az.Accounts
-    Az.Websites
-    Az.Functions
+Connects to the specified Windows Package Manager source, or local file system path to retrieve the package Manifest, returning
+the manifest found.  
+Allows for retrieving results based on the package identifier when targeting the Windows Package Manager source.
 
 ## EXAMPLES
 
@@ -40,40 +37,36 @@ The following Azure Modules are used by this script:
 Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys"
 ```
 
-Returns an array of the Package Manifest objects based on the files (*.yaml or *.json) found within the specified Path.
+Returns a Manifest object based on the files found within the specified Path.
 
 ### EXAMPLE 2
 ```
 Get-WinGetManifest -Path "C:\AppManifests\Microsoft.PowerToys\Microsoft.PowerToys.json"
 ```
 
-Returns a Package Manifest object of the specified JSON file.
+Returns a Manifest object (*.json) of the specified JSON file.
 
 ### EXAMPLE 3
 ```
 Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys"
 ```
 
-Returns an Manifest object of the specified Application Package Identifier that is queried against in the REST APIs.
+Returns a Manifest object of the specified Package Identifier that is queried against the Windows Package Manager REST source.
 
 ### EXAMPLE 4
 ```
 Get-WinGetManifest -FunctionName "contosorestsource" -PackageIdentifier "Windows.PowerToys" -SubscriptionName "Visual Studio Subscription"
 ```
 
-Returns a Package Manifest object of the specified Package Identifier that is queried against in the REST APIs from the specified Subscription Name.
-
-### EXAMPLE 5
-```
-Get-WinGetManifest -FunctionName "contosorestsource"
-```
-
-Returns an array of Package Manifest objects that are found in the specified Azure Function.
+Returns a Manifest object of the specified Package Identifier that is queried against the Windows Package Manager REST source from the specified Subscription Name.
 
 ## PARAMETERS
 
 ### -Path
-Path to a file (*.json) or folder containing *.yaml or *.json files.
+Points to either a folder containing a specific Manifest of type .json or .yaml or to a specific .json or .yaml file.
+
+If you are processing a multi-file Manifest, point to the folder that contains all yamls.
+Note: all yamls within the folder must be part of the same Manifest.
 
 ```yaml
 Type: String
@@ -87,8 +80,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -PriorManifest
+A WinGetManifest object containing a single Windows Package Manager REST source Manifest that will be merged with locally processed .yaml files.
+This is used by the script infrastructure internally.
+
+```yaml
+Type: WinGetManifest
+Parameter Sets: File
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -FunctionName
-Name of the Azure Function Name that contains the Windows Package Manager REST APIs.
+Name of the Azure Function Name that contains the Windows Package Manager REST source.
 
 ```yaml
 Type: String
@@ -103,22 +112,23 @@ Accept wildcard characters: False
 ```
 
 ### -PackageIdentifier
-\[Optional\] The Windows Package Manager Package Identifier of a specific Manifest result
+Supports input from pipeline.
+The Windows Package Manager Package Identifier of a specific Package Manifest result.
 
 ```yaml
 Type: String
 Parameter Sets: Azure
 Aliases:
 
-Required: False
+Required: True
 Position: 2
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
 ### -SubscriptionName
-\[Optional\] Name of the Azure Subscription that contains the Azure Function which contains the REST APIs.
+\[Optional\] The name of the subscription containing the Windows Package Manager REST source.
 
 ```yaml
 Type: String
@@ -126,7 +136,7 @@ Parameter Sets: Azure
 Aliases:
 
 Required: False
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

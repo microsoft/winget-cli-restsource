@@ -27,12 +27,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{13F84087-30FC-4274-AAF2-F7A0AAB6FD81}"
 	ProjectSection(SolutionItems) = preProject
-		..\pipelines\templates\copy.yml = ..\pipelines\templates\copy.yml
 		..\pipelines\templates\copy-and-publish-powershell.yml = ..\pipelines\templates\copy-and-publish-powershell.yml
+		..\pipelines\templates\copy.yml = ..\pipelines\templates\copy.yml
 		..\pipelines\templates\publish.yml = ..\pipelines\templates\publish.yml
 		..\pipelines\templates\restore-build-publish-test.yml = ..\pipelines\templates\restore-build-publish-test.yml
 		..\pipelines\templates\run-integrationtests.yml = ..\pipelines\templates\run-integrationtests.yml
 		..\pipelines\templates\run-unittests.yml = ..\pipelines\templates\run-unittests.yml
+		..\pipelines\templates\sign-azure-function.yml = ..\pipelines\templates\sign-azure-function.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E49C6A16-7E44-4318-8F1B-8B17EBFD5189}"
@@ -60,16 +61,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{954044E2-C2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C510F11-3A5B-4E30-8189-05E87B7DE1F0}"
 	ProjectSection(SolutionItems) = preProject
-		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psd1
-		..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.Source.psm1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psd1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psd1
+		..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psm1 = ..\Tools\PowershellModule\src\Microsoft.WinGet.RestSource.psm1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Powershell", "Powershell", "{D1D61BF9-BA0C-4339-B8C6-790B2B1FEEF5}"
 	ProjectSection(SolutionItems) = preProject
 		..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Add-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Find-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Find-WinGetManifest.md
 		..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Get-WinGetManifest.md
 		..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\New-WinGetSource.md
 		..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md = ..\Tools\PowershellModule\doc\PowerShell\Remove-WinGetManifest.md
+		..\Tools\PowershellModule\doc\PowerShell\Update-WinGetSource.md = ..\Tools\PowershellModule\doc\PowerShell\Update-WinGetSource.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7BF3F-415D-4A9D-B859-ED1168438F1F}"
@@ -78,7 +81,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5DF7
 		..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Add-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1 = ..\Tools\PowershellModule\src\Library\Connect-ToAzure.ps1
 		..\Tools\PowershellModule\src\Library\Find-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Find-WinGetManifest.ps1
-		..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1 = ..\Tools\PowershellModule\src\Library\Get-PairedAzureRegion.ps1
 		..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1 = ..\Tools\PowershellModule\src\Library\Get-WinGetManifest.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMObjects.ps1
 		..\Tools\PowershellModule\src\Library\New-ARMParameterObjects.ps1 = ..\Tools\PowershellModule\src\Library\New-ARMParameterObjects.ps1
@@ -104,48 +106,70 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsPackageMan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinGet.RestSource.AppConfig", "WinGet.RestSource.AppConfig\WinGet.RestSource.AppConfig.csproj", "{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinGet.RestSource.Fuzzing", "WinGet.RestSource.Fuzzing\WinGet.RestSource.Fuzzing.csproj", "{270833BB-CC75-40DD-AA78-EF8EC556625C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		LegacySupport|Any CPU = LegacySupport|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.LegacySupport|Any CPU.ActiveCfg = LegacySupport|Any CPU
+		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.LegacySupport|Any CPU.Build.0 = LegacySupport|Any CPU
 		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15E4BE9B-2891-410A-A042-47FE838B1AEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.LegacySupport|Any CPU.ActiveCfg = LegacySupport|Any CPU
+		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.LegacySupport|Any CPU.Build.0 = LegacySupport|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90FD325A-57FF-4FD4-A9A6-FCB32661D5DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F98E939-EC64-40DA-9630-336A40807BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F98E939-EC64-40DA-9630-336A40807BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F98E939-EC64-40DA-9630-336A40807BBE}.LegacySupport|Any CPU.ActiveCfg = Release|Any CPU
 		{0F98E939-EC64-40DA-9630-336A40807BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F98E939-EC64-40DA-9630-336A40807BBE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}.LegacySupport|Any CPU.ActiveCfg = Release|Any CPU
 		{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CD39A15-0E0E-4C71-AC8A-A2D3BF9D42AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2B5CF2A-9FC0-430D-A1BB-AC718E659DBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2B5CF2A-9FC0-430D-A1BB-AC718E659DBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B5CF2A-9FC0-430D-A1BB-AC718E659DBF}.LegacySupport|Any CPU.ActiveCfg = Release|Any CPU
 		{F2B5CF2A-9FC0-430D-A1BB-AC718E659DBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2B5CF2A-9FC0-430D-A1BB-AC718E659DBF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.LegacySupport|Any CPU.ActiveCfg = LegacySupport|Any CPU
+		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.LegacySupport|Any CPU.Build.0 = LegacySupport|Any CPU
 		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0980DC5C-85B7-4CE9-BBDF-05387191C624}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44AD7B2D-4367-47B0-987A-DABDF5C74A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44AD7B2D-4367-47B0-987A-DABDF5C74A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44AD7B2D-4367-47B0-987A-DABDF5C74A9B}.LegacySupport|Any CPU.ActiveCfg = Release|Any CPU
 		{44AD7B2D-4367-47B0-987A-DABDF5C74A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44AD7B2D-4367-47B0-987A-DABDF5C74A9B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.LegacySupport|Any CPU.ActiveCfg = LegacySupport|Any CPU
+		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.LegacySupport|Any CPU.Build.0 = LegacySupport|Any CPU
 		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AC8DE6B-4B4C-49DA-8444-94FD3BAC4C47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.LegacySupport|Any CPU.ActiveCfg = LegacySupport|Any CPU
+		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.LegacySupport|Any CPU.Build.0 = LegacySupport|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8F523C8-2B41-4F77-9DD0-A9FBE72E6B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.LegacySupport|Any CPU.ActiveCfg = Release|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270833BB-CC75-40DD-AA78-EF8EC556625C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

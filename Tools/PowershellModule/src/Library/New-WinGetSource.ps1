@@ -3,41 +3,41 @@
 Function New-WinGetSource {
     <#
     .SYNOPSIS
-    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
+    Creates a Windows Package Manager REST source in Azure.
 
     .DESCRIPTION
-    Creates a Windows Package Manager REST source in Azure for the storage of Windows Package Manager package Manifests.
+    Creates a Windows Package Manager REST source in Azure.
 
     .PARAMETER Name
-    The name of the objects that will be created
+    The base name of Azure Resources (Windows Package Manager REST source components) that will be created.
 
     .PARAMETER ResourceGroup
     [Optional] The name of the Resource Group that the Windows Package Manager REST source will reside. All Azure
-    resources will be created in in this Resource Group (Default: WinGetRestsource)
+    Resources will be created in in this Resource Group (Default: WinGetRestSource)
 
     .PARAMETER SubscriptionName
     [Optional] The name of the subscription that will be used to host the Windows Package Manager REST source. (Default: Current connected subscription)
 
     .PARAMETER Region
-    [Optional] The Azure location where objects will be created in. (Default: westus)
+    [Optional] The Azure location where Azure Resources (Windows Package Manager REST source components) will be created in. (Default: westus)
 
     .PARAMETER TemplateFolderPath
     [Optional] The directory containing required ARM templates. (Default: $PSScriptRoot\..\Data\ARMTemplates)
-    
+
     .PARAMETER ParameterOutputPath
-    [Optional] The directory where Parameter files will be created in. (Default: Current Directory\Parameters)
+    [Optional] The directory where ARM Template Parameter files will be created in. (Default: Current Directory\Parameters)
 
     .PARAMETER RestSourcePath
-    [Optional] Path to the compiled REST API Zip file. (Default: $PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip)
+    [Optional] Path to the compiled Azure Function (Windows Package Manager REST source) Zip file. (Default: $PSScriptRoot\..\Data\WinGet.RestSource.Functions.zip)
 
     .PARAMETER PublisherName
-    [Optional] The WinGet rest source publisher name
+    [Optional] The Windows Package Manager REST source publisher name. (Default: Signed in user email Or WinGetRestSource@DomainName)
 
     .PARAMETER PublisherEmail
-    [Optional] The WinGet rest source publisher email
+    [Optional] The Windows Package Manager REST source publisher email. (Default: Signed in user email Or WinGetRestSource@DomainName)
 
     .PARAMETER ImplementationPerformance
-    [Optional] ["Developer", "Basic", "Enhanced"] specifies the performance of the resources to be created for the Windows Package Manager REST source.
+    [Optional] ["Developer", "Basic", "Enhanced"] specifies the performance of the Azure Resources to be created for the Windows Package Manager REST source.
     | Preference | Description                                                                                                             |
     |------------|-------------------------------------------------------------------------------------------------------------------------|
     | Developer  | Specifies lowest cost for developing the Windows Package Manager REST source. Uses free-tier options when available.    |
@@ -47,35 +47,49 @@ Function New-WinGetSource {
     (Default: Basic)
 
     .PARAMETER RestSourceAuthentication
-    [Optional] ["None", "MicrosoftEntraId"] The WinGet rest source authentication type. [Default: None]
+    [Optional] ["None", "MicrosoftEntraId"] The Windows Package Manager REST source authentication type. (Default: None)
 
     .PARAMETER CreateNewMicrosoftEntraIdAppRegistration
     [Optional] If specified, a new Microsoft Entra Id app registration will be created. (Default: False)
 
     .PARAMETER MicrosoftEntraIdResource
-    [Optional] Microsoft Entra Id authentication resource
+    [Optional] Microsoft Entra Id authentication resource. (Default: None)
 
     .PARAMETER MicrosoftEntraIdResourceScope
-    [Optional] Microsoft Entra Id authentication resource scope
+    [Optional] Microsoft Entra Id authentication resource scope. (Default: None)
 
     .PARAMETER ShowConnectionInstructions
-    [Optional] If specified, the instructions for connecting to the Windows Package Manager REST source. (Default: False)
+    [Optional] If specified, shows the instructions for connecting to the Windows Package Manager REST source. (Default: False)
 
     .PARAMETER MaxRetryCount
-    [Optional] Max ARM template deployment retry count upon failure. (Default: 5)
+    [Optional] Max ARM Templates deployment retry count upon failure. (Default: 5)
 
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource" -InformationAction Continue -Verbose
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
     Azure with the basic level performance.
 
     .EXAMPLE
     New-WinGetSource -Name "contosorestsource" -ResourceGroup "WinGet" -SubscriptionName "Visual Studio Subscription" -Region "westus" -ParameterOutput "C:\WinGet" -ImplementationPerformance "Basic" -ShowConnectionInformation -InformationAction Continue -Verbose
 
-    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of
-    Azure with the basic level performance in the "Visual Studio Subscription" Subscription. Displays the required command
-    to connect the WinGet client to the new REST source after the REST source has been created.
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
+    Azure with the basic level performance in the "Visual Studio Subscription" subscription. Displays the required command 
+    to connect the WinGet client to the new Windows Package Manager REST source after the source has been created.
+
+    .EXAMPLE
+    New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -CreateNewMicrosoftEntraIdAppRegistration -ShowConnectionInformation -InformationAction Continue -Verbose
+
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
+    Azure with the basic level performance. The Windows Package Manager REST source is protected with Microsoft Entra Id authentication. 
+    A new Microsoft Entra Id app registration is created.
+
+    .EXAMPLE
+    New-WinGetSource -Name "contosorestsource" -RestSourceAuthentication "MicrosoftEntraId" -MicrosoftEntraIdResource "GUID" -MicrosoftEntraIdResourceScope "user-impersonation" -ShowConnectionInformation -InformationAction Continue -Verbose
+
+    Creates the Windows Package Manager REST source in Azure with resources named "contosorestsource" in the westus region of 
+    Azure with the basic level performance. The Windows Package Manager REST source is protected with Microsoft Entra Id authentication. 
+    Uses existing Microsoft Entra Id app registration.
 
     #>
     PARAM(

@@ -70,10 +70,10 @@
                 "description": "Whether an API or Product subscription is required for accessing the API."
             }
         },
-        "keyVaultName": {
+        "keyVaultServiceUri": {
             "type": "string",
             "metadata": {
-                "description": "Key Vault Name"
+                "description": "Key Vault service uri. Do not append '/' to the uri."
             }
         },
         "backendUrls": {
@@ -112,7 +112,7 @@
         }
     },
     "variables": {
-        "kv_secreturi_path": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
+        "kv_secreturi_path": "[concat(parameters('keyVaultServiceUri'), '/secrets/')]",
         "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
         "backendPoolName": "[concat(parameters('apiName'), '-backend-pool')]",
         "entraIdTokenAudience": "[concat('<audiences>', if(empty(parameters('microsoftEntraIdResource')), '<audience>https://management.core.windows.net/</audience><audience>https://management.azure.com/</audience>', concat('<audience>', parameters('microsoftEntraIdResource'), '</audience>')), '</audiences>')]",

@@ -26,6 +26,10 @@ extends:
       # Builds from forked repos do not have permissions to set tags
       skipBuildTagsForGitHubPullRequests: true
 
+    sdl:
+      binskim:
+        analyzeTargetGlob: '$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.*.dll;$(Build.SourcesDirectory)\**\Microsoft.WinGet.*.dll;'
+
     stages:
     - stage: Build_Publish_Test
       jobs:
@@ -35,6 +39,8 @@ extends:
         variables:
         - name: BuildConfiguration
           value: 'release'
+        - name: LegacySupportBuildConfiguration
+          value: 'LegacySupport'
         - name: BuildPlatform
           value: 'Any CPU'
 
@@ -62,7 +68,13 @@ extends:
             targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions
             artifactName: WinGet.RestSource-WinGet.RestSource.Functions
 
-          # Publish Rest Function App as an artifact 
+          # Publish Rest Function App Legacy Support
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions.LegacySupport
+            artifactName: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport
+
+          # Publish Integration Test
           - output: pipelineArtifact
             displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.IntegrationTest'
             targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.IntegrationTest
@@ -73,3 +85,29 @@ extends:
             displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
             targetPath: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
             artifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
+
+          # Publish Fuzzing Artifacts
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing
+            artifactName: WinGet.RestSource-WinGet.RestSource.Fuzzing
+
+      - job: 'Fuzzing'
+        displayName: Submit Fuzzing Artifacts
+        timeoutInMinutes: 30
+        dependsOn: 'BuildPublishTest'
+        condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Fuzzing Artifacts'
+          inputs:
+            artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing
+            targetPath: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+
+        - task: onefuzz-task@0
+          inputs:
+            onefuzzOSes: 'Windows'
+          env:
+            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)

@@ -224,7 +224,16 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier?}")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionGet,
+                Route = "packageManifests/{packageIdentifier?}")]
             HttpRequest req,
             string packageIdentifier,
             ILogger log)

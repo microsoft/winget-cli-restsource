@@ -53,7 +53,16 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestSearchPost)]
         public async Task<IActionResult> ManifestSearchPostAsync(
-            [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "manifestSearch")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionPost,
+                Route = "manifestSearch")]
             HttpRequest req,
             ILogger log)
         {
