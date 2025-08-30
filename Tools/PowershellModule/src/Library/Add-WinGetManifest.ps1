@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Add-WinGetManifest {
+function Add-WinGetManifest {
     <#
     .SYNOPSIS
     Submits a Manifest to the Windows Package Manager REST source.
@@ -40,12 +40,12 @@ Function Add-WinGetManifest {
     specified Manifest (*.json) to the Windows Package Manager REST source.
     #>
 
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)]  [string]$FunctionName,
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true)] [string]$Path,
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = ''
     )
-    BEGIN {
+    begin {
         [WinGetManifest[]] $Return = @()
         
         ###############################
@@ -90,7 +90,7 @@ Function Add-WinGetManifest {
         
         $AzFunctionURLBase = 'https://' + $DefaultHostName + '/api/packageManifests/'
     }
-    PROCESS {
+    process {
         $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
 
         ###############################
@@ -162,7 +162,7 @@ Function Add-WinGetManifest {
             }
         }
     }
-    END {
+    end {
         return $Return
     }
 }

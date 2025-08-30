@@ -192,6 +192,7 @@ class WinGetInstaller {
     [Nullable[bool]]$DownloadCommandProhibited
     [string]$RepairBehavior
     [Nullable[bool]]$ArchiveBinariesDependOnPath
+    [WinGetInstallerAuthentication]$Authentication
 
     WinGetInstaller () {}
 }

@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-ConnectionToAzure {
+function Test-ConnectionToAzure {
     <#
     .SYNOPSIS
     Validates that a connection is existing to Azure and/or Azure Subscription Name / Id.
@@ -30,7 +30,7 @@ Function Test-ConnectionToAzure {
     Returns a Boolean if the current session is connected to Azure and the active Subscription matches with the specified Subscription Name and Id.
 
     #>
-    PARAM(
+    param(
         [Parameter(Mandatory = $false)] [string] $SubscriptionName = '',
         [Parameter(Mandatory = $false)] [string] $SubscriptionId = ''
     )

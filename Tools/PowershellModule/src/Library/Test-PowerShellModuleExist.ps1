@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-PowerShellModuleExist {
+function Test-PowerShellModuleExist {
     <#
     .SYNOPSIS
     Verifies that the provided Modules are installed.
@@ -26,7 +26,7 @@ Function Test-PowerShellModuleExist {
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'Multiple')]
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Single')] [string]$Name,
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Multiple')] [string[]]$Modules
     )

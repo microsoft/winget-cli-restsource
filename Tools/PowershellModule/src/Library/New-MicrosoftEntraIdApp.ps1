@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function New-MicrosoftEntraIdApp {
+function New-MicrosoftEntraIdApp {
     <#
     .SYNOPSIS
     Creates a new Microsoft Entra Id app registration to be used for WinGet rest source Microsoft Entra Id based authentication.
@@ -18,7 +18,7 @@ Function New-MicrosoftEntraIdApp {
     Assumes an active connection to Azure. Creates a new Microsoft Entra Id app named "contosoapp".
     #>
 
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)] [string]$Name
     )
     

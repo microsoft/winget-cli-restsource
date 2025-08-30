@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-Function Get-WinGetManifest {
+function Get-WinGetManifest {
     <#
     .SYNOPSIS
     Connects to the specified Windows Package Manager source, or local file system path to retrieve the package manifest, returning
@@ -52,14 +52,14 @@ Function Get-WinGetManifest {
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'Azure')]
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'File')]  [string]$Path,
         [Parameter(Mandatory = $false, ParameterSetName = 'File')]  [WinGetManifest]$PriorManifest = $null,
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Azure')] [string]$FunctionName,
         [Parameter(Position = 1, Mandatory = $true, ParameterSetName = 'Azure', ValueFromPipeline = $true)][ValidateNotNullOrEmpty()] [string]$PackageIdentifier,
         [Parameter(Mandatory = $false, ParameterSetName = 'Azure')] [string]$SubscriptionName = ''
     )
-    BEGIN {
+    begin {
         [WinGetManifest[]] $Return = @()
 
         ###############################
@@ -103,7 +103,7 @@ Function Get-WinGetManifest {
             }
         }        
     }
-    PROCESS {
+    process {
         switch ($PsCmdlet.ParameterSetName) {
             'Azure' {
                 $AzFunctionURL = 'https://' + $DefaultHostName + '/api/packageManifests/' + $PackageIdentifier
@@ -243,7 +243,7 @@ Function Get-WinGetManifest {
             }
         }
     }
-    END {
+    end {
         ## Returns results
         Write-Verbose -Message "Returning ($($Return.Count)) manifests based on search."
         return $Return

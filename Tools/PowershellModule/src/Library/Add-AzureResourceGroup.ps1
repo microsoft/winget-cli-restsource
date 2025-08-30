@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Add-AzureResourceGroup {
+function Add-AzureResourceGroup {
     <#
     .SYNOPSIS
     Adds a Resource Group to the connected to Subscription.
@@ -23,7 +23,7 @@ Function Add-AzureResourceGroup {
     Assumes an active connection to Azure. Creates a new Resource Group named "contosorestsource" in the West US region.
     #>
 
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)] [string]$Name,
         [Parameter(Position = 1, Mandatory = $true)] [string]$Region
     )

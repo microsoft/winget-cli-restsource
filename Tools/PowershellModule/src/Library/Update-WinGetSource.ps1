@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Update-WinGetSource {
+function Update-WinGetSource {
     <#
     .SYNOPSIS
     Updates a Windows Package Manager REST source in Azure.
@@ -88,7 +88,7 @@ Function Update-WinGetSource {
     Updates the Windows Package Manager REST source in Azure with resources named "contosorestsource" with publishing Azure Function only.
 
     #>
-    PARAM(
+    param(
         [Parameter(Mandatory = $false)] [string]$Name,
         [Parameter(Mandatory = $false)] [string]$ResourceGroup = 'WinGetRestSource',
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',

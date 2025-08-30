@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-WinGetManifest {
+function Test-WinGetManifest {
     <#
     .SYNOPSIS
     [TODO: Stub for a backlog issue, essentially does nothing today.]
@@ -27,7 +27,7 @@ Function Test-WinGetManifest {
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'File')]
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'File')] [string]$Path,
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Object')] [WinGetManifest]$Manifest
     )

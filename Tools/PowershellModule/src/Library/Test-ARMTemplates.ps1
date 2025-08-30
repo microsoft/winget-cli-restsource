@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-ARMTemplates {
+function Test-ARMTemplates {
     <#
     .SYNOPSIS
     Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
@@ -24,7 +24,7 @@ Function Test-ARMTemplates {
     Tests that the Azure Resource can be created in the specified Azure Resource Group with the parameter and template files.
 
     #>
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)] [array] $ARMObjects,
         [Parameter(Position = 1, Mandatory = $true)] [string] $ResourceGroup
     )

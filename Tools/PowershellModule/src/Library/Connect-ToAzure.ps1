@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Connect-ToAzure {
+function Connect-ToAzure {
     <#
     .SYNOPSIS
     Connects to an Azure environment and connects to a specific Azure Subscription if a name of the subscription has been provided.
@@ -36,7 +36,7 @@ Function Connect-ToAzure {
 
     #>
     
-    PARAM(
+    param(
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',
         [Parameter(Mandatory = $false)] [string]$SubscriptionId = ''
     )

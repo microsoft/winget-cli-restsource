@@ -1,6 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function New-WinGetSource {
+function New-WinGetSource {
     <#
     .SYNOPSIS
     Creates a Windows Package Manager REST source in Azure.
@@ -92,7 +92,7 @@ Function New-WinGetSource {
     Uses existing Microsoft Entra Id app registration.
 
     #>
-    PARAM(
+    param(
         [Parameter(Position = 0, Mandatory = $true)] [string]$Name,
         [Parameter(Mandatory = $false)] [string]$ResourceGroup = 'WinGetRestSource',
         [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',
