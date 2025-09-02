@@ -374,5 +374,3 @@ Microsoft.WinGet.*.Documentation.xml
 # Developer ARM template
 src/WinGet.RestSource.Infrastructure/**/*.dev.*json
 
-# VS Code
-.vscode/

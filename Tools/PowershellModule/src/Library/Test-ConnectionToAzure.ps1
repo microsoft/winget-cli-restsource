@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-ConnectionToAzure
-{
+function Test-ConnectionToAzure {
     <#
     .SYNOPSIS
     Validates that a connection is existing to Azure and/or Azure Subscription Name / Id.
@@ -31,33 +30,30 @@ Function Test-ConnectionToAzure
     Returns a Boolean if the current session is connected to Azure and the active Subscription matches with the specified Subscription Name and Id.
 
     #>
-    PARAM(
-        [Parameter(Mandatory=$false)] [string] $SubscriptionName = "",
-        [Parameter(Mandatory=$false)] [string] $SubscriptionId = ""
+    param(
+        [Parameter(Mandatory = $false)] [string] $SubscriptionName = '',
+        [Parameter(Mandatory = $false)] [string] $SubscriptionId = ''
     )
 
-    $Result    = $false
+    $Result = $false
     $AzContext = Get-AzContext
 
-    if($AzContext) {
-        if($SubscriptionName -and $AzContext.Subscription.Name -ne $SubscriptionName) {
+    if ($AzContext) {
+        if ($SubscriptionName -and $AzContext.Subscription.Name -ne $SubscriptionName) {
             ## If Subscription Name paramter is passed in, and the value doesn't match current connection return $false
             Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionName"
             $Result = $false
-        }
-        elseif($SubscriptionId -and $AzContext.Subscription.Id -ne $SubscriptionId) {
+        } elseif ($SubscriptionId -and $AzContext.Subscription.Id -ne $SubscriptionId) {
             ## If Subscription Id paramter is passed in, and the value doesn't match current connection return $false
             Write-Error "Connection to an unmatched Subscription in Azure. Not connected to $SubscriptionId"
             $Result = $false
-        }
-        else {
-            Write-Information "Connected to Azure"
+        } else {
+            Write-Information 'Connected to Azure'
             $Result = $true
         }
-    }
-    else {
+    } else {
         ## Not currently connected to Azure
-        Write-Error "Not connected to Azure, please connect to your Azure Subscription"
+        Write-Error 'Not connected to Azure, please connect to your Azure Subscription'
         $Result = $false
     }
 

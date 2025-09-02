@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Connect-ToAzure
-{
+function Connect-ToAzure {
     <#
     .SYNOPSIS
     Connects to an Azure environment and connects to a specific Azure Subscription if a name of the subscription has been provided.
@@ -37,66 +36,60 @@ Function Connect-ToAzure
 
     #>
     
-    PARAM(
-        [Parameter(Mandatory=$false)] [string]$SubscriptionName = "",
-        [Parameter(Mandatory=$false)] [string]$SubscriptionId = ""
+    param(
+        [Parameter(Mandatory = $false)] [string]$SubscriptionName = '',
+        [Parameter(Mandatory = $false)] [string]$SubscriptionId = ''
     )
 
     $TestAzureConnection = $false
     
-    if($SubscriptionName -and $SubscriptionId){
+    if ($SubscriptionName -and $SubscriptionId) {
         ## If connected to Azure, and the Subscription Name and Id are provided then verify that the connected Azure session matches the provided Subscription Name and Id.
         Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Name $SubscriptionName and Subscription Id $SubscriptionId"
         $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
-    }
-    elseif($SubscriptionName){
+    } elseif ($SubscriptionName) {
         ## If connected to Azure, and the Subscription Name are provided then verify that the connected Azure session matches the provided Subscription Name.
         Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Name $SubscriptionName"
         $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName
-    }
-    elseif($SubscriptionId){
+    } elseif ($SubscriptionId) {
         ## If connected to Azure, and the Subscription Id are provided then verify that the connected Azure session matches the provided Subscription Id.
         Write-Verbose -Message "Verifying if PowerShell session is currently connected to your Azure Subscription Id $SubscriptionId"
         $TestAzureConnection = Test-ConnectionToAzure -SubscriptionId $SubscriptionId
-    }
-    else{
-        Write-Information "No Subscription Name or Subscription Id provided. Will test connection to default Azure Subscription"
+    } else {
+        Write-Information 'No Subscription Name or Subscription Id provided. Will test connection to default Azure Subscription'
         $TestAzureConnection = Test-ConnectionToAzure
     }
     
     Write-Verbose -Message "Test Connection Result: $TestAzureConnection"
     
-    if(!$TestAzureConnection) {
-        if($SubscriptionName -and $SubscriptionId) {
+    if (!$TestAzureConnection) {
+        if ($SubscriptionName -and $SubscriptionId) {
             ## Attempts a connection to Azure using both the Subscription Name and Subscription Id
             Write-Information "Initiating a connection to your Azure Subscription Name $SubscriptionName and Subscription Id $SubscriptionId"
             $ConnectResult = Connect-AzAccount -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
             
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName -SubscriptionId $SubscriptionId
-        }
-        elseif($SubscriptionName) {
+        } elseif ($SubscriptionName) {
             ## Attempts a connection to Azure using Subscription Name
             Write-Information "Initiating a connection to your Azure Subscription Name $SubscriptionName"
             $ConnectResult = Connect-AzAccount -SubscriptionName $SubscriptionName
 
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionName $SubscriptionName
-        }
-        elseif($SubscriptionId) {
+        } elseif ($SubscriptionId) {
             ## Attempts a connection to Azure using Subscription Id
             Write-Information "Initiating a connection to your Azure Subscription Id $SubscriptionId"
             $ConnectResult = Connect-AzAccount -SubscriptionId $SubscriptionId
 
             $TestAzureConnection = Test-ConnectionToAzure -SubscriptionId $SubscriptionId
-        }
-        else{
+        } else {
             ## Attempts a connection to Azure with the users default Subscription
-            Write-Information "Initiating a connection to your Azure environment."
+            Write-Information 'Initiating a connection to your Azure environment.'
             $ConnectResult = Connect-AzAccount
 
             $TestAzureConnection = Test-ConnectionToAzure
         }
 
-        if(!$TestAzureConnection) {
+        if (!$TestAzureConnection) {
             ## If the connection fails, or the user cancels the login request, then return as failed.
             $ErrReturnObject = @{
                 SubscriptionName = $SubscriptionName
@@ -104,7 +97,7 @@ Function Connect-ToAzure
                 AzureConnected   = $TestAzureConnection
             }
 
-            Write-Error -Message  "Failed to connect to Azure" -TargetObject $ErrReturnObject
+            Write-Error -Message 'Failed to connect to Azure' -TargetObject $ErrReturnObject
         }
     }
     

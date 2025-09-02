@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-ARMTemplates
-{
+function Test-ARMTemplates {
     <#
     .SYNOPSIS
     Validates that the parameter files have been build correctly, matches to the template files, and can be used to build Azure 
@@ -25,25 +24,24 @@ Function Test-ARMTemplates
     Tests that the Azure Resource can be created in the specified Azure Resource Group with the parameter and template files.
 
     #>
-    PARAM(
-        [Parameter(Position=0, Mandatory=$true)] [array] $ARMObjects,
-        [Parameter(Position=1, Mandatory=$true)] [string] $ResourceGroup
+    param(
+        [Parameter(Position = 0, Mandatory = $true)] [array] $ARMObjects,
+        [Parameter(Position = 1, Mandatory = $true)] [string] $ResourceGroup
     )
 
-    Write-Information "Verifying the ARM Resource Templates and Parameters are valid:"
+    Write-Information 'Verifying the ARM Resource Templates and Parameters are valid:'
     [PSCustomObject[]]$Return = @()
 
     ## Parses through all ARM Parameter objects to validate they are properly configured.
-    foreach($Object in $ARMObjects)
-    {
+    foreach ($Object in $ARMObjects) {
         ## Validates that each ARM object will work.
         Write-Information "Validation testing on ARM Resource ($($Object.ObjectType))."
         $AzResourceResult = Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroup -Mode Complete -TemplateFile $Object.TemplatePath -TemplateParameterFile $Object.ParameterPath
 
         ## If the ARM object fails validation, report error to screen.
-        if($AzResourceResult) { 
+        if ($AzResourceResult) { 
             [PSCustomObject]$ErrReturnObject = [PSCustomObject]@{
-                ARMObject = $Object
+                ARMObject  = $Object
                 TestResult = $AzResourceResult
             }
 

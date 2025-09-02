@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
-Function Test-WinGetManifest
-{
+function Test-WinGetManifest {
     <#
     .SYNOPSIS
     [TODO: Stub for a backlog issue, essentially does nothing today.]
@@ -28,30 +27,27 @@ Function Test-WinGetManifest
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'File')]
-    PARAM(
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="File")] [string]$Path,
-        [Parameter(Position=0, Mandatory=$true, ParameterSetName="Object")] [WinGetManifest]$Manifest
+    param(
+        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'File')] [string]$Path,
+        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = 'Object')] [WinGetManifest]$Manifest
     )
 
     $Return = $false
     
     switch ($($PSCmdlet.ParameterSetName)) {
-        "File"{
+        'File' {
             ## Convert to full path if applicable
             $Path = [System.IO.Path]::GetFullPath($Path, $pwd.Path)
             
             $PathFound = Test-Path -Path $Path
-            if ($PathFound)
-            {
+            if ($PathFound) {
                 ## Construct $Manifest from path then validate
                 $Return = $true
-            }
-            else
-            {
+            } else {
                 Write-Error "Manifest path not found: $Path"
             }
         }
-        "Object" {
+        'Object' {
             ## Validate manifest
             $Return = $true
         }
