@@ -1,0 +1,43 @@
+# Template helper to copy PowerShell scripts and all dependencies
+parameters:
+ powershellSupportPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\net8.0'
+ templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy Files: Powershell Module'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\Tools\PowershellModule\src'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
+    CleanTargetFolder: true
+    OverWrite: true
+
+# Publish Helper Libs
+- task: CopyFiles@2
+  displayName: 'Copy Files: WinGet.RestSource.PowershellSupport'
+  inputs:
+    SourceFolder: ${{ parameters.powershellSupportPath }}
+    Contents: |
+      Microsoft.Extensions.Logging.Abstractions.dll
+      Microsoft.WinGet.PowershellSupport.dll
+      Microsoft.WinGet.RestSource.Utils.dll
+      WinGetUtilInterop.dll
+      YamlDotNet.dll
+      runtimes\**\native\WinGetUtil.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Library\WinGet.RestSource.PowershellSupport'
+    OverWrite: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: Arm Templates'
+  inputs:
+    Contents: ${{ parameters.templatesPath }}\**\*.json
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Data\ARMTemplates'
+    OverWrite: true
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files: azure function'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source\Data'
+    OverWrite: true

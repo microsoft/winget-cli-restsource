@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------
 // <copyright file="LocaleFunctions.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,14 +15,16 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with locales.
@@ -30,14 +32,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class LocaleFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public LocaleFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public LocaleFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -57,8 +62,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             Locale locale = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -79,6 +84,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocalePost,
+                        req.Path.Value,
+                        headers,
+                        locale,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -113,7 +131,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
-
                 await this.dataStore.DeleteLocale(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
@@ -124,6 +141,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocaleDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -152,8 +181,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             Locale locale = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -182,6 +211,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.LocalePut,
+                        req.Path.Value,
+                        headers,
+                        locale,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -201,7 +243,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         [FunctionName(FunctionConstants.LocaleGet)]
         public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
                 AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales/{packageLocale?}")]
             HttpRequest req,
@@ -210,15 +258,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageLocale,
             ILogger log)
         {
+            ApiDataPage<Locale> locales;
             Dictionary<string, string> headers = null;
-            ApiDataPage<Locale> locales = new ApiDataPage<Locale>();
 
             try
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale, null);
+                locales = await this.dataStore.GetLocales(packageIdentifier, packageVersion, packageLocale);
             }
             catch (DefaultException e)
             {
@@ -228,6 +276,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseGetError,
+                        FunctionConstants.LocaleGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 

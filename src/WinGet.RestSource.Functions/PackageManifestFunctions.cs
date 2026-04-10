@@ -1,6 +1,6 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PackageManifestFunctions.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,14 +15,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for interacting with manifests.
@@ -30,14 +33,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class PackageManifestFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageManifestFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public PackageManifestFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public PackageManifestFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -53,8 +59,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             PackageManifest packageManifest = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -75,6 +81,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestPost,
+                        req.Path.Value,
+                        headers,
+                        packageManifest,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -102,7 +121,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
-
                 await this.dataStore.DeletePackageManifest(packageIdentifier);
             }
             catch (DefaultException e)
@@ -113,6 +131,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -134,8 +164,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             PackageManifest packageManifest = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -165,6 +195,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestPut,
+                        req.Path.Value,
+                        headers,
+                        packageManifest,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -181,20 +224,46 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestGet)]
         public async Task<IActionResult> ManifestGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packageManifests/{packageIdentifier?}")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionGet,
+                Route = "packageManifests/{packageIdentifier?}")]
             HttpRequest req,
             string packageIdentifier,
             ILogger log)
         {
+            ApiDataPage<PackageManifest> manifests;
+            QueryParameters unsupportedQueryParameters;
+            QueryParameters requiredQueryParameters;
             Dictionary<string, string> headers = null;
-            ApiDataPage<PackageManifest> manifests = new ApiDataPage<PackageManifest>();
 
             try
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
+                string continuationToken = headers.GetValueOrDefault(QueryConstants.ContinuationToken);
 
-                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, req.Query);
+                string versionFilter = null;
+                string channelFilter = null;
+                string marketFilter = null;
+
+                // Schema supports query parameters only when PackageIdentifier is specified.
+                if (!string.IsNullOrWhiteSpace(packageIdentifier))
+                {
+                    versionFilter = req.Query[QueryConstants.Version];
+                    channelFilter = req.Query[QueryConstants.Channel];
+                    marketFilter = req.Query[QueryConstants.Market];
+                }
+
+                manifests = await this.dataStore.GetPackageManifests(packageIdentifier, continuationToken, versionFilter, channelFilter, marketFilter);
+                unsupportedQueryParameters = UnsupportedAndRequiredFieldsHelper.GetUnsupportedQueryParametersFromRequest(req.Query, ApiConstants.UnsupportedQueryParameters);
+                requiredQueryParameters = UnsupportedAndRequiredFieldsHelper.GetRequiredQueryParametersFromRequest(req.Query, ApiConstants.RequiredQueryParameters);
             }
             catch (DefaultException e)
             {
@@ -204,14 +273,34 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseUpdateError,
+                        FunctionConstants.ManifestGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
             return manifests.Items.Count switch
             {
                 0 => new NoContentResult(),
-                1 => new ApiObjectResult(new ApiResponse<PackageManifest>(manifests.Items.First(), manifests.ContinuationToken)),
-                _ => new ApiObjectResult(new ApiResponse<List<PackageManifest>>(manifests.Items.ToList(), manifests.ContinuationToken)),
+                1 => new ApiObjectResult(new GetPackageManifestApiResponse<PackageManifest>(manifests.Items.First(), manifests.ContinuationToken)
+                {
+                    UnsupportedQueryParameters = unsupportedQueryParameters,
+                    RequiredQueryParameters = requiredQueryParameters,
+                }),
+                _ => new ApiObjectResult(new GetPackageManifestApiResponse<List<PackageManifest>>(manifests.Items.ToList(), manifests.ContinuationToken)
+                {
+                    UnsupportedQueryParameters = unsupportedQueryParameters,
+                    RequiredQueryParameters = requiredQueryParameters,
+                }),
             };
         }
     }

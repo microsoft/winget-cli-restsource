@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------
 // <copyright file="ActionResultHelper.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,8 +8,8 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
 {
     using System;
     using System.Net;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
 
     /// <summary>
     /// This Creates Action Results.
@@ -50,8 +50,11 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
                 case ErrorConstants.ValidationFailureErrorCode:
                 case ErrorConstants.HeadersAreNullErrorCode:
                 case ErrorConstants.ServerVersionNotSupportedErrorCode:
-                case ErrorConstants.ToManyContinuationTokensErrorCode:
+                case ErrorConstants.TooManyContinuationTokensErrorCode:
                     return CreateObjectResult(internalRestError, (int)HttpStatusCode.BadRequest);
+
+                case ErrorConstants.ForbiddenErrorCode:
+                    return CreateObjectResult(internalRestError, (int)HttpStatusCode.Forbidden);
 
                 case ErrorConstants.HttpRequestExceptionErrorCode:
                 case ErrorConstants.UnhandledErrorCode:

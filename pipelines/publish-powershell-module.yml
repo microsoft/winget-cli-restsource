@@ -1,0 +1,187 @@
+# Publishes winget rest source powershell module.
+
+trigger: none
+
+# parameters are shown up in ADO UI in a build queue time
+parameters:
+- name: moduleVersion
+  displayName: 'Version of the module'
+  type: string
+
+variables:
+  moduleName: Microsoft.WinGet.RestSource
+  sourceArtifactName: WinGet.RestSource-WinGet.PowerShell.Source
+  downloadRoot: $(Pipeline.Workspace)\buildRelease\$(sourceArtifactName)
+  azureFunctionArtifactName: WinGet.RestSource-WinGet.RestSource.Functions
+  azureFunctionDownloadRoot: $(Pipeline.Workspace)\buildRelease\$(azureFunctionArtifactName)
+  azureFunctionLegacyArtifactName: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport
+  azureFunctionLegacyDownloadRoot: $(Pipeline.Workspace)\buildRelease\$(azureFunctionLegacyArtifactName)
+
+  # Docker image which is used to build the project
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest'
+
+resources:
+  pipelines:
+  - pipeline: buildRelease
+    source: 'winget-cli-restsource Build_Test'
+    trigger: none
+
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+
+extends:
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
+  parameters:
+    globalSdl:
+      tsa:
+        enabled: false
+    platform:
+      name: 'onebranch'
+    release:
+      category: NonAzure
+    git:
+      fetchTags: false
+
+    stages:
+      - stage: Prepare
+        jobs:
+        - job: Prepare_Sign
+          displayName: Prepare and sign
+          pool:
+            type: windows
+          variables:
+            ob_outputDirectory: $(Build.ArtifactStagingDirectory)
+
+          steps:
+          - task: NuGetToolInstaller@1
+            displayName: 'Use NuGet 6.x'
+            inputs:
+              versionSpec: 6.x
+
+          - download: buildRelease
+            displayName: Download artifacts to sign
+            artifact: $(sourceArtifactName)
+            patterns: '**'
+
+          - pwsh: |
+              $psd1File = "$(downloadRoot)\Microsoft.WinGet.RestSource.psd1"
+
+              # This needs to be modified when the build sets the correct version number.
+              $manifestContent = (Get-Content -Path $psd1File -Raw)
+              if ($manifestContent -notlike "*ModuleVersion = '0.1.0'*")
+              {
+                  throw "Expected version before changes is 0.1.0"
+              }
+
+              # Set module version
+              $manifestContent = $manifestContent -replace "ModuleVersion = '0.1.0'", "ModuleVersion = '${{ parameters.moduleVersion }}'"
+
+              # Set release as needed in the future
+              # $manifestContent = $manifestContent -replace "Prerelease = 'alpha'", "#Prerelease = 'alpha'"
+
+              Set-Content -Path $psd1File -Value $manifestContent
+
+              Get-Content -Path $psd1File -Raw
+            displayName: 'PowerShell: Prepare Microsoft.WinGet.RestSource Module'
+
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign 1st party module files'
+            inputs:
+              command: 'sign'
+              signing_profile: 'external_distribution'
+              search_root: '$(downloadRoot)'
+              files_to_sign: |
+                Microsoft.WinGet.RestSource.psd1;
+                Microsoft.WinGet.RestSource.psm1;
+                Library/*.ps1;
+                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.PowershellSupport.dll;
+                Library/WinGet.RestSource.PowershellSupport/Microsoft.WinGet.RestSource.Utils.dll;
+
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign 3rd party module files'
+            inputs:
+              command: 'sign'
+              cp_code: '135020002' # CP-231522 - Microsoft 3rd Party Application Component (SHA2)
+              search_root: '$(downloadRoot)'
+              files_to_sign: |
+                Library/WinGet.RestSource.PowershellSupport/YamlDotNet.dll;
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(downloadRoot)\Data'
+
+          - task: CopyFiles@2
+            displayName: Copy files to be published to staging directory
+            inputs:
+              SourceFolder: $(downloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(moduleName)
+              Contents: |
+                *.psm1
+                *.psd1
+                Library/**
+                Data/**
+
+          - download: buildRelease
+            displayName: Download Azure Functions to sign
+            artifact: $(azureFunctionArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionArtifactName)
+              Contents: |
+                **/*
+
+          - download: buildRelease
+            displayName: Download Azure Functions Legacy to sign
+            artifact: $(azureFunctionLegacyArtifactName)
+            patterns: '**'
+
+          - template: pipelines/templates/sign-azure-function.yml@self
+            parameters:
+              azureFunctionFolder: '$(azureFunctionLegacyDownloadRoot)'
+
+          - task: CopyFiles@2
+            displayName: Copy Azure Functions to be published to staging directory
+            inputs:
+              SourceFolder: $(azureFunctionLegacyDownloadRoot)
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(azureFunctionLegacyArtifactName)
+              Contents: |
+                **/*
+
+      - stage: Publish
+        displayName: Publish to PS Gallery
+        dependsOn: Prepare
+        variables:
+          ob_release_environment: Production
+
+        jobs:
+        - job: PublishToGallery
+          pool:
+            type: release
+            os: windows
+
+          templateContext:
+            inputs:
+            - input: pipelineArtifact
+              artifactName: drop_Prepare_Prepare_Sign
+              targetPath: $(System.DefaultWorkingDirectory)/ModuleToPublish/
+              itemPattern: |
+                Microsoft.WinGet.RestSource/**
+
+          steps:
+          - pwsh: |
+              $moduleFolder = "$(System.DefaultWorkingDirectory)/ModuleToPublish/$(moduleName)"
+              Get-ChildItem -Path $moduleFolder -Recurse
+              $moduleFolderPath = (Resolve-Path $moduleFolder).Path
+              Publish-Module -Path $moduleFolderPath -Repository PSGallery -NuGetApiKey $(PowerShellNugetAPIKey) -verbose
+            displayName: 'Publish $(moduleName)'

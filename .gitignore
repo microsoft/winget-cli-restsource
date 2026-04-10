@@ -31,6 +31,13 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+!scripts/Release/
+
+# These are the PowerShell helper libraries used to run. Added to artifact as automated task
+Tools/PowershellModule/src/Library/ARMTemplate
+Tools/PowershellModule/src/Library/RestAPI
+Tools/PowershellModule/src/Library/WinGet.RestSource.PowerShellSupport
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -181,6 +188,9 @@ publish/
 # checkin your Azure Web App publish settings, but sensitive information contained
 # in these scripts will be unencrypted
 PublishScripts/
+
+# Azure functions publish settings
+profile.arm.json
 
 # NuGet Packages
 *.nupkg
@@ -352,14 +362,15 @@ MigrationBackup/
 # Ignore JetBrains Files
 src/.idea/
 
-# Exlude Function Settings
+# Exclude Function Settings
 src/WinGet.RestSource.Functions/local.settings.json
 
+# Exclude local test settings
+test.runsettings.json
+
 # Exclude Documentation XML
-src/*/Microsoft.WinGet.RestSource*.Documentation.xml
+Microsoft.WinGet.*.Documentation.xml
 
 # Developer ARM template
 src/WinGet.RestSource.Infrastructure/**/*.dev.*json
 
-# VS Code
-.vscode/

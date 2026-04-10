@@ -1,0 +1,16 @@
+# Template helper to publish projects (using DotNetCoreCLI Publish Command)
+parameters:
+  name: ''
+  projects: ''
+  buildconfig: ''
+  zipAfterPublish: ''
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Publish: WinGet.RestSource-${{ parameters.name }}'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '${{ parameters.projects }}'
+    arguments: '--configuration ${{ parameters.buildconfig }} --output $(Build.ArtifactStagingDirectory)\${{ parameters.name }} --no-restore'
+    zipAfterPublish: ${{ parameters.zipAfterPublish }}

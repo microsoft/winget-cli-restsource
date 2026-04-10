@@ -1,0 +1,114 @@
+{
+    "storageAccounts": [
+        {
+            "description": "This is the storage account for the west azure function",
+            "name": "stwgrestwestusppe",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-ppe",
+                    "roles": [
+                        "Storage Blob Data Contributor"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-ppe",
+                    "roles": [
+                        "Storage Account Contributor",
+                        "Storage Blob Data Owner",
+                        "Storage Table Data Contributor",
+                        "Storage Queue Data Contributor",
+                        "Storage Queue Data Message Sender",
+                        "Storage Queue Data Message Processor"
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "This is the storage account for the central us azure function",
+            "name": "stwgrestcentusppe",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-ppe",
+                    "roles": [
+                        "Storage Blob Data Contributor"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-ppe",
+                    "roles": [
+                        "Storage Account Contributor",
+                        "Storage Blob Data Owner",
+                        "Storage Table Data Contributor",
+                        "Storage Queue Data Contributor",
+                        "Storage Queue Data Message Sender",
+                        "Storage Queue Data Message Processor"
+                    ]
+                }
+            ]
+        }
+    ],
+    "appConfigs": [
+        {
+            "description": "This is the primary app config.",
+            "name": "appconfig-wgrest-centus-ppe",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-ppe",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-ppe",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-ppe",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "This is the secondary app config.",
+            "name": "appconfig-wgrest-westus-ppe",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-ppe",
+                    "roles": [
+                        "App Configuration Data Owner"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-centus-ppe",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                },
+                {
+                    "displayName": "azfun-wgrest-api-westus-ppe",
+                    "roles": [
+                        "App Configuration Data Reader"
+                    ]
+                }
+            ]
+        }
+    ],
+    "subscription" : [
+        {
+            "description": "Roles at subscription level",
+            "name": "subscription",
+            "servicePrincipals": [
+                {
+                    "displayName": "mi-wgrest-deployment-ppe",
+                    "roles": [
+                        "Reader"
+                    ]
+                }
+            ]
+        }
+    ]
+}

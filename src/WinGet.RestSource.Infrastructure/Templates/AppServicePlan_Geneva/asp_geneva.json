@@ -1,0 +1,357 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "aspName": {
+            "type": "string",
+            "defaultValue": "[concat('asp', uniquestring(resourceGroup().id))]",
+            "metadata": {
+                "description": "App Service Name"
+            }
+        },
+        "genevaName": {
+            "type": "string",
+            "defaultValue": "[concat('asp', uniquestring(resourceGroup().id), 'geneva')]",
+            "metadata": {
+                "description": "Geneva App Name"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "App Service Deployment Location."
+            }
+        },
+        "skucode": {
+            "type": "string",
+            "defaultValue": "B1",
+            "metadata": {
+                "description": "Sku Code for ASP"
+            }
+        },
+        "numberOfWorkers": {
+            "type": "string",
+            "defaultValue": "1",
+            "metadata": {
+                "description": "Number of Workers"
+            }
+        },
+        "keyVaultSubscription": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "Key Vault Subscription"
+            }
+        },
+        "keyVaultResourceGroup": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "Key Vault Resource Group"
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "Key Vault Name"
+            }
+        },
+        "genevaCertificateName": {
+            "type": "string",
+            "defaultValue": "GenevaMonitor",
+            "metadata": {
+                "description": "Geneva Certificate Name"
+            }
+        },
+        "monitoringTenant": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Tenant"
+            }
+        },
+        "monitoringRole": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
+        },
+        "monitoringMetricsAccount": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
+        },
+        "monitoringGcsEnvironment": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring GCS Environment"
+            }
+        },
+        "monitoringGcsAccount": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring GCS Account"
+            }
+        },
+        "monitoringGcsNamespace": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring GCS Namespace"
+            }
+        },
+        "monitoringGcsAuthId": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring GCS Auth ID"
+            }
+        },
+        "monitoringConfigVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Config Version"
+            }
+        }
+    },
+    "variables": {
+        "keyVaultReferenceId": "[resourceId(parameters('keyVaultSubscription'), parameters('keyVaultResourceGroup'), 'Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]",
+        "configJson": {
+            "MONITORING_TENANT": "[parameters('monitoringTenant')]",
+            "MONITORING_ROLE": "[parameters('monitoringRole')]",
+            "MONITORING_XSTORE_ACCOUNTS": "GCSPlaceholder",
+            "AdditionalEnvironmentVariables": [
+                {
+                    "Key": "DATACENTER",
+                    "Value": "[parameters('location')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_ENVIRONMENT",
+                    "Value": "[parameters('monitoringGcsEnvironment')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_ACCOUNT",
+                    "Value": "[parameters('monitoringGcsAccount')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_NAMESPACE",
+                    "Value": "[parameters('monitoringGcsNamespace')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_REGION",
+                    "Value": "[parameters('location')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_AUTH_ID",
+                    "Value": "[parameters('monitoringGcsAuthId')]"
+                },
+                {
+                    "Key": "MONITORING_GCS_AUTH_ID_TYPE",
+                    "Value": "AuthKeyVault"
+                },
+                {
+                    "Key": "MONITORING_CONFIG_VERSION",
+                    "Value": "[parameters('monitoringConfigVersion')]"
+                },
+                {
+                    "Key": "MONITORING_USE_GENEVA_CONFIG_SERVICE",
+                    "Value": "true"
+                }
+            ]
+        },
+        "configXml": "<MonitoringManagement eventVersion=\"1\" version=\"1.0\" timestamp=\"2017-12-29T00:00:00Z\" namespace=\"PlaceHolder\"></MonitoringManagement>"
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('aspName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('aspName')]",
+                "numberOfWorkers": "[parameters('numberOfWorkers')]",
+                "reserved": false
+            },
+            "sku": {
+                "Name": "[parameters('skuCode')]"
+            }
+        },
+        {
+            "comments": "Defines how the Geneva Monitoring Agent should be configured.",
+            "type": "Microsoft.Web/serverfarms/firstPartyApps/settings",
+            "name": "[concat(parameters('aspName'), '/AntMDS/ConfigJson')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+            ],
+            "properties": {
+                "firstPartyId": "AntMDS",
+                "settingName": "ConfigJson",
+                "settingValue": "[string(variables('configJson'))]"
+            }
+        },
+        {
+            "comments": "Defines what events the Geneva Monitoring Agent should upload. This should be a placeholder configuration for services using GCS.",
+            "type": "Microsoft.Web/serverfarms/firstPartyApps/settings",
+            "name": "[concat(parameters('aspName'), '/AntMDS/MdsConfigXml')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+            ],
+            "properties": {
+                "firstPartyId": "AntMDS",
+                "settingName": "MdsConfigXml",
+                "settingValue": "[variables('configXml')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms/firstPartyApps/settings",
+            "name": "[concat(parameters('aspName'), '/AntMDS/CERTIFICATE_PASSWORD_GENEVACERT')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+            ],
+            "properties": {
+                "firstPartyId": "AntMDS",
+                "settingName": "CERTIFICATE_PASSWORD_GENEVACERT",
+                "settingValue": ""
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "name": "LoadGenevaCert",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "genevaCertVaultId": {
+                            "type": "string"
+                        },
+                        "genevaCertSecretName": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Web/serverfarms/firstPartyApps/keyVaultSettings",
+                            "name": "[concat(parameters('name'), '/AntMDS/CERTIFICATE_PFX_GENEVACERT')]",
+                            "apiVersion": "2015-08-01",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "firstPartyId": "AntMDS",
+                                "settingName": "CERTIFICATE_PFX_GENEVACERT",
+                                "vaultId": "[parameters('genevaCertVaultId')]",
+                                "secretName": "[parameters('genevaCertSecretName')]"
+                            }
+                        }
+                    ]
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[parameters('aspName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "genevaCertVaultId": {
+                        "value": "[variables('keyVaultReferenceId')]"
+                    },
+                    "genevaCertSecretName": {
+                        "value": "[parameters('genevaCertificateName')]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "Defines an Azure Web App integrated with Geneva.",
+            "type": "Microsoft.Web/sites",
+            "name": "[parameters('genevaName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]",
+                "ConfigJson",
+                "MdsConfigXml",
+                "LoadGenevaCert",
+                "CERTIFICATE_PASSWORD_GENEVACERT"
+            ],
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('aspName'))]": "empty"
+            },
+            "properties": {
+                "sourcePlatform": "Unknown",
+                "targetPlatform": "Unknown",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]",
+                "siteConfig": {
+                    "phpVersion": "off",
+                    "scmType": null,
+                    "netFrameworkVersion": "v4.0",
+                    "use32BitWorkerProcess": false,
+                    "webSocketsEnabled": false,
+                    "alwaysOn": "false",
+                    "httpLoggingEnabled": true,
+                    "logsDirectorySizeLimit": 50,
+                    "appSettings": [
+                        {
+                            "Name": "WEBSITE_FIRST_PARTY_ID",
+                            "Value": "AntMDS"
+                        },
+                        {
+                            "Name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "Value": "6.7.0"
+                        },
+                        {
+                            "Name": "WinGet:Telemetry:Role",
+                            "Value": "[parameters('monitoringRole')]"
+                        },
+                        {
+                            "Name": "WinGet:Telemetry:Tenant",
+                            "Value": "[parameters('monitoringTenant')]"
+                        },
+                        {
+                            "Name": "WinGet:Telemetry:Metrics",
+                            "Value": "[parameters('monitoringMetricsAccount')]"
+                        }
+                    ],
+                    "minTlsVersion": "1.2"
+                },
+                "httpsOnly": true
+            }
+        }
+    ],
+    "outputs": {
+        "aspName": {
+            "type": "string",
+            "value": "[parameters('aspName')]"
+        },
+        "aspResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Web/serverfarms', parameters('aspName'))]"
+        },
+        "genevaName": {
+            "type": "string",
+            "value": "[parameters('genevaName')]"
+        },
+        "genevaResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Web/sites', parameters('genevaName'))]"
+        }
+    }
+}

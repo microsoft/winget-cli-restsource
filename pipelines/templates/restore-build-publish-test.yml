@@ -1,6 +1,11 @@
 # Template helper to restore, build, and publish
 
 steps:
+
+# Checkout repo with lfs enabled
+- checkout: self
+  lfs: "true"
+
 ## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
@@ -8,44 +13,76 @@ steps:
     command: 'restore'
     projects: '**/*.csproj'
     feedsToUse: 'config'
-    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGEt.config'
+    nugetConfigPath: '$(Build.SourcesDirectory)\src\NuGet.config'
     restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
 
 ## Build
 - task: VSBuild@1
   displayName: Build
   inputs:
+    solution: '**\*.sln'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
     clean: true
 
+## Build Legacy Support
+- task: VSBuild@1
+  displayName: Build Legacy Support
+  inputs:
+    solution: '**\*.sln'
+    platform: '$(BuildPlatform)'
+    configuration: '$(LegacySupportBuildConfiguration)'
+    clean: true
+
 ## Publish
 # Publish ARM Templates
-- template: copy-and-publish.yml
+- template: copy.yml@self
   parameters:
     name: WinGet.Restsource.Infrastructure
     source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)'
 
+# Publish scripts
+- template: copy.yml@self
+  parameters:
+    name: ReleaseScripts
+    source: '$(Build.SourcesDirectory)\scripts\Release'
+
 # Publish Rest Function App
-- template: package-and-publish.yml
+- template: publish.yml@self
   parameters:
     name: WinGet.RestSource.Functions
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
     buildconfig: '$(BuildConfiguration)'
     zipAfterPublish: True
 
+# Publish Legacy Support Rest Function App
+- template: publish.yml@self
+  parameters:
+    name: WinGet.RestSource.Functions.LegacySupport
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Functions\WinGet.RestSource.Functions.csproj'
+    buildconfig: '$(LegacySupportBuildConfiguration)'
+    zipAfterPublish: True
+
+# Publish Integration Test
+- template: publish.yml@self
+  parameters:
+    name: WinGet.RestSource.IntegrationTest
+    projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\WinGet.RestSource.IntegrationTest.csproj'
+    buildconfig: '$(BuildConfiguration)'
+    zipAfterPublish: False
+
+# Publish Fuzzing Artifacts
+- template: copy.yml@self
+  parameters:
+    name: WinGet.RestSource.Fuzzing
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net8.0'
+
+# Publish powershell
+- template: copy-and-publish-powershell.yml@self
+
 ## Run Unit Tests
-- template: run-unittests.yml
+- template: run-unittests.yml@self
   parameters:
     name: WinGet.RestSource.UnitTest
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\netcoreapp3.1'
-    dll: Microsoft.WinGet.RestSource.UnitTest.dll
-
-## Component Governance
-- task: ComponentGovernanceComponentDetection@0
-  displayName: Component Governance
-  inputs:
-    scanType: 'Register'
-    verbosity: 'Verbose'
-    alertWarningLevel: 'High'
-    failOnAlert: true
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net8.0'
+    dll: Microsoft.WinGet.RestSource.UnitTest.

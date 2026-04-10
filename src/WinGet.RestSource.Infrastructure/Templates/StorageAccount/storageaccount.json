@@ -93,7 +93,8 @@
                         }
                     },
                     "keySource": "Microsoft.Storage"
-                }
+                },
+                "allowSharedKeyAccess": false
             },
             "kind": "[parameters('kind')]"
         },

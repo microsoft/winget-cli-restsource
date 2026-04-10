@@ -1,0 +1,42 @@
+﻿{
+  "PackageIdentifier": "RestIntegrationTest.CodeLite",
+  "Versions": [
+    {
+      "PackageVersion": "14.0.0",
+      "DefaultLocale": {
+        "License": "GNU General Public License v2.0",
+        "LicenseUrl": "https://github.com/eranif/codelite/blob/master/LICENSE",
+        "ManifestType": "merged",
+        "ManifestVersion": "1.1.0",
+        "MinimumOSVersion": "10.0.0.0",
+        "Moniker": "codelite",
+        "PackageLocale": "en-US",
+        "PackageName": "some random data and match type substring",
+        "PackageUrl": "https://codelite.org/",
+        "Publisher": "CodeLite",
+        "ShortDescription": "CodeLite is an open source, free, cross platform IDE specialized in C, C++, PHP and JavaScript (mainly for backend developers using Node.js) programming languages which runs best on all major Platforms ( OSX, Windows and Linux )",
+        "Tags": [
+          "c",
+          "c++",
+          "ide",
+          "nodejs",
+          "php",
+          "code"
+        ]
+      },
+      "Installers": [
+        {
+          "Architecture": "x64",
+          "InstallerIdentifier": "CodeLite.CodeLite_14.0.0_x64",
+          "InstallerSha256": "7A5A72FA48D54466DDF2EA60A84463C41703794051AB2DCC12E9C98F7C5D4750",
+          "InstallerUrl": "https://downloads.codelite.org/codelite/14.0.0/codelite-amd64-14.0.0.exe",
+          "InstallerSwitches": {
+            "Silent": "/VERYSILENT",
+            "SilentWithProgress": "/VERYSILENT"
+          },
+          "InstallerType": "exe"
+        }
+      ]
+    }
+  ]
+}

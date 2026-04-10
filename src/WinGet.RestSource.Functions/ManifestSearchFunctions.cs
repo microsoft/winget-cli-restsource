@@ -1,6 +1,6 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ManifestSearchFunctions.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,13 +15,15 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Schemas;
-    using Microsoft.WinGet.RestSource.Validators;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models.Arrays;
+    using Microsoft.WinGet.RestSource.Utils.Models.Schemas;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
 
     /// <summary>
     /// This class contains the functions for searching manifests.
@@ -29,14 +31,17 @@ namespace Microsoft.WinGet.RestSource.Functions
     public class ManifestSearchFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManifestSearchFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public ManifestSearchFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public ManifestSearchFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -48,24 +53,39 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.ManifestSearchPost)]
         public async Task<IActionResult> ManifestSearchPostAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionPost, Route = "manifestSearch")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionPost,
+                Route = "manifestSearch")]
             HttpRequest req,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
+            ApiDataPage<ManifestSearchResponse> manifestSearchResponse;
+            PackageMatchFields unsupportedFields;
+            PackageMatchFields requiredFields;
             ManifestSearchRequest manifestSearch = null;
-            ApiDataPage<ManifestSearchResponse> manifestSearchResponse = new ApiDataPage<ManifestSearchResponse>();
+            Dictionary<string, string> headers = null;
 
             try
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
+                string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);
 
                 // Get Manifest Search Request and Validate.
                 manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
                 ApiDataValidator.Validate(manifestSearch);
 
-                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, headers, req.Query);
+                manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, continuationToken);
+
+                unsupportedFields = UnsupportedAndRequiredFieldsHelper.GetUnsupportedPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.UnsupportedPackageMatchFields);
+                requiredFields = UnsupportedAndRequiredFieldsHelper.GetRequiredPackageMatchFieldsFromSearchRequest(manifestSearch, ApiConstants.RequiredPackageMatchFields);
             }
             catch (DefaultException e)
             {
@@ -75,14 +95,27 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.DatabaseGetError,
+                        FunctionConstants.ManifestSearchPost,
+                        req.Path.Value,
+                        headers,
+                        manifestSearch,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
-            return manifestSearchResponse.Items.Count() switch
+            return new ApiObjectResult(new SearchApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items?.ToList(), manifestSearchResponse.ContinuationToken)
             {
-                0 => new NoContentResult(),
-                _ => new ApiObjectResult(new ApiResponse<List<ManifestSearchResponse>>(manifestSearchResponse.Items.ToList(), manifestSearchResponse.ContinuationToken)),
-            };
+                UnsupportedPackageMatchFields = unsupportedFields,
+                RequiredPackageMatchFields = requiredFields,
+            });
         }
     }
 }

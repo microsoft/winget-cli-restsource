@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "centralus"
+    },
+    "serverIdentifier": {
+      "value": "winget-pkgs-rest-ppe"
+    },
+    "manifestCacheEndpoint": {
+      "value": "https://winget-ppe.azureedge.net/cache/"
+    },
+    "cosmosContainer": {
+      "value": "Manifests"
+    },
+    "cosmosDatabase": {
+      "value": "cosmossql-wgrest-ppe"
+    },
+    "functionName": {
+      "value": "azfun-wgrest-api-centus-ppe"
+    },
+    "appServiceName": {
+      "value": "asp-wgrest-centus-ppe"
+    },
+    "keyVaultServiceUri": {
+      "value": "https://kv-wgrest-westus-ppe.vault.azure.net"
+    },
+    "appInsightName": {
+      "value": "appin-wgrest-westus-ppe"
+    },
+    "monitoringTenant": {
+      "value": "PkgMgrPPE"
+    },
+    "monitoringRole": {
+      "value": "azfun-wgrest-api-centus-ppe"
+    },
+    "monitoringMetricsAccount": {
+      "value": "MsPkgMgrProd"
+    },
+    "cors": {
+      "value": {
+        "allowedOrigins": [
+          "https://functions.azure.com",
+          "https://functions-staging.azure.com",
+          "https://functions-next.azure.com",
+          "https://df-devicemanagement.onecloud.azure-test.net"
+        ],
+        "supportCredentials": false
+      }
+    },
+    "blobStorageServiceUri": {
+      "value": "https://stwgrestcentusppe.blob.core.windows.net"
+    },
+    "queueStorageServiceUri": {
+      "value": "https://stwgrestcentusppe.queue.core.windows.net"
+    },
+    "tableStorageServiceUri": {
+      "value": "https://stwgrestcentusppe.table.core.windows.net"
+    },
+    "serverAuthenticationType": {
+        "value": "none"
+    }
+  }
+}

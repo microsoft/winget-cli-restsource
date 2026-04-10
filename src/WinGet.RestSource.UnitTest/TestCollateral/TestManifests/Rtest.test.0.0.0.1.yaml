@@ -1,0 +1,15 @@
+﻿Installers:
+- Architecture: x64
+  InstallerLocale: en-US
+  InstallerSha256: 01234567890ABCDEF01234567890ABCDEF01234567890ABCDEF1234567890ABC
+  InstallerType: wix
+  InstallerUrl: https://test.com/test.msi
+License: License
+ManifestType: merged
+ManifestVersion: 1.1.0
+PackageIdentifier: Rtest.test
+PackageLocale: en-US
+PackageName: Test
+PackageVersion: 0.0.0.1
+Publisher: Test
+ShortDescription: Test

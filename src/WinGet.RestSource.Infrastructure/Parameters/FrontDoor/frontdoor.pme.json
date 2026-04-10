@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "pkgmgr-wgrest-pme"
+        },
+        "frontendEndpoints": {
+            "value": [{
+                "name": "pkgmgr-wgrest-pme-azurefd-net",
+                "properties": {
+                    "hostName": "pkgmgr-wgrest-pme.azurefd.net",
+                    "sessionAffinityEnabledState": "Disabled",
+                    "sessionAffinityTtlSeconds": 0,
+                    "resourceState": "Enabled"
+                }
+            }]
+        },
+        "healthProbeSettings": {
+            "value": [{
+                "name": "healthProbe-fiveSecond",
+                "properties": {
+                    "intervalInSeconds": 5,
+                    "path": "/",
+                    "protocol": "Https",
+                    "resourceState": "Enabled",
+                    "enabledState": "Enabled",
+                    "healthProbeMethod": "Head"
+                }
+            }]
+        },
+        "loadBalancingSettings": {
+            "value": [{
+                "name": "loadBalancing-tenSample",
+                "properties": {
+                    "additionalLatencyMilliseconds": 1000,
+                    "sampleSize": 10,
+                    "successfulSamplesRequired": 5,
+                    "resourceState": "Enabled"
+                }
+            }]
+        },
+        "backendPools": {
+            "value": [{
+                "name": "api",
+                "backEnds": [{
+                        "address": "azfun-wgrest-api-westus-pme.azurewebsites.net",
+                        "httpPort": 80,
+                        "httpsPort": 443,
+                        "priority": 1,
+                        "weight": 100,
+                        "backendHostHeader": "azfun-wgrest-api-westus-pme.azurewebsites.net",
+                        "enabledState": "Enabled"
+                    },
+                    {
+                        "address": "azfun-wgrest-api-centus-pme.azurewebsites.net",
+                        "httpPort": 80,
+                        "httpsPort": 443,
+                        "priority": 1,
+                        "weight": 100,
+                        "backendHostHeader": "azfun-wgrest-api-centus-pme.azurewebsites.net",
+                        "enabledState": "Enabled"
+                    }
+                ],
+                "HealthProbeSettingsName": "healthProbe-fiveSecond",
+                "LoadBalancingSettingsName": "loadBalancing-tenSample"
+            }]
+        },
+        "routingRules": {
+            "value": [{
+                "name": "api-rule",
+                "frontendEndpoint": "pkgmgr-wgrest-pme-azurefd-net",
+                "acceptedProtocols": [
+                    "Https"
+                ],
+                "patternsToMatch": [
+                    "/api/*"
+                ],
+                "enabledState": "Enabled",
+                "routeConfiguration": {
+                    "odataType": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                    "forwardingProtocol": "HttpsOnly",
+                    "backendPoolName": "api"
+                }
+            }]
+        },
+        "backendPoolsSettings": {
+            "value": {
+                "enforceCertificateNameCheck": "Enabled",
+                "sendRecvTimeoutSeconds": 30
+            }
+        },
+        "enabledState": {
+            "value": "Enabled"
+        }
+    }
+}

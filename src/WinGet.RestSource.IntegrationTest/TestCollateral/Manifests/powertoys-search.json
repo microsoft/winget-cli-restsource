@@ -1,0 +1,91 @@
+﻿{
+  "PackageIdentifier": "RestIntegrationTest.PowerToys",
+  "Versions": [
+    {
+      "PackageVersion": "0.31.4",
+      "DefaultLocale": {
+        "Description": "Microsoft PowerToys is a set of utilities for power users to tune and streamline their Windows experience for greater productivity. Inspired by the Windows 95 era PowerToys project, this reboot provides power users with ways to squeeze more efficiency out of the Windows 10 shell and customize it for individual workflows.",
+        "License": "MIT",
+        "LicenseUrl": "https://github.com/microsoft/PowerToys/blob/master/LICENSE",
+        "ManifestType": "merged",
+        "ManifestVersion": "1.1.0",
+        "MinimumOSVersion": "10.0.17134.0",
+        "PackageIdentifier": "Microsoft.PowerToys",
+        "PackageLocale": "en-US",
+        "PackageName": "Starts-With, something else and used for search",
+        "PackageUrl": "https://github.com/microsoft/PowerToys",
+        "Publisher": "Microsoft Corporation",
+        "ShortDescription": "Microsoft.PowerToys",
+        "Tags": [
+          "color-picker",
+          "fancyzones",
+          "file-explorer",
+          "image-resizer",
+          "keyboard-manager",
+          "powerrename",
+          "powertoys",
+          "power-toys",
+          "powertoys-run",
+          "windows-key-shortcut-guide"
+        ]
+      },
+      "Installers": [
+        {
+          "InstallerIdentifier": "Microsoft.PowerToys_0.31.4_en_x64",
+          "InstallerSwitches": {
+            "Silent": "--silent",
+            "SilentWithProgress": "--silent"
+          },
+          "Architecture": "x64",
+          "InstallerSha256": "8B4A3D4C8D18DA10FD11558BD6C8CF195D931576D6E07369E7AC99BA9BE7C4C4",
+          "InstallerUrl": "https://github.com/microsoft/PowerToys/releases/download/v0.31.2/PowerToysSetup-0.31.2-x64.exe",
+          "ProductCode": "{174AD64A-220A-4CB9-ABDC-A13E3243DD09}",
+          "InstallerType": "exe"
+        }
+      ]
+    },
+    {
+      "PackageVersion": "0.32.4",
+      "DefaultLocale": {
+        "Description": "Microsoft PowerToys is a set of utilities for power users to tune and streamline their Windows experience for greater productivity. Inspired by the Windows 95 era PowerToys project, this reboot provides power users with ways to squeeze more efficiency out of the Windows 10 shell and customize it for individual workflows.",
+        "License": "MIT",
+        "LicenseUrl": "https://github.com/microsoft/PowerToys/blob/master/LICENSE",
+        "ManifestType": "merged",
+        "ManifestVersion": "1.1.0",
+        "MinimumOSVersion": "10.0.17134.0",
+        "PackageIdentifier": "Microsoft.PowerToys",
+        "PackageLocale": "en-US",
+        "PackageName": "Starts-With, something else",
+        "PackageUrl": "https://github.com/microsoft/PowerToys",
+        "Publisher": "Microsoft Corporation",
+        "ShortDescription": "Microsoft.PowerToys",
+        "Tags": [
+          "color-picker",
+          "fancyzones",
+          "file-explorer",
+          "image-resizer",
+          "keyboard-manager",
+          "powerrename",
+          "powertoys",
+          "power-toys",
+          "powertoys-run",
+          "windows-key-shortcut-guide"
+        ]
+      },
+      "Installers": [
+        {
+          "InstallerIdentifier": "Microsoft.PowerToys_0.32.4_en_x64",
+          "InstallerSwitches": {
+            "Silent": "--silent",
+            "SilentWithProgress": "--silent"
+          },
+          "Architecture": "x64",
+          "InstallerSha256": "8B4A3D4C8D18DA10FD11558BD6C8CF195D931576D6E07369E7AC99BA9BE7C4C4",
+          "InstallerUrl": "https://github.com/microsoft/PowerToys/releases/download/v0.31.2/PowerToysSetup-0.31.2-x64.exe",
+          "ProductCode": "{174AD64A-220A-4CB9-ABDC-A13E3243DD09}",
+          "InstallerType": "exe"
+        }
+      ]
+    }
+  ]
+}

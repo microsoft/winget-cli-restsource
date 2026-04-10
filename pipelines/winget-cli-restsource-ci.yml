@@ -3,31 +3,112 @@
 
 # Branches that trigger a build on commit
 trigger:
-- master
-
-# PR triggers
-pr:
   branches:
     include:
-    - master
-  paths:
-    include:
-    - pipelines/*
-    - src/*
+    - main
 
-jobs:
-- job: 'BuildTestPublish'
-  displayName: 'Build, Publish & Test'
-  timeoutInMinutes: 60
-  pool:
-    vmImage: windows-2019
-    demands:
-    - msbuild
-    - visualstudio
-  variables:
-    BuildConfiguration: 'release'
-    BuildPlatform: 'Any CPU'
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
 
-  steps:
-  # Restore and Build
-  - template: templates/restore-build-publish-test.yml
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-2022
+      os: windows
+    customBuildTags:
+    # This is added by 1ES migration tool and it is okay to remove in the future.
+    - ES365AIMigrationTooling
+
+    sdl:
+      codeInspector:
+        enabled: true
+      binskim:
+        analyzeTargetGlob: '$(Build.SourcesDirectory)\**\Microsoft.WindowsPackageManager.*.dll;$(Build.SourcesDirectory)\**\Microsoft.WinGet.*.dll;'
+
+    stages:
+    - stage: Build_Publish_Test
+      jobs:
+      - job: 'BuildTestPublish'
+        displayName: 'Build Test & Publish'
+        timeoutInMinutes: 60
+        variables:
+        - name: BuildConfiguration
+          value: 'release'
+        - name: LegacySupportBuildConfiguration
+          value: 'LegacySupport'
+        - name: BuildPlatform
+          value: 'Any CPU'
+
+        steps:
+        # Restore and Build
+        - template: pipelines/templates/restore-build-publish-test.yml@self
+
+        templateContext:
+          outputs:
+          # Publish ARM Templates
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.Restsource.Infrastructure'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.Restsource.Infrastructure
+            artifactName: WinGet.RestSource-WinGet.Restsource.Infrastructure
+          
+          # Publish scripts
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-ReleaseScripts'
+            targetPath: $(Build.ArtifactStagingDirectory)\ReleaseScripts
+            artifactName: WinGet.RestSource-ReleaseScripts
+
+          # Publish Rest Function App
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Functions'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions
+            artifactName: WinGet.RestSource-WinGet.RestSource.Functions
+
+          # Publish Rest Function App Legacy Support
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Functions.LegacySupport
+            artifactName: WinGet.RestSource-WinGet.RestSource.Functions.LegacySupport
+
+          # Publish Integration Test
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.IntegrationTest'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.IntegrationTest
+            artifactName: WinGet.RestSource-WinGet.RestSource.IntegrationTest
+          
+          # Publish Powershell Module
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-Winget.PowerShell.Source'
+            targetPath: '$(Build.ArtifactStagingDirectory)\Winget.PowerShell.Source'
+            artifactName: 'WinGet.RestSource-Winget.PowerShell.Source'
+
+          # Publish Fuzzing Artifacts
+          - output: pipelineArtifact
+            displayName: 'Publish Artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing'
+            targetPath: $(Build.ArtifactStagingDirectory)\WinGet.RestSource.Fuzzing
+            artifactName: WinGet.RestSource-WinGet.RestSource.Fuzzing
+
+      - job: 'Fuzzing'
+        displayName: Submit Fuzzing Artifacts
+        timeoutInMinutes: 30
+        dependsOn: 'BuildTestPublish'
+        condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Fuzzing Artifacts'
+          inputs:
+            artifact: WinGet.RestSource-WinGet.RestSource.Fuzzing
+            targetPath: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+
+        - task: onefuzz-task@0
+          inputs:
+            onefuzzOSes: 'Windows'
+          env:
+            onefuzzDropDirectory: '$(Pipeline.Workspace)\WinGet.RestSource-WinGet.RestSource.Fuzzing'
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)

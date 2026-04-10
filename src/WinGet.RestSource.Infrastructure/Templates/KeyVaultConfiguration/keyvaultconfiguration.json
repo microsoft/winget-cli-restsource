@@ -1,0 +1,102 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Key Vault Name"
+      }
+    },
+    "frontDoorName": {
+      "type": "string",
+      "metadata": {
+        "description": "Front Door Name"
+      }
+    },
+    "appConfigPrimary": {
+      "type": "securestring",
+      "metadata": {
+          "description": "Name of the primary AppConfig"
+      }
+    },
+    "appConfigSecondary": {
+      "type": "securestring",
+      "metadata": {
+          "description": "Name of the secondary AppConfig"
+      }
+    }
+  },
+  "functions": [
+    {
+      "namespace": "restsource",
+      "members": {
+        "get_fd_endpoint": {
+          "parameters": [
+            {
+              "name": "fd_root",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat( 'https://', parameters('fd_root'), '.azurefd.net/api/' )]"
+          }
+        },
+        "get_fd_function_endpoint": {
+          "parameters": [
+            {
+              "name": "fd_root",
+              "type": "string"
+            },
+            {
+              "name": "function_name",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat( 'https://', parameters('fd_root'), '.azurefd.net/api/', parameters('function_name') )]"
+          }
+        }
+      }
+    }
+  ],
+  "variables": {
+    "kv_restSourceEndpoint_SecretName": "AzFuncRestSourceEndpoint",
+    "restsource_api_endpoint": "[restsource.get_fd_endpoint( parameters('frontDoorName') )]",
+    "appConfigs": [
+      {
+          "key": "AppConfigPrimaryEndpoint",
+          "resource": "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigPrimary'))]"
+      },
+      {
+          "key": "AppConfigSecondaryEndpoint",
+          "resource": "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigSecondary'))]"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'),'/',variables('kv_restSourceEndpoint_SecretName'))]",
+      "apiVersion": "2016-10-01",
+      "properties": {
+        "value": "[variables('restsource_api_endpoint')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'),'/',variables('appConfigs')[copyIndex()].key)]",
+      "apiVersion": "2016-10-01",
+      "properties": {
+          "value": "[reference(variables('appConfigs')[copyIndex()].resource, '2023-03-01', 'full').properties.endpoint]"
+      },
+      "copy": {
+          "name": "appConfigsCount",
+          "count": "[length(variables('appConfigs'))]"
+      }
+    }
+  ],
+  "outputs": {}
+}

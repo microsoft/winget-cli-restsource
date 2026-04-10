@@ -11,7 +11,25 @@
         "serverIdentifier": {
             "type": "string",
             "metadata": {
-                "description": "Azure Function Name"
+                "description": "The source identifier is a unique identifier for the source server"
+            }
+        },
+        "manifestCacheEndpoint": {
+            "type": "string",
+            "metadata": {
+                "description": "The endpoint where we expect manifests to be cached for this deployment ring."
+            }
+        },
+        "cosmosDatabase": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Database"
+            }
+        },
+        "cosmosContainer": {
+            "type": "string",
+            "metadata": {
+                "description": "Cosmos Container"
             }
         },
         "location": {
@@ -41,16 +59,28 @@
                 "description": "App Service Name"
             }
         },
-        "keyVaultName": {
+        "keyVaultServiceUri": {
             "type": "string",
             "metadata": {
-                "description": "Key Vault Name"
+                "description": "Key Vault service uri. Do not append '/' to the uri."
             }
         },
-        "storageSecretName": {
+        "blobStorageServiceUri": {
             "type": "string",
             "metadata": {
-                "description": "Storage Secret Name"
+                "description": "The uri of the blob storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
+            }
+        },
+        "queueStorageServiceUri": {
+            "type": "string",
+            "metadata": {
+                "description": "The uri of the queue storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
+            }
+        },
+        "tableStorageServiceUri": {
+            "type": "string",
+            "metadata": {
+                "description": "The uri of the table storage used for Az Func operations. This Az Func must have the permissions required. See roles.*.json under StorageAccount"
             }
         },
         "appInsightSubscription": {
@@ -96,7 +126,7 @@
         },
         "functionExtensionVersion": {
             "type": "string",
-            "defaultValue": "~3",
+            "defaultValue": "~4",
             "metadata": {
                 "description": "Function Extension Version"
             }
@@ -107,14 +137,76 @@
             "metadata": {
                 "description": "This is the thumbprint loading Certs."
             }
+        },
+        "cors": {
+            "type": "object",
+            "defaultValue": {
+                "allowedOrigins": [],
+                "supportCredentials": false
+            },
+            "metadata": {
+                "description": "Function CORS Settings."
+            }
+        },
+        "monitoringTenant": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Tenant"
+            }
+        },
+        "monitoringRole": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
+        },
+        "monitoringMetricsAccount": {
+            "type": "string",
+            "metadata": {
+                "description": "Monitoring Role"
+            }
+        },
+        "runFromPackageUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "The url of the zip package of this azure function. The az function must have at least Storage Blob Data Reader role to the storage account."
+            }
+        },
+        "serverAuthenticationType": {
+            "type": "string",
+            "defaultValue": "none",
+            "allowedValues": [
+                "none",
+                "microsoftEntraId"
+            ],
+            "metadata": {
+                "description": "The authentication type to query the server."
+            }
+        },
+        "microsoftEntraIdResource": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Required if serverAuthenticationType is microsoftEntraId. The Microsoft EntraId target resource."
+            }
+        },
+        "microsoftEntraIdResourceScope": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. The Microsoft EntraId target resource scope."
+            }
         }
     },
     "variables": {
-        "appServiceResourceId": "[resourceId(parameters('appServiceSubscription'), parameters('appServiceResourceGroup'), 'Microsoft.Web/serverfarms/', parameters('appServiceName'))]",
         "appInsightResourceId": "[resourceId(parameters('appInsightSubscription'), parameters('appInsightResourceGroup'), 'microsoft.insights/components', parameters('appInsightName'))]",
-        "kv_secreturi_path": "[concat('https://',parameters('keyVaultName'),'.vault.azure.net/secrets/')]",
+        "appServiceResourceId": "[resourceId(parameters('appServiceSubscription'), parameters('appServiceResourceGroup'), 'Microsoft.Web/serverfarms/', parameters('appServiceName'))]",
+        "kv_appConfigPrimary_SecretName": "AppConfigPrimaryEndpoint",
+        "kv_appConfigSecondary_SecretName": "AppConfigSecondaryEndpoint",
         "kv_cosmosAccountEndpoint_secretName": "CosmosAccountEndpoint",
-        "kv_cosmosAccountKey_secretName": "CosmosAccountKey"
+        "kv_functionHostKey_SecretName": "AzureFunctionHostKey",
+        "kv_restSourceApiEndpoint_SecretName": "AzFuncRestSourceEndpoint",
+        "kv_secreturi_path": "[concat(parameters('keyVaultServiceUri'), '/secrets/')]"
     },
     "resources": [
         {
@@ -134,12 +226,6 @@
                     "alwaysOn": "[parameters('enableAlwaysOn')]",
                     "minTlsVersion": "[parameters('minimumTlsVersion')]"
                 },
-                "appSettings": [
-                    {
-                        "name": "FUNCTIONS_EXTENSION_VERSION",
-                        "value": "[parameters('functionExtensionVersion')]"
-                    }
-                ],
                 "httpsOnly": true
             },
             "resources": [
@@ -148,68 +234,49 @@
                     "type": "config",
                     "name": "appsettings",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]",
-                        "AzureFunctionKeyVaultAccessPolicy"
+                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]"
                     ],
                     "properties": {
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
+                        "AzFuncRestSourceEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_restSourceApiEndpoint_SecretName'), '/)')]",
+                        "AzureWebJobsStorage__blobServiceUri": "[parameters('blobStorageServiceUri')]",
+                        "AzureWebJobsStorage__queueServiceUri": "[parameters('queueStorageServiceUri')]",
+                        "AzureWebJobsStorage__tableServiceUri": "[parameters('tableStorageServiceUri')]",
+                        "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
+                        "CosmosContainer": "[parameters('cosmosContainer')]",
+                        "CosmosDatabase": "[parameters('cosmosDatabase')]",
+                        "FunctionHostKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_functionHostKey_SecretName'), '/)')]",
                         "FunctionName": "[parameters('functionName')]",
-                        "ServerIdentifier": "[parameters('serverIdentifier')]",
                         "FUNCTIONS_EXTENSION_VERSION": "[parameters('functionExtensionVersion')]",
                         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(variables('appInsightResourceId'), '2015-05-01').InstrumentationKey]",
-                        "AzureWebJobsStorage": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), parameters('storageSecretName'), '/)')]",
-                        "WEBSITE_CONTENTSHARE": "[toLower(parameters('functionName'))]",
+                        "FUNCTIONS_INPROC_NET8_ENABLED": 1,
+                        "ManifestCacheEndpoint": "[parameters('manifestCacheEndpoint')]",
+                        "ServerIdentifier": "[parameters('serverIdentifier')]",
+                        "WEBSITE_FIRST_PARTY_ID": "AntMDS",
                         "WEBSITE_LOAD_CERTIFICATES": "[parameters('website_load_certificates')]",
-                        "CosmosAccountEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountEndpoint_secretName'), '/)')]",
-                        "CosmosAccountKey": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_cosmosAccountKey_secretName'), '/)')]"
+                        "WinGet:AppConfig:PrimaryEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_appConfigPrimary_SecretName'), '/)')]",
+                        "WinGet:AppConfig:SecondaryEndpoint": "[concat('@Microsoft.KeyVault(SecretUri=', variables('kv_secreturi_path'), variables('kv_appConfigSecondary_SecretName'), '/)')]",
+                        "WinGetRest::SubscriptionId": "[parameters('appServiceSubscription')]",
+                        "WinGetRest:Telemetry:Metrics": "[parameters('monitoringMetricsAccount')]",
+                        "WinGetRest:Telemetry:Role": "[parameters('monitoringRole')]",
+                        "WinGetRest:Telemetry:Tenant": "[parameters('monitoringTenant')]",
+                        "ServerAuthenticationType": "[parameters('serverAuthenticationType')]",
+                        "MicrosoftEntraIdResource": "[parameters('microsoftEntraIdResource')]",
+                        "MicrosoftEntraIdResourceScope": "[parameters('microsoftEntraIdResourceScope')]"
+                    }
+                },
+                {
+                    "apiVersion": "2021-03-01",
+                    "type": "config",
+                    "name": "web",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/Sites/', parameters('functionName'))]"
+                    ],
+                    "properties": {
+                        "cors": "[parameters('cors')]"
                     }
                 }
             ]
-        },
-        {
-            "apiVersion": "2019-05-01",
-            "name": "AzureFunctionKeyVaultAccessPolicy",
-            "type": "Microsoft.Resources/deployments",
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/', parameters('functionName'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": [
-                        {
-                            "type": "Microsoft.KeyVault/vaults/accessPolicies",
-                            "name": "[concat(parameters('keyVaultName'), '/add')]",
-                            "apiVersion": "2016-10-01",
-                            "properties": {
-                                "accessPolicies": [
-                                    {
-                                        "tenantId": "[reference(concat('Microsoft.Web/sites/', parameters('functionName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').tenantId]",
-                                        "objectId": "[reference(concat('Microsoft.Web/sites/', parameters('functionName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
-                                        "permissions": {
-                                            "keys": [
-                                                "Get"
-                                            ],
-                                            "secrets": [
-                                                "Get"
-                                            ],
-                                            "certificates": [
-                                                "Get"
-                                            ]
-                                        },
-                                        "metadata": {
-                                            "description": "This is the service principal for the Service Functions Azure Function."
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
         }
     ],
     "outputs": {}

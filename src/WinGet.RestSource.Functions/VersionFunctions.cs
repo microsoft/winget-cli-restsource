@@ -1,6 +1,6 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="VersionFunctions.cs" company="Microsoft Corporation">
-//     Copyright (c) Microsoft Corporation. All rights reserved.
+//     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,30 +15,34 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.WinGet.RestSource.Common;
-    using Microsoft.WinGet.RestSource.Constants;
-    using Microsoft.WinGet.RestSource.Exceptions;
+    using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
-    using Microsoft.WinGet.RestSource.Models;
-    using Microsoft.WinGet.RestSource.Models.Errors;
-    using Microsoft.WinGet.RestSource.Validators;
-    using Version = Microsoft.WinGet.RestSource.Models.Schemas.Version;
+    using Microsoft.WinGet.RestSource.Functions.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Common;
+    using Microsoft.WinGet.RestSource.Utils.Constants;
+    using Microsoft.WinGet.RestSource.Utils.Exceptions;
+    using Microsoft.WinGet.RestSource.Utils.Models;
+    using Microsoft.WinGet.RestSource.Utils.Models.Errors;
+    using Microsoft.WinGet.RestSource.Utils.Validators;
+    using Version = Microsoft.WinGet.RestSource.Utils.Models.Schemas.Version;
 
     /// <summary>
     /// This class contains the functions for interacting with versions.
     /// </summary>
-    /// TODO: Refactor duplicate code to library.
     public class VersionFunctions
     {
         private readonly IApiDataStore dataStore;
+        private readonly IWinGetAppConfig appConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
-        public VersionFunctions(IApiDataStore dataStore)
+        /// <param name="appConfig">App Config.</param>
+        public VersionFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
         {
             this.dataStore = dataStore;
+            this.appConfig = appConfig;
         }
 
         /// <summary>
@@ -56,8 +60,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageIdentifier,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             Version version = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -79,6 +83,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.ServerInformationError,
+                        FunctionConstants.VersionPost,
+                        req.Path.Value,
+                        headers,
+                        version,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -108,7 +125,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
-
                 await this.dataStore.DeleteVersion(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
@@ -119,6 +135,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.ServerInformationError,
+                        FunctionConstants.VersionDelete,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -142,8 +170,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             string packageVersion,
             ILogger log)
         {
-            Dictionary<string, string> headers = null;
             Version version = null;
+            Dictionary<string, string> headers = null;
 
             try
             {
@@ -173,6 +201,19 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.ServerInformationError,
+                        FunctionConstants.VersionPut,
+                        req.Path.Value,
+                        headers,
+                        version,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 
@@ -190,21 +231,30 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <returns>IActionResult.</returns>
         [FunctionName(FunctionConstants.VersionGet)]
         public async Task<IActionResult> VersionsGetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, FunctionConstants.FunctionGet, Route = "packages/{packageIdentifier}/versions/{packageVersion?}")]
+            [HttpTrigger(
+#pragma warning disable SA1114 // Parameter list should follow declaration
+#if WINGET_REST_SOURCE_LEGACY_SUPPORT
+                AuthorizationLevel.Anonymous,
+#else
+                AuthorizationLevel.Function,
+#endif
+#pragma warning restore SA1114 // Parameter list should follow declaration
+                FunctionConstants.FunctionGet,
+                Route = "packages/{packageIdentifier}/versions/{packageVersion?}")]
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
             ILogger log)
         {
+            ApiDataPage<Version> versions;
             Dictionary<string, string> headers = null;
-            ApiDataPage<Version> versions = new ApiDataPage<Version>();
 
             try
             {
                 // Parse Headers
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
-                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion, null);
+                versions = await this.dataStore.GetVersions(packageIdentifier, packageVersion);
             }
             catch (DefaultException e)
             {
@@ -214,6 +264,18 @@ namespace Microsoft.WinGet.RestSource.Functions
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+
+                if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
+                {
+                    Geneva.Metrics.EmitMetricForOperation(
+                        Geneva.ErrorMetrics.ServerInformationError,
+                        FunctionConstants.VersionGet,
+                        req.Path.Value,
+                        headers,
+                        e,
+                        log);
+                }
+
                 return ActionResultHelper.UnhandledError(e);
             }
 

@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "value": "kv-wgrest-westus-int"
+        },
+        "frontDoorName": {
+            "value": "pkgmgr-wgrest-int"
+        },
+        "appConfigPrimary": {
+            "value": "appconfig-wgrest-centus-int"
+        },
+        "appConfigSecondary": {
+            "value": "appconfig-wgrest-westus-int"
+        }
+    }
+}
