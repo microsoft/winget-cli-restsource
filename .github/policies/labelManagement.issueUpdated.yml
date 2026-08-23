@@ -35,6 +35,23 @@ configuration:
         then:
           - removeLabel:
               label: Needs-Author-Feedback
+      - description: >-
+          When changes are requested on a pull request
+          * Disable automerge
+          * Assign to the author
+          * Label with Needs-Author-Feedback
+        if:
+          - payloadType: Pull_Request_Review
+          - isAction:
+              action: Submitted
+          - isReviewState:
+              reviewState: Changes_requested
+        then:
+          - disableAutoMerge
+          - assignTo:
+              author: True
+          - addLabel:
+              label: Needs-Author-Feedback
       - description: Sync labels from issues on all pull request events
         if:
           - payloadType: Pull_Request
