@@ -200,7 +200,7 @@ function New-ARMObjects {
             ## Assign cosmos db roles
             $CosmosAccount = Get-AzCosmosDBAccount -ResourceGroupName $ResourceGroup -Name $CosmosAccountName
             $RoleId = '00000000-0000-0000-0000-000000000002' ## Built in contributor role
-            $RoleDefinitionId = "$($CosmosAccount.Id)/sqlRoleAssignments/$RoleId"
+            $RoleDefinitionId = "$($CosmosAccount.Id)/sqlRoleDefinitions/$RoleId"
             if ((Get-AzCosmosDBSqlRoleAssignment -ResourceGroupName $ResourceGroup -AccountName $CosmosAccountName).Where({ $_.PrincipalId -eq $FunctionApp.IdentityPrincipalId -and $_.RoleDefinitionId -eq $RoleDefinitionId }).Count -eq 0) {
                 Write-Verbose 'Assigning Cosmos DB Account contributor role'
                 $Result = New-AzCosmosDBSqlRoleAssignment -AccountName $CosmosAccountName -ResourceGroupName $ResourceGroup -RoleDefinitionId $RoleId -Scope '/' -PrincipalId $FunctionApp.IdentityPrincipalId -ErrorVariable ErrorNew

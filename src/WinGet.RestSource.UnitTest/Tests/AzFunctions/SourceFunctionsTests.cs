@@ -11,9 +11,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.DurableTask;
     using Microsoft.Extensions.Logging;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Models;
@@ -22,7 +21,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
     using Microsoft.WinGet.RestSource.Functions.Constants;
     using Microsoft.WinGet.RestSource.Functions.Geneva;
     using Microsoft.WinGet.RestSource.Interfaces;
-    using Microsoft.Winget.RestSource.UnitTest.Common;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -38,7 +36,6 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
         private readonly Mock<IHttpClientFactory> mockHttpClientFactory = new Mock<IHttpClientFactory>();
         private readonly Mock<HttpClient> mockHttpClient = new Mock<HttpClient>();
         private readonly Mock<ILogger> mockLogger = new Mock<ILogger>();
-        private readonly Mock<ExecutionContext> mockExecutionContext = new Mock<ExecutionContext>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceFunctionsTests"/> class.
@@ -47,661 +44,285 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
         public SourceFunctionsTests(ITestOutputHelper log)
         {
             this.log = log;
-
             this.telemetryConfiguration = new TelemetryConfiguration
             {
                 TelemetryChannel = this.mockTelemetryChannel.Object,
                 ConnectionString = $"InstrumentationKey={Guid.NewGuid()}",
             };
 
-            this.mockHttpClientFactory.Setup(
-                m => m.CreateClient(It.IsAny<string>()))
+            this.mockHttpClientFactory
+                .Setup(m => m.CreateClient(It.IsAny<string>()))
                 .Returns(this.mockHttpClient.Object);
         }
 
         /// <summary>
-        /// Test RebuildPostAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task RebuildPostAsync_Test()
-        {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-            var body = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
-            var mockHttpRequest = TestUtils.CreateMockHttpRequest(body);
-
-            string orchestrationInstanceId = "orchestrationInstanceId";
-            var mockDurableOrchestrationClient = new Mock<IDurableOrchestrationClient>();
-            mockDurableOrchestrationClient.Setup(
-                m => m.StartNewAsync(
-                    FunctionConstants.RebuildOrchestrator,
-                    It.Is<ContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.ReferenceType == referenceType)))
-                .ReturnsAsync(orchestrationInstanceId)
-                .Verifiable();
-            mockDurableOrchestrationClient.Setup(
-                m => m.CreateCheckStatusResponse(
-                    mockHttpRequest.Object,
-                    orchestrationInstanceId,
-                    It.IsAny<bool>()))
-                .Verifiable();
-
-            _ = await sourceFunctions.RebuildPostAsync(
-                mockHttpRequest.Object,
-                mockDurableOrchestrationClient.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableOrchestrationClient.Verify();
-        }
-
-        /// <summary>
-        /// Test UpdatePostAsync.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task UpdatePostAsync_Test()
-        {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            string commit = "commit";
-            ReferenceType referenceType = ReferenceType.Add;
-            var body = new CommitContextAndReferenceInput(
-                operationId,
-                sasReference,
-                commit,
-                referenceType);
-            var mockHttpRequest = TestUtils.CreateMockHttpRequest(body);
-
-            string orchestrationInstanceId = "orchestrationInstanceId";
-            var mockDurableOrchestrationClient = new Mock<IDurableOrchestrationClient>();
-            mockDurableOrchestrationClient.Setup(
-                m => m.StartNewAsync(
-                    FunctionConstants.UpdateOrchestrator,
-                    It.Is<CommitContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.Commit == commit &&
-                             c.ReferenceType == referenceType)))
-                .ReturnsAsync(orchestrationInstanceId)
-                .Verifiable();
-            mockDurableOrchestrationClient.Setup(
-                m => m.CreateCheckStatusResponse(
-                    mockHttpRequest.Object,
-                    orchestrationInstanceId,
-                    It.IsAny<bool>()))
-                .Verifiable();
-
-            _ = await sourceFunctions.UpdatePostAsync(
-                mockHttpRequest.Object,
-                mockDurableOrchestrationClient.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableOrchestrationClient.Verify();
-        }
-
-        /// <summary>
-        /// Tests SourceEntryPointHelperAsync returns bad request object when there's an exception thrown.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task SourceEntryPointHelperAsync_Test_Throws()
-        {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-            var body = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
-            var mockHttpRequest = TestUtils.CreateMockHttpRequest(body);
-
-            var mockDurableOrchestrationClient = new Mock<IDurableOrchestrationClient>();
-            mockDurableOrchestrationClient.Setup(
-                m => m.StartNewAsync(
-                    It.IsAny<string>(),
-                    It.Is<ContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.ReferenceType == referenceType)))
-                .Throws(new Exception())
-                .Verifiable();
-
-            var result = await sourceFunctions.SourceEntryPointHelperAsync<ContextAndReferenceInput>(
-                mockHttpRequest.Object,
-                mockDurableOrchestrationClient.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object,
-                "orchestartorFunction",
-                "entryPointFunction");
-
-            mockDurableOrchestrationClient.Verify();
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        /// <summary>
-        /// Tests RebuildOrchestratorAsync.
+        /// Tests the rebuild orchestrator.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task RebuildOrchestratorAsync_Test()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
+            var expected = new SourceResultOutputHelper(SourceResultType.Success);
+            Mock<TaskOrchestrationContext> context = this.CreateOrchestrationContext(
+                FunctionConstants.RebuildOrchestrator,
+                input);
 
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-            var input = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
-
-            var mockResult = new SourceResultOutputHelper(SourceResultType.Success);
-
-            var mockDurableOrchestrationContext = new Mock<IDurableOrchestrationContext>();
-            mockDurableOrchestrationContext.Setup(
-                m => m.GetInput<ContextAndReferenceInput>())
-                .Returns(input);
-            mockDurableOrchestrationContext.Setup(
-                m => m.CallActivityAsync<SourceResultOutputHelper>(
+            context
+                .Setup(m => m.CallActivityAsync<SourceResultOutputHelper>(
                     FunctionConstants.RebuildActivity,
-                    It.Is<ContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.ReferenceType == referenceType)))
-                .ReturnsAsync(mockResult)
+                    It.Is<ContextAndReferenceInput>(value => value.OperationId == input.OperationId),
+                    It.IsAny<TaskOptions>()))
+                .ReturnsAsync(expected)
                 .Verifiable();
 
-            var result = await sourceFunctions.RebuildOrchestratorAsync(
-                mockDurableOrchestrationContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
+            SourceResultOutputHelper result = await sourceFunctions.RebuildOrchestratorAsync(context.Object);
 
-            mockDurableOrchestrationContext.Verify();
-            Assert.Equal(mockResult, result);
+            context.Verify();
+            Assert.Equal(expected, result);
         }
 
         /// <summary>
-        /// Tests UpdateOrchestratorAsync.
+        /// Tests the update orchestrator.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task UpdateOrchestratorAsync_Test()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new CommitContextAndReferenceInput("operationId", "sasReference", "commit", ReferenceType.Add);
+            var expected = new SourceResultOutputHelper(SourceResultType.Success);
+            Mock<TaskOrchestrationContext> context = this.CreateOrchestrationContext(
+                FunctionConstants.UpdateOrchestrator,
+                input);
 
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            string commit = "commit";
-            ReferenceType referenceType = ReferenceType.Add;
-            var input = new CommitContextAndReferenceInput(
-                operationId,
-                sasReference,
-                commit,
-                referenceType);
-
-            var mockResult = new SourceResultOutputHelper(SourceResultType.Success);
-
-            var mockDurableOrchestrationContext = new Mock<IDurableOrchestrationContext>();
-            mockDurableOrchestrationContext.Setup(
-                m => m.GetInput<CommitContextAndReferenceInput>())
-                .Returns(input);
-            mockDurableOrchestrationContext.Setup(
-                m => m.CallActivityAsync<SourceResultOutputHelper>(
+            context
+                .Setup(m => m.CallActivityAsync<SourceResultOutputHelper>(
                     FunctionConstants.UpdateActivity,
-                    It.Is<CommitContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.ReferenceType == referenceType &&
-                             c.Commit == commit)))
-                .ReturnsAsync(mockResult)
+                    It.Is<CommitContextAndReferenceInput>(value => value.Commit == input.Commit),
+                    It.IsAny<TaskOptions>()))
+                .ReturnsAsync(expected)
                 .Verifiable();
 
-            var result = await sourceFunctions.UpdateOrchestratorAsync(
-                mockDurableOrchestrationContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
+            SourceResultOutputHelper result = await sourceFunctions.UpdateOrchestratorAsync(context.Object);
 
-            mockDurableOrchestrationContext.Verify();
-            Assert.Equal(mockResult, result);
+            context.Verify();
+            Assert.Equal(expected, result);
         }
 
         /// <summary>
-        /// Tests SourceOrchestratorHelperAsync when activity functions fails.
+        /// Tests that orchestration failures return an error result.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task SourceOrchestratorHelperAsync_Throws()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
+            Mock<TaskOrchestrationContext> context = this.CreateOrchestrationContext("orchestrator", input);
 
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-            var input = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
-
-            var mockDurableOrchestrationContext = new Mock<IDurableOrchestrationContext>();
-            mockDurableOrchestrationContext.Setup(
-                m => m.GetInput<ContextAndReferenceInput>())
-                .Returns(input);
-            mockDurableOrchestrationContext.Setup(
-                m => m.CallActivityAsync<SourceResultOutputHelper>(
-                    It.IsAny<string>(),
-                    It.Is<ContextAndReferenceInput>(
-                        c => c.OperationId == operationId &&
-                             c.SASReference == sasReference &&
-                             c.ReferenceType == referenceType)))
+            context
+                .Setup(m => m.CallActivityAsync<SourceResultOutputHelper>(
+                    It.IsAny<TaskName>(),
+                    It.IsAny<object>(),
+                    It.IsAny<TaskOptions>()))
                 .ThrowsAsync(new Exception())
                 .Verifiable();
 
-            var result = await sourceFunctions.SourceOrchestratorHelperAsync<ContextAndReferenceInput>(
-                mockDurableOrchestrationContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object,
-                "activityFunction",
-                "orchestrationFunction",
+            SourceResultOutputHelper result = await sourceFunctions.SourceOrchestratorHelperAsync<ContextAndReferenceInput>(
+                context.Object,
+                "activity",
+                "orchestrator",
                 ErrorMetrics.SourceUpdateError);
 
-            mockDurableOrchestrationContext.Verify();
+            context.Verify();
             Assert.Equal(SourceResultType.Error, result.OverallResult);
         }
 
         /// <summary>
-        /// Tests RebuildActivityAsync good scenario.
+        /// Tests a successful rebuild activity.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task RebuildActivityAsync_Test()
         {
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-
-            var mockRebuild = new Mock<IRebuild>();
-            mockRebuild.Setup(
-                m => m.ProcessRebuildRequestAsync(
+            var rebuild = new Mock<IRebuild>();
+            rebuild
+                .Setup(m => m.ProcessRebuildRequestAsync(
                     It.IsAny<HttpClient>(),
-                    operationId,
-                    sasReference,
-                    referenceType,
+                    "operationId",
+                    "sasReference",
+                    ReferenceType.Add,
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions(rebuild: rebuild.Object);
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
 
-            var input = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
+            SourceResultOutputHelper result = await sourceFunctions.RebuildActivityAsync(
+                input,
+                CreateFunctionContext(FunctionConstants.RebuildActivity));
 
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<ContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
-
-            var result = await sourceFunctions.RebuildActivityAsync(
-                mockDurableActivityContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableActivityContext.Verify();
-            mockRebuild.Verify();
+            rebuild.Verify();
             Assert.Equal(SourceResultType.Success, result.OverallResult);
         }
 
         /// <summary>
-        /// Tests RebuildActivityAsync when rebuild throws an exception.
+        /// Tests that rebuild failures return an error result.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task RebuildActivityAsync_Throws()
         {
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-
-            var mockRebuild = new Mock<IRebuild>();
-            mockRebuild.Setup(
-                m => m.ProcessRebuildRequestAsync(
+            var rebuild = new Mock<IRebuild>();
+            rebuild
+                .Setup(m => m.ProcessRebuildRequestAsync(
                     It.IsAny<HttpClient>(),
-                    operationId,
-                    sasReference,
-                    referenceType,
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<ReferenceType>(),
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
-                .Throws(new Exception())
-                .Verifiable();
+                .ThrowsAsync(new Exception());
 
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions(rebuild: rebuild.Object);
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
 
-            var input = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
+            SourceResultOutputHelper result = await sourceFunctions.RebuildActivityAsync(
+                input,
+                CreateFunctionContext(FunctionConstants.RebuildActivity));
 
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<ContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
-
-            var result = await sourceFunctions.RebuildActivityAsync(
-                mockDurableActivityContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableActivityContext.Verify();
-            mockRebuild.Verify();
             Assert.Equal(SourceResultType.Error, result.OverallResult);
         }
 
         /// <summary>
-        /// Tests UpdateActivityAsync normal scenario.
+        /// Tests a successful update activity.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task UpdateActivityAsync_Test()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            string commit = "commit";
-            ReferenceType referenceType = ReferenceType.Add;
-
-            var mockUpdate = new Mock<IUpdate>();
-            mockUpdate.Setup(
-                m => m.ProcessUpdateRequestAsync(
+            var update = new Mock<IUpdate>();
+            update
+                .Setup(m => m.ProcessUpdateRequestAsync(
                     It.IsAny<HttpClient>(),
-                    operationId,
-                    commit,
-                    sasReference,
-                    referenceType,
+                    "operationId",
+                    "commit",
+                    "sasReference",
+                    ReferenceType.Add,
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
                 .Verifiable();
 
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions(update: update.Object);
+            var input = new CommitContextAndReferenceInput("operationId", "sasReference", "commit", ReferenceType.Add);
 
-            var input = new CommitContextAndReferenceInput(
-                operationId,
-                sasReference,
-                commit,
-                referenceType);
+            SourceResultOutputHelper result = await sourceFunctions.UpdateActivityAsync(
+                input,
+                CreateFunctionContext(FunctionConstants.UpdateActivity));
 
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<CommitContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
-
-            var result = await sourceFunctions.UpdateActivityAsync(
-                mockDurableActivityContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableActivityContext.Verify();
-            mockUpdate.Verify();
+            update.Verify();
             Assert.Equal(SourceResultType.Success, result.OverallResult);
         }
 
         /// <summary>
-        /// Tests UpdateActivityAsync expected exception.
+        /// Tests that expected update failures return a failure result.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task UpdateActivityAsync_ThrowsExpected()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            string commit = "commit";
-            ReferenceType referenceType = ReferenceType.Add;
-
-            var mockUpdate = new Mock<IUpdate>();
-            mockUpdate.Setup(
-                m => m.ProcessUpdateRequestAsync(
+            var update = new Mock<IUpdate>();
+            update
+                .Setup(m => m.ProcessUpdateRequestAsync(
                     It.IsAny<HttpClient>(),
-                    operationId,
-                    commit,
-                    sasReference,
-                    referenceType,
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<ReferenceType>(),
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
-                .Throws(new RestSourceCallException("message"))
-                .Verifiable();
+                .ThrowsAsync(new RestSourceCallException("message"));
 
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions(update: update.Object);
+            var input = new CommitContextAndReferenceInput("operationId", "sasReference", "commit", ReferenceType.Add);
 
-            var input = new CommitContextAndReferenceInput(
-                operationId,
-                sasReference,
-                commit,
-                referenceType);
+            SourceResultOutputHelper result = await sourceFunctions.UpdateActivityAsync(
+                input,
+                CreateFunctionContext(FunctionConstants.UpdateActivity));
 
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<CommitContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
-
-            var result = await sourceFunctions.UpdateActivityAsync(
-                mockDurableActivityContext.Object,
-                this.mockLogger.Object,
-                this.mockExecutionContext.Object);
-
-            mockDurableActivityContext.Verify();
-            mockUpdate.Verify();
             Assert.Equal(SourceResultType.Failure, result.OverallResult);
         }
 
         /// <summary>
-        /// Tests UpdateActivityAsync unexpected exception.
+        /// Tests that unexpected update failures are propagated.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task UpdateActivityAsync_Throws()
         {
-            var mockRebuild = new Mock<IRebuild>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
-
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            string commit = "commit";
-            ReferenceType referenceType = ReferenceType.Add;
-
-            var mockUpdate = new Mock<IUpdate>();
-            mockUpdate.Setup(
-                m => m.ProcessUpdateRequestAsync(
+            var update = new Mock<IUpdate>();
+            update
+                .Setup(m => m.ProcessUpdateRequestAsync(
                     It.IsAny<HttpClient>(),
-                    operationId,
-                    commit,
-                    sasReference,
-                    referenceType,
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<ReferenceType>(),
                     It.IsAny<IRestSourceTriggerFunction>(),
                     It.IsAny<string>(),
                     It.IsAny<LoggingContext>()))
-                .Throws(new Exception())
-                .Verifiable();
+                .ThrowsAsync(new Exception());
 
-            var sourceFunctions = new SourceFunctions(
-                this.mockHttpClientFactory.Object,
-                this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
-
-            var input = new CommitContextAndReferenceInput(
-                operationId,
-                sasReference,
-                commit,
-                referenceType);
-
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<CommitContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions(update: update.Object);
+            var input = new CommitContextAndReferenceInput("operationId", "sasReference", "commit", ReferenceType.Add);
 
             await Assert.ThrowsAsync<Exception>(
-                async () => await sourceFunctions.UpdateActivityAsync(
-                    mockDurableActivityContext.Object,
-                    this.mockLogger.Object,
-                    this.mockExecutionContext.Object));
-
-            mockDurableActivityContext.Verify();
-            mockUpdate.Verify();
+                () => sourceFunctions.UpdateActivityAsync(
+                    input,
+                    CreateFunctionContext(FunctionConstants.UpdateActivity)));
         }
 
-        /// <summary>
-        /// Tests SourceEntryPointHelperAsync when lambda throws.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task SourceEntryPointHelperAsync_Throws()
+        private static FunctionContext CreateFunctionContext(string functionName)
         {
-            var mockUpdate = new Mock<IUpdate>();
-            var mockRebuild = new Mock<IRebuild>();
-            var mockRestSourceTriggerFunction = new Mock<IRestSourceTriggerFunction>();
+            var definition = new Mock<FunctionDefinition>();
+            definition.SetupGet(m => m.Name).Returns(functionName);
 
-            var sourceFunctions = new SourceFunctions(
+            var context = new Mock<FunctionContext>();
+            context.SetupGet(m => m.FunctionDefinition).Returns(definition.Object);
+            context.SetupGet(m => m.InvocationId).Returns(Guid.NewGuid().ToString());
+            return context.Object;
+        }
+
+        private SourceFunctions CreateSourceFunctions(IRebuild rebuild = null, IUpdate update = null)
+        {
+            return new SourceFunctions(
                 this.mockHttpClientFactory.Object,
                 this.telemetryConfiguration,
-                mockRebuild.Object,
-                mockUpdate.Object,
-                mockRestSourceTriggerFunction.Object);
+                rebuild ?? Mock.Of<IRebuild>(),
+                update ?? Mock.Of<IUpdate>(),
+                Mock.Of<IRestSourceTriggerFunction>());
+        }
 
-            string operationId = "operationId";
-            string sasReference = "sasReference";
-            ReferenceType referenceType = ReferenceType.Add;
-            var input = new ContextAndReferenceInput(
-                operationId,
-                sasReference,
-                referenceType);
-
-            var mockDurableActivityContext = new Mock<IDurableActivityContext>();
-            mockDurableActivityContext.Setup(
-                m => m.GetInput<ContextAndReferenceInput>())
-                .Returns(input)
-                .Verifiable();
-
-            async Task<SourceResultOutputHelper> WorkAsync(ContextAndReferenceInput inputHelper, LoggingContext loggingContext)
-            {
-                await Task.CompletedTask;
-                throw new NotImplementedException();
-            }
-
-            await Assert.ThrowsAsync<NotImplementedException>(
-                async () => await sourceFunctions.SourceActivityHelperAsync<ContextAndReferenceInput>(
-                    mockDurableActivityContext.Object,
-                    this.mockLogger.Object,
-                    this.mockExecutionContext.Object,
-                    WorkAsync,
-                    "activityFunction"));
-
-            mockDurableActivityContext.Verify();
+        private Mock<TaskOrchestrationContext> CreateOrchestrationContext<TInput>(
+            string functionName,
+            TInput input)
+        {
+            var context = new Mock<TaskOrchestrationContext>();
+            context.SetupGet(m => m.Name).Returns(functionName);
+            context.SetupGet(m => m.InstanceId).Returns(Guid.NewGuid().ToString());
+            context.SetupGet(m => m.CurrentUtcDateTime).Returns(DateTime.UtcNow);
+            context.Setup(m => m.GetInput<TInput>()).Returns(input);
+            context.Setup(m => m.CreateReplaySafeLogger<SourceFunctions>()).Returns(this.mockLogger.Object);
+            return context;
         }
     }
 }

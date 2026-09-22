@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------
 // <copyright file="ManifestSearchFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -12,8 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
@@ -32,16 +31,19 @@ namespace Microsoft.WinGet.RestSource.Functions
     {
         private readonly IApiDataStore dataStore;
         private readonly IWinGetAppConfig appConfig;
+        private readonly ILogger<ManifestSearchFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManifestSearchFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
         /// <param name="appConfig">App Config.</param>
-        public ManifestSearchFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
+        /// <param name="logger">Logger.</param>
+        public ManifestSearchFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig, ILogger<ManifestSearchFunctions> logger)
         {
             this.dataStore = dataStore;
             this.appConfig = appConfig;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -49,9 +51,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This also allows us to query manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.ManifestSearchPost)]
+        [Function(FunctionConstants.ManifestSearchPost)]
         public async Task<IActionResult> ManifestSearchPostAsync(
             [HttpTrigger(
 #pragma warning disable SA1114 // Parameter list should follow declaration
@@ -63,8 +64,7 @@ namespace Microsoft.WinGet.RestSource.Functions
 #pragma warning restore SA1114 // Parameter list should follow declaration
                 FunctionConstants.FunctionPost,
                 Route = "manifestSearch")]
-            HttpRequest req,
-            ILogger log)
+            HttpRequest req)
         {
             ApiDataPage<ManifestSearchResponse> manifestSearchResponse;
             PackageMatchFields unsupportedFields;
@@ -79,7 +79,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 string continuationToken = headers.GetValueOrDefault(HeaderConstants.ContinuationToken);
 
                 // Get Manifest Search Request and Validate.
-                manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, log);
+                manifestSearch = await Parser.StreamParser<ManifestSearchRequest>(req.Body, this.logger);
                 ApiDataValidator.Validate(manifestSearch);
 
                 manifestSearchResponse = await this.dataStore.SearchPackageManifests(manifestSearch, continuationToken);
@@ -89,12 +89,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -105,7 +105,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         manifestSearch,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);

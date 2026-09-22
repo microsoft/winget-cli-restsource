@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------
 // <copyright file="InstallerFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -13,8 +13,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.Cosmos.Linq;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
@@ -34,16 +33,19 @@ namespace Microsoft.WinGet.RestSource.Functions
     {
         private readonly IApiDataStore dataStore;
         private readonly IWinGetAppConfig appConfig;
+        private readonly ILogger<InstallerFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstallerFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
         /// <param name="appConfig">App Config.</param>
-        public InstallerFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
+        /// <param name="logger">Logger.</param>
+        public InstallerFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig, ILogger<InstallerFunctions> logger)
         {
             this.dataStore = dataStore;
             this.appConfig = appConfig;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -53,9 +55,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerPost)]
+        [Function(FunctionConstants.InstallerPost)]
         public async Task<IActionResult> InstallerPostAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
@@ -63,8 +64,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 Route = "packages/{packageIdentifier}/versions/{packageVersion}/installers")]
             HttpRequest req,
             string packageIdentifier,
-            string packageVersion,
-            ILogger log)
+            string packageVersion)
         {
             Installer installer = null;
             Dictionary<string, string> headers = null;
@@ -74,19 +74,19 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as installer
-                installer = await Parser.StreamParser<Installer>(req.Body, log);
+                installer = await Parser.StreamParser<Installer>(req.Body, this.logger);
                 ApiDataValidator.Validate(installer);
 
                 await this.dataStore.AddInstaller(packageIdentifier, packageVersion, installer);
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -97,7 +97,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         installer,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -114,9 +114,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerDelete)]
+        [Function(FunctionConstants.InstallerDelete)]
         public async Task<IActionResult> InstallerDeleteAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
@@ -125,8 +124,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
-            ILogger log)
+            string installerIdentifier)
         {
             Dictionary<string, string> headers = null;
 
@@ -138,12 +136,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -153,7 +151,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -170,9 +168,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerPut)]
+        [Function(FunctionConstants.InstallerPut)]
         public async Task<IActionResult> InstallerPutAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
@@ -181,8 +178,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
-            ILogger log)
+            string installerIdentifier)
         {
             Installer installer = null;
             Dictionary<string, string> headers = null;
@@ -193,7 +189,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
-                installer = await Parser.StreamParser<Installer>(req.Body, log);
+                installer = await Parser.StreamParser<Installer>(req.Body, this.logger);
                 ApiDataValidator.Validate(installer);
 
                 if (installer.InstallerIdentifier != installerIdentifier)
@@ -208,12 +204,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -224,7 +220,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         installer,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -241,9 +237,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="installerIdentifier">Installer Identifier for the installer.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.InstallerGet)]
+        [Function(FunctionConstants.InstallerGet)]
         public async Task<IActionResult> InstallerGetAsync(
             [HttpTrigger(
 #pragma warning disable SA1114 // Parameter list should follow declaration
@@ -258,8 +253,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string installerIdentifier,
-            ILogger log)
+            string installerIdentifier)
         {
             ApiDataPage<Installer> installers;
             Dictionary<string, string> headers = null;
@@ -273,12 +267,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -288,7 +282,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);

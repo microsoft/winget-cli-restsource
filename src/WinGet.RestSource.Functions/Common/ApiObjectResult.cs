@@ -37,7 +37,12 @@ namespace Microsoft.WinGet.RestSource.Functions.Common
                 Formatting = formatting,
             };
             this.Formatters = new FormatterCollection<IOutputFormatter>();
-            this.Formatters.Add(new NewtonsoftJsonOutputFormatter(settings, System.Buffers.ArrayPool<char>.Shared, new MvcOptions()));
+            this.Formatters.Add(
+                new NewtonsoftJsonOutputFormatter(
+                    settings,
+                    System.Buffers.ArrayPool<char>.Shared,
+                    new MvcOptions(),
+                    new MvcNewtonsoftJsonOptions()));
             this.StatusCode = statusCode;
         }
     }

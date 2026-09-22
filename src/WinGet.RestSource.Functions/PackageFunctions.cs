@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------
 // <copyright file="PackageFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -12,8 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
@@ -33,16 +32,19 @@ namespace Microsoft.WinGet.RestSource.Functions
     {
         private readonly IApiDataStore dataStore;
         private readonly IWinGetAppConfig appConfig;
+        private readonly ILogger<PackageFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
         /// <param name="appConfig">App Config.</param>
-        public PackageFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
+        /// <param name="logger">Logger.</param>
+        public PackageFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig, ILogger<PackageFunctions> logger)
         {
             this.dataStore = dataStore;
             this.appConfig = appConfig;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -50,13 +52,11 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This allows us to handle post requests for manifests.
         /// </summary>
         /// <param name="req">HttpRequest.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.PackagePost)]
+        [Function(FunctionConstants.PackagePost)]
         public async Task<IActionResult> PackagesPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages")]
-            HttpRequest req,
-            ILogger log)
+            HttpRequest req)
         {
             Package package = null;
             Dictionary<string, string> headers = null;
@@ -67,7 +67,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
-                package = await Parser.StreamParser<Package>(req.Body, log);
+                package = await Parser.StreamParser<Package>(req.Body, this.logger);
                 ApiDataValidator.Validate(package);
 
                 // Add Package Store
@@ -75,12 +75,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -91,7 +91,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         package,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -107,14 +107,12 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.PackageDelete)]
+        [Function(FunctionConstants.PackageDelete)]
         public async Task<IActionResult> PackageDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{packageIdentifier}")]
             HttpRequest req,
-            string packageIdentifier,
-            ILogger log)
+            string packageIdentifier)
         {
             Dictionary<string, string> headers = null;
 
@@ -126,12 +124,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -141,7 +139,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -156,14 +154,12 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.PackagePut)]
+        [Function(FunctionConstants.PackagePut)]
         public async Task<IActionResult> PackagesPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{packageIdentifier}")]
             HttpRequest req,
-            string packageIdentifier,
-            ILogger log)
+            string packageIdentifier)
         {
             Package package = null;
             Dictionary<string, string> headers = null;
@@ -174,7 +170,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
-                package = await Parser.StreamParser<Package>(req.Body, log);
+                package = await Parser.StreamParser<Package>(req.Body, this.logger);
                 ApiDataValidator.Validate(package);
 
                 // Validate Versions Match
@@ -190,12 +186,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -206,7 +202,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         package,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -222,9 +218,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.PackageGet)]
+        [Function(FunctionConstants.PackageGet)]
         public async Task<IActionResult> PackagesGetAsync(
             [HttpTrigger(
 #pragma warning disable SA1114 // Parameter list should follow declaration
@@ -237,8 +232,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 FunctionConstants.FunctionGet,
                 Route = "packages/{packageIdentifier?}")]
             HttpRequest req,
-            string packageIdentifier,
-            ILogger log)
+            string packageIdentifier)
         {
             ApiDataPage<Package> packages;
             Dictionary<string, string> headers = null;
@@ -253,12 +247,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -268,7 +262,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);

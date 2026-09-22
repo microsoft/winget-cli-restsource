@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------
 // <copyright file="VersionFunctions.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. Licensed under the MIT License.
 // </copyright>
@@ -12,8 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
@@ -33,16 +32,19 @@ namespace Microsoft.WinGet.RestSource.Functions
     {
         private readonly IApiDataStore dataStore;
         private readonly IWinGetAppConfig appConfig;
+        private readonly ILogger<VersionFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
         /// <param name="appConfig">App Config.</param>
-        public VersionFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
+        /// <param name="logger">Logger.</param>
+        public VersionFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig, ILogger<VersionFunctions> logger)
         {
             this.dataStore = dataStore;
             this.appConfig = appConfig;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -51,14 +53,12 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// </summary>
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionPost)]
+        [Function(FunctionConstants.VersionPost)]
         public async Task<IActionResult> VersionsPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions")]
             HttpRequest req,
-            string packageIdentifier,
-            ILogger log)
+            string packageIdentifier)
         {
             Version version = null;
             Dictionary<string, string> headers = null;
@@ -69,7 +69,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as Version
-                version = await Parser.StreamParser<Version>(req.Body, log);
+                version = await Parser.StreamParser<Version>(req.Body, this.logger);
                 ApiDataValidator.Validate(version);
 
                 // Save Document
@@ -77,12 +77,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -93,7 +93,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         version,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -109,15 +109,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionDelete)]
+        [Function(FunctionConstants.VersionDelete)]
         public async Task<IActionResult> VersionsDeleteAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionDelete, Route = "packages/{packageIdentifier}/versions/{packageVersion}")]
             HttpRequest req,
             string packageIdentifier,
-            string packageVersion,
-            ILogger log)
+            string packageVersion)
         {
             Dictionary<string, string> headers = null;
 
@@ -129,12 +127,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -144,7 +142,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -160,15 +158,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionPut)]
+        [Function(FunctionConstants.VersionPut)]
         public async Task<IActionResult> VersionsPutAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPut, Route = "packages/{packageIdentifier}/versions/{packageVersion}")]
             HttpRequest req,
             string packageIdentifier,
-            string packageVersion,
-            ILogger log)
+            string packageVersion)
         {
             Version version = null;
             Dictionary<string, string> headers = null;
@@ -179,7 +175,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as Version
-                version = await Parser.StreamParser<Version>(req.Body, log);
+                version = await Parser.StreamParser<Version>(req.Body, this.logger);
                 ApiDataValidator.Validate(version);
 
                 // Validate Versions Match
@@ -195,12 +191,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -211,7 +207,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         version,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -227,9 +223,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.VersionGet)]
+        [Function(FunctionConstants.VersionGet)]
         public async Task<IActionResult> VersionsGetAsync(
             [HttpTrigger(
 #pragma warning disable SA1114 // Parameter list should follow declaration
@@ -243,8 +238,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 Route = "packages/{packageIdentifier}/versions/{packageVersion?}")]
             HttpRequest req,
             string packageIdentifier,
-            string packageVersion,
-            ILogger log)
+            string packageVersion)
         {
             ApiDataPage<Version> versions;
             Dictionary<string, string> headers = null;
@@ -258,12 +252,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -273,7 +267,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
