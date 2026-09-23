@@ -18,7 +18,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.DurableTask;
     using Microsoft.DurableTask.Client;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Msix.Utils.Logger;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Models;
@@ -64,30 +63,6 @@ namespace Microsoft.WinGet.RestSource.Functions
             this.updateHandler = updateHandler;
             this.restSourceTriggerFunction = restSourceTriggerFunction;
             this.logger = logger;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceFunctions"/> class for direct invocation.
-        /// </summary>
-        /// <param name="httpClientFactory">Http client factory.</param>
-        /// <param name="telemetryConfiguration">AppInsights Telemetry Configuration.</param>
-        /// <param name="rebuildHandler">An object of type <see cref="IRebuild"/>.</param>
-        /// <param name="updateHandler">An object of type <see cref="IUpdate"/>.</param>
-        /// <param name="restSourceTriggerFunction">An object of type <see cref="IRestSourceTriggerFunction"/>.</param>
-        public SourceFunctions(
-            IHttpClientFactory httpClientFactory,
-            TelemetryConfiguration telemetryConfiguration,
-            IRebuild rebuildHandler,
-            IUpdate updateHandler,
-            IRestSourceTriggerFunction restSourceTriggerFunction)
-            : this(
-                  httpClientFactory,
-                  telemetryConfiguration,
-                  rebuildHandler,
-                  updateHandler,
-                  restSourceTriggerFunction,
-                  NullLogger<SourceFunctions>.Instance)
-        {
         }
 
         /// <summary>

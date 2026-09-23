@@ -309,7 +309,8 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                 this.telemetryConfiguration,
                 rebuild ?? Mock.Of<IRebuild>(),
                 update ?? Mock.Of<IUpdate>(),
-                Mock.Of<IRestSourceTriggerFunction>());
+                Mock.Of<IRestSourceTriggerFunction>(),
+                Mock.Of<ILogger<SourceFunctions>>());
         }
 
         private Mock<TaskOrchestrationContext> CreateOrchestrationContext<TInput>(
