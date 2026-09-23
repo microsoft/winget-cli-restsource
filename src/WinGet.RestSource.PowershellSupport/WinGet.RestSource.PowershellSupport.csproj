@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" GeneratePathProperty="true" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Utils" Version="1.10.340" GeneratePathProperty="true" />
   </ItemGroup>
@@ -58,12 +59,14 @@
     <ProjectReference Include="..\WinGet.RestSource.Utils\WinGet.RestSource.Utils.csproj" />
   </ItemGroup>
 
-  <!-- Copy WinGetUtil dll to out folder for use in composing powershell artifact folders. -->  
+  <!-- Copy WinGetUtil dll to out folder for use in composing powershell artifact folders. -->
   <Target Name="CopyWinGet" AfterTargets="Build">
     <ItemGroup>
       <WinGetDll Include="$(PkgMicrosoft_WindowsPackageManager_Utils)\runtimes\**\**\*.dll" />
+      <LoggingAbstractionsDll Include="$(PkgMicrosoft_Extensions_Logging_Abstractions)\lib\net10.0\Microsoft.Extensions.Logging.Abstractions.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(WinGetDll)" DestinationFiles="@(WinGetDll->'$(OutDir)\runtimes\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(LoggingAbstractionsDll)" DestinationFolder="$(OutDir)" />
   </Target>
 
 </Project>

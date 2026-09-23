@@ -18,6 +18,7 @@ steps:
   inputs:
     SourceFolder: ${{ parameters.powershellSupportPath }}
     Contents: |
+      Microsoft.Extensions.Logging.Abstractions.dll
       Microsoft.WinGet.PowershellSupport.dll
       Microsoft.WinGet.RestSource.Utils.dll
       WinGetUtilInterop.dll
