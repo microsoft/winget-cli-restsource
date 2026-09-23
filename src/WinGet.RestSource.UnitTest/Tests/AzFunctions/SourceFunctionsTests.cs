@@ -7,13 +7,23 @@
 namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
+    using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights.Channel;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.DurableTask;
+    using Microsoft.DurableTask.Client;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WindowsPackageManager.Rest.Models;
     using Microsoft.WinGet.RestSource.Exceptions;
@@ -53,6 +63,76 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
             this.mockHttpClientFactory
                 .Setup(m => m.CreateClient(It.IsAny<string>()))
                 .Returns(this.mockHttpClient.Object);
+        }
+
+        /// <summary>
+        /// Tests the rebuild HTTP entry point.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task RebuildPostAsync_Test()
+        {
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
+            HttpRequestData request = CreateHttpRequestData(FunctionConstants.RebuildPost, input);
+            Mock<DurableTaskClient> durableClient = CreateDurableTaskClient(
+                FunctionConstants.RebuildOrchestrator,
+                input);
+
+            HttpResponseData response = await sourceFunctions.RebuildPostAsync(request, durableClient.Object);
+
+            durableClient.Verify();
+            Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Tests the update HTTP entry point.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task UpdatePostAsync_Test()
+        {
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new CommitContextAndReferenceInput("operationId", "sasReference", "commit", ReferenceType.Add);
+            HttpRequestData request = CreateHttpRequestData(FunctionConstants.UpdatePost, input);
+            Mock<DurableTaskClient> durableClient = CreateDurableTaskClient(
+                FunctionConstants.UpdateOrchestrator,
+                input);
+
+            HttpResponseData response = await sourceFunctions.UpdatePostAsync(request, durableClient.Object);
+
+            durableClient.Verify();
+            Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Tests that HTTP entry point failures return a bad request.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task SourceEntryPointHelperAsync_Test_Throws()
+        {
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
+            HttpRequestData request = CreateHttpRequestData(FunctionConstants.RebuildPost, input);
+            var durableClient = new Mock<DurableTaskClient>("client");
+            durableClient
+                .Setup(m => m.ScheduleNewOrchestrationInstanceAsync(
+                    It.IsAny<TaskName>(),
+                    It.IsAny<object>(),
+                    It.IsAny<StartOrchestrationOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception())
+                .Verifiable();
+
+            HttpResponseData response = await sourceFunctions.SourceEntryPointHelperAsync<ContextAndReferenceInput>(
+                request,
+                durableClient.Object,
+                FunctionConstants.RebuildOrchestrator,
+                FunctionConstants.RebuildPost);
+
+            durableClient.Verify();
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         /// <summary>
@@ -291,14 +371,82 @@ namespace Microsoft.Winget.RestSource.UnitTest.Tests.AzFunctions
                     CreateFunctionContext(FunctionConstants.UpdateActivity)));
         }
 
+        /// <summary>
+        /// Tests that activity helper failures are propagated.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task SourceActivityHelperAsync_Throws()
+        {
+            SourceFunctions sourceFunctions = this.CreateSourceFunctions();
+            var input = new ContextAndReferenceInput("operationId", "sasReference", ReferenceType.Add);
+
+            Task<SourceResultOutputHelper> WorkAsync(ContextAndReferenceInput inputHelper, LoggingContext loggingContext)
+            {
+                throw new NotImplementedException();
+            }
+
+            await Assert.ThrowsAsync<NotImplementedException>(
+                () => sourceFunctions.SourceActivityHelperAsync(
+                    input,
+                    CreateFunctionContext(FunctionConstants.RebuildActivity),
+                    WorkAsync,
+                    FunctionConstants.RebuildActivity));
+        }
+
+        private static Mock<DurableTaskClient> CreateDurableTaskClient<TInput>(
+            string orchestratorName,
+            TInput expectedInput)
+        {
+            var durableClient = new Mock<DurableTaskClient>("client");
+            durableClient
+                .Setup(m => m.ScheduleNewOrchestrationInstanceAsync(
+                    It.Is<TaskName>(name => name.Name == orchestratorName),
+                    It.Is<object>(input =>
+                        Newtonsoft.Json.JsonConvert.SerializeObject(input) ==
+                        Newtonsoft.Json.JsonConvert.SerializeObject(expectedInput)),
+                    It.IsAny<StartOrchestrationOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync("instanceId")
+                .Verifiable();
+            return durableClient;
+        }
+
+        private static HttpRequestData CreateHttpRequestData<TInput>(string functionName, TInput input)
+        {
+            FunctionContext context = CreateFunctionContext(functionName);
+            var response = new Mock<HttpResponseData>(context);
+            response.SetupProperty(m => m.StatusCode);
+            response.SetupProperty(m => m.Headers, new HttpHeadersCollection());
+            response.SetupProperty(m => m.Body, new MemoryStream());
+            response.SetupGet(m => m.Cookies).Returns(Mock.Of<HttpCookies>());
+
+            var request = new Mock<HttpRequestData>(context);
+            request.SetupGet(m => m.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(input))));
+            request.SetupGet(m => m.Headers).Returns(new HttpHeadersCollection());
+            request.SetupGet(m => m.Cookies).Returns(Mock.Of<IReadOnlyCollection<IHttpCookie>>());
+            request.SetupGet(m => m.Identities).Returns(Array.Empty<ClaimsIdentity>());
+            request.SetupGet(m => m.Method).Returns("POST");
+            request.SetupGet(m => m.Url).Returns(new Uri("https://localhost/"));
+            request.Setup(m => m.CreateResponse()).Returns(response.Object);
+            return request.Object;
+        }
+
         private static FunctionContext CreateFunctionContext(string functionName)
         {
             var definition = new Mock<FunctionDefinition>();
             definition.SetupGet(m => m.Name).Returns(functionName);
 
+            var services = new ServiceCollection();
+            services.AddOptions<WorkerOptions>().Configure(options =>
+            {
+                options.Serializer = new global::Azure.Core.Serialization.JsonObjectSerializer();
+            });
+
             var context = new Mock<FunctionContext>();
             context.SetupGet(m => m.FunctionDefinition).Returns(definition.Object);
             context.SetupGet(m => m.InvocationId).Returns(Guid.NewGuid().ToString());
+            context.SetupProperty(m => m.InstanceServices, services.BuildServiceProvider());
             return context.Object;
         }
 
