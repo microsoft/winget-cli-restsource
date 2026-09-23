@@ -24,22 +24,20 @@ steps:
     restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
 
 ## Build
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    solution: '**\*.sln'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-    clean: true
+    command: build
+    projects: '**\*.sln'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 ## Build Legacy Support
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build Legacy Support
   inputs:
-    solution: '**\*.sln'
-    platform: '$(BuildPlatform)'
-    configuration: '$(LegacySupportBuildConfiguration)'
-    clean: true
+    command: build
+    projects: '**\*.sln'
+    arguments: '--configuration $(LegacySupportBuildConfiguration) --no-restore'
 
 ## Publish
 # Publish ARM Templates
