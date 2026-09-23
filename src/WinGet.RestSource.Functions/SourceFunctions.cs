@@ -334,9 +334,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
                     this.logger,
-                    setupGenevaTelemetry: true,
-                    monitorTenant: AzureFunctionEnvironment.MonitorTenant,
-                    monitorRole: AzureFunctionEnvironment.MonitorRole);
+                    setupGenevaTelemetry: false);
 
                 loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
                     executionContext.FunctionDefinition.Name,
@@ -396,9 +394,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             {
                 DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
                     this.logger,
-                    setupGenevaTelemetry: true,
-                    monitorTenant: AzureFunctionEnvironment.MonitorTenant,
-                    monitorRole: AzureFunctionEnvironment.MonitorRole);
+                    setupGenevaTelemetry: false);
 
                 TInput input = await RequestBodyHelper.GetRequestDataFromBody<TInput>(
                     req.Body,

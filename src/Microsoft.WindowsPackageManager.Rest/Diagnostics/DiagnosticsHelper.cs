@@ -37,6 +37,27 @@ namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
         }
 
         /// <summary>
+        /// Adds the Geneva exporter to a logging pipeline.
+        /// </summary>
+        /// <param name="loggingBuilder">Logging builder.</param>
+        public static void ConfigureGenevaLogging(ILoggingBuilder loggingBuilder)
+        {
+            _ = loggingBuilder ?? throw new ArgumentNullException(nameof(loggingBuilder));
+
+            loggingBuilder.AddOpenTelemetry(loggingOptions =>
+            {
+                loggingOptions.AddGenevaLogExporter(exporterOptions =>
+                {
+                    exporterOptions.ConnectionString = "EtwSession=OpenTelemetry";
+                    exporterOptions.TableNameMappings = new Dictionary<string, string>
+                    {
+                        ["DiagnosticEvent"] = "DiagnosticEventFromOpenTelemetry",
+                    };
+                });
+            });
+        }
+
+        /// <summary>
         /// Sets up logging.
         /// </summary>
         /// <param name="logger">Logger from Microsoft.Extensions.Logging.</param>

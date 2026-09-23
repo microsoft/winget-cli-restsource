@@ -12,6 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.Azure.Functions.Worker.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.WindowsPackageManager.Rest.Diagnostics;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Cosmos;
     using Microsoft.WinGet.RestSource.Factories;
@@ -39,6 +40,8 @@ namespace Microsoft.WinGet.RestSource.Functions
             builder.Services
                 .AddApplicationInsightsTelemetryWorkerService()
                 .ConfigureFunctionsApplicationInsights();
+
+            DiagnosticsHelper.ConfigureGenevaLogging(builder.Logging);
 
             builder.Services.AddMvc().AddNewtonsoftJson(options =>
             {
