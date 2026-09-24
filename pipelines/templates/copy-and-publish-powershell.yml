@@ -1,6 +1,6 @@
 # Template helper to copy PowerShell scripts and all dependencies
 parameters:
- powershellSupportPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\net8.0'
+ powershellSupportPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.PowershellSupport\bin\$(BuildConfiguration)\net10.0'
  templatesPath: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Infrastructure\bin\$(BuildConfiguration)\Templates'
 
 steps:

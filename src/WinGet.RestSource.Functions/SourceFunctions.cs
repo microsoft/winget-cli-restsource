@@ -8,15 +8,15 @@ namespace Microsoft.WinGet.RestSource.Functions
 {
     using System;
     using System.Collections.Generic;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.DurableTask;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.DurableTask;
+    using Microsoft.DurableTask.Client;
     using Microsoft.Extensions.Logging;
     using Microsoft.Msix.Utils.Logger;
     using Microsoft.WindowsPackageManager.Rest.Diagnostics;
@@ -24,7 +24,6 @@ namespace Microsoft.WinGet.RestSource.Functions
     using Microsoft.WindowsPackageManager.Rest.Utils;
     using Microsoft.WinGet.RestSource.Exceptions;
     using Microsoft.WinGet.RestSource.Functions.Constants;
-    using Microsoft.WinGet.RestSource.Functions.Extensions;
     using Microsoft.WinGet.RestSource.Functions.Geneva;
     using Microsoft.WinGet.RestSource.Interfaces;
     using Microsoft.WinGet.RestSource.Utils.Constants;
@@ -39,6 +38,7 @@ namespace Microsoft.WinGet.RestSource.Functions
         private readonly IRebuild rebuildHandler;
         private readonly IUpdate updateHandler;
         private readonly IRestSourceTriggerFunction restSourceTriggerFunction;
+        private readonly ILogger<SourceFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceFunctions"/> class.
@@ -48,37 +48,34 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="rebuildHandler">An object of type <see cref="IRebuild"/>.</param>
         /// <param name="updateHandler">An object of type <see cref="IUpdate"/>.</param>
         /// <param name="restSourceTriggerFunction">An object of type <see cref="IRestSourceTriggerFunction"/>.</param>
+        /// <param name="logger">Logger.</param>
         public SourceFunctions(
             IHttpClientFactory httpClientFactory,
             TelemetryConfiguration telemetryConfiguration,
             IRebuild rebuildHandler,
             IUpdate updateHandler,
-            IRestSourceTriggerFunction restSourceTriggerFunction)
+            IRestSourceTriggerFunction restSourceTriggerFunction,
+            ILogger<SourceFunctions> logger)
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.telemetryClient = new TelemetryClient(telemetryConfiguration);
             this.rebuildHandler = rebuildHandler;
             this.updateHandler = updateHandler;
             this.restSourceTriggerFunction = restSourceTriggerFunction;
+            this.logger = logger;
         }
 
         /// <summary>
         /// Azure function to dispatch source rebuild work.
         /// </summary>
         /// <param name="durableContext">Durable orchestration context.</param>
-        /// <param name="logger">Logger.</param>
-        /// <param name="executionContext">Function execution context.</param>
         /// <returns>SourceResultOutputHelper.</returns>
-        [FunctionName(FunctionConstants.RebuildOrchestrator)]
+        [Function(FunctionConstants.RebuildOrchestrator)]
         public async Task<SourceResultOutputHelper> RebuildOrchestratorAsync(
-            [OrchestrationTrigger] IDurableOrchestrationContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext)
+            [OrchestrationTrigger] TaskOrchestrationContext durableContext)
         {
             return await this.SourceOrchestratorHelperAsync<ContextAndReferenceInput>(
                 durableContext,
-                logger,
-                executionContext,
                 FunctionConstants.RebuildActivity,
                 FunctionConstants.RebuildOrchestrator,
                 ErrorMetrics.SourceRebuildError);
@@ -87,15 +84,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <summary>
         /// This function provides an API call that will perform the source rebuild.
         /// </summary>
-        /// <param name="durableContext">Durable context.</param>
-        /// <param name="logger">This is the default ILogger passed in for Azure Functions.</param>
+        /// <param name="input">Activity input.</param>
         /// <param name="executionContext">Function execution context.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.RebuildActivity)]
+        [Function(FunctionConstants.RebuildActivity)]
         public async Task<SourceResultOutputHelper> RebuildActivityAsync(
-            [ActivityTrigger] IDurableActivityContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext)
+            [ActivityTrigger] ContextAndReferenceInput input,
+            FunctionContext executionContext)
         {
             async Task<SourceResultOutputHelper> WorkAsync(ContextAndReferenceInput inputHelper, LoggingContext loggingContext)
             {
@@ -123,8 +118,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
 
             return await this.SourceActivityHelperAsync<ContextAndReferenceInput>(
-                durableContext,
-                logger,
+                input,
                 executionContext,
                 WorkAsync,
                 FunctionConstants.RebuildActivity);
@@ -136,24 +130,18 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// This function involves doing multiple full passes of the database, thus will be very expensive. It should be used
         /// sparingly only for bootstrapping catalogs and recovering from significant failures.
         /// </summary>
-        /// <param name="req">HttpRequest.</param>
+        /// <param name="req">HttpRequestData.</param>
         /// <param name="durableClient">Durable client object.</param>
-        /// <param name="logger">ILogger.</param>
-        /// <param name="executionContext">Function execution context.</param>
-        /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.RebuildPost)]
-        public async Task<IActionResult> RebuildPostAsync(
+        /// <returns>HttpResponseData.</returns>
+        [Function(FunctionConstants.RebuildPost)]
+        public async Task<HttpResponseData> RebuildPostAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "rebuild")]
-            HttpRequest req,
-            [DurableClient] IDurableOrchestrationClient durableClient,
-            ILogger logger,
-            ExecutionContext executionContext)
+            HttpRequestData req,
+            [DurableClient] DurableTaskClient durableClient)
         {
             return await this.SourceEntryPointHelperAsync<ContextAndReferenceInput>(
                 req,
                 durableClient,
-                logger,
-                executionContext,
                 FunctionConstants.RebuildOrchestrator,
                 FunctionConstants.RebuildPost);
         }
@@ -162,19 +150,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// Azure function to dispatch source update work.
         /// </summary>
         /// <param name="durableContext">Durable orchestration context.</param>
-        /// <param name="logger">Logger.</param>
-        /// <param name="executionContext">Function execution context.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [FunctionName(FunctionConstants.UpdateOrchestrator)]
+        [Function(FunctionConstants.UpdateOrchestrator)]
         public async Task<SourceResultOutputHelper> UpdateOrchestratorAsync(
-            [OrchestrationTrigger] IDurableOrchestrationContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext)
+            [OrchestrationTrigger] TaskOrchestrationContext durableContext)
         {
             return await this.SourceOrchestratorHelperAsync<CommitContextAndReferenceInput>(
                 durableContext,
-                logger,
-                executionContext,
                 FunctionConstants.UpdateActivity,
                 FunctionConstants.UpdateOrchestrator,
                 ErrorMetrics.SourceUpdateError);
@@ -183,15 +165,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <summary>
         /// This function provides an API call that will perform the source update.
         /// </summary>
-        /// <param name="durableContext">Durable context.</param>
-        /// <param name="logger">This is the default ILogger passed in for Azure Functions.</param>
+        /// <param name="input">Activity input.</param>
         /// <param name="executionContext">Function execution context.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.UpdateActivity)]
+        [Function(FunctionConstants.UpdateActivity)]
         public async Task<SourceResultOutputHelper> UpdateActivityAsync(
-            [ActivityTrigger] IDurableActivityContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext)
+            [ActivityTrigger] CommitContextAndReferenceInput input,
+            FunctionContext executionContext)
         {
             async Task<SourceResultOutputHelper> WorkAsync(CommitContextAndReferenceInput inputHelper, LoggingContext loggingContext)
             {
@@ -229,8 +209,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
 
             return await this.SourceActivityHelperAsync<CommitContextAndReferenceInput>(
-                durableContext,
-                logger,
+                input,
                 executionContext,
                 WorkAsync,
                 FunctionConstants.UpdatePost);
@@ -241,24 +220,18 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// For each change, we trigger the corresponding operation against the rest source implementation to
         /// add, remove, or update an application.
         /// </summary>
-        /// <param name="req">HttpRequest.</param>
+        /// <param name="req">HttpRequestData.</param>
         /// <param name="durableClient">Durable client object.</param>
-        /// <param name="logger">ILogger.</param>
-        /// <param name="executionContext">Function execution context.</param>
-        /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.UpdatePost)]
-        public async Task<IActionResult> UpdatePostAsync(
+        /// <returns>HttpResponseData.</returns>
+        [Function(FunctionConstants.UpdatePost)]
+        public async Task<HttpResponseData> UpdatePostAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "update")]
-            HttpRequest req,
-            [DurableClient] IDurableOrchestrationClient durableClient,
-            ILogger logger,
-            ExecutionContext executionContext)
+            HttpRequestData req,
+            [DurableClient] DurableTaskClient durableClient)
         {
             return await this.SourceEntryPointHelperAsync<CommitContextAndReferenceInput>(
                 req,
                 durableClient,
-                logger,
-                executionContext,
                 FunctionConstants.UpdateOrchestrator,
                 FunctionConstants.UpdateActivity);
         }
@@ -273,16 +246,12 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// </summary>
         /// <typeparam name="TFunctionInput">Generic function input.</typeparam>
         /// <param name="durableContext">Orchestration durable context.</param>
-        /// <param name="logger">Logger.</param>
-        /// <param name="executionContext">Execution context.</param>
         /// <param name="activityFunction">Activity function to call.</param>
         /// <param name="orchestrationFunction">Name of orchestration function. Used for debugging.</param>
         /// <param name="errorMetric">Metric to emit for failures.</param>
         /// <returns>SourceResultOutputHelper.</returns>
         internal async Task<SourceResultOutputHelper> SourceOrchestratorHelperAsync<TFunctionInput>(
-            IDurableOrchestrationContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext,
+            TaskOrchestrationContext durableContext,
             string activityFunction,
             string orchestrationFunction,
             ErrorMetrics errorMetric)
@@ -293,25 +262,20 @@ namespace Microsoft.WinGet.RestSource.Functions
             Dictionary<string, string> customDimensions = new Dictionary<string, string>();
 
             TFunctionInput inputHelper = null;
+            ILogger replaySafeLogger = durableContext.CreateReplaySafeLogger<SourceFunctions>();
             try
             {
-                DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
-                    logger,
-                    setupGenevaTelemetry: true,
-                    monitorTenant: AzureFunctionEnvironment.MonitorTenant,
-                    monitorRole: AzureFunctionEnvironment.MonitorRole);
-
                 inputHelper = durableContext.GetInput<TFunctionInput>();
 
                 loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
-                    executionContext.FunctionName,
-                    executionContext.InvocationId.ToString(),
+                    durableContext.Name,
+                    durableContext.InstanceId,
                     inputHelper.OperationId);
 
-                customDimensions.Add("FunctionName", executionContext.FunctionName);
+                customDimensions.Add("FunctionName", durableContext.Name);
                 customDimensions.Add("OperationId", inputHelper.OperationId);
 
-                durableContext.LogInfo($"{loggingContext}{orchestrationFunction} executed at: {durableContext.CurrentUtcDateTime}." +
+                replaySafeLogger.LogInformation($"{loggingContext}{orchestrationFunction} executed at: {durableContext.CurrentUtcDateTime}." +
                     $" Calling {activityFunction} activity function.");
 
                 // Actual work.
@@ -319,19 +283,22 @@ namespace Microsoft.WinGet.RestSource.Functions
                     activityFunction,
                     inputHelper);
 
-                durableContext.LogInfo($"{loggingContext}{activityFunction} activity function verification result {sourceResultOutput}.");
+                replaySafeLogger.LogInformation($"{loggingContext}{activityFunction} activity function verification result {sourceResultOutput}.");
             }
             catch (Exception e)
             {
-                durableContext.LogError($"{loggingContext}Error occurred in SourceOrchestratorHelperAsync {e}");
+                replaySafeLogger.LogError($"{loggingContext}Error occurred in SourceOrchestratorHelperAsync {e}");
                 customDimensions.Add("Exception", e.GetType().FullName);
-                Metrics.EmitMetric(errorMetric, customDimensions, logger);
+                if (!durableContext.IsReplaying)
+                {
+                    Metrics.EmitMetric(errorMetric, customDimensions, replaySafeLogger);
+                }
             }
             finally
             {
                 if (inputHelper != null)
                 {
-                    durableContext.LogInfo($"{loggingContext}Task result: {sourceResultOutput}");
+                    replaySafeLogger.LogInformation($"{loggingContext}Task result: {sourceResultOutput}");
                 }
 
                 customDimensions.Add("Result", sourceResultOutput.ToString());
@@ -347,16 +314,14 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// The return type must be a SourceResultOutputHelper.
         /// </summary>
         /// <typeparam name="TFunctionInput">Generic function input.</typeparam>
-        /// <param name="durableContext">Activity durable context.</param>
-        /// <param name="logger">Logger.</param>
+        /// <param name="functionInput">Activity input.</param>
         /// <param name="executionContext">Execute context.</param>
         /// <param name="workAsync">Work to be done by the activity function.</param>
         /// <param name="activityFunction">Activity function that does the work. Used for logging.</param>
         /// <returns>SourceResultOutputHelper.</returns>
         internal async Task<SourceResultOutputHelper> SourceActivityHelperAsync<TFunctionInput>(
-            IDurableActivityContext durableContext,
-            ILogger logger,
-            ExecutionContext executionContext,
+            TFunctionInput functionInput,
+            FunctionContext executionContext,
             Func<TFunctionInput, LoggingContext, Task<SourceResultOutputHelper>> workAsync,
             string activityFunction)
             where TFunctionInput : ContextAndReferenceInput
@@ -368,19 +333,15 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
-                    logger,
-                    setupGenevaTelemetry: true,
-                    monitorTenant: AzureFunctionEnvironment.MonitorTenant,
-                    monitorRole: AzureFunctionEnvironment.MonitorRole);
-
-                TFunctionInput functionInput = durableContext.GetInput<TFunctionInput>();
+                    this.logger,
+                    setupGenevaTelemetry: false);
 
                 loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
-                    executionContext.FunctionName,
-                    executionContext.InvocationId.ToString(),
+                    executionContext.FunctionDefinition.Name,
+                    executionContext.InvocationId,
                     functionInput.OperationId);
 
-                customDimensions.Add("FunctionName", executionContext.FunctionName);
+                customDimensions.Add("FunctionName", executionContext.FunctionDefinition.Name);
                 customDimensions.Add("OperationId", functionInput.OperationId);
                 this.telemetryClient.TrackEvent("ExecutionStart", customDimensions);
 
@@ -415,16 +376,12 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <typeparam name="TInput">Input.</typeparam>
         /// <param name="req">Request.</param>
         /// <param name="durableClient">Durable orchestration client.</param>
-        /// <param name="logger">Logger.</param>
-        /// <param name="executionContext">Execution context.</param>
         /// <param name="orchestratorFunction">Orchestration function to start.</param>
         /// <param name="entryPointFunction">Az functions that was called. Used for logging.</param>
-        /// <returns>IActionResult.</returns>
-        internal async Task<IActionResult> SourceEntryPointHelperAsync<TInput>(
-            HttpRequest req,
-            IDurableOrchestrationClient durableClient,
-            ILogger logger,
-            ExecutionContext executionContext,
+        /// <returns>HttpResponseData.</returns>
+        internal async Task<HttpResponseData> SourceEntryPointHelperAsync<TInput>(
+            HttpRequestData req,
+            DurableTaskClient durableClient,
             string orchestratorFunction,
             string entryPointFunction)
             where TInput : ContextAndReferenceInput
@@ -436,29 +393,25 @@ namespace Microsoft.WinGet.RestSource.Functions
             try
             {
                 DiagnosticsHelper.Instance.SetupAzureFunctionLoggerAndGenevaTelemetry(
-                    logger,
-                    setupGenevaTelemetry: true,
-                    monitorTenant: AzureFunctionEnvironment.MonitorTenant,
-                    monitorRole: AzureFunctionEnvironment.MonitorRole);
-
-                req.EnableBuffering();
+                    this.logger,
+                    setupGenevaTelemetry: false);
 
                 TInput input = await RequestBodyHelper.GetRequestDataFromBody<TInput>(
                     req.Body,
                     true);
 
                 loggingContext = DiagnosticsHelper.Instance.GetLoggingContext(
-                    executionContext.FunctionName,
-                    executionContext.InvocationId.ToString(),
+                    req.FunctionContext.FunctionDefinition.Name,
+                    req.FunctionContext.InvocationId,
                     input.OperationId);
 
-                customDimensions.Add("FunctionName", executionContext.FunctionName);
+                customDimensions.Add("FunctionName", req.FunctionContext.FunctionDefinition.Name);
                 customDimensions.Add("OperationId", input.OperationId);
                 this.telemetryClient.TrackEvent("ExecutionStart", customDimensions);
 
                 Logger.Info($"{loggingContext}Starting {entryPointFunction} processing. Received: {input}");
 
-                orchestrationInstanceId = await durableClient.StartNewAsync(
+                orchestrationInstanceId = await durableClient.ScheduleNewOrchestrationInstanceAsync(
                     orchestratorFunction,
                     input);
 
@@ -471,7 +424,9 @@ namespace Microsoft.WinGet.RestSource.Functions
                 customDimensions.Add("Exception", e.GetType().FullName);
                 this.telemetryClient.TrackException(e, customDimensions);
 
-                return new BadRequestObjectResult(new { Name = $"Error: {e}" });
+                HttpResponseData badRequest = req.CreateResponse(HttpStatusCode.BadRequest);
+                await badRequest.WriteAsJsonAsync(new { Name = $"Error: {e}" });
+                return badRequest;
             }
             finally
             {
@@ -481,7 +436,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             // This returns information that the client can use to query the status of the running orchestration.
             // We expect the client to poll for results and pull the success/fail of the operation from the output of the status response.
             // We are leveraging the full durable function pre-built infrastructure to offer our API Async.
-            return durableClient.CreateCheckStatusResponse(req, orchestrationInstanceId);
+            return await durableClient.CreateCheckStatusResponseAsync(req, orchestrationInstanceId);
         }
     }
 }

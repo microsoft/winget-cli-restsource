@@ -12,8 +12,7 @@ namespace Microsoft.WinGet.RestSource.Functions
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Azure.Functions.Worker;
     using Microsoft.Extensions.Logging;
     using Microsoft.WinGet.RestSource.AppConfig;
     using Microsoft.WinGet.RestSource.Functions.Common;
@@ -33,16 +32,19 @@ namespace Microsoft.WinGet.RestSource.Functions
     {
         private readonly IApiDataStore dataStore;
         private readonly IWinGetAppConfig appConfig;
+        private readonly ILogger<LocaleFunctions> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleFunctions"/> class.
         /// </summary>
         /// <param name="dataStore">Data Store.</param>
         /// <param name="appConfig">App Config.</param>
-        public LocaleFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig)
+        /// <param name="logger">Logger.</param>
+        public LocaleFunctions(IApiDataStore dataStore, IWinGetAppConfig appConfig, ILogger<LocaleFunctions> logger)
         {
             this.dataStore = dataStore;
             this.appConfig = appConfig;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -52,15 +54,13 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="req">HttpRequest.</param>
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.LocalePost)]
+        [Function(FunctionConstants.LocalePost)]
         public async Task<IActionResult> LocalePostAsync(
             [HttpTrigger(AuthorizationLevel.Function, FunctionConstants.FunctionPost, Route = "packages/{packageIdentifier}/versions/{packageVersion}/locales")]
             HttpRequest req,
             string packageIdentifier,
-            string packageVersion,
-            ILogger log)
+            string packageVersion)
         {
             Locale locale = null;
             Dictionary<string, string> headers = null;
@@ -71,19 +71,19 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as locale
-                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                locale = await Parser.StreamParser<Locale>(req.Body, this.logger);
                 ApiDataValidator.Validate(locale);
 
                 await this.dataStore.AddLocale(packageIdentifier, packageVersion, locale);
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -94,7 +94,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         locale,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -111,9 +111,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="packageLocale">Package locale.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.LocaleDelete)]
+        [Function(FunctionConstants.LocaleDelete)]
         public async Task<IActionResult> LocaleDeleteAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
@@ -122,8 +121,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string packageLocale,
-            ILogger log)
+            string packageLocale)
         {
             Dictionary<string, string> headers = null;
 
@@ -135,12 +133,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -150,7 +148,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -167,9 +165,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="packageLocale">Package locale.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.LocalePut)]
+        [Function(FunctionConstants.LocalePut)]
         public async Task<IActionResult> LocalePutAsync(
             [HttpTrigger(
                 AuthorizationLevel.Function,
@@ -178,8 +175,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string packageLocale,
-            ILogger log)
+            string packageLocale)
         {
             Locale locale = null;
             Dictionary<string, string> headers = null;
@@ -190,7 +186,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                 headers = HeaderProcessor.ToDictionary(req.Headers);
 
                 // Parse body as package
-                locale = await Parser.StreamParser<Locale>(req.Body, log);
+                locale = await Parser.StreamParser<Locale>(req.Body, this.logger);
                 ApiDataValidator.Validate(locale);
 
                 if (locale.PackageLocale != packageLocale)
@@ -205,12 +201,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -221,7 +217,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         headers,
                         locale,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);
@@ -238,9 +234,8 @@ namespace Microsoft.WinGet.RestSource.Functions
         /// <param name="packageIdentifier">Package ID.</param>
         /// <param name="packageVersion">Version ID.</param>
         /// <param name="packageLocale">Package locale.</param>
-        /// <param name="log">ILogger.</param>
         /// <returns>IActionResult.</returns>
-        [FunctionName(FunctionConstants.LocaleGet)]
+        [Function(FunctionConstants.LocaleGet)]
         public async Task<IActionResult> LocaleGetAsync(
             [HttpTrigger(
 #pragma warning disable SA1114 // Parameter list should follow declaration
@@ -255,8 +250,7 @@ namespace Microsoft.WinGet.RestSource.Functions
             HttpRequest req,
             string packageIdentifier,
             string packageVersion,
-            string packageLocale,
-            ILogger log)
+            string packageLocale)
         {
             ApiDataPage<Locale> locales;
             Dictionary<string, string> headers = null;
@@ -270,12 +264,12 @@ namespace Microsoft.WinGet.RestSource.Functions
             }
             catch (DefaultException e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
                 return ActionResultHelper.ProcessError(e.InternalRestError);
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                this.logger.LogError(e.ToString());
 
                 if (await this.appConfig.IsEnabledAsync(FeatureFlag.GenevaLogging, null))
                 {
@@ -285,7 +279,7 @@ namespace Microsoft.WinGet.RestSource.Functions
                         req.Path.Value,
                         headers,
                         e,
-                        log);
+                        this.logger);
                 }
 
                 return ActionResultHelper.UnhandledError(e);

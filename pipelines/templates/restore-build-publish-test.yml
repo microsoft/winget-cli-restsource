@@ -6,6 +6,13 @@ steps:
 - checkout: self
   lfs: "true"
 
+# Install the .NET SDK used by all managed projects.
+- task: UseDotNet@2
+  displayName: 'Use .NET 10 SDK'
+  inputs:
+    packageType: sdk
+    version: '10.0.x'
+
 ## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
@@ -17,22 +24,20 @@ steps:
     restoreDirectory: '$(Build.SourcesDirectory)\src\packages'
 
 ## Build
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    solution: '**\*.sln'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-    clean: true
+    command: build
+    projects: '**\*.sln'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
 
 ## Build Legacy Support
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: Build Legacy Support
   inputs:
-    solution: '**\*.sln'
-    platform: '$(BuildPlatform)'
-    configuration: '$(LegacySupportBuildConfiguration)'
-    clean: true
+    command: build
+    projects: '**\*.sln'
+    arguments: '--configuration $(LegacySupportBuildConfiguration) --no-restore'
 
 ## Publish
 # Publish ARM Templates
@@ -75,7 +80,7 @@ steps:
 - template: copy.yml@self
   parameters:
     name: WinGet.RestSource.Fuzzing
-    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net8.0'
+    source: '$(Build.SourcesDirectory)\src\WinGet.RestSource.Fuzzing\bin\$(BuildConfiguration)\net10.0'
 
 # Publish powershell
 - template: copy-and-publish-powershell.yml@self
@@ -84,5 +89,5 @@ steps:
 - template: run-unittests.yml@self
   parameters:
     name: WinGet.RestSource.UnitTest
-    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net8.0'
+    testDirectory: '$(Build.SourcesDirectory)\src\WinGet.RestSource.UnitTest\bin\$(BuildConfiguration)\net10.0'
     dll: Microsoft.WinGet.RestSource.UnitTest.

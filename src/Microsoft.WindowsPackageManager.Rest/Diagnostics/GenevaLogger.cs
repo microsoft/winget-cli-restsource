@@ -7,7 +7,6 @@
 namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using Microsoft.Extensions.Logging;
     using Microsoft.Msix.Utils.Logger;
@@ -24,18 +23,7 @@ namespace Microsoft.WindowsPackageManager.Rest.Diagnostics
         /// </summary>
         public GenevaLogger()
         {
-            var loggerFactory = LoggerFactory.Create(builder => builder
-            .AddOpenTelemetry(loggerOptions =>
-            {
-                loggerOptions.AddGenevaLogExporter(exporterOptions =>
-                {
-                    exporterOptions.ConnectionString = "EtwSession=OpenTelemetry";
-                    exporterOptions.TableNameMappings = new Dictionary<string, string>
-                    {
-                        ["DiagnosticEvent"] = "DiagnosticEventFromOpenTelemetry",
-                    };
-                });
-            }));
+            var loggerFactory = LoggerFactory.Create(DiagnosticsHelper.ConfigureGenevaLogging);
 
             this.logger = loggerFactory.CreateLogger<GenevaLogger>();
         }

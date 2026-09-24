@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Azure.Functions.Sdk/1.0.1">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <AzureFunctionsVersion>V4</AzureFunctionsVersion>
+    <TargetFramework>net10.0</TargetFramework>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <Platforms>AnyCPU</Platforms>
     <AssemblyName>Microsoft.WinGet.RestSource.Functions</AssemblyName>
     <RootNamespace>Microsoft.WinGet.RestSource.Functions</RootNamespace>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
+    <OutputType>Exe</OutputType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Configurations>Debug;Release;LegacySupport</Configurations>
   </PropertyGroup>
@@ -49,27 +49,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.5" />
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" Version="1.19.1" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.1" />
   </ItemGroup>
 
   <!-- Component Governance fix Item Group. -->
   <ItemGroup>
     <!-- Remove when dependency resolving correctly picks up security fixed version-->
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
-
-  <!-- see GitHub issue https://github.com/Azure/azure-functions-host/issues/5894 -->
-  <PropertyGroup>
-    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Update="host.json">
