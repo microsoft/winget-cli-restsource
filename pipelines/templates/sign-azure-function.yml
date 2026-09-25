@@ -19,6 +19,7 @@ steps:
     files_to_sign: |
       **/Microsoft.WindowsPackageManager.*.dll;
       **/Microsoft.WinGet.*.dll;
+      **/Microsoft.WinGet.*.exe;
 
 - task: onebranch.pipeline.signing@1
   displayName: 'Sign 3rd party module files'
@@ -26,16 +27,21 @@ steps:
     command: 'sign'
     cp_code: '135020002' # CP-231522 - Microsoft 3rd Party Application Component (SHA2)
     search_root: '${{ parameters.azureFunctionFolder }}\ExtractedFiles'
+    # Microsoft.Azure.WebJobs.Extensions.DurableTask.dll ships without an Authenticode
+    # signature from 3.5.0 onward. This is an upstream packaging regression.
+    # Drop the entry below once upstream restores it.
     files_to_sign: |
       **/Castle.*.dll;
       **/DnsClient.dll;
       **/Google.*.dll;
       **/[Gg]rpc*.dll;
       **/LinqKit.dll;
+      **/Microsoft.Azure.WebJobs.Extensions.DurableTask.dll;
       **/NCrontab.*.dll;
       **/Newtonsoft.*.dll;
       **/OpenTelemetry*.dll;
       **/*[Ss][Qq][Ll][Ii][Tt][Ee]*.dll;
+      **/System.Linq.*.dll;
       **/System.Reactive*.dll;
       **/YamlDotNet.dll;
 
