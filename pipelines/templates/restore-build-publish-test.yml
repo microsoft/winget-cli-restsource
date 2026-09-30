@@ -6,13 +6,6 @@ steps:
 - checkout: self
   lfs: "true"
 
-# Install the .NET SDK used by all managed projects.
-- task: UseDotNet@2
-  displayName: 'Use .NET 10 SDK'
-  inputs:
-    packageType: sdk
-    version: '10.0.x'
-
 ## Restore
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
