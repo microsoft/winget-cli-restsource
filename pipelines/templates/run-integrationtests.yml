@@ -36,9 +36,8 @@ steps:
   displayName: 'Run tests: ${{ parameters.name }}'
   inputs:
     command: 'test'
-    arguments: "--no-build -c Release"
+    arguments: '--no-build --no-restore -c Release -p:RestoreConfigFile=$(Build.SourcesDirectory)\src\NuGet.config'
     publishTestResults: true
     projects: '$(Build.SourcesDirectory)\src\WinGet.RestSource.IntegrationTest\*.csproj'
   env:
     RestSourceUrl: "$(RestSourceUrl)" #  variable set in pipeline settings
-    
