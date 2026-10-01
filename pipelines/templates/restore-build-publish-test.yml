@@ -22,7 +22,7 @@ steps:
   inputs:
     command: build
     projects: '**\*.sln'
-    arguments: '--configuration $(BuildConfiguration) --no-restore'
+    arguments: '--configuration $(BuildConfiguration) --no-restore --configfile $(Build.SourcesDirectory)\src\NuGet.config'
 
 ## Build Legacy Support
 - task: DotNetCoreCLI@2
@@ -30,7 +30,7 @@ steps:
   inputs:
     command: build
     projects: '**\*.sln'
-    arguments: '--configuration $(LegacySupportBuildConfiguration) --no-restore'
+    arguments: '--configuration $(LegacySupportBuildConfiguration) --no-restore --configfile $(Build.SourcesDirectory)\src\NuGet.config'
 
 ## Publish
 # Publish ARM Templates

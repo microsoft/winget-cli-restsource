@@ -12,5 +12,5 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '${{ parameters.projects }}'
-    arguments: '--configuration ${{ parameters.buildconfig }} --output $(Build.ArtifactStagingDirectory)\${{ parameters.name }} --no-restore'
+    arguments: '--configuration ${{ parameters.buildconfig }} --output $(Build.ArtifactStagingDirectory)\${{ parameters.name }} --no-restore -p:RestoreConfigFile=$(Build.SourcesDirectory)\src\NuGet.config'
     zipAfterPublish: ${{ parameters.zipAfterPublish }}
