@@ -24,6 +24,8 @@ extends:
     customBuildTags:
     # This is added by 1ES migration tool and it is okay to remove in the future.
     - ES365AIMigrationTooling
+    settings:
+      networkIsolationPolicy: Preferred
 
     sdl:
       codeInspector:
